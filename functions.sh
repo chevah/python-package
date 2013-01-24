@@ -191,6 +191,7 @@ make_dist(){
     execute pushd ${BUILD_FOLDER}
         echo "Creating $target_tar_gz from $target_folder."
         execute tar -cf $target_tar $target_folder
+        execute rm -rf $target_tar_gz
         execute gzip $target_tar
     execute popd
 

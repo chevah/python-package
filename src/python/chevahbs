@@ -1,0 +1,73 @@
+#!/bin/bash
+#
+# Chevah Build Script for Python.
+#
+# Import shared code.
+. ./functions.sh
+
+chevahbs_configure() {
+    CONFIG_ARGS="--without-sqlite  --disable-shared --without-tkinter"
+
+    case $OS in
+        "hpux")
+            export EXTRA_CFLAGS="-D_REENTRANT"
+            export LIBS="-lpthread"
+            CONFIG_ARGS="${CONFIG_ARGS} --without-gcc --without-ctypes"
+            ;;
+        "ubuntu1004")
+            # On Ubuntu there are no libXXX.o, but rather linked against the
+            # full version number.
+            CONFIG_ARGS="${CONFIG_ARGS} \
+                --with-bz2-version=1 \
+                --with-crypt-version=1 \
+                --with-openssl-version=0.9.8 \
+                "
+            ;;
+        "ubuntu1204")
+            CONFIG_ARGS="${CONFIG_ARGS} \
+                --with-bz2-version=1 \
+                --with-crypt-version=1 \
+                --with-openssl-version=1.0.0 \
+                "
+            ;;
+    esac
+
+    execute ./configure --prefix="" $CONFIG_ARGS
+
+    case $OS in
+        "hpux")
+            cp Makefile Makefile.orig
+            # On HPUX -DNDEBUG is causing troubles.
+            sed "s/^OPT=.*-O/OPT= -O/"  Makefile.orig > Makefile
+            unset EXTRA_CFLAGS
+            unset LIBS
+            ;;
+    esac
+
+}
+
+
+chevahbs_compile() {
+    case $OS in
+        "hpux")
+            # This should fix the './Parser/asdl_c.py' error on hpux.
+            touch Include/Python-ast.h Python/Python-ast.c
+            ;;
+        "aix")
+            # This should fix the './Parser/asdl_c.py' error.
+            touch Include/Python-ast.h Python/Python-ast.c
+            ;;
+    esac
+
+    execute make      
+}
+
+
+chevahbs_install() {
+    install_folder=$1
+    execute make altinstall DESTDIR=$INSTALL_FOLDER
+    cp $INSTALL_FOLDER/bin/python2.7 $INSTALL_FOLDER/bin/python
+}
+
+
+select_chevahbs_command $@

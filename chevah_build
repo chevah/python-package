@@ -1,0 +1,127 @@
+#!/bin/bash
+#
+# Chevah Build Script for Python.
+#
+# build
+# test
+# publish_production
+# publish_staging
+#
+
+# Import shared code.
+. ./functions.sh
+
+EXTRA_LIBRARIES="\
+    python-modules/pyOpenSSL-0.13 \
+    python-modules/pycrypto-2.3 \
+    python-modules/pysqlite-2.6.3 \
+    python-modules/python-setproctitle-1.1.4.dev0 \
+    "
+
+PROG=$0
+DIST_FOLDER='dist'
+BUILD_FOLDER='build'
+
+# Get default values from main paver script.
+./discover_system.sh
+if [ "$?" -ne 0 ]; then
+    exit 1
+fi
+PYTHON_VERSION=`cut -d' ' -f 1 DEFAULT_VALUES`
+OS=`cut -d' ' -f 2 DEFAULT_VALUES`
+ARCH=`cut -d' ' -f 3 DEFAULT_VALUES`
+TIMESTAMP=`date +'%Y%m%d'`
+rm DEFAULT_VALUES
+
+LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
+INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST
+PYTHON_BIN=$INSTALL_FOLDER/bin/python
+PYTHON_BUILD_FOLDER="$PYTHON_VERSION-$OS-$ARCH"
+
+
+help_text_clean="Clean the build."
+command_clean() {
+    rm -rf ${BUILD_FOLDER}
+}
+
+help_text_build="Create the Python binaries for current OS."
+command_build() {
+    install_dependencies
+
+    build 'python' 'Python-2.7.3' ${PYTHON_BUILD_FOLDER}
+    build 'sqlite' 'SQLite-3.7.10' ${PYTHON_BUILD_FOLDER}
+    command_build_python_extra_libraries
+
+    execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
+        # Clean the build folder.
+        execute mkdir -p lib/config
+        safe_move share lib/config
+        safe_move pysqlite2-doc lib/config
+        # Move all bin to lib/config
+        safe_move bin lib/config
+        execute mkdir bin
+        # Copy back python binary
+        execute cp lib/config/bin/$PYTHON_VERSION bin/python
+    execute popd
+
+    remove_dependencies
+
+    make_dist $PYTHON_VERSION ${PYTHON_BUILD_FOLDER}
+}
+
+
+# Compile and install all Python extra libraries.
+command_build_python_extra_libraries() {
+    # Update Python config Makefile to use the python that we have just
+    # created.
+    makefile=$INSTALL_FOLDER/lib/$PYTHON_VERSION/config/Makefile
+    makefile_orig=$INSTALL_FOLDER/lib/$PYTHON_VERSION/config/Makefile.orig
+    execute cp $makefile $makefile_orig
+    sed "s#^prefix=.*#prefix= $INSTALL_FOLDER#" $makefile_orig > $makefile
+
+    for library in $EXTRA_LIBRARIES ; do
+        # Library is in the form pyopenssl/PyOpenssl-2.4.5
+        version_folder=${library#*/}
+        target_folder=${BUILD_FOLDER}/$version_folder
+
+        execute rm -rf $target_folder
+        execute cp -r $library $target_folder
+        execute pushd $target_folder
+            if [ -f setup.cfg ] ; then
+                echo "include_dirs=$INSTALL_FOLDER/include" >> setup.cfg
+                echo "library_dirs=$INSTALL_FOLDER/lib" >> setup.cfg
+            fi
+            execute $PYTHON_BIN setup.py install
+        execute popd
+    done
+    execute mv $makefile_orig $makefile
+}
+
+
+#
+# Test the newly created Python binary dist.
+#
+help_text_test=\
+"Run a quick test for the Python from build."
+command_test() {
+    test_file='test_python_binary_dist.py'
+    execute mkdir -p build/
+    execute cp python-modules/chevah-python-test/${test_file} build/
+    execute pushd build
+    execute ./$LOCAL_PYTHON_BINARY_DIST/bin/python ${test_file}
+    execute popd
+}
+
+
+
+help_text_publish_python=\
+"Upload Python binaries for current OS."
+command_publish_python() {
+    execute rsync -qrlDvcz \
+        ${DIST_FOLDER}/$PYTHON_VERSION/ \
+        ${BINARY_DIST_PUBLISH_URI}/$PYTHON_VERSION/
+}
+
+
+# Launch the whole thing.
+select_command $@

@@ -184,14 +184,14 @@ make_dist(){
     tar_gz_file=${target_folder}.tar.gz
     tar_gz_timestamp_file=${target_folder}-${TIMESTAMP}.tar.bz
 
-    # Create dist folder.
+    # Create a clean dist folder.
+    execute rm -rf ${DIST_FOLDER}
     execute mkdir -p ${DIST_FOLDER}/${kind}/${OS}/${ARCH}
 
     # Create tar inside dist folder.
     execute pushd ${BUILD_FOLDER}
         echo "Creating $target_tar_gz from $target_folder."
         execute tar -cf $target_tar $target_folder
-        execute rm -rf $target_tar_gz
         execute gzip $target_tar
     execute popd
 

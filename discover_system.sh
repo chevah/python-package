@@ -2,6 +2,11 @@
 # Copyright (c) 2011 Adi Roiban.
 # See LICENSE for details.
 #
+# Put default values and create them as global variables.
+OS='not-detected-yet'
+ARCH='x86'
+PYTHON_BIN="/bin/python"
+PYTHON_VERSION="python2.7"
 
 write_default_values() {
     echo ${PYTHON_VERSION} ${OS} ${ARCH} > DEFAULT_VALUES
@@ -91,7 +96,6 @@ detect_os() {
                 ;;
                 '12.04' | '12.10' | '13.04' | '13.10')
                     OS='ubuntu1204'
-                    PYTHON_VERSION="python2.7"
                     PYTHON_LIB="/lib/${PYTHON_VERSION}/"
                 ;;
                 *)
@@ -146,13 +150,6 @@ detect_os() {
         ARCH='x64'
     fi
 }
-
-# Put default values and create them as global variables.
-OS='not-detected-yet'
-ARCH='x86'
-PYTHON_BIN="/bin/python"
-PYTHON_VERSION="python2.5"
-PYTHON_LIB="/lib/${PYTHON_VERSION}/"
 
 detect_os
 write_default_values

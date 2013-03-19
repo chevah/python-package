@@ -182,7 +182,7 @@ make_dist(){
     target_tar_gz=../dist/${kind}/${OS}/${ARCH}/${target_folder}-${TIMESTAMP}.tar.gz
 
     tar_gz_file=${target_folder}.tar.gz
-    tar_gz_timestamp_file=${target_folder}-${TIMESTAMP}.tar.bz
+    tar_gz_timestamp_file=${target_folder}-${TIMESTAMP}.tar.gz
 
     # Create a clean dist folder.
     execute rm -rf ${DIST_FOLDER}

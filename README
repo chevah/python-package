@@ -1,0 +1,14 @@
+Python Portable Package
+=======================
+
+This code is here to generate a portable Python distribution,
+
+It is used by our Buildbot script to generate and publish binary python
+distribution.
+
+Here are the steps used by Buildbot:
+
+* Get code
+* ./chevah_build build
+* ./chevah_build test
+* upload to binary dist publishing website.

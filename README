@@ -8,7 +8,24 @@ distribution.
 
 Here are the steps used by Buildbot:
 
-* Get code
+* Login on the new platform
+* Get code from git
 * ./chevah_build build
 * ./chevah_build test
 * upload to binary dist publishing website.
+
+
+Rebuild Python from your home
+---------------------------
+
+If a buildbot is already active for the platform, you can use
+`paver test_remote` to rebuild Python distribution on that system,
+
+Do a testing build (files go in http://binary.chevah.com/testing/python/)::
+
+    paver test_remote NAME_OF_BUILDER
+
+Do a production build
+(files go in http://binary.chevah.com/production/python/)::
+
+    paver buildbot_try -b FULL_NAME_OF_BUILDER --properties=publish=yes

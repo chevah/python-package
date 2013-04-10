@@ -122,6 +122,7 @@ execute() {
     "$@"
     exit_code=$?
     if [ $exit_code -ne 0 ]; then
+        echo "PWD:" `pwd`
         echo "Fail:" $@
         exit 1
     fi

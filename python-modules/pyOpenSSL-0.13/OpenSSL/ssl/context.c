@@ -1117,6 +1117,7 @@ Specify a callback function to be called when clients specify a server name.\n\
 ";
 static PyObject *
 ssl_Context_set_tlsext_servername_callback(ssl_ContextObj *self, PyObject *args) {
+#ifdef TLSEXT_MAXLEN_host_name
     PyObject *callback;
     PyObject *old;
 
@@ -1134,6 +1135,10 @@ ssl_Context_set_tlsext_servername_callback(ssl_ContextObj *self, PyObject *args)
 
     Py_INCREF(Py_None);
     return Py_None;
+#else
+    PyErr_SetString(PyExc_ValueError, "SSL_CTX_set_tlsext_servername_callback not supported by this version of OpenSSL");
+    return NULL;
+#endif
 }
 
 

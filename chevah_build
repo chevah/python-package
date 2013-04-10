@@ -14,14 +14,14 @@
 # List of OS packages required for building Python.
 UBUNTU_PACKAGES="gcc libssl-dev zlib1g-dev libsqlite3-dev libbz2-dev"
 RHEL_PACKAGES="gcc openssl-devel zlib-devel sqlite-devel bzip2-devel"
-SLES_PACKAGES="gcc openssl-devel zlib-devel sqlite-devel bzip2-devel"
+SLES_PACKAGES="gcc openssl-devel zlib-devel sqlite-devel libbz2-devel"
 
 
 EXTRA_LIBRARIES="\
     python-modules/pyOpenSSL-0.13 \
     python-modules/pycrypto-2.3 \
     python-modules/pysqlite-2.6.3 \
-    python-modules/python-setproctitle-1.1.4.dev0 \
+    python-modules/python-setproctitle-1.1.8.dev0 \
     "
 
 PROG=$0

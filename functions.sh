@@ -3,9 +3,6 @@
 # Shared code for all binary-dist scripts.
 #
 
-UBUNTU_PACKAGES="libssl-dev zlib1g-dev libsqlite3-dev libbz2-dev"
-RHEL_PACKAGES="openssl-devel zlib-devel sqlite-devel"
-SLES_PACKAGES="openssl-devel zlib-devel sqlite-devel"
 
 # Define global variables
 COMMAND=""
@@ -213,35 +210,3 @@ safe_move() {
 }
 
 
-install_dependencies() {
-    case $OS in
-        ubuntu*)
-            execute sudo apt-get install -y $UBUNTU_PACKAGES
-        ;;
-        rhel*)
-            execute sudo yum install -y $RHEL_PACKAGES
-        ;;
-        sles*)
-            execute sudo zypper --non-interactive install -l $SLES_PACKAGES
-        ;;
-    esac
-}
-
-
-#
-# This function should do the best to remove the packages previously
-# installed by `install_dependencies` and leave the system clean.
-#
-remove_dependencies() {
-    case $OS in
-        ubuntu*)
-            execute sudo apt-get remove -y --purge $UBUNTU_PACKAGES
-        ;;
-        rhel*)
-            execute sudo yum remove -y $RHEL_PACKAGES
-        ;;
-        sles*)
-            execute sudo zypper --non-interactive remove $SLES_PACKAGES
-        ;;
-    esac
-}

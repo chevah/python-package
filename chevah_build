@@ -11,6 +11,12 @@
 # Import shared code.
 . ./functions.sh
 
+# List of OS packages required for building Python.
+UBUNTU_PACKAGES="gcc libssl-dev zlib1g-dev libsqlite3-dev libbz2-dev"
+RHEL_PACKAGES="gcc openssl-devel zlib-devel sqlite-devel bzip2-devel"
+SLES_PACKAGES="gcc openssl-devel zlib-devel sqlite-devel bzip2-devel"
+
+
 EXTRA_LIBRARIES="\
     python-modules/pyOpenSSL-0.13 \
     python-modules/pycrypto-2.3 \
@@ -37,6 +43,58 @@ LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
 INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST
 PYTHON_BIN=$INSTALL_FOLDER/bin/python
 PYTHON_BUILD_FOLDER="$PYTHON_VERSION-$OS-$ARCH"
+
+
+#
+# Install OS package required to build Python.
+#
+install_dependencies() {
+
+    packages='unknown'
+    install_command='unknown'
+
+    case $OS in
+        ubuntu*)
+            packages=$UBUNTU_PACKAGES
+            install_command='sudo apt-get install -y'
+        ;;
+        rhel*)
+            packages=$RHEL_PACKAGES
+            install_command='sudo yum install -y'
+        ;;
+        sles*)
+            packages=$SLES_PACKAGES
+            install_command='sudo zypper --non-interactive install -l'
+        ;;
+    esac
+
+    # We install one package after another since some package managers
+    # (I am looking at you yum) will exit with 0 exit code if at least
+    # one package was successfully installed.
+    for package in $packages ; do
+        execute $install_command $package
+    done
+
+}
+
+
+#
+# This function should do the best to remove the packages previously
+# installed by `install_dependencies` and leave the system clean.
+#
+remove_dependencies() {
+    case $OS in
+        ubuntu*)
+            execute sudo apt-get remove -y --purge $UBUNTU_PACKAGES
+        ;;
+        rhel*)
+            execute sudo yum remove -y $RHEL_PACKAGES
+        ;;
+        sles*)
+            execute sudo zypper --non-interactive remove $SLES_PACKAGES
+        ;;
+    esac
+}
 
 
 help_text_clean="Clean the build."
@@ -66,7 +124,7 @@ command_build() {
 
     remove_dependencies
 
-    make_dist $PYTHON_VERSION ${PYTHON_BUILD_FOLDER}
+    make_dist 'python' ${PYTHON_BUILD_FOLDER}
 }
 
 
@@ -111,7 +169,6 @@ command_test() {
     execute ./$LOCAL_PYTHON_BINARY_DIST/bin/python ${test_file}
     execute popd
 }
-
 
 
 help_text_publish_python=\

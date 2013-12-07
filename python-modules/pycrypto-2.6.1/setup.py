@@ -121,6 +121,10 @@ class PCTBuildExt (build_ext):
             if self.compiler.compiler_so[0] == 'cc' and sys.platform.startswith('hp-ux'):
                 self.__remove_compiler_option("-std=c99")
 
+            # Or on AIX.
+            if sys.platform.startswith('aix'):
+                self.__remove_compiler_option("-std=c99")
+
             # Make assert() statements always work
             self.__remove_compiler_option("-DNDEBUG")
 
@@ -134,8 +138,15 @@ class PCTBuildExt (build_ext):
             else:
                 # Speed up execution by tweaking compiler options.  This
                 # especially helps the DES modules.
-                self.__add_compiler_option("-O3")
-                self.__add_compiler_option("-fomit-frame-pointer")
+                if sys.platform.startswith('aix'):
+                    self.__add_compiler_option("-O2")
+                    self.__add_compiler_option("-qmaxmem=70000")
+                    self.__add_compiler_option("-D_LARGE_FILES")
+                    self.__add_compiler_option("-D_LARGE_FILE_API")
+                else:
+                    self.__add_compiler_option("-O3")
+                    self.__add_compiler_option("-fomit-frame-pointer")
+
                 # Don't include debug symbols unless debugging
                 self.__remove_compiler_option("-g")
                 # Don't include profiling information (incompatible with

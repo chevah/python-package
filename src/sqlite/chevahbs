@@ -1,24 +1,6 @@
 #!/bin/bash
 #
-# Chevah Build Script for SQLite main library.
+# SQLite code is build by the pysqlite module.
 #
-# Import shared code.
-. ./functions.sh
-
-
-chevahbs_configure() {
-    execute ./configure --enable-readline=no prefix=""
-}
-
-
-chevahbs_compile() {
-    execute make
-}
-
-
-chevahbs_install() {
-    execute make install DESTDIR=$INSTALL_FOLDER
-}
-
-
-select_chevahbs_command $@
+echo "You should not build this but use pysqlite lib."
+exit 1

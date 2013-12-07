@@ -1,0 +1,34 @@
+#!/bin/bash
+#
+# Chevah Build Script for libffi.
+#
+# For it is supported only on AIX.
+#
+# Import shared code.
+. ./functions.sh
+
+
+chevahbs_configure() {
+    # We want only static build so that we don't have to mess with LIBPATH.
+    execute ./configure --prefix="" --disable-shared --enable-static
+}
+
+
+chevahbs_compile() {
+    execute $MAKE
+}
+
+
+chevahbs_install() {
+    install_folder=$1
+
+    # I have no idea why headers are installed in lib/libffi-3.0.13/include
+    # and not in include so we manually.
+    local temp_folder=$INSTALL_FOLDER/tmp/libffi
+    execute mkdir -p $temp_folder
+    execute cp powerpc-ibm-aix5.3.0.0/.libs/* $temp_folder
+    execute cp powerpc-ibm-aix5.3.0.0/include/* $temp_folder
+}
+
+
+select_chevahbs_command $@

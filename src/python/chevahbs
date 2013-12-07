@@ -5,8 +5,11 @@
 # Import shared code.
 . ./functions.sh
 
+
 chevahbs_configure() {
-    CONFIG_ARGS="--without-sqlite  --disable-shared --without-tkinter"
+    CONFIG_ARGS="--disable-shared"
+
+    CONFIGURE_ENVIRONMENT=""
 
     case $OS in
         "hpux")
@@ -30,6 +33,20 @@ chevahbs_configure() {
                 --with-openssl-version=1.0.0 \
                 "
             ;;
+        aix*)
+            # These files are already created in the Python distribution,
+            # but for some strange reason, make tries to recreate them.
+            # We just touch them so that make will see them up to date.
+            touch Include/Python-ast.h Python/Python-ast.c
+            # MAXMEM option with a value greater than 8192.
+            CONFIG_ARGS="${CONFIG_ARGS} --without-gcc --with-system-ffi"
+
+            # On AIX we build _ctypes with external libffi, but not from
+            # system /usr/lib folder but from a local build folder since
+            # we will use the static linking.
+            execute mkdir -p build/libffi
+            execute cp $INSTALL_FOLDER/tmp/libffi/* build/libffi/
+            ;;
     esac
 
     execute ./configure --prefix="" $CONFIG_ARGS
@@ -39,8 +56,6 @@ chevahbs_configure() {
             cp Makefile Makefile.orig
             # On HPUX -DNDEBUG is causing troubles.
             sed "s/^OPT=.*-O/OPT= -O/"  Makefile.orig > Makefile
-            unset EXTRA_CFLAGS
-            unset LIBS
             ;;
     esac
 
@@ -48,25 +63,13 @@ chevahbs_configure() {
 
 
 chevahbs_compile() {
-    case $OS in
-        "hpux")
-            # This should fix the './Parser/asdl_c.py' error on hpux.
-            touch Include/Python-ast.h Python/Python-ast.c
-            ;;
-        "aix")
-            # This should fix the './Parser/asdl_c.py' error.
-            touch Include/Python-ast.h Python/Python-ast.c
-            ;;
-    esac
-
-    execute make      
+    execute $MAKE
 }
 
 
 chevahbs_install() {
     install_folder=$1
-    execute make altinstall DESTDIR=$INSTALL_FOLDER
-    cp $INSTALL_FOLDER/bin/python2.7 $INSTALL_FOLDER/bin/python
+    execute $MAKE install DESTDIR=$INSTALL_FOLDER
 }
 
 

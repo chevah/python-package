@@ -77,7 +77,7 @@ typedef uint64_t			U64;
 typedef unsigned char		U8;
 typedef unsigned __int64	U64;
 typedef unsigned int		U32;
-#elif defined(__sun) || defined(__sun__)
+#elif defined(__sun) || defined(__sun__) || defined(_AIX)
 #include <sys/inttypes.h>
 typedef uint8_t				U8;
 typedef uint32_t			U32;

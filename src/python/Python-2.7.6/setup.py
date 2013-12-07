@@ -2051,6 +2051,7 @@ class PyBuildExt(build_ext):
         include_dirs = []
         extra_compile_args = []
         extra_link_args = []
+        extra_objects = []
         sources = ['_ctypes/_ctypes.c',
                    '_ctypes/callbacks.c',
                    '_ctypes/callproc.c',
@@ -2084,6 +2085,7 @@ class PyBuildExt(build_ext):
                         include_dirs=include_dirs,
                         extra_compile_args=extra_compile_args,
                         extra_link_args=extra_link_args,
+                        extra_objects=extra_objects,
                         libraries=[],
                         sources=sources,
                         depends=depends)
@@ -2099,6 +2101,10 @@ class PyBuildExt(build_ext):
             # in /usr/include/ffi
             inc_dirs.append('/usr/include/ffi')
 
+        # On AIX we hack the libffi in current folder to simplify the build.
+        if host_platform == 'aix5':
+            inc_dirs.append('build/libffi')
+
         ffi_inc = [sysconfig.get_config_var("LIBFFI_INCLUDEDIR")]
         if not ffi_inc or ffi_inc[0] == '':
             ffi_inc = find_file('ffi.h', [], inc_dirs)
@@ -2113,15 +2119,25 @@ class PyBuildExt(build_ext):
                 if line.startswith('#define LIBFFI_H'):
                     break
         ffi_lib = None
+        ffi_lib_dirs = lib_dirs[:]
+
+        # On AIX we hack the libffi in current folder to simplify the build.
+        if host_platform == 'aix5':
+            ffi_lib_dirs.append('build/libffi')
+
         if ffi_inc is not None:
             for lib_name in ('ffi_convenience', 'ffi_pic', 'ffi'):
-                if (self.compiler.find_library_file(lib_dirs, lib_name)):
+                if (self.compiler.find_library_file(ffi_lib_dirs, lib_name)):
                     ffi_lib = lib_name
                     break
 
         if ffi_inc and ffi_lib:
             ext.include_dirs.extend(ffi_inc)
-            ext.libraries.append(ffi_lib)
+            # On AIX we link the ffi static and dynamic on all other systems.
+            if host_platform.startswith('aix'):
+                ext.extra_objects.append('build/libffi/libffi.a')
+            else:
+                ext.libraries.append(ffi_lib)
             self.use_system_libffi = True
 
 

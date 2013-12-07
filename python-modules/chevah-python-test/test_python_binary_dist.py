@@ -2,6 +2,8 @@
 # See LICENSE for details.
 import os
 import sys
+import platform
+platform_system = platform.system().lower()
 exit_code = 0
 
 try:
@@ -9,13 +11,6 @@ try:
     zlib
 except:
     print '"zlib" missing.'
-    exit_code = 1
-
-try:
-    import bz2
-    bz2
-except:
-    print '"bz2" missing.'
     exit_code = 1
 
 try:
@@ -70,6 +65,14 @@ except:
     print '"ctypes - CDLL" missing.'
     exit_code = 1
 
+try:
+    from ctypes.util import find_library
+    find_library
+except:
+    print '"ctypes.utils - find_library" missing.'
+    exit_code = 1
+
+# Windows specific modules.
 if os.name == 'nt':
     try:
         from ctypes import windll
@@ -78,11 +81,21 @@ if os.name == 'nt':
         print '"ctypes - windll" missing.'
         exit_code = 1
 
-try:
-    from ctypes.util import find_library
-    find_library
-except:
-    print '"ctypes.utils - find_library" missing.'
-    exit_code = 1
+# Linux specific modules.
+if platform_system == 'linux':
+    # On Linux we need spwd... but not on all Unix system, ex: AIX
+    try:
+        import spwd
+        spwd
+    except:
+        print 'spwd missing.'
+        exit_code = 1
+
+    try:
+        import bz2
+        bz2
+    except:
+        print '"bz2" missing.'
+        exit_code = 1
 
 sys.exit(exit_code)

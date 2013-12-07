@@ -12,17 +12,20 @@
 . ./functions.sh
 
 # List of OS packages required for building Python.
-UBUNTU_PACKAGES="gcc libssl-dev zlib1g-dev libsqlite3-dev libbz2-dev"
-RHEL_PACKAGES="gcc openssl-devel zlib-devel sqlite-devel bzip2-devel"
-SLES_PACKAGES="gcc openssl-devel zlib-devel sqlite-devel libbz2-devel"
+UBUNTU_PACKAGES="gcc libssl-dev zlib1g-dev libbz2-dev"
+RHEL_PACKAGES="gcc openssl-devel zlib-devel bzip2-devel"
+SLES_PACKAGES="gcc openssl-devel zlib-devel libbz2-devel"
 
+LIBFFI_VERSION=3.0.13
+PYTHON_BUILD_VERSION=2.7.6
+PYSQLITE_VERSION=2.6.3
+SQLITE_VERSION=3.8.1
 
 EXTRA_LIBRARIES="\
-    python-modules/pyOpenSSL-0.13 \
-    python-modules/pycrypto-2.3 \
-    python-modules/pysqlite-2.6.3 \
-    python-modules/python-setproctitle-1.1.8.dev0 \
-    "
+   python-modules/pyOpenSSL-0.13 \
+   python-modules/pycrypto-2.6.1 \
+   python-modules/python-setproctitle-1.1.8.dev0 \
+   "
 
 PROG=$0
 DIST_FOLDER='dist'
@@ -43,6 +46,17 @@ LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
 INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST
 PYTHON_BIN=$INSTALL_FOLDER/bin/python
 PYTHON_BUILD_FOLDER="$PYTHON_VERSION-$OS-$ARCH"
+
+MAKE=make
+
+case $OS in
+    aix*)
+        export MAKE=gmake
+        export PATH=/usr/vac/bin:$PATH
+        export CC=xlc_r
+        export OPT="-O2 -qmaxmem=70000"
+        ;;
+esac
 
 
 #
@@ -65,6 +79,11 @@ install_dependencies() {
         sles*)
             packages=$SLES_PACKAGES
             install_command='sudo zypper --non-interactive install -l'
+        ;;
+        aix*)
+            # For the moment, we don't install anything on AIX.
+            packages=""
+            install_command=''
         ;;
     esac
 
@@ -106,12 +125,21 @@ help_text_build="Create the Python binaries for current OS."
 command_build() {
     install_dependencies
 
-    build 'python' 'Python-2.7.3' ${PYTHON_BUILD_FOLDER}
-    build 'sqlite' 'SQLite-3.7.10' ${PYTHON_BUILD_FOLDER}
+    case $OS in
+        aix*)
+            build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
+            ;;
+    esac
+
+    build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
+
+    command_build_sqlite
+
     command_build_python_extra_libraries
 
     execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
         # Clean the build folder.
+        execute rm -rf tmp
         execute mkdir -p lib/config
         safe_move share lib/config
         safe_move pysqlite2-doc lib/config
@@ -128,7 +156,31 @@ command_build() {
 }
 
 
+#
+# Build pysqlite with static linked SQLite.
+#
+command_build_sqlite() {
+    target_folder=${BUILD_FOLDER}/pysqlite
+    amalgamation_folder=${BUILD_FOLDER}/pysqlite/amalgamation
+
+    initialize_python_module \
+        "python-modules/pysqlite-$PYSQLITE_VERSION" $target_folder
+
+    # Prepare SQLite source.
+    execute rm -rf $amalgamation_folder
+    execute cp -r "src/sqlite/SQLite-$SQLITE_VERSION/" $amalgamation_folder
+
+    # Build and install.
+    execute pushd $target_folder
+        execute $PYTHON_BIN setup.py build_static
+        execute $PYTHON_BIN setup.py install
+    execute popd
+
+}
+
+#
 # Compile and install all Python extra libraries.
+#
 command_build_python_extra_libraries() {
     # Update Python config Makefile to use the python that we have just
     # created.
@@ -137,22 +189,52 @@ command_build_python_extra_libraries() {
     execute cp $makefile $makefile_orig
     sed "s#^prefix=.*#prefix= $INSTALL_FOLDER#" $makefile_orig > $makefile
 
+    case $OS in
+        aix*)
+            cp /opt/freeware/include/gmp* $INSTALL_FOLDER/include
+            cp /opt/freeware/lib/libgmp* $INSTALL_FOLDER/lib
+        ;;
+    esac
+
     for library in $EXTRA_LIBRARIES ; do
         # Library is in the form pyopenssl/PyOpenssl-2.4.5
         version_folder=${library#*/}
         target_folder=${BUILD_FOLDER}/$version_folder
 
-        execute rm -rf $target_folder
-        execute cp -r $library $target_folder
+        initialize_python_module $library $target_folder
+
         execute pushd $target_folder
-            if [ -f setup.cfg ] ; then
-                echo "include_dirs=$INSTALL_FOLDER/include" >> setup.cfg
-                echo "library_dirs=$INSTALL_FOLDER/lib" >> setup.cfg
-            fi
             execute $PYTHON_BIN setup.py install
         execute popd
+
     done
     execute mv $makefile_orig $makefile
+}
+
+
+#
+# Initialize Python module for build.
+#
+initialize_python_module(){
+    source_folder=$1
+    larget_folder=$1
+
+    execute rm -rf $target_folder
+    execute cp -r $source_folder $target_folder
+    execute pushd $target_folder
+        if [ -f setup.cfg ] ; then
+            echo "include_dirs=$INSTALL_FOLDER/include" >> setup.cfg
+            echo "library_dirs=$INSTALL_FOLDER/lib" >> setup.cfg
+        fi
+
+        case $OS in
+            aix*)
+                # Copy special link steps in local folder.
+                mkdir -p Modules
+                cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
+            ;;
+        esac
+    execute popd
 }
 
 

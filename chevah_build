@@ -58,7 +58,7 @@ case $OS in
         ;;
     solaris*)
         export MAKE=gmake
-        export PATH=/usr/ccs/bin/:$PATH
+        export PATH=/usr/sfw/bin/:/usr/ccs/bin/:$PATH
         ;;
 esac
 

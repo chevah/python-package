@@ -51,6 +51,8 @@ chevahbs_configure() {
             if [ "$ARCH" = "x64"  ]; then
                 export CFLAGS="-m64" LDFLAGS="-m64"
             fi
+            echo "_ssl _ssl.c -I/usr/sfw/include/openssl -L/usr/sfw/lib" \
+                "-lssl -lcrypto" >>Modules/Setup.local
             ;;
     esac
 

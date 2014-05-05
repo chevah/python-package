@@ -47,6 +47,11 @@ chevahbs_configure() {
             execute mkdir -p build/libffi
             execute cp $INSTALL_FOLDER/tmp/libffi/* build/libffi/
             ;;
+        solaris*)
+            if [ "$ARCH" = "x64"  ]; then
+                export CFLAGS="-m64" LDFLAGS="-m64"
+            fi
+            ;;
     esac
 
     execute ./configure --prefix="" $CONFIG_ARGS

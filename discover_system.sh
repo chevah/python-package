@@ -34,6 +34,9 @@ detect_os() {
         elif [ "$ARCH" = "amd64" ]; then
             ARCH='x64'
         fi
+        if [ "$ARCH" = "sparcv9" ] ; then
+            ARCH='sparc64'
+        fi
 
         if [ "$VERSION" = "5.10" ] ; then
             OS="solaris10"

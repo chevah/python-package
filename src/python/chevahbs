@@ -48,11 +48,17 @@ chevahbs_configure() {
             execute cp $INSTALL_FOLDER/tmp/libffi/* build/libffi/
             ;;
         solaris*)
-            if [ "$ARCH" = "x64"  ]; then
-                export CFLAGS="-m64" LDFLAGS="-m64"
+            ARCH="`isainfo -n`"
+            if [ "${ARCH%64}" = "$ARCH" ]; then
+                echo "_ssl _ssl.c -I/usr/sfw/include" \
+                    "-I/usr/sfw/include/openssl -L/usr/sfw/lib" \
+                    " -R/usr/sfw/lib -lssl -lcrypto" >> Modules/Setup.local
+            else
+                CONFIG_ARGS="${CONFIG_ARGS} CFLAGS=-m64 LDFLAGS=-m64"
+                echo "_ssl _ssl.c -I/usr/sfw/include" \
+                    "-I/usr/sfw/include/openssl -L/usr/sfw/lib/64" \
+                    " -R/usr/sfw/lib/64 -lssl -lcrypto" >> Modules/Setup.local
             fi
-            echo "_ssl _ssl.c -I/usr/sfw/include/openssl -L/usr/sfw/lib" \
-                "-lssl -lcrypto" >>Modules/Setup.local
             ;;
     esac
 

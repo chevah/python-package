@@ -48,6 +48,10 @@ chevahbs_configure() {
             execute cp $INSTALL_FOLDER/tmp/libffi/* build/libffi/
             ;;
         solaris*)
+            # In Solaris the default OpenSSL installation lives in /usr/sfw/.
+            # Both include options are needed to match both the native Sun
+            # Studio compiler and GCC. The -R option is needed when using the
+            # the native compiler.
             ARCH="`isainfo -n`"
             if [ "${ARCH%64}" = "$ARCH" ]; then
                 echo "_ssl _ssl.c -I/usr/sfw/include" \

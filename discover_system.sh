@@ -26,15 +26,14 @@ detect_os() {
     elif [ "${OS}" = "sunos" ] ; then
 
         OS="solaris"
-        ARCH=`isainfo -n`
+        ARCH="`isainfo -n`"
         VERSION=`uname -r`
 
         if [ "$ARCH" = "i386" ] ; then
             ARCH='x86'
         elif [ "$ARCH" = "amd64" ]; then
             ARCH='x64'
-        fi
-        if [ "$ARCH" = "sparcv9" ] ; then
+        elif [ "$ARCH" = "sparcv9" ] ; then
             ARCH='sparc64'
         fi
 

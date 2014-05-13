@@ -2,7 +2,7 @@
 #
 # Chevah Build Script for libffi.
 #
-# For it is supported only on AIX.
+# For now it is supported only on AIX and Solaris.
 #
 # Import shared code.
 . ./functions.sh
@@ -22,12 +22,14 @@ chevahbs_compile() {
 chevahbs_install() {
     install_folder=$1
 
-    # I have no idea why headers are installed in lib/libffi-3.0.13/include
-    # and not in include so we manually.
-    local temp_folder=$INSTALL_FOLDER/tmp/libffi
-    execute mkdir -p $temp_folder
-    execute cp powerpc-ibm-aix5.3.0.0/.libs/* $temp_folder
-    execute cp powerpc-ibm-aix5.3.0.0/include/* $temp_folder
+    if [ ${ARCH##ppc} != "$ARCH" ]; then
+        # I have no idea why headers are installed in lib/libffi-3.0.13/include
+        # and not in include so we install them manually in AIX.
+        local temp_folder=$INSTALL_FOLDER/tmp/libffi
+        execute mkdir -p $temp_folder
+        execute cp powerpc-ibm-aix5.3.0.0/.libs/* $temp_folder
+        execute cp powerpc-ibm-aix5.3.0.0/include/* $temp_folder
+    fi
 }
 
 

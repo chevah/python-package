@@ -769,11 +769,13 @@ class PyBuildExt(build_ext):
             missing.append('readline')
 
         # crypt module.
-
-        if self.compiler.find_library_file(lib_dirs, 'crypt'):
+        libs = []
+        if host_platform == 'sunos5':
+            # http://bugs.python.org/issue1471934 (64bit Solaris 8-10)
+            if self.compiler.find_library_file(lib_dirs, 'crypt_i'):
+                libs = ['crypt_i']
+        elif self.compiler.find_library_file(lib_dirs, 'crypt'):
             libs = ['crypt']
-        else:
-            libs = []
         exts.append( Extension('crypt', ['cryptmodule.c'], libraries=libs) )
 
         # CSV files
@@ -786,6 +788,7 @@ class PyBuildExt(build_ext):
         # Detect SSL support for the socket module (via _ssl)
         search_for_ssl_incs_in = [
                               '/usr/local/ssl/include',
+                              '/usr/sfw/include/',
                               '/usr/contrib/ssl/include/'
                              ]
         ssl_incs = find_file('openssl/ssl.h', inc_dirs,
@@ -793,10 +796,23 @@ class PyBuildExt(build_ext):
                              )
         if ssl_incs is not None:
             krb5_h = find_file('krb5.h', inc_dirs,
-                               ['/usr/kerberos/include'])
+                               ['/usr/kerberos/include',
+                                '/usr/include/kerberosv5/'
+                               ])
             if krb5_h:
                 ssl_incs += krb5_h
-        ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
+        # On Solaris 10 the OpenSSL libs live in /usr/sfw/lib.
+        if host_platform == 'sunos5':
+            # Determine if we need to set the path to 64bit OpenSSL libs.
+            arch_env = os.environ.get('ARCH')
+            if '64' in arch_env:
+                ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
+                                         [ '/usr/sfw/lib/64' ] )
+            else:
+                ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
+                                         [ '/usr/sfw/lib' ] )
+        else:
+            ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
                                      ['/usr/local/ssl/lib',
                                       '/usr/contrib/ssl/lib/'
                                      ] )
@@ -2102,7 +2118,7 @@ class PyBuildExt(build_ext):
             inc_dirs.append('/usr/include/ffi')
 
         # On AIX we hack the libffi in current folder to simplify the build.
-        if host_platform == 'aix5':
+        if host_platform == 'aix5' or host_platform == 'sunos5' :
             inc_dirs.append('build/libffi')
 
         ffi_inc = [sysconfig.get_config_var("LIBFFI_INCLUDEDIR")]
@@ -2122,7 +2138,7 @@ class PyBuildExt(build_ext):
         ffi_lib_dirs = lib_dirs[:]
 
         # On AIX we hack the libffi in current folder to simplify the build.
-        if host_platform == 'aix5':
+        if host_platform == 'aix5' or host_platform == 'sunos5':
             ffi_lib_dirs.append('build/libffi')
 
         if ffi_inc is not None:
@@ -2134,7 +2150,7 @@ class PyBuildExt(build_ext):
         if ffi_inc and ffi_lib:
             ext.include_dirs.extend(ffi_inc)
             # On AIX we link the ffi static and dynamic on all other systems.
-            if host_platform.startswith('aix'):
+            if host_platform.startswith('aix') or host_platform.startswith('sunos'):
                 ext.extra_objects.append('build/libffi/libffi.a')
             else:
                 ext.libraries.append(ffi_lib)

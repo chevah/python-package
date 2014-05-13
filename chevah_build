@@ -42,6 +42,12 @@ ARCH=`cut -d' ' -f 3 DEFAULT_VALUES`
 TIMESTAMP=`date +'%Y%m%d'`
 rm DEFAULT_VALUES
 
+# In Solaris we use $ARCH to set the appropriate paths later on.
+# This way we can also force a 32bit build on a 64bit machine,
+# for example by exporting ARCH as "i386".
+# We also use $ARCH when building the external libffi in AIX.
+export ARCH
+
 LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
 INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST
 PYTHON_BIN=$INSTALL_FOLDER/bin/python
@@ -57,8 +63,20 @@ case $OS in
         export OPT="-O2 -qmaxmem=70000"
         ;;
     solaris*)
-        export MAKE=gmake
-        export PATH=/usr/sfw/bin/:/usr/ccs/bin/:$PATH
+        # By default we compile with the Sun Studio compiler.
+        # If you want to use GCC 3.x or 4.x, please export the appropriate PATH.
+        # This is the default-included GNU make.
+        export MAKE=/usr/sfw/bin/gmake
+        # We favour the BSD-flavoured "install" over the default one.
+        # "ar", "nm" and "ld" are included by default in the same path.
+        export PATH=/usr/ccs/bin/:$PATH
+        # And this is where the GNU libs are in Solaris 10, including OpenSSL.
+        if [ "${ARCH%64}" = "$ARCH" ]; then
+            export LDFLAGS="-L/usr/sfw/lib -R/usr/sfw/lib"
+        else
+            export LDFLAGS="-m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
+            export CFLAGS="-m64"
+        fi
         ;;
 esac
 
@@ -136,6 +154,9 @@ command_build() {
 
     case $OS in
         aix*)
+            build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
+            ;;
+        solaris*)
             build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
     esac
@@ -241,6 +262,19 @@ initialize_python_module(){
                 # Copy special link steps in local folder.
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
+            ;;
+            solaris*)
+                # Copy special link steps in local folder.
+                mkdir -p Modules
+                cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
+                # This is needed for pyOpenSSL.
+                if [ "${ARCH%64}" = "$ARCH" ]; then
+                    execute $PYTHON_BIN setup.py build_ext -I/usr/sfw/include \
+                        -L/usr/sfw/lib
+                else
+                    execute $PYTHON_BIN setup.py build_ext -I/usr/sfw/include \
+                        -L/usr/sfw/lib/64
+                fi
             ;;
         esac
     execute popd

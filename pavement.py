@@ -19,6 +19,7 @@ from brink.pavement_commons import (
     buildbot_list,
     buildbot_try,
     default,
+    github,
     harness,
     help,
     pave,
@@ -31,6 +32,7 @@ from paver.easy import task
 buildbot_list
 buildbot_try
 default
+github
 harness
 help
 test_remote
@@ -43,6 +45,8 @@ SETUP['pocket-lint']['include_folders'] = ['src']
 SETUP['pocket-lint']['exclude_files'] = []
 SETUP['test']['package'] = None
 
+
+SETUP['github']['url'] = 'https://github.com/chevah/python-package'
 SETUP['buildbot']['server'] = 'build.chevah.com'
 SETUP['buildbot']['web_url'] = 'http://build.chevah.com:10088'
 

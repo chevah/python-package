@@ -28,4 +28,4 @@ Do a testing build (files go in http://binary.chevah.com/testing/python/)::
 Do a production build
 (files go in http://binary.chevah.com/production/python/)::
 
-    paver buildbot_try -b FULL_NAME_OF_BUILDER --properties=publish=yes
+    paver test_remote NAME_OF_BUILDER --properties=publish=yes

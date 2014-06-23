@@ -67,9 +67,11 @@ clean_build() {
     echo "Cleaning project temporary files..."
     rm -f DEFAULT_VALUES
     echo "Cleaning pyc files ..."
-    # We use NULL delimiter for result to support files with spaces.
-    # Piping is faster than -exec since rm is called once.
-    find . -name '*.pyc' -print0 | xargs -0 -r rm || true
+    # AIX's find complains if there are no matching files when using +.
+    [ $(uname) == AIX ] && touch ./dummy_file_for_AIX.pyc
+    # Faster than '-exec \;' and supported in most OS'es,
+    # details at http://www.in-ulm.de/~mascheck/various/find/#xargs
+    find ./ -name '*.pyc' -exec rm {} +
 }
 
 
@@ -179,13 +181,7 @@ pip() {
 #
 get_binary_dist() {
     local dist_name=$1
-    local remote_url
-
-    if [ $# -eq 1 ]; then
-        remote_url=$BINARY_DIST_URI
-    else
-        remote_url="$2/packages"
-    fi
+    local remote_url=$2
 
     echo "Getting $dist_name from $remote_url..."
 
@@ -229,7 +225,8 @@ copy_python() {
         # get one together with default build system.
         if [ ! -d ${python_distributable} ]; then
             echo "No ${PYTHON_VERSION} environment. Start downloading it..."
-            get_binary_dist ${PYTHON_VERSION}-${OS}-${ARCH}
+            get_binary_dist \
+                ${PYTHON_VERSION}-${OS}-${ARCH} "$BINARY_DIST_URI/python"
         fi
         echo "Copying bootstraping files... "
         cp -R ${python_distributable}/* ${BUILD_FOLDER}
@@ -249,13 +246,13 @@ copy_python() {
 
         if [ ! -d ${CACHE_FOLDER}/$pip_package ]; then
             echo "No ${pip_package}. Start downloading it..."
-            get_binary_dist "$pip_package" $PIP_INDEX
+            get_binary_dist "$pip_package" "$PIP_INDEX/packages"
         fi
         cp -RL "${CACHE_FOLDER}/$pip_package/pip" ${PYTHON_LIB}/site-packages/
 
         if [ ! -d ${CACHE_FOLDER}/$setuptools_package ]; then
             echo "No ${setuptools_package}. Start downloading it..."
-            get_binary_dist "$setuptools_package"  $PIP_INDEX
+            get_binary_dist "$setuptools_package" "$PIP_INDEX/packages"
         fi
         cp -RL "${CACHE_FOLDER}/$setuptools_package/setuptools" ${PYTHON_LIB}/site-packages/
         cp -RL "${CACHE_FOLDER}/$setuptools_package//setuptools.egg-info" ${PYTHON_LIB}/site-packages/
@@ -464,7 +461,12 @@ if [ "$COMMAND" = "get_default_values" ] ; then
 fi
 
 if [ "$COMMAND" = "get_python" ] ; then
-    get_binary_dist $2
+    get_binary_dist $2 "$BINARY_DIST_URI/python"
+    exit 0
+fi
+
+if [ "$COMMAND" = "get_agent" ] ; then
+    get_binary_dist $2 "$BINARY_DIST_URI/agent"
     exit 0
 fi
 
@@ -473,9 +475,8 @@ write_default_values
 copy_python
 install_dependencies
 
-# Always update brink when running buildbot tasks so that brink is installed
-# outside of Python.
-for paver_task in "deps"; do
+# Always update brink when running buildbot tasks.
+for paver_task in "deps" "test_os_dependent" "test_os_independent"; do
     if [ "$COMMAND" == "$paver_task" ] ; then
         install_brink
     fi

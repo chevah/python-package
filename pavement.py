@@ -39,7 +39,7 @@ test_remote
 
 SETUP['product']['name'] = 'python'
 SETUP['folders']['source'] = u'src'
-SETUP['repository']['name'] = u'python'
+SETUP['repository']['name'] = u'python-package'
 SETUP['pocket-lint']['include_files'] = ['pavement.py']
 SETUP['pocket-lint']['include_folders'] = ['src']
 SETUP['pocket-lint']['exclude_files'] = []

@@ -45,6 +45,7 @@ SETUP['pocket-lint']['include_folders'] = ['src']
 SETUP['pocket-lint']['exclude_files'] = []
 SETUP['test']['package'] = None
 
+SETUP['pypi']['index_url'] = 'http://pypi.chevah.com:10042/simple'
 SETUP['github']['repo'] = 'chevah/python-package'
 SETUP['buildbot']['server'] = 'build.chevah.com'
 SETUP['buildbot']['web_url'] = 'http://build.chevah.com:10088'

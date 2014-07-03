@@ -309,7 +309,7 @@ check_source_folder() {
 # Update OS and ARCH variables with the current values.
 #
 detect_os() {
-    OS=`uname -s | tr '[:upper:]' '[:lower:]'`
+    OS=`uname -s | tr "[A-Z]" "[a-z]"`
 
     if [ "${OS%mingw*}" = "" ] ; then
 
@@ -319,11 +319,15 @@ detect_os() {
     elif [ "${OS}" = "sunos" ] ; then
 
         OS="solaris"
-        ARCH=`uname -p`
+        ARCH=`isainfo -n`
         VERSION=`uname -r`
 
         if [ "$ARCH" = "i386" ] ; then
             ARCH='x86'
+        elif [ "$ARCH" = "amd64" ]; then
+            ARCH='x64'
+        elif [ "$ARCH" = "sparcv9" ] ; then
+            ARCH='sparc64'
         fi
 
         if [ "$VERSION" = "5.10" ] ; then

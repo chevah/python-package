@@ -95,12 +95,12 @@ detect_os() {
         elif [ -f /etc/lsb-release ] ; then
             release=`lsb_release -sr`
             case $release in
-                '10.04' | '10.10' | '11.04' | '11.10')
-                    OS='ubuntu1004'
-                ;;
                 '12.04' | '12.10' | '13.04' | '13.10')
                     OS='ubuntu1204'
                     PYTHON_LIB="/lib/${PYTHON_VERSION}/"
+                ;;
+                '14.04' | '14.10' | '15.04' | '15.10')
+                    OS='ubuntu1404'
                 ;;
                 *)
                     echo 'Unsuported Ubuntu version.'

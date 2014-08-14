@@ -102,6 +102,9 @@ detect_os() {
                     OS='ubuntu1204'
                     PYTHON_LIB="/lib/${PYTHON_VERSION}/"
                 ;;
+                '14.04' | '14.10' | '15.04' | '15.10')
+                    OS='ubuntu1404'
+                ;;
                 *)
                     echo 'Unsuported Ubuntu version.'
                     exit 1

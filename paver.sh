@@ -404,7 +404,7 @@ detect_os() {
                         OS='ubuntu1404'
                     ;;
                     *)
-                        echo 'Unsuported Ubuntu version.'
+                        echo 'Unsupported Ubuntu version.'
                         exit 1
                     ;;
                 esac

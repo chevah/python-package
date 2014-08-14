@@ -397,6 +397,9 @@ detect_os() {
             if [ $lsb_release_id = Ubuntu ]; then
                 ubuntu_release=`lsb_release -sr`
                 case $ubuntu_release in
+                    '10.04' | '10.10' | '11.04' | '11.10')
+                        OS='ubuntu1004'
+                    ;;
                     '12.04' | '12.10' | '13.04' | '13.10')
                         OS='ubuntu1204'
                     ;;

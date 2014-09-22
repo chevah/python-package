@@ -82,7 +82,7 @@ detect_os() {
             elif [ "$rhel_major_version" = "7" ] ; then
                 OS='rhel7'
             else
-                echo 'Unsuported RHEL version.'
+                echo 'Unsupported RHEL version.'
                 exit 1
             fi
         elif [ -f /etc/SuSE-release ] ; then
@@ -108,7 +108,7 @@ detect_os() {
                     OS='ubuntu1404'
                 ;;
                 *)
-                    echo 'Unsuported Ubuntu version.'
+                    echo 'Unsupported Ubuntu version.'
                     exit 1
                 ;;
             esac

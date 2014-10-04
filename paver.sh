@@ -422,23 +422,24 @@ detect_os() {
 
     elif [ "${OS}" = "darwin" ] ; then
         osx_version=`sw_vers -productVersion`
-        osx_major_version=${osx_version%.*}
-    	if [ "$osx_major_version" = "10.4" ] ; then
-    		OS='osx104'
+    	if [ "$osx_version" = "10.8" ] ; then
+    		OS='osx108'
     	else
-    		echo 'Unsuported OS X version.'
+    		echo 'Unsuported OS X version:' $osx_version
     		exit 1
     	fi
 
     	osx_arch=`uname -m`
     	if [ "$osx_arch" = "Power Macintosh" ] ; then
     		ARCH='ppc'
+        elif [ "$osx_arch" = "x86_64" ] ; then
+            ARCH='x64'
     	else
-    		echo 'Unsuported OS X architecture.'
+    		echo 'Unsuported OS X architecture:' $osx_arch
     		exit 1
     	fi
     else
-        echo 'Unsuported operating system.'
+        echo 'Unsuported operating system:' $OS
         exit 1
     fi
 
@@ -464,7 +465,7 @@ if [ "$COMMAND" = "clean" ] ; then
     exit 0
 fi
 
-if [ "$COMMAND" = "get_default_values" ] ; then
+if [ "$COMMAND" = "detect_os" ] ; then
     write_default_values
     exit 0
 fi

@@ -32,13 +32,13 @@ DIST_FOLDER='dist'
 BUILD_FOLDER='build'
 
 # Get default values from main paver script.
-./discover_system.sh
+./paver.sh detect_os
 if [ "$?" -ne 0 ]; then
     exit 1
 fi
-PYTHON_VERSION=`cut -d' ' -f 1 DEFAULT_VALUES`
-OS=`cut -d' ' -f 2 DEFAULT_VALUES`
-ARCH=`cut -d' ' -f 3 DEFAULT_VALUES`
+PYTHON_VERSION=`cut -d' ' -f 2 DEFAULT_VALUES`
+OS=`cut -d' ' -f 3 DEFAULT_VALUES`
+ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 TIMESTAMP=`date +'%Y%m%d'`
 rm DEFAULT_VALUES
 
@@ -86,8 +86,8 @@ esac
 #
 install_dependencies() {
 
-    packages='unknown'
-    install_command='unknown'
+    packages='packages-not-defined'
+    install_command='install-command-not-defined'
 
     case $OS in
         ubuntu*)
@@ -109,6 +109,11 @@ install_dependencies() {
         ;;
         solaris*)
             # For the moment, we don't install anything on Solaris.
+            packages=""
+            install_command=''
+        ;;
+        osx*)
+            # For the moment, we don't install anything on OSX.
             packages=""
             install_command=''
         ;;

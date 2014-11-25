@@ -27,8 +27,14 @@ chevahbs_install() {
         # and not in include so we install them manually in AIX.
         local temp_folder=$INSTALL_FOLDER/tmp/libffi
         execute mkdir -p $temp_folder
-        execute cp powerpc-ibm-aix5.3.0.0/.libs/* $temp_folder
-        execute cp powerpc-ibm-aix5.3.0.0/include/* $temp_folder
+
+       if [ $OS = 'aix53' ]; then
+            execute cp powerpc-ibm-aix5.3.0.0/.libs/* $temp_folder
+            execute cp powerpc-ibm-aix5.3.0.0/include/* $temp_folder
+       elif [ $OS = 'aix71' ]; then
+            execute cp powerpc-ibm-aix7.1.0.0/.libs/* $temp_folder
+            execute cp powerpc-ibm-aix7.1.0.0/include/* $temp_folder
+        fi
     fi
 }
 

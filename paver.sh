@@ -348,10 +348,13 @@ detect_os() {
             5.1.*)
                 OS='aix51'
                 ARCH='ppc'
-                ;;
-            *)
-                # By default we go for AIX 5.3 on PPC64
+            ;;
+            5.3.*)
                 OS='aix53'
+                ARCH='ppc64'
+            ;;
+            7.1.*)
+                OS='aix71'
                 ARCH='ppc64'
             ;;
         esac

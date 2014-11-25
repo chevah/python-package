@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Chevah Build Script for Python.
 #
@@ -224,6 +224,7 @@ command_build_python_extra_libraries() {
     execute cp $makefile $makefile_orig
     sed "s#^prefix=.*#prefix= $INSTALL_FOLDER#" $makefile_orig > $makefile
 
+    # We need GMP or MPIR for fast math in pycrypto.
     case $OS in
         aix*)
             cp /opt/freeware/include/gmp* $INSTALL_FOLDER/include

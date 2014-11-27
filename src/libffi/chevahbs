@@ -22,7 +22,7 @@ chevahbs_compile() {
 chevahbs_install() {
     install_folder=$1
 
-    if [ ${ARCH##ppc} != "$ARCH" ]; then
+    if [ x${ARCH##ppc} != x"$ARCH" ]; then
         # I have no idea why headers are installed in lib/libffi-3.0.13/include
         # and not in include so we install them manually in AIX.
         local temp_folder=$INSTALL_FOLDER/tmp/libffi

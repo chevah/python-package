@@ -39,7 +39,10 @@ chevahbs_configure() {
             # We just touch them so that make will see them up to date.
             touch Include/Python-ast.h Python/Python-ast.c
             # MAXMEM option with a value greater than 8192.
-            CONFIG_ARGS="${CONFIG_ARGS} --without-gcc --with-system-ffi"
+            CONFIG_ARGS="${CONFIG_ARGS} \
+                --without-gcc \
+                --with-system-ffi \
+                "
 
             # On AIX we build _ctypes with external libffi, but not from
             # system /usr/lib folder but from a local build folder since

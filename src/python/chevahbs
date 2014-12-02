@@ -34,6 +34,14 @@ chevahbs_configure() {
                 "
             ;;
         aix*)
+            # In AIX we build _ctypes with external libffi, but not the system
+            # one. We use our libffi files and statically link against its libs.
+            execute mkdir -p build/libffi
+            execute cp $INSTALL_FOLDER/tmp/libffi/* build/libffi/
+            # The following two parameters are picked up by Python's setup.py
+            # and will convince it to use our external libffi for _ctypes.
+            export CPPFLAGS="${CPPFLAGS} -Ibuild/libffi/"
+            export LDFLAGS="${LDFLAGS} -Lbuild/libffi/"
             # These files are already created in the Python distribution,
             # but for some strange reason, make tries to recreate them.
             # We just touch them so that make will see them up to date.
@@ -43,12 +51,6 @@ chevahbs_configure() {
                 --without-gcc \
                 --with-system-ffi \
                 "
-
-            # On AIX we build _ctypes with external libffi, but not from
-            # system /usr/lib folder but from a local build folder since
-            # we will use the static linking.
-            execute mkdir -p build/libffi
-            execute cp $INSTALL_FOLDER/tmp/libffi/* build/libffi/
             ;;
         solaris*)
             # In Solaris the default OpenSSL installation lives in /usr/sfw/.

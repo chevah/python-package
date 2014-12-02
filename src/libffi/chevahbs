@@ -23,17 +23,17 @@ chevahbs_install() {
     install_folder=$1
 
     if [ x${ARCH##ppc} != x"$ARCH" ]; then
-        # I have no idea why headers are installed in lib/libffi-3.0.13/include
-        # and not in include so we install them manually in AIX.
+        # libffi installs its headers in $PREFIX/lib/libffi-$VERSION/include,
+        # instead of $PREFIX/include, so we copy them manually in AIX.
         local temp_folder=$INSTALL_FOLDER/tmp/libffi
         execute mkdir -p $temp_folder
 
-       if [ $OS = 'aix53' ]; then
+        if [ $OS = 'aix53' ]; then
             execute cp powerpc-ibm-aix5.3.0.0/.libs/* $temp_folder
-            execute cp powerpc-ibm-aix5.3.0.0/include/* $temp_folder
-       elif [ $OS = 'aix71' ]; then
+            execute cp powerpc-ibm-aix5.3.0.0/include/*.h $temp_folder
+        elif [ $OS = 'aix71' ]; then
             execute cp powerpc-ibm-aix7.1.0.0/.libs/* $temp_folder
-            execute cp powerpc-ibm-aix7.1.0.0/include/* $temp_folder
+            execute cp powerpc-ibm-aix7.1.0.0/include/*.h $temp_folder
         fi
     fi
 }

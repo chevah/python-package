@@ -60,8 +60,9 @@ case $OS in
         export MAKE=gmake
         export PATH=/usr/vac/bin:$PATH
         export CC=xlc_r
-        export CXX=xlc_r
+        export CXX=xlC_r
         export OPT="-O2 -qmaxmem=-1"
+        export OBJECT_MODE=32
         ;;
     solaris*)
         # By default we compile with the Sun Studio compiler.

@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# Chevah Build Script for GMP.
+#
+# For now it is supported only on AIX.
+#
+# Import shared code.
+. ./functions.sh
+
+chevahbs_configure() {
+    # We want only static build so that we don't have to mess with LIBPATH.
+    execute ./configure --prefix="" --disable-shared --enable-static
+}
+
+
+chevahbs_compile() {
+    execute $MAKE
+    # GMP needs to be checked even after a successful compilation.
+    # See its INSTALL file for details.
+    execute $MAKE check
+}
+
+
+chevahbs_install() {
+    install_folder=$1
+    if [ x${ARCH##ppc} != x"$ARCH" ]; then
+        # As with libffi, we copy the files manually to a temporary location
+        # and then we copy them from there just in time for the compilation of
+        # pycrypto. Which we instruct to use them through augmenting CPPFLAGS
+        # with the include's location and LDFLAGS with the location of the libs.
+        local temp_folder=$INSTALL_FOLDER/tmp/gmp/
+        execute mkdir -p $temp_folder
+        execute cp .libs/* $temp_folder
+        ranlib $temp_folder/libgmp.a
+        execute cp gmp.h $temp_folder
+    fi
+}
+
+
+select_chevahbs_command $@
+

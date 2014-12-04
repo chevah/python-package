@@ -24,7 +24,11 @@ chevahbs_install() {
 
     if [ x${ARCH##ppc} != x"$ARCH" ]; then
         # libffi installs its headers in $PREFIX/lib/libffi-$VERSION/include,
-        # instead of $PREFIX/include, so we copy them manually in AIX.
+        # instead of $PREFIX/include, so we copy them manually to a temporary
+        # location.
+        # From there we will copy them just in time for building Python sources.
+        # For Python's setup.py to pick them up, we will augment CPPFLAGS with
+        # the include's location and LDFLAGS with the location of the libs.
         local temp_folder=$INSTALL_FOLDER/tmp/libffi
         execute mkdir -p $temp_folder
 

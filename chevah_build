@@ -43,10 +43,10 @@ ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 TIMESTAMP=`date +'%Y%m%d'`
 rm DEFAULT_VALUES
 
-# In Solaris we use $ARCH to set the appropriate paths later on.
-# This way we can also force a 32bit build on a 64bit machine,
-# for example by exporting ARCH as "i386".
-# We also use $ARCH when building the external libffi in AIX.
+# In Solaris we use $ARCH to set the appropriate paths later on. This way we
+# can also force a 32bit build on a 64bit machine, for example by exporting
+# ARCH as "x86" instead of "x64". The same in AIX with "ppc" instead of "ppc64".
+# We also use $ARCH when building the external libs in AIX: libffi and GMP.
 export ARCH
 
 LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
@@ -67,10 +67,18 @@ case $OS in
         # As IBM's OpenSSL libs appear to be 32bit only and we need to link to
         # them,  we only compile 32bit packages in AIX for now. We need to force
         # this for GMP, otherwise it would compile 64bit libraries.
-        export OPT="-O2 -qmaxmem=-1 -q32"
-        export ABI=32
-        export AR="ar -X32"
-        ;;
+        if [ "${ARCH%64}" = "$ARCH" ]; then
+            export OPT="-O2 -qmaxmem=-1 -q32"
+            export OBJECT_MODE="32"
+            export ABI="32"
+            export AR="ar -X32"
+        else
+            export OPT="-O2 -qmaxmem=-1 -q64"
+            export OBJECT_MODE="64"
+            export ABI="mode64"
+            export AR="ar -X64"
+        fi
+       ;;
     solaris*)
         # By default we compile with the Sun Studio compiler.
         # If you want to use GCC 3.x or 4.x, please export the appropriate PATH.

@@ -43,9 +43,10 @@ ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 TIMESTAMP=`date +'%Y%m%d'`
 rm DEFAULT_VALUES
 
-# In Solaris we use $ARCH to set the appropriate paths later on. This way we
-# can also force a 32bit build on a 64bit machine, for example by exporting
-# ARCH as "x86" instead of "x64". The same in AIX with "ppc" instead of "ppc64".
+# In Solaris and AIX we use $ARCH to choose if we build a 32bit or 64bit
+# package. This way we are able to force a 32bit build on a 64bit machine,
+# for example by exporting here ARCH as "x86" instead of "x64" or "ppc"
+# instead of "ppc64".
 # We also use $ARCH when building the external libs in AIX: libffi and GMP.
 export ARCH
 
@@ -64,9 +65,9 @@ case $OS in
         # CXX is not really needed, we set it to suppress some warnings and
         # to make sure g++ is never used. However, we'll set CPPFLAGS later...
         export CXX=xlC_r
-        # As IBM's OpenSSL libs appear to be 32bit only and we need to link to
-        # them,  we only compile 32bit packages in AIX for now. We need to force
-        # this for GMP, otherwise it would compile 64bit libraries.
+        # IBM's OpenSSL libs are mixed 32/64bit binaries in AIX 7.1, so we need
+        # to be specific about what kind of build we want, because GMP by
+        # default compiles 64bit libraries.
         if [ "${ARCH%64}" = "$ARCH" ]; then
             export OPT="-O2 -qmaxmem=-1 -q32"
             export OBJECT_MODE="32"
@@ -78,7 +79,7 @@ case $OS in
             export ABI="mode64"
             export AR="ar -X64"
         fi
-       ;;
+        ;;
     solaris*)
         # By default we compile with the Sun Studio compiler.
         # If you want to use GCC 3.x or 4.x, please export the appropriate PATH.

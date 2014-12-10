@@ -69,12 +69,12 @@ case $OS in
         # to be specific about what kind of build we want, because GMP by
         # default compiles 64bit libraries.
         if [ "${ARCH%64}" = "$ARCH" ]; then
-            export OPT="-O2 -qmaxmem=-1 -q32"
+            export CFLAGS="-O2 -qmaxmem=-1 -q32"
             export OBJECT_MODE="32"
             export ABI="32"
             export AR="ar -X32"
         else
-            export OPT="-O2 -qmaxmem=-1 -q64"
+            export CFLAGS="-O2 -qmaxmem=-1 -q64"
             export OBJECT_MODE="64"
             export ABI="mode64"
             export AR="ar -X64"

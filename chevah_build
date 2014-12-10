@@ -178,7 +178,6 @@ command_build() {
     case $OS in
         aix*)
             build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
-            # Consider patching GMP to increase MAXMEM as advised by xlc_r.
             build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
         solaris*)

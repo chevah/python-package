@@ -362,11 +362,11 @@ detect_os() {
             ;;
             5.3.*)
                 OS='aix53'
-                ARCH='ppc64'
+                ARCH='ppc'
             ;;
             7.1.*)
                 OS='aix71'
-                ARCH='ppc64'
+                ARCH='ppc'
             ;;
         esac
 

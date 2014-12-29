@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Chevah Build Script for Python.
 #
@@ -17,6 +17,7 @@ RHEL_PACKAGES="gcc openssl-devel zlib-devel bzip2-devel"
 SLES_PACKAGES="gcc openssl-devel zlib-devel libbz2-devel"
 
 LIBFFI_VERSION=3.0.13
+GMP_VERSION=6.0.0
 PYTHON_BUILD_VERSION=2.7.6
 PYSQLITE_VERSION=2.6.3
 SQLITE_VERSION=3.8.1
@@ -42,10 +43,11 @@ ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 TIMESTAMP=`date +'%Y%m%d'`
 rm DEFAULT_VALUES
 
-# In Solaris we use $ARCH to set the appropriate paths later on.
-# This way we can also force a 32bit build on a 64bit machine,
-# for example by exporting ARCH as "i386".
-# We also use $ARCH when building the external libffi in AIX.
+# In Solaris and AIX we use $ARCH to choose if we build a 32bit or 64bit
+# package. This way we are able to force a 32bit build on a 64bit machine,
+# for example by exporting here ARCH as "x86" instead of "x64" or "ppc"
+# instead of "ppc64".
+# We also use $ARCH when building the external libs in AIX: libffi and GMP.
 export ARCH
 
 LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
@@ -60,7 +62,23 @@ case $OS in
         export MAKE=gmake
         export PATH=/usr/vac/bin:$PATH
         export CC=xlc_r
-        export OPT="-O2 -qmaxmem=70000"
+        # CXX is not really needed, we set it to suppress some warnings and
+        # to make sure g++ is never used. However, we'll set CPPFLAGS later...
+        export CXX=xlC_r
+        # IBM's OpenSSL libs are mixed 32/64bit binaries in AIX 7.1, so we need
+        # to be specific about what kind of build we want, because GMP by
+        # default compiles 64bit libraries.
+        if [ "${ARCH%64}" = "$ARCH" ]; then
+            export CFLAGS="-O2 -qmaxmem=-1 -q32"
+            export OBJECT_MODE="32"
+            export ABI="32"
+            export AR="ar -X32"
+        else
+            export CFLAGS="-O2 -qmaxmem=-1 -q64"
+            export OBJECT_MODE="64"
+            export ABI="mode64"
+            export AR="ar -X64"
+        fi
         ;;
     solaris*)
         # By default we compile with the Sun Studio compiler.
@@ -160,6 +178,7 @@ command_build() {
     case $OS in
         aix*)
             build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
+            build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
         solaris*)
             build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
@@ -224,10 +243,15 @@ command_build_python_extra_libraries() {
     execute cp $makefile $makefile_orig
     sed "s#^prefix=.*#prefix= $INSTALL_FOLDER#" $makefile_orig > $makefile
 
+    # We need GMP or MPIR for fast math in pycrypto.
     case $OS in
         aix*)
-            cp /opt/freeware/include/gmp* $INSTALL_FOLDER/include
-            cp /opt/freeware/lib/libgmp* $INSTALL_FOLDER/lib
+            # There is no GMP/MPIR available from IBM. Since GMP seems to care
+            # more about AIX, we build that and make it available to pycrypto.
+            cp $INSTALL_FOLDER/tmp/gmp/gmp.h $INSTALL_FOLDER/include
+            cp $INSTALL_FOLDER/tmp/gmp/libgmp* $INSTALL_FOLDER/lib
+            export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"
+            export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
         ;;
     esac
 

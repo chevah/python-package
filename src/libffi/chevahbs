@@ -22,13 +22,18 @@ chevahbs_compile() {
 chevahbs_install() {
     install_folder=$1
 
-    if [ ${ARCH##ppc} != "$ARCH" ]; then
-        # I have no idea why headers are installed in lib/libffi-3.0.13/include
-        # and not in include so we install them manually in AIX.
+    if [ x${ARCH##ppc} != x"$ARCH" ]; then
+        # libffi installs its headers in $PREFIX/lib/libffi-$VERSION/include,
+        # instead of $PREFIX/include, so we copy them manually to a temporary
+        # location.
+        # From there we will copy them just in time for building Python sources.
+        # For Python's setup.py to pick them up, we will augment CPPFLAGS with
+        # the include's location and LDFLAGS with the location of the libs.
         local temp_folder=$INSTALL_FOLDER/tmp/libffi
         execute mkdir -p $temp_folder
-        execute cp powerpc-ibm-aix5.3.0.0/.libs/* $temp_folder
-        execute cp powerpc-ibm-aix5.3.0.0/include/* $temp_folder
+
+        execute cp powerpc-ibm-aix*/.libs/* $temp_folder
+        execute cp powerpc-ibm-aix*/include/*.h $temp_folder
     fi
 }
 

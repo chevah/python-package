@@ -16,7 +16,7 @@ UBUNTU_PACKAGES="gcc libssl-dev zlib1g-dev libbz2-dev"
 RHEL_PACKAGES="gcc openssl-devel zlib-devel bzip2-devel"
 SLES_PACKAGES="gcc openssl-devel zlib-devel libbz2-devel"
 
-LIBFFI_VERSION=3.0.13
+LIBFFI_VERSION=3.2.1
 GMP_VERSION=6.0.0
 PYTHON_BUILD_VERSION=2.7.6
 PYSQLITE_VERSION=2.6.3

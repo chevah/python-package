@@ -16,9 +16,9 @@ UBUNTU_PACKAGES="gcc libssl-dev zlib1g-dev libbz2-dev"
 RHEL_PACKAGES="gcc openssl-devel zlib-devel bzip2-devel"
 SLES_PACKAGES="gcc openssl-devel zlib-devel libbz2-devel"
 
-LIBFFI_VERSION=3.0.13
+LIBFFI_VERSION=3.2.1
 GMP_VERSION=6.0.0
-PYTHON_BUILD_VERSION=2.7.6
+PYTHON_BUILD_VERSION=2.7.9
 PYSQLITE_VERSION=2.6.3
 SQLITE_VERSION=3.8.1
 
@@ -81,10 +81,14 @@ case $OS in
         fi
         ;;
     solaris*)
+        if [ "$OS" = "solaris10" ]; then
+            PYTHON_BUILD_VERSION=2.7.8
+        fi
         # By default we compile with the Sun Studio compiler.
         # If you want to use GCC 3.x or 4.x, please export the appropriate PATH.
-        # This is the default-included GNU make.
+        # This is the default-included GNU make and its counterpart: makeinfo.
         export MAKE=/usr/sfw/bin/gmake
+        export MAKEINFO=/usr/sfw/bin/makeinfo
         # We favour the BSD-flavoured "install" over the default one.
         # "ar", "nm" and "ld" are included by default in the same path.
         export PATH=/usr/ccs/bin/:$PATH

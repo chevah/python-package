@@ -25,6 +25,7 @@ from brink.pavement_commons import (
     pave,
     SETUP,
     test_remote,
+    test_review,
     )
 from paver.easy import task
 
@@ -36,6 +37,7 @@ github
 harness
 help
 test_remote
+test_review
 
 SETUP['product']['name'] = 'python'
 SETUP['folders']['source'] = u'src'

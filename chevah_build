@@ -18,7 +18,7 @@ SLES_PACKAGES="gcc openssl-devel zlib-devel libbz2-devel"
 
 LIBFFI_VERSION=3.2.1
 GMP_VERSION=6.0.0
-PYTHON_BUILD_VERSION=2.7.9
+PYTHON_BUILD_VERSION=2.7.8
 PYSQLITE_VERSION=2.6.3
 SQLITE_VERSION=3.8.1
 
@@ -81,6 +81,8 @@ case $OS in
         fi
         ;;
     solaris*)
+        # Solaris 10 has OpenSSL 0.9.7 and Python 2.7 versions starting with
+        # 2.7.9 do not support it. More at https://bugs.python.org/issue20981.
         if [ "$OS" = "solaris10" ]; then
             PYTHON_BUILD_VERSION=2.7.8
         fi

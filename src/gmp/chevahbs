@@ -7,7 +7,13 @@
 
 chevahbs_configure() {
     # We want only static build so that we don't have to mess with LIBPATH.
-    execute ./configure --prefix="" --disable-shared --enable-static
+    CONF_OPTS="--disable-shared --enable-static"
+    if [ x${ARCH} == x"x64" -a  x${os} != x"solaris" ]; then
+        # Fix relocation error for amd64 in Linux. More at:
+        # https://www.gentoo.org/proj/en/base/amd64/howtos/index.xml?part=1&chap=3#doc_chap7
+        CONF_OPTS="$CONF_OPTS --with-pic"
+    fi
+    execute ./configure --prefix="" $CONF_OPTS
 }
 
 

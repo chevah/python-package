@@ -72,6 +72,13 @@ except:
     print '"ctypes.utils - find_library" missing.'
     exit_code = 1
 
+try:
+    from Crypto.PublicKey import _fastmath
+    _fastmath
+except:
+    print 'Crypto.PublicKey._fastmath missing. No GMP?'
+    exit_code = 1
+
 # Windows specific modules.
 if os.name == 'nt':
     try:

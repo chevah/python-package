@@ -86,8 +86,12 @@ case $OS in
         if [ "$OS" = "solaris10" ]; then
             PYTHON_BUILD_VERSION=2.7.8
         fi
-        # By default we compile with the Sun Studio compiler.
-        # If you want to use GCC 3.x or 4.x, please export the appropriate PATH.
+        # By default we compile with the Sun Studio compiler. If you want GCC
+        # 3.x or 4.x, change this and export the appropriate PATH below.
+        export CC=cc
+        # CXX is not really needed, we set it to suppress some warnings and
+        # to make sure g++ is never used. However, we'll set CPPFLAGS later...
+        export CXX=CC
         # This is the default-included GNU make and its counterpart: makeinfo.
         export MAKE=/usr/sfw/bin/gmake
         export MAKEINFO=/usr/sfw/bin/makeinfo

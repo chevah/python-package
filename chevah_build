@@ -184,12 +184,14 @@ command_build() {
     case $OS in
         aix*)
             build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
-            build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
         solaris*)
             build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
     esac
+
+    # Build GMP on all platforms.
+    build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
 
     build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
 
@@ -249,17 +251,12 @@ command_build_python_extra_libraries() {
     execute cp $makefile $makefile_orig
     sed "s#^prefix=.*#prefix= $INSTALL_FOLDER#" $makefile_orig > $makefile
 
-    # We need GMP or MPIR for fast math in pycrypto.
-    case $OS in
-        aix*)
-            # There is no GMP/MPIR available from IBM. Since GMP seems to care
-            # more about AIX, we build that and make it available to pycrypto.
-            cp $INSTALL_FOLDER/tmp/gmp/gmp.h $INSTALL_FOLDER/include
-            cp $INSTALL_FOLDER/tmp/gmp/libgmp* $INSTALL_FOLDER/lib
-            export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"
-            export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
-        ;;
-    esac
+    # We need GMP or MPIR for fast math in pycrypto. We use GMP because
+    # its devs do a better job of supporting exotic platforms such as AIX.
+    cp $INSTALL_FOLDER/tmp/gmp/gmp.h $INSTALL_FOLDER/include
+    cp $INSTALL_FOLDER/tmp/gmp/libgmp* $INSTALL_FOLDER/lib
+    export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"
+    export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
 
     for library in $EXTRA_LIBRARIES ; do
         # Library is in the form pyopenssl/PyOpenssl-2.4.5

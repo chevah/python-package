@@ -10,20 +10,14 @@ chevahbs_configure() {
     # We want only static build so that we don't have to mess with LIBPATH.
     CONF_OPTS="--disable-shared --enable-static"
     if [ x${ARCH} == x"x64" -o x${ARCH} == x"x86" ]; then
+        # Select a "fat binary" build on x86/x64, where optimized low level
+        # subroutines are chosen at runtime according to the CPU detected.
+        # This means more code, but gives good performance on all chips.
+        CONF_OPTS="$CONF_OPTS --enable-fat"
         if [ x${ARCH} == x"x64" ]; then
             # Fix lib relocation error for x64. More details at:
             # https://www.gentoo.org/proj/en/base/amd64/howtos/index.xml?part=1&chap=3#doc_chap7
             CONF_OPTS="$CONF_OPTS --with-pic"
-        fi
-        if [ x${OS##osx} != x"$OS" ]; then
-            # See https://gmplib.org/manual/Build-Options.html and the list of
-            # relevant CPUs from ./src/gmp/gmp-6.0.0/mpn/x86_64/fat/fat.c.
-            export MPN_PATH="x86_64/core2 x86_64 generic"
-        else
-            # Select a "fat binary" build on x86/x64, where optimized low level
-            # subroutines are chosen at runtime according to the CPU detected.
-            # This means more code, but gives good performance on all chips.
-            CONF_OPTS="$CONF_OPTS --enable-fat"
         fi
     fi
     execute ./configure --prefix="" $CONF_OPTS

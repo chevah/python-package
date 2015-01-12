@@ -61,15 +61,15 @@ case $OS in
     aix*)
         export MAKE=gmake
         export PATH=/usr/vac/bin:$PATH
-        export CC=xlc_r
+        export CC=gcc
         # CXX is not really needed, we set it to suppress some warnings and
         # to make sure g++ is never used. However, we'll set CPPFLAGS later...
-        export CXX=xlC_r
+        export CXX=g++
         # IBM's OpenSSL libs are mixed 32/64bit binaries in AIX 7.1, so we need
         # to be specific about what kind of build we want, because GMP by
         # default compiles 64bit libraries.
         if [ "${ARCH%64}" = "$ARCH" ]; then
-            export CFLAGS="-O2 -qmaxmem=-1 -q32"
+            export CFLAGS="-O2"
             export OBJECT_MODE="32"
             export ABI="32"
             export AR="ar -X32"

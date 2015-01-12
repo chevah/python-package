@@ -12,9 +12,9 @@
 . ./functions.sh
 
 # List of OS packages required for building Python.
-UBUNTU_PACKAGES="gcc libssl-dev zlib1g-dev libbz2-dev"
-RHEL_PACKAGES="gcc openssl-devel zlib-devel bzip2-devel"
-SLES_PACKAGES="gcc openssl-devel zlib-devel libbz2-devel"
+UBUNTU_PACKAGES="gcc libssl-dev zlib1g-dev libbz2-dev m4"
+RHEL_PACKAGES="gcc openssl-devel zlib-devel bzip2-devel m4"
+SLES_PACKAGES="gcc openssl-devel zlib-devel libbz2-devel m4"
 
 LIBFFI_VERSION=3.2.1
 GMP_VERSION=6.0.0
@@ -86,8 +86,12 @@ case $OS in
         if [ "$OS" = "solaris10" ]; then
             PYTHON_BUILD_VERSION=2.7.8
         fi
-        # By default we compile with the Sun Studio compiler.
-        # If you want to use GCC 3.x or 4.x, please export the appropriate PATH.
+        # By default, we compile with the Sun Studio compiler. If you want GCC
+        # 3.x or 4.x, change this and export the appropriate PATH below.
+        export CC=cc
+        # CXX is not really needed, we set it to suppress some warnings and
+        # to make sure g++ is never used. However, we'll set CPPFLAGS later...
+        export CXX=CC
         # This is the default-included GNU make and its counterpart: makeinfo.
         export MAKE=/usr/sfw/bin/gmake
         export MAKEINFO=/usr/sfw/bin/makeinfo
@@ -101,6 +105,13 @@ case $OS in
             export LDFLAGS="-m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
             export CFLAGS="-m64"
         fi
+        ;;
+    *)
+        # By default, we compile with GCC in Linux and OS X.
+        export CC=gcc
+        # CXX is not really needed, we set it to suppress some warnings.
+        # However, we'll set CPPFLAGS later...
+        export CXX=g++
         ;;
 esac
 
@@ -184,12 +195,14 @@ command_build() {
     case $OS in
         aix*)
             build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
-            build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
         solaris*)
             build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
     esac
+
+    # Build GMP on all platforms.
+    build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
 
     build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
 
@@ -249,17 +262,12 @@ command_build_python_extra_libraries() {
     execute cp $makefile $makefile_orig
     sed "s#^prefix=.*#prefix= $INSTALL_FOLDER#" $makefile_orig > $makefile
 
-    # We need GMP or MPIR for fast math in pycrypto.
-    case $OS in
-        aix*)
-            # There is no GMP/MPIR available from IBM. Since GMP seems to care
-            # more about AIX, we build that and make it available to pycrypto.
-            cp $INSTALL_FOLDER/tmp/gmp/gmp.h $INSTALL_FOLDER/include
-            cp $INSTALL_FOLDER/tmp/gmp/libgmp* $INSTALL_FOLDER/lib
-            export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"
-            export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
-        ;;
-    esac
+    # We need GMP or MPIR for fast math in PyCrypto. We use GMP because
+    # its devs do a better job of supporting exotic platforms such as AIX.
+    cp $INSTALL_FOLDER/tmp/gmp/gmp.h $INSTALL_FOLDER/include
+    cp $INSTALL_FOLDER/tmp/gmp/libgmp* $INSTALL_FOLDER/lib
+    export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"
+    export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
 
     for library in $EXTRA_LIBRARIES ; do
         # Library is in the form pyopenssl/PyOpenssl-2.4.5

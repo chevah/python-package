@@ -2,14 +2,25 @@
 #
 # Chevah Build Script for GMP.
 #
-# For now it is supported only on AIX.
-#
 # Import shared code.
 . ./functions.sh
 
+
 chevahbs_configure() {
     # We want only static build so that we don't have to mess with LIBPATH.
-    execute ./configure --prefix="" --disable-shared --enable-static
+    CONF_OPTS="--disable-shared --enable-static"
+    if [ x${ARCH} == x"x64" -o x${ARCH} == x"x86" ]; then
+        # Select a "fat binary" build on x86/x64, where optimized low level
+        # subroutines are chosen at runtime according to the CPU detected.
+        # This means more code, but gives good performance on all chips.
+        CONF_OPTS="$CONF_OPTS --enable-fat"
+        if [ x${ARCH} == x"x64" ]; then
+            # Fix lib relocation error for x64. More details at:
+            # https://www.gentoo.org/proj/en/base/amd64/howtos/index.xml?part=1&chap=3#doc_chap7
+            CONF_OPTS="$CONF_OPTS --with-pic"
+        fi
+    fi
+    execute ./configure --prefix="" $CONF_OPTS
 }
 
 
@@ -23,17 +34,15 @@ chevahbs_compile() {
 
 chevahbs_install() {
     install_folder=$1
-    if [ x${ARCH##ppc} != x"$ARCH" ]; then
-        # As with libffi, we copy the files manually to a temporary location
-        # and then we copy them from there just in time for the compilation of
-        # pycrypto. Which we instruct to use them through augmenting CPPFLAGS
-        # with the include's location and LDFLAGS with the location of the libs.
-        local temp_folder=$INSTALL_FOLDER/tmp/gmp/
-        execute mkdir -p $temp_folder
-        execute cp .libs/* $temp_folder
-        ranlib $temp_folder/libgmp.a
-        execute cp gmp.h $temp_folder
-    fi
+    # As with libffi, we copy the files manually to a temporary location and
+    # then we get them from there before compiling PyCrypto. We'll also have
+    # to instruct the compiler to link against our GMP by augmenting CPPFLAGS
+    # with the include's location and LDFLAGS with the location of the libs.
+    local temp_folder=$INSTALL_FOLDER/tmp/gmp/
+    execute mkdir -p $temp_folder
+    execute cp .libs/* $temp_folder
+    ranlib $temp_folder/libgmp.a
+    execute cp gmp.h $temp_folder
 }
 
 

@@ -139,8 +139,6 @@ class PCTBuildExt (build_ext):
                 # Speed up execution by tweaking compiler options.  This
                 # especially helps the DES modules.
                 if sys.platform.startswith('aix'):
-                    self.__add_compiler_option("-O2")
-                    self.__add_compiler_option("-qmaxmem=70000")
                     self.__add_compiler_option("-D_LARGE_FILES")
                     self.__add_compiler_option("-D_LARGE_FILE_API")
                 else:

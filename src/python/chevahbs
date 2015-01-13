@@ -51,7 +51,6 @@ chevahbs_configure() {
             touch Include/Python-ast.h Python/Python-ast.c
             # MAXMEM option with a value greater than 8192.
             CONFIG_ARGS="${CONFIG_ARGS} \
-                --without-gcc \
                 --with-system-ffi \
                 "
             ;;

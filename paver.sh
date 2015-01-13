@@ -61,6 +61,8 @@ LOCAL_PYTHON_BINARY_DIST=""
 # Put default values and create them as global variables.
 OS='not-detected-yet'
 ARCH='x86'
+CC='gcc'
+CXX='g++'
 
 # When run on Linux distros other then those supported by us (Red Hat, SUSE,
 # Ubuntu), we match the LSB distros to the oldest Ubuntu LTS supported by us.
@@ -164,7 +166,7 @@ update_path_variables() {
 
 
 write_default_values() {
-    echo ${BUILD_FOLDER} ${PYTHON_VERSION} ${OS} ${ARCH} > DEFAULT_VALUES
+    echo ${BUILD_FOLDER} ${PYTHON_VERSION} ${OS} ${ARCH} ${CC} ${CXX} > DEFAULT_VALUES
 }
 
 
@@ -352,6 +354,10 @@ detect_os() {
 
     elif [ "${OS}" = "sunos" ] ; then
 
+        # By default, we use Sun's Studio compiler. Comment these two for GCC.
+        CC="cc"
+        CXX="CC"
+
         OS="solaris"
         ARCH=`isainfo -n`
         VERSION=`uname -r`
@@ -369,6 +375,11 @@ detect_os() {
         fi
 
     elif [ "${OS}" = "aix" ] ; then
+
+        # By default, we use IBM's XL C compiler. Comment these two for GCC.
+        # Beware that GCC 4.2 from IBM's RPMs will fail with GMP and Python!
+        CC="xlc_r"
+        CXX="xlC_r"
 
         release=`oslevel`
         case $release in

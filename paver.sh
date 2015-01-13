@@ -81,11 +81,27 @@ clean_build() {
     echo "Cleaning project temporary files..."
     rm -f DEFAULT_VALUES
     echo "Cleaning pyc files ..."
-    # AIX's find complains if there are no matching files when using +.
-    [ $(uname) == AIX ] && touch ./dummy_file_for_AIX.pyc
-    # Faster than '-exec \;' and supported in most OS'es,
-    # details at http://www.in-ulm.de/~mascheck/various/find/#xargs
-    find ./ -name '*.pyc' -exec rm {} +
+    if [ $OS = "rhel4" ]; then
+        # RHEL 4 don't support + option in -exec
+        # We use -print0 and xargs to no fork for each file.
+        # find will fail if no file is found.
+        touch ./dummy_file_for_RHEL4.pyc
+        find ./ -name '*.pyc' -print0 | xargs -0 rm
+    else
+        # AIX's find complains if there are no matching files when using +.
+        [ $(uname) == AIX ] && touch ./dummy_file_for_AIX.pyc
+        # Faster than '-exec rm {} \;' and supported in most OS'es,
+        # details at http://www.in-ulm.de/~mascheck/various/find/#xargs
+        find ./ -name '*.pyc' -exec rm {} +
+    fi
+    # In some case pip hangs with a build folder in temp and
+    # will not continue until it is manually removed.
+    rm -rf /tmp/pip*
+
+    if [ "$CLEAN_PYTHON_BINARY_DIST_CACHE" = "yes" ]; then
+        echo "Cleaning python binary ..."
+        rm -rf cache/python*
+    fi
 }
 
 

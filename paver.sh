@@ -61,6 +61,8 @@ LOCAL_PYTHON_BINARY_DIST=""
 # Put default values and create them as global variables.
 OS='not-detected-yet'
 ARCH='x86'
+CC='gcc'
+CXX='g++'
 
 # When run on Linux distros other then those supported by us (Red Hat, SUSE,
 # Ubuntu), we match the LSB distros to the oldest Ubuntu LTS supported by us.
@@ -81,11 +83,27 @@ clean_build() {
     echo "Cleaning project temporary files..."
     rm -f DEFAULT_VALUES
     echo "Cleaning pyc files ..."
-    # AIX's find complains if there are no matching files when using +.
-    [ $(uname) == AIX ] && touch ./dummy_file_for_AIX.pyc
-    # Faster than '-exec \;' and supported in most OS'es,
-    # details at http://www.in-ulm.de/~mascheck/various/find/#xargs
-    find ./ -name '*.pyc' -exec rm {} +
+    if [ $OS = "rhel4" ]; then
+        # RHEL 4 don't support + option in -exec
+        # We use -print0 and xargs to no fork for each file.
+        # find will fail if no file is found.
+        touch ./dummy_file_for_RHEL4.pyc
+        find ./ -name '*.pyc' -print0 | xargs -0 rm
+    else
+        # AIX's find complains if there are no matching files when using +.
+        [ $(uname) == AIX ] && touch ./dummy_file_for_AIX.pyc
+        # Faster than '-exec rm {} \;' and supported in most OS'es,
+        # details at http://www.in-ulm.de/~mascheck/various/find/#xargs
+        find ./ -name '*.pyc' -exec rm {} +
+    fi
+    # In some case pip hangs with a build folder in temp and
+    # will not continue until it is manually removed.
+    rm -rf /tmp/pip*
+
+    if [ "$CLEAN_PYTHON_BINARY_DIST_CACHE" = "yes" ]; then
+        echo "Cleaning python binary ..."
+        rm -rf cache/python*
+    fi
 }
 
 
@@ -148,7 +166,7 @@ update_path_variables() {
 
 
 write_default_values() {
-    echo ${BUILD_FOLDER} ${PYTHON_VERSION} ${OS} ${ARCH} > DEFAULT_VALUES
+    echo ${BUILD_FOLDER} ${PYTHON_VERSION} ${OS} ${ARCH} ${CC} ${CXX} > DEFAULT_VALUES
 }
 
 
@@ -336,17 +354,13 @@ detect_os() {
 
     elif [ "${OS}" = "sunos" ] ; then
 
+        # By default, we use Sun's Studio compiler. Comment these two for GCC.
+        CC="cc"
+        CXX="CC"
+
         OS="solaris"
         ARCH=`isainfo -n`
         VERSION=`uname -r`
-
-        if [ "$ARCH" = "i386" ] ; then
-            ARCH='x86'
-        elif [ "$ARCH" = "amd64" ]; then
-            ARCH='x64'
-        elif [ "$ARCH" = "sparcv9" ] ; then
-            ARCH='sparc64'
-        fi
 
         if [ "$VERSION" = "5.10" ] ; then
             OS="solaris10"
@@ -354,19 +368,19 @@ detect_os() {
 
     elif [ "${OS}" = "aix" ] ; then
 
+        # By default, we use IBM's XL C compiler. Comment these two for GCC.
+        # Beware that GCC 4.2 from IBM's RPMs will fail with GMP and Python!
+        CC="xlc_r"
+        CXX="xlC_r"
+
+        ARCH="ppc`getconf HARDWARE_BITMODE`"
         release=`oslevel`
         case $release in
-            5.1.*)
-                OS='aix51'
-                ARCH='ppc'
-            ;;
             5.3.*)
                 OS='aix53'
-                ARCH='ppc'
             ;;
             7.1.*)
                 OS='aix71'
-                ARCH='ppc'
             ;;
         esac
 
@@ -446,13 +460,9 @@ detect_os() {
                 ;;
         esac
 
-        osx_arch=`uname -m`
-        if [ "$osx_arch" = "Power Macintosh" ] ; then
-            ARCH='ppc'
-        elif [ "$osx_arch" = "x86_64" ] ; then
-            ARCH='x64'
-        else
-            echo 'Unsuported OS X architecture:' $osx_arch
+        ARCH=`uname -m`
+        if [ "$ARCH" != "x86_64" ] ; then
+            echo 'Unsuported OS X architecture:' $ARCH
             exit 1
         fi
     else
@@ -461,16 +471,16 @@ detect_os() {
     fi
 
     # Fix arch names.
-    if [ "$ARCH" = "i686" ] ; then
+    if [ "$ARCH" = "i686" -o "$ARCH" = "i386" ]; then
         ARCH='x86'
-
-    fi
-    if [ "$ARCH" = "i386" ] ; then
-        ARCH='x86'
-    fi
-
-    if [ "$ARCH" = "x86_64" ] ; then
+    elif [ "$ARCH" = "x86_64" -o "$ARCH" = "amd64" ]; then
         ARCH='x64'
+    elif [ "$ARCH" = "sparcv9" ]; then
+        ARCH='sparc64'
+    elif [ "$ARCH" = "ppc64" ]; then
+        # Python has not been fully tested on AIX when compiled as a 64 bit
+        # application and has math rounding error problems (at least with XL C).
+        ARCH='ppc'
     fi
 }
 

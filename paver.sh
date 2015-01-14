@@ -362,14 +362,6 @@ detect_os() {
         ARCH=`isainfo -n`
         VERSION=`uname -r`
 
-        if [ "$ARCH" = "i386" ] ; then
-            ARCH='x86'
-        elif [ "$ARCH" = "amd64" ]; then
-            ARCH='x64'
-        elif [ "$ARCH" = "sparcv9" ] ; then
-            ARCH='sparc64'
-        fi
-
         if [ "$VERSION" = "5.10" ] ; then
             OS="solaris10"
         fi
@@ -381,19 +373,14 @@ detect_os() {
         CC="xlc_r"
         CXX="xlC_r"
 
+        ARCH="ppc`getconf HARDWARE_BITMODE`"
         release=`oslevel`
         case $release in
-            5.1.*)
-                OS='aix51'
-                ARCH='ppc'
-            ;;
             5.3.*)
                 OS='aix53'
-                ARCH='ppc'
             ;;
             7.1.*)
                 OS='aix71'
-                ARCH='ppc'
             ;;
         esac
 
@@ -473,13 +460,9 @@ detect_os() {
                 ;;
         esac
 
-        osx_arch=`uname -m`
-        if [ "$osx_arch" = "Power Macintosh" ] ; then
-            ARCH='ppc'
-        elif [ "$osx_arch" = "x86_64" ] ; then
-            ARCH='x64'
-        else
-            echo 'Unsuported OS X architecture:' $osx_arch
+        ARCH=`uname -m`
+        if [ "$ARCH" != "x86_64" ] ; then
+            echo 'Unsuported OS X architecture:' $ARCH
             exit 1
         fi
     else
@@ -488,16 +471,16 @@ detect_os() {
     fi
 
     # Fix arch names.
-    if [ "$ARCH" = "i686" ] ; then
+    if [ "$ARCH" = "i686" -o "$ARCH" = "i386" ]; then
         ARCH='x86'
-
-    fi
-    if [ "$ARCH" = "i386" ] ; then
-        ARCH='x86'
-    fi
-
-    if [ "$ARCH" = "x86_64" ] ; then
+    elif [ "$ARCH" = "x86_64" -o "$ARCH" = "amd64" ]; then
         ARCH='x64'
+    elif [ "$ARCH" = "sparcv9" ]; then
+        ARCH='sparc64'
+    elif [ "$ARCH" = "ppc64" ]; then
+        # Python has not been fully tested on AIX when compiled as a 64 bit
+        # application and has math rounding error problems (at least with XL C).
+        ARCH='ppc'
     fi
 }
 

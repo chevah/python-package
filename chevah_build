@@ -15,6 +15,8 @@
 UBUNTU_PACKAGES="gcc libssl-dev zlib1g-dev libbz2-dev m4"
 RHEL_PACKAGES="gcc openssl-devel zlib-devel bzip2-devel m4"
 SLES_PACKAGES="gcc openssl-devel zlib-devel libbz2-devel m4"
+# Currently, we use Debian 7 as a generic Linux distro.
+LINUX_PACKAGES="gcc libssl-dev zlib1g-dev libbz2-dev m4"
 
 LIBFFI_VERSION=3.2.1
 GMP_VERSION=6.0.0
@@ -139,6 +141,10 @@ install_dependencies() {
             packages=$SLES_PACKAGES
             install_command='sudo zypper --non-interactive install -l'
         ;;
+        linux*)
+            packages=$LINUX_PACKAGES
+            install_command='sudo apt-get install -y'
+        ;;
         aix*)
             # For the moment, we don't install anything on AIX.
             packages=""
@@ -180,6 +186,9 @@ remove_dependencies() {
         ;;
         sles*)
             execute sudo zypper --non-interactive remove $SLES_PACKAGES
+        ;;
+        linux*)
+            execute sudo apt-get remove -y --purge $LINUX_PACKAGES
         ;;
     esac
 }

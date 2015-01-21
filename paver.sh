@@ -64,13 +64,6 @@ ARCH='x86'
 CC='gcc'
 CXX='g++'
 
-# When run on Linux distros other then those supported by us (Red Hat, SUSE,
-# Ubuntu), we match the LSB distros to the oldest Ubuntu LTS supported by us.
-# For non-LSB distros we use the oldest supported Linux distro. No guarantees
-# made... For details, please see the Linux bits in detect_os() below.
-OS_LINUX_LSB='ubuntu1204'
-OS_LINUX_NONLSB='ubuntu1004'
-
 
 clean_build() {
     # Shortcut for clear since otherwise it will depend on python
@@ -441,11 +434,9 @@ detect_os() {
                         exit 1
                     ;;
                 esac
-            else
-                OS=$OS_LINUX_LSB
             fi
         else
-            OS=$OS_LINUX_NONLSB
+            OS='linux'
         fi
 
     elif [ "${OS}" = "darwin" ] ; then

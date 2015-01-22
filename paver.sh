@@ -412,7 +412,7 @@ detect_os() {
             if [ "$sles_version" = "11" ] ; then
                 OS='sles11'
             else
-                echo 'Unsuported SLES version.'
+                echo 'Unsupported SLES version.'
                 exit 1
             fi
         elif [ -f /etc/lsb-release ] ; then
@@ -446,18 +446,14 @@ detect_os() {
                 OS='osx108'
                 ;;
             *)
-                echo 'Unsuported OS X version:' $osx_version
+                echo 'Unsupported OS X version:' $osx_version
                 exit 1
                 ;;
         esac
 
         ARCH=`uname -m`
-        if [ "$ARCH" != "x86_64" ] ; then
-            echo 'Unsuported OS X architecture:' $ARCH
-            exit 1
-        fi
     else
-        echo 'Unsuported operating system:' $OS
+        echo 'Unsupported operating system:' $OS
         exit 1
     fi
 

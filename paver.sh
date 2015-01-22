@@ -159,7 +159,8 @@ update_path_variables() {
 
 
 write_default_values() {
-    echo ${BUILD_FOLDER} ${PYTHON_VERSION} ${OS} ${ARCH} ${CC} ${CXX} > DEFAULT_VALUES
+    echo ${BUILD_FOLDER} ${PYTHON_VERSION} ${OS} ${ARCH} ${CC} ${CXX} \
+        > DEFAULT_VALUES
 }
 
 

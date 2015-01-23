@@ -14,9 +14,12 @@
 # List of OS packages required for building Python.
 UBUNTU_PACKAGES="gcc libssl-dev zlib1g-dev libbz2-dev m4 texinfo"
 RHEL_PACKAGES="gcc openssl-devel zlib-devel bzip2-devel m4 texinfo"
-SLES_PACKAGES="gcc openssl-devel zlib-devel bzip2-devel m4 texinfo"
-# Currently, we use Debian 7 as a generic Linux distro.
-LINUX_PACKAGES="gcc libssl-dev zlib1g-dev libbz2-dev m4 texinfo"
+SLES_PACKAGES="gcc openssl-devel zlib-devel libbz2-devel m4 texinfo"
+# For the moment, we don't install anything on OS X, Solaris, AIX and
+# unsupported Linux distros. The build requires a C compiler, GNU make, m4,
+# makeinfo (from texinfo) and the header files for OpenSSL, zlib and bzip2.
+# On platforms with a choice of C compilers, you may choose among them by
+# setting/unsetting CC and CXX in paver.sh.
 
 LIBFFI_VERSION=3.2.1
 GMP_VERSION=6.0.0
@@ -142,22 +145,7 @@ install_dependencies() {
             install_command='sudo zypper --non-interactive install
                 --auto-agree-with-licenses'
         ;;
-        linux*)
-            packages=$LINUX_PACKAGES
-            install_command='sudo apt-get -y install'
-        ;;
-        aix*)
-            # For the moment, we don't install anything on AIX.
-            packages=""
-            install_command=''
-        ;;
-        solaris*)
-            # For the moment, we don't install anything on Solaris.
-            packages=""
-            install_command=''
-        ;;
-        osx*)
-            # For the moment, we don't install anything on OSX.
+        linux*|aix*|solaris*|osx*)
             packages=""
             install_command=''
         ;;
@@ -185,10 +173,13 @@ remove_dependencies() {
         ;;
         rhel*)
             execute sudo yum -y remove $RHEL_PACKAGES
-            # Nothing else works in all supported RHELs (currently 4 to 7).
+            # Nothing else works in all supported RHELs (currently 4 to 7)
+            # for automatically removing packages installed as dependencies.
             RHEL_LEAVES=`package-cleanup --leaves --quiet 2>/dev/null \
                 | egrep -v ^'Excluding|Finished'`
-            execute sudo yum -y remove $RHEL_LEAVES
+            if [ ! -z $RHEL_LEAVES ]; then
+                execute sudo yum -y remove $RHEL_LEAVES
+            fi
         ;;
         sles*)
             ZYPPER_OPTIONS="--non-interactive"
@@ -198,10 +189,6 @@ remove_dependencies() {
                 ZYPPER_OPTIONS="$ZYPPER_OPTIONS --clean-deps"
             fi
             execute sudo zypper $ZYPPER_OPTIONS remove $SLES_PACKAGES
-        ;;
-        linux*)
-            execute sudo apt-get -y --purge remove $LINUX_PACKAGES
-            execute sudo apt-get -y --purge autoremove
         ;;
     esac
 }

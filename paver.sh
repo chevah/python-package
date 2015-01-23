@@ -360,7 +360,7 @@ detect_os() {
             exit 13
         fi
 
-        OS="solaris"`echo $sunos_release | cut -b 3-4`
+        OS="solaris"$(echo $sunos_release | cut -d '.' -f 2)
 
     elif [ "${OS}" = "aix" ] ; then
 
@@ -377,7 +377,7 @@ detect_os() {
             exit 13
         fi
 
-        OS="aix"`echo $aix_release | cut -b 1-2`
+        OS="aix"$(echo $aix_release | cut -d '.' -f 1-2 | sed s/\\.//g)
 
     elif [ "${OS}" = "hp-ux" ] ; then
 
@@ -442,7 +442,7 @@ detect_os() {
             echo "OS X version is too old: ${osx_version}."
             exit 13
         else
-            OS="osx`echo $osx_version | cut -b 1-2,4`"
+            OS="osx"$(echo $osx_version | cut -d'.' -f 1-2 | sed s/\\.//g)
         fi
 
     else

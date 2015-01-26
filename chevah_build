@@ -12,12 +12,12 @@
 . ./functions.sh
 
 # List of OS packages required for building Python.
-UBUNTU_PACKAGES="gcc libssl-dev zlib1g-dev libbz2-dev m4 texinfo"
-RHEL_PACKAGES="gcc openssl-devel zlib-devel bzip2-devel m4 texinfo"
-SLES_PACKAGES="gcc openssl-devel zlib-devel libbz2-devel m4 texinfo"
+UBUNTU_PACKAGES="gcc libssl-dev zlib1g-dev m4 texinfo"
+RHEL_PACKAGES="gcc openssl-devel zlib-devel m4 texinfo"
+SLES_PACKAGES="gcc openssl-devel zlib-devel m4 texinfo"
 # For the moment, we don't install anything on OS X, Solaris, AIX and
 # unsupported Linux distros. The build requires a C compiler, GNU make, m4,
-# makeinfo (from texinfo) and the header files for OpenSSL, zlib and bzip2.
+# makeinfo (from texinfo, optional) and the header files for OpenSSL and zlib.
 # On platforms with a choice of C compilers, you may choose among them by
 # setting/unsetting CC and CXX in paver.sh.
 

@@ -438,7 +438,7 @@ detect_os() {
         ARCH=`uname -m`
 
         osx_version=`sw_vers -productVersion`
-        if [ "$osx_version" \< "10.8" ] ; then
+        if [ "$osx_version" \< "10.4" ] ; then
             echo "OS X version is too old: ${osx_version}."
             exit 13
         else

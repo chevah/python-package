@@ -103,25 +103,53 @@ if platform_system == 'linux':
     # glibc, openssl and zlib.
     try:
         actual_deps = subprocess.check_output("./test_binaries_deps.sh", \
-            shell=True).split()
+                      shell=True).split()
     except:
         print "Couldn't determine the deps for the new binaries."
         exit_code = 13
     else:
-        expected_deps = [ \
-            "ld-linux", \
-            "libc.so", \
-            "libcrypt.so", \
-            "libcrypto.so", \
-            "libdl.so", \
-            "libm.so", \
-            "libnsl.so", \
-            "libpthread.so", \
-            "libssl.so", \
-            "libutil.so", \
-            "libz.so", \
-            "linux-gate.so", \
+        expected_deps = [
+            "ld-linux",
+            "libc.so",
+            "libcrypt.so",
+            "libcrypto.so",
+            "libdl.so",
+            "libm.so",
+            "libnsl.so",
+            "libpthread.so",
+            "libssl.so",
+            "libutil.so",
+            "libz.so",
+            "linux-gate.so",
+            "linux-vdso.so",
             ]
+        # Distro-specific deps. Now we may specify the major versions too.
+        linux_distro_name = platform.linux_distribution()[0]
+        if ("Red Hat" in linux_distro_name) or ("CentOS" in linux_distro_name):
+            expected_deps.extend([
+                "libcom_err.so.2",
+                "libgssapi_krb5.so.2",
+                "libk5crypto.so.3",
+                "libkrb5.so.3",
+                "libresolv.so.2",
+                ])
+            rhel_version = int(platform.linux_distribution()[1].split('.')[0])
+            if rhel_version >= 5:
+                expected_deps.extend([
+                    "libkeyutils.so.1",
+                    "libkrb5support.so.0",
+                    "libselinux.so.1",
+                    "libsepol.so.1",
+                ])
+            if rhel_version >= 6:
+                expected_deps.extend([
+                    "libfreebl3.so",
+                ])
+            if rhel_version >= 7:
+                expected_deps.extend([
+                    "liblzma.so.5",
+                    "libpcre.so.1",
+                ])
         # We check actual deps one by one to see if there is a substring of
         # each of them in any dep from the list of expected deps.
         # This is so that an actual dep of libssl.so.0.9.8 or libssl.so.1.0.0

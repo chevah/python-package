@@ -154,18 +154,16 @@ if platform_system == 'linux':
         # each of them in any dep from the list of expected deps.
         # This is so that an actual dep of libssl.so.0.9.8 or libssl.so.1.0.0
         # matches an expected dep of libssl.so when checking for OpenSSL.
-        unexpected_deps = []
+        unwanted_deps = []
         for single_actual_dep in actual_deps:
-            found_dep = ""
             for single_expected_dep in expected_deps:
                 if single_expected_dep in single_actual_dep:
-                    found_dep = single_expected_dep
                     break
-            if not found_dep:
-                unexpected_deps.append(single_actual_dep)
-        if unexpected_deps:
-            print "Got unexpected deps:"
-            for single_dep_to_print in unexpected_deps:
+            else:
+                unwanted_deps.append(single_actual_dep)
+        if unwanted_deps:
+            print "Got unwanted deps:"
+            for single_dep_to_print in unwanted_deps:
                 print "\t" , single_dep_to_print
             exit_code=14
 

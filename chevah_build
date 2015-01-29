@@ -195,7 +195,7 @@ remove_dependencies() {
             ZYPPER_OPTIONS="--non-interactive"
             # zypper version 7.4 got support for automatically removing
             # unneeded packages, but only when removing installed packages.
-            if [ $(rpm -qv libzypp) \> 'libzypp-7.4' ]; then
+            if [ $(rpm -qv libzypp) \> 'libzypp-7.39' ]; then
                 ZYPPER_OPTIONS="$ZYPPER_OPTIONS --clean-deps"
             fi
             execute sudo zypper $ZYPPER_OPTIONS remove $SLES_PACKAGES

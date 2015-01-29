@@ -9,7 +9,7 @@ platform_system = platform.system().lower()
 exit_code = 0
 
 
-def get_expected_deps():
+def set_expected_deps():
     """
     Here we hardcode the list of expected deps for every supported OS.
     """
@@ -61,14 +61,13 @@ def get_expected_deps():
                 ])
     # AIX specific deps.
     elif platform_system == 'aix':
-        # This is the standard list of deps for AIX 5-7.
+        # This is the standard list of deps for AIX 5 to AIX 7.
         expected_deps = [
             '/unix',
             'libbsd.a',
             'libc.a',
             'libcrypt.a',
             'libcrypto.a',
-            'libcurses.a',
             'libdl.a',
             'libnsl.a',
             'libpthreads.a',
@@ -83,12 +82,10 @@ def get_expected_deps():
         # This is the standard list of deps for a Solaris 10 build.
         expected_deps = [
             'libaio.so.1',
-            'libbz2.so.1',
             'libc.so.1',
             'libcrypt_i.so.1',
             'libcrypto.so.0.9.7',
             'libcrypto_extra.so.0.9.7',
-            'libcurses.so.1',
             'libdl.so.1',
             'libdoor.so.1',
             'libgen.so.1',
@@ -97,7 +94,6 @@ def get_expected_deps():
             'libmd.so.1',
             'libmp.so.2',
             'libnsl.so.1',
-            'libpanel.so.1',
             'librt.so.1',
             'libscf.so.1',
             'libsocket.so.1',
@@ -109,14 +105,16 @@ def get_expected_deps():
             ]
     # OS X specific deps.
     elif platform_system == 'darwin':
-        # This is the minimum list of deps for OS X 10.8.
+        # This is the minimum list of deps for OS X.
         expected_deps = [
+            'ApplicationServices.framework/Versions/A/ApplicationServices',
+            'Carbon.framework/Versions/A/Carbon',
+            'CoreFoundation.framework/Versions/A/CoreFoundation',
+            'CoreServices.framework/Versions/A/CoreServices',
+            'SystemConfiguration.framework/Versions/A/SystemConfiguration',
             'libSystem.B.dylib',
-            'libbz2.1.0.dylib',
             'libcrypto.0.9.8.dylib',
-            'libncurses.5.4.dylib',
-            'libpanel.5.4.dylib',
-            'libsqlite3.dylib',
+            'libgcc_s.1.dylib',
             'libssl.0.9.8.dylib',
             'libz.1.dylib',
             ]
@@ -127,8 +125,9 @@ def get_actual_deps():
     """
     Here we get the list of actual deps using a shell script helper.
     """
+    global exit_code
     try:
-        actual_deps = subprocess.check_output('./get_binaries_deps.sh', \
+        actual_deps = subprocess.check_output('./get_binaries_deps.sh',
                       shell=True).split()
     except:
         print 'Could not determine the deps for the new binaries.'
@@ -144,6 +143,7 @@ def check_deps(expected_deps, actual_deps):
     actual dep of libssl.so.0.9.8 or libssl.so.1.0.0 matches an expected dep of
     libssl.so when checking for OpenSSL.
     """
+    global exit_code
     unwanted_deps = []
     for single_actual_dep in actual_deps:
         for single_expected_dep in expected_deps:
@@ -158,10 +158,12 @@ def check_deps(expected_deps, actual_deps):
         exit_code = 15
 
 
-def main(exit_code):
+def main():
     """
     Main function.
     """
+    global exit_code
+
     try:
         import zlib
         zlib
@@ -244,7 +246,7 @@ def main(exit_code):
             print '"ctypes - windll" missing.'
             exit_code = 1
 
-    if platform_system != 'aix':
+    if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
         # On Linux/Unix we need spwd, but not on AIX.
         try:
             import spwd
@@ -255,7 +257,7 @@ def main(exit_code):
 
     # Finally, we compare the list of expected deps for the current OS with the
     # list of actual deps returned by the shell script helper.
-    expected_deps = get_expected_deps()
+    expected_deps = set_expected_deps()
     actual_deps = get_actual_deps()
     if not actual_deps:
         print 'List of deps is empty.'
@@ -266,4 +268,4 @@ def main(exit_code):
     sys.exit(exit_code)
 
 if __name__ == '__main__':
-    main(exit_code)
+    main()

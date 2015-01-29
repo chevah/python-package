@@ -213,8 +213,8 @@ help_text_build="Create the Python binaries for current OS."
 command_build() {
     install_dependencies
 
-    # Clean the install sub-directory to avoid contamination.
-    rm -rf ${INSTALL_FOLDER}/*
+    # Clean the build sub-directory to avoid contamination.
+    command_clean
 
     case $OS in
         aix*)

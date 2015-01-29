@@ -79,7 +79,7 @@ def get_expected_deps():
             'libz.a',
             ]
     # Solaris specific deps.
-    elif platform_system == 'solaris':
+    elif platform_system == 'sunos':
         # This is the standard list of deps for a Solaris 10 build.
         expected_deps = [
             'libaio.so.1',
@@ -106,6 +106,19 @@ def get_expected_deps():
             'libssl_extra.so.0.9.7',
             'libuutil.so.1',
             'libz.so.1',
+            ]
+    # OS X specific deps.
+    elif platform_system == 'darwin':
+        # This is the minimum list of deps for OS X 10.8.
+        expected_deps = [
+            'libSystem.B.dylib',
+            'libbz2.1.0.dylib',
+            'libcrypto.0.9.8.dylib',
+            'libncurses.5.4.dylib',
+            'libpanel.5.4.dylib',
+            'libsqlite3.dylib',
+            'libssl.0.9.8.dylib',
+            'libz.1.dylib',
             ]
     return expected_deps
 

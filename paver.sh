@@ -447,7 +447,7 @@ detect_os() {
 
     else
         echo 'Unsupported operating system:' $OS
-        exit 69
+        exit 14
     fi
 
     # Fix arch names.

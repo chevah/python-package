@@ -32,7 +32,7 @@ def set_expected_deps():
             'linux-gate.so',
             'linux-vdso.so',
             ]
-        # Distro-specific additional deps. Now we may use the major versions.
+        # Distro-specific deps to add. Now we may specify major versions too.
         linux_distro_name = platform.linux_distribution()[0]
         if ('Red Hat' in linux_distro_name) or ('CentOS' in linux_distro_name):
             expected_deps.extend([
@@ -61,7 +61,7 @@ def set_expected_deps():
                 ])
     # AIX specific deps.
     elif platform_system == 'aix':
-        # This is the standard list of deps for AIX 5 to AIX 7.
+        # This is the standard list of deps for AIX 5.3.
         expected_deps = [
             '/unix',
             'libbsd.a',
@@ -73,10 +73,15 @@ def set_expected_deps():
             'libpthreads.a',
             'libpthreads_compat.a',
             'libssl.a',
-            'libthread.a',
             'libtli.a',
             'libz.a',
             ]
+        # sys.platform could be 'aix5', 'aix6' etc.
+        aix_version = int(sys.platform[-1])
+        if aix_version >= 7:
+            expected_deps.extend([
+                'libthread.a',
+            ])
     # Solaris specific deps.
     elif platform_system == 'sunos':
         # This is the standard list of deps for a Solaris 10 build.
@@ -247,7 +252,7 @@ def main():
             exit_code = 1
 
     if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
-        # On Linux/Unix we need spwd, but not on AIX.
+        # On Linux and Solaris we need spwd, but not on AIX or OS X.
         try:
             import spwd
             spwd

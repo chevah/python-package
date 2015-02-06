@@ -134,15 +134,16 @@ install_dependencies() {
     case $OS in
         ubuntu*)
             packages=$UBUNTU_PACKAGES
-            install_command='sudo apt-get install -y'
+            install_command='sudo apt-get --assume-yes install'
         ;;
         rhel*)
             packages=$RHEL_PACKAGES
-            install_command='sudo yum install -y'
+            install_command='sudo yum -y install'
         ;;
         sles*)
             packages=$SLES_PACKAGES
-            install_command='sudo zypper --non-interactive install -l'
+            install_command='sudo zypper --non-interactive install
+                            --auto-agree-with-licenses'
         ;;
         aix*|solaris*|osx*)
             packages=""
@@ -167,14 +168,38 @@ install_dependencies() {
 remove_dependencies() {
     case $OS in
         ubuntu*)
-            execute sudo apt-get remove -y --purge $UBUNTU_PACKAGES
-        ;;
+            execute sudo apt-get --assume-yes --purge remove $UBUNTU_PACKAGES
+            execute sudo apt-get --assume-yes --purge autoremove
+            ;;
         rhel*)
-            execute sudo yum remove -y $RHEL_PACKAGES
-        ;;
+            execute sudo yum -y remove $RHEL_PACKAGES
+            if [ $OS \> 'rhel6' ]; then
+                execute sudo yum -y autoremove
+            else
+                # This partially works in RHEL 4 to 6 for automatically
+                # removing packages installed as dependencies (aka "leaves").
+                rhel_yum_autoremove() {
+                    RPM_LEAVES=$(package-cleanup --leaves --quiet 2>/dev/null \
+                        | egrep -v ^'Excluding|Finished')
+                    if [ -z "$RPM_LEAVES" ]; then
+                        (exit 0)
+                    else
+                        execute sudo yum -y remove "$RPM_LEAVES"
+                        rhel_autoremove
+                    fi
+                }
+                rhel_yum_autoremove
+            fi
+            ;;
         sles*)
-            execute sudo zypper --non-interactive remove $SLES_PACKAGES
-        ;;
+            ZYPPER_OPTIONS="--non-interactive"
+            # zypper version 7.4 got support for automatically removing
+            # unneeded packages, but only when removing installed packages.
+            if [ $(rpm -qv libzypp) \> 'libzypp-7.39' ]; then
+                ZYPPER_OPTIONS="$ZYPPER_OPTIONS --clean-deps"
+            fi
+            execute sudo zypper $ZYPPER_OPTIONS remove $SLES_PACKAGES
+            ;;
     esac
 }
 

@@ -12,9 +12,14 @@
 . ./functions.sh
 
 # List of OS packages required for building Python.
-UBUNTU_PACKAGES="gcc libssl-dev zlib1g-dev libbz2-dev m4"
-RHEL_PACKAGES="gcc openssl-devel zlib-devel bzip2-devel m4"
-SLES_PACKAGES="gcc openssl-devel zlib-devel libbz2-devel m4"
+UBUNTU_PACKAGES="gcc libssl-dev zlib1g-dev m4 texinfo"
+RHEL_PACKAGES="gcc openssl-devel zlib-devel m4 texinfo"
+SLES_PACKAGES="gcc openssl-devel zlib-devel m4 texinfo"
+# For the moment, we don't install anything on OS X, Solaris and AIX.
+# The build requires a C compiler, GNU make, m4, makeinfo (from texinfo,
+# optional) and the header files for OpenSSL and zlib. On platforms with
+# a choice of C compilers, you may choose one by setting/unsetting CC
+# and CXX in paver.sh.
 
 LIBFFI_VERSION=3.2.1
 GMP_VERSION=6.0.0
@@ -129,28 +134,18 @@ install_dependencies() {
     case $OS in
         ubuntu*)
             packages=$UBUNTU_PACKAGES
-            install_command='sudo apt-get install -y'
+            install_command='sudo apt-get --assume-yes install'
         ;;
         rhel*)
             packages=$RHEL_PACKAGES
-            install_command='sudo yum install -y'
+            install_command='sudo yum -y install'
         ;;
         sles*)
             packages=$SLES_PACKAGES
-            install_command='sudo zypper --non-interactive install -l'
+            install_command='sudo zypper --non-interactive install
+                            --auto-agree-with-licenses'
         ;;
-        aix*)
-            # For the moment, we don't install anything on AIX.
-            packages=""
-            install_command=''
-        ;;
-        solaris*)
-            # For the moment, we don't install anything on Solaris.
-            packages=""
-            install_command=''
-        ;;
-        osx*)
-            # For the moment, we don't install anything on OSX.
+        aix*|solaris*|osx*)
             packages=""
             install_command=''
         ;;
@@ -173,14 +168,38 @@ install_dependencies() {
 remove_dependencies() {
     case $OS in
         ubuntu*)
-            execute sudo apt-get remove -y --purge $UBUNTU_PACKAGES
-        ;;
+            execute sudo apt-get --assume-yes --purge remove $UBUNTU_PACKAGES
+            execute sudo apt-get --assume-yes --purge autoremove
+            ;;
         rhel*)
-            execute sudo yum remove -y $RHEL_PACKAGES
-        ;;
+            execute sudo yum -y remove $RHEL_PACKAGES
+            if [ $OS \> 'rhel6' ]; then
+                execute sudo yum -y autoremove
+            else
+                # This partially works in RHEL 4 to 6 for automatically
+                # removing packages installed as dependencies (aka "leaves").
+                rhel_yum_autoremove() {
+                    RPM_LEAVES=$(package-cleanup --leaves --quiet 2>/dev/null \
+                        | egrep -v ^'Excluding|Finished')
+                    if [ -z "$RPM_LEAVES" ]; then
+                        (exit 0)
+                    else
+                        execute sudo yum -y remove "$RPM_LEAVES"
+                        rhel_autoremove
+                    fi
+                }
+                rhel_yum_autoremove
+            fi
+            ;;
         sles*)
-            execute sudo zypper --non-interactive remove $SLES_PACKAGES
-        ;;
+            ZYPPER_OPTIONS="--non-interactive"
+            # zypper version 7.4 got support for automatically removing
+            # unneeded packages, but only when removing installed packages.
+            if [ $(rpm -qv libzypp) \> 'libzypp-7.39' ]; then
+                ZYPPER_OPTIONS="$ZYPPER_OPTIONS --clean-deps"
+            fi
+            execute sudo zypper $ZYPPER_OPTIONS remove $SLES_PACKAGES
+            ;;
     esac
 }
 
@@ -193,6 +212,9 @@ command_clean() {
 help_text_build="Create the Python binaries for current OS."
 command_build() {
     install_dependencies
+
+    # Clean the build dir to avoid contamination from previous builds.
+    command_clean
 
     case $OS in
         aix*)

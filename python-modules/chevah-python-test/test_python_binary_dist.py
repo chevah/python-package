@@ -98,11 +98,4 @@ if platform_system == 'linux':
         print 'spwd missing.'
         exit_code = 1
 
-    try:
-        import bz2
-        bz2
-    except:
-        print '"bz2" missing.'
-        exit_code = 1
-
 sys.exit(exit_code)

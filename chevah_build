@@ -12,9 +12,9 @@
 . ./functions.sh
 
 # List of OS packages required for building Python.
-UBUNTU_PACKAGES="gcc libssl-dev zlib1g-dev libbz2-dev m4"
-RHEL_PACKAGES="gcc openssl-devel zlib-devel bzip2-devel m4"
-SLES_PACKAGES="gcc openssl-devel zlib-devel libbz2-devel m4"
+UBUNTU_PACKAGES="gcc libssl-dev zlib1g-dev m4"
+RHEL_PACKAGES="gcc openssl-devel zlib-devel m4"
+SLES_PACKAGES="gcc openssl-devel zlib-devel m4"
 
 LIBFFI_VERSION=3.2.1
 GMP_VERSION=6.0.0

@@ -213,6 +213,9 @@ help_text_build="Create the Python binaries for current OS."
 command_build() {
     install_dependencies
 
+    # Clean the build dir to avoid contamination from previous builds.
+    command_clean
+
     case $OS in
         aix*)
             build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}

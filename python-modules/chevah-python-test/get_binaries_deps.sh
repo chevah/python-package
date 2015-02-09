@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Outputs a sorted list of dependencies for the python binary and .so files
+# in the current directory and its subdirectories (to be run in 'build/').
+
 set -o nounset
 set -o errexit
 set -o pipefail

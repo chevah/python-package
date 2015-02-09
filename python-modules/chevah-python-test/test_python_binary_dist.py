@@ -6,13 +6,13 @@ import platform
 import subprocess
 
 platform_system = platform.system().lower()
-exit_code = 0
 
 
 def set_expected_deps():
     """
-    Here we hardcode the list of expected deps for every supported OS.
+    Returns a hardcoded list of expected deps for every supported OS.
     """
+    expected_deps = []
     # Linux specific deps.
     if platform_system == 'linux':
         # The minimal list of deps covering Debian, Ubuntu and SUSE:
@@ -85,6 +85,7 @@ def set_expected_deps():
     # Solaris specific deps.
     elif platform_system == 'sunos':
         # This is the standard list of deps for a Solaris 10 build.
+        # For now, we include the major versions for Solaris libs.
         expected_deps = [
             'libaio.so.1',
             'libc.so.1',
@@ -128,27 +129,25 @@ def set_expected_deps():
 
 def get_actual_deps():
     """
-    Here we get the list of actual deps using a shell script helper.
+    Returns the list of actual deps obtained using a bash script helper.
     """
-    global exit_code
     try:
         actual_deps = subprocess.check_output('./get_binaries_deps.sh',
-                      shell=True).split()
+            shell=True).split()
     except:
         print 'Could not determine the deps for the new binaries.'
-        exit_code = 13
     else:
         return actual_deps
 
 
 def check_deps(expected_deps, actual_deps):
     """
-    We check actual deps one by one to see if there is a substring of each
-    of them in any dep from the list of expected deps. This is so that an
-    actual dep of libssl.so.0.9.8 or libssl.so.1.0.0 matches an expected dep of
-    libssl.so when checking for OpenSSL.
+    Returns unwanted deps for the python binary or the .so files in 'build/'.
     """
-    global exit_code
+    # Check actual deps one by one to see if there is a substring of each of
+    # them in any dep from the list of expected deps. This is so that an actual
+    # dep of libssl.so.0.9.8 or libssl.so.1.0.0 matches an expected dep of
+    # libssl.so when checking for OpenSSL.
     unwanted_deps = []
     for single_actual_dep in actual_deps:
         for single_expected_dep in expected_deps:
@@ -156,18 +155,14 @@ def check_deps(expected_deps, actual_deps):
                 break
         else:
             unwanted_deps.append(single_actual_dep)
-    if unwanted_deps:
-        print 'Got unwanted deps:'
-        for single_dep_to_print in unwanted_deps:
-            print '\t' , single_dep_to_print
-        exit_code = 15
-
+    return unwanted_deps
 
 def main():
     """
-    Main function.
+    Launches tests to check required modules and OS-specific dependencies.
+    Exits with a relevant error code.
     """
-    global exit_code
+    exit_code = 0
 
     try:
         import zlib
@@ -260,15 +255,24 @@ def main():
             print 'spwd missing.'
             exit_code = 1
 
-    # Finally, we compare the list of expected deps for the current OS with the
+    # Finally, compare the list of expected deps for the current OS with the
     # list of actual deps returned by the shell script helper.
     expected_deps = set_expected_deps()
-    actual_deps = get_actual_deps()
-    if not actual_deps:
-        print 'List of deps is empty.'
-        exit_code = 14
+    if not expected_deps:
+        print 'List of expected deps is empty. Unsupported OS?'
+        exit_code = 13
     else:
-        check_deps(expected_deps, actual_deps)
+        actual_deps = get_actual_deps()
+        if not actual_deps:
+            print 'List of deps is empty. Problems running the script helper?'
+            exit_code = 14
+        else:
+            unwanted_deps = check_deps(expected_deps, actual_deps)
+            if unwanted_deps:
+                print 'Got unwanted deps:'
+                for single_dep_to_print in unwanted_deps:
+                    print '\t' , single_dep_to_print
+                exit_code = 15
 
     sys.exit(exit_code)
 

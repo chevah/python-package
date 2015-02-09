@@ -355,8 +355,10 @@ help_text_test=\
 "Run a quick test for the Python from build."
 command_test() {
     test_file='test_python_binary_dist.py'
+    test_file_helper='get_binaries_deps.sh'
     execute mkdir -p build/
     execute cp python-modules/chevah-python-test/${test_file} build/
+    execute cp python-modules/chevah-python-test/${test_file_helper} build/
     execute pushd build
     execute ./$LOCAL_PYTHON_BINARY_DIST/bin/python ${test_file}
     execute popd

@@ -5,19 +5,19 @@ import sys
 import platform
 import subprocess
 
+script_helper = './get_binaries_deps.sh'
 platform_system = platform.system().lower()
 
 
-def set_expected_deps():
+def get_allowed_deps():
     """
-    Returns a hardcoded list of expected deps for every supported OS.
+    Return a hardcoded list of allowed deps for the current OS.
     """
-    expected_deps = []
-    # Linux specific deps.
+    allowed_deps = []
     if platform_system == 'linux':
         # The minimal list of deps covering Debian, Ubuntu and SUSE:
         # glibc, openssl and zlib.
-        expected_deps = [
+        allowed_deps = [
             'ld-linux',
             'libc.so',
             'libcrypt.so',
@@ -35,7 +35,7 @@ def set_expected_deps():
         # Distro-specific deps to add. Now we may specify major versions too.
         linux_distro_name = platform.linux_distribution()[0]
         if ('Red Hat' in linux_distro_name) or ('CentOS' in linux_distro_name):
-            expected_deps.extend([
+            allowed_deps.extend([
                 'libcom_err.so.2',
                 'libgssapi_krb5.so.2',
                 'libk5crypto.so.3',
@@ -44,25 +44,24 @@ def set_expected_deps():
                 ])
             rhel_version = int(platform.linux_distribution()[1].split('.')[0])
             if rhel_version >= 5:
-                expected_deps.extend([
+                allowed_deps.extend([
                     'libkeyutils.so.1',
                     'libkrb5support.so.0',
                     'libselinux.so.1',
                     'libsepol.so.1',
                 ])
             if rhel_version >= 6:
-                expected_deps.extend([
+                allowed_deps.extend([
                     'libfreebl3.so',
                 ])
             if rhel_version >= 7:
-                expected_deps.extend([
+                allowed_deps.extend([
                     'liblzma.so.5',
                     'libpcre.so.1',
                 ])
-    # AIX specific deps.
     elif platform_system == 'aix':
         # This is the standard list of deps for AIX 5.3.
-        expected_deps = [
+        allowed_deps = [
             '/unix',
             'libbsd.a',
             'libc.a',
@@ -79,14 +78,13 @@ def set_expected_deps():
         # sys.platform could be 'aix5', 'aix6' etc.
         aix_version = int(sys.platform[-1])
         if aix_version >= 7:
-            expected_deps.extend([
+            allowed_deps.extend([
                 'libthread.a',
             ])
-    # Solaris specific deps.
     elif platform_system == 'sunos':
         # This is the standard list of deps for a Solaris 10 build.
         # For now, we include the major versions for Solaris libs.
-        expected_deps = [
+        allowed_deps = [
             'libaio.so.1',
             'libc.so.1',
             'libcrypt_i.so.1',
@@ -109,10 +107,9 @@ def set_expected_deps():
             'libuutil.so.1',
             'libz.so.1',
             ]
-    # OS X specific deps.
     elif platform_system == 'darwin':
         # This is the minimum list of deps for OS X.
-        expected_deps = [
+        allowed_deps = [
             'ApplicationServices.framework/Versions/A/ApplicationServices',
             'Carbon.framework/Versions/A/Carbon',
             'CoreFoundation.framework/Versions/A/CoreFoundation',
@@ -124,43 +121,51 @@ def set_expected_deps():
             'libssl.0.9.8.dylib',
             'libz.1.dylib',
             ]
-    return expected_deps
+    return allowed_deps
 
 
 def get_actual_deps():
     """
-    Returns the list of actual deps obtained using a bash script helper.
+    Return the list of actual deps for the newly-built binaries.
     """
     try:
-        actual_deps = subprocess.check_output('./get_binaries_deps.sh',
-            shell=True).split()
+        raw_deps = subprocess.check_output(script_helper).splitlines()
     except:
-        print 'Could not determine the deps for the new binaries.'
+        sys.stderr.write('Could not get the deps for the new binaries.\n')
     else:
-        return actual_deps
+        libs_deps = []
+        for line in raw_deps:
+            # We exclude any occuring lines listing the examined files as we
+            # know they start with './' (this is a problem in AIX and OS X).
+            if line[:2] != './' :
+                libs_deps.append(line.split()[0])
+        return list(set(libs_deps))
 
 
-def check_deps(expected_deps, actual_deps):
+def get_unwanted_deps(allowed_deps, actual_deps):
     """
-    Returns unwanted deps for the python binary or the .so files in 'build/'.
+    Return unwanted deps for the newly-built binaries.
+    allowed_deps are hardcoded deps for binaries built for the current OS.
+    actual_deps are the deps found for the newly-built binaries.
     """
     # Check actual deps one by one to see if there is a substring of each of
-    # them in any dep from the list of expected deps. This is so that an actual
-    # dep of libssl.so.0.9.8 or libssl.so.1.0.0 matches an expected dep of
+    # them in any dep from the list of allowed deps. This is so that an actual
+    # dep of libssl.so.0.9.8 or libssl.so.1.0.0 matches an allowed dep of
     # libssl.so when checking for OpenSSL.
     unwanted_deps = []
     for single_actual_dep in actual_deps:
-        for single_expected_dep in expected_deps:
-            if single_expected_dep in single_actual_dep:
+        for single_allowed_dep in allowed_deps:
+            if single_allowed_dep in single_actual_dep:
                 break
         else:
             unwanted_deps.append(single_actual_dep)
     return unwanted_deps
 
+
 def main():
     """
-    Launches tests to check required modules and OS-specific dependencies.
-    Exits with a relevant error code.
+    Launch tests to check required modules and OS-specific dependencies.
+    Exit with a relevant error code.
     """
     exit_code = 0
 
@@ -168,15 +173,15 @@ def main():
         import zlib
         zlib
     except:
-        print '"zlib" missing.'
+        sys.stderr.write('"zlib" missing.\n')
         exit_code = 1
 
     try:
         import _hashlib
         _hashlib
     except:
-        print 'standard "ssl" missing.'
-        exit_code = 1
+        sys.stderr.write('standard "ssl" missing.\n')
+        exit_code = 2
 
     try:
         from OpenSSL import SSL, crypto, rand
@@ -184,58 +189,57 @@ def main():
         crypto
         rand
     except:
-        print '"OpenSSL" missing.'
-        exit_code = 1
+        sys.stderr.write('"OpenSSL" missing.\n')
+        exit_code = 3
 
     try:
         import Crypto
         Crypto
     except:
-        print '"PyCrypto" missing.'
-        exit_code = 1
-
+        sys.stderr.write('"PyCrypto" missing.\n')
+        exit_code = 4
 
     try:
         import crypt
         crypt
     except:
-        print '"crypt" missing.'
-        exit_code = 1
+        sys.stderr.write('"crypt" missing.\n')
+        exit_code = 5
 
     try:
         import pysqlite2
         pysqlite2
     except:
-        print '"pysqlite2" missing.'
-        exit_code = 1
+        sys.stderr.write('"pysqlite2" missing.\n')
+        exit_code = 6
 
     try:
         import setproctitle
         setproctitle
     except:
-        print '"setproctitle" missing.'
-        exit_code = 1
+        sys.stderr.write('"setproctitle" missing.\n')
+        exit_code = 7
 
     try:
         from ctypes import CDLL
         CDLL
     except:
-        print '"ctypes - CDLL" missing.'
-        exit_code = 1
+        sys.stderr.write('"ctypes - CDLL" missing.\n')
+        exit_code = 8
 
     try:
         from ctypes.util import find_library
         find_library
     except:
-        print '"ctypes.utils - find_library" missing.'
-        exit_code = 1
+        sys.stderr.write('"ctypes.utils - find_library" missing.\n')
+        exit_code = 9
 
     try:
         from Crypto.PublicKey import _fastmath
         _fastmath
     except:
-        print 'Crypto.PublicKey._fastmath missing. No GMP?'
-        exit_code = 1
+        sys.stderr.write('Crypto.PublicKey._fastmath missing. No GMP?\n')
+        exit_code = 10
 
     # Windows specific modules.
     if os.name == 'nt':
@@ -243,8 +247,8 @@ def main():
             from ctypes import windll
             windll
         except:
-            print '"ctypes - windll" missing.'
-            exit_code = 1
+            sys.stderr.write('"ctypes - windll" missing.\n')
+            exit_code = 11
 
     if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
         # On Linux and Solaris we need spwd, but not on AIX or OS X.
@@ -252,26 +256,28 @@ def main():
             import spwd
             spwd
         except:
-            print 'spwd missing.'
-            exit_code = 1
+            sys.stderr.write('spwd missing.\n')
+            exit_code = 12
 
-    # Finally, compare the list of expected deps for the current OS with the
-    # list of actual deps returned by the shell script helper.
-    expected_deps = set_expected_deps()
-    if not expected_deps:
-        print 'List of expected deps is empty. Unsupported OS?'
+    # Compare the list of allowed deps for the current OS with the list of
+    # actual deps for the newly-built binaries returned by the script helper.
+    allowed_deps = get_allowed_deps()
+    if not allowed_deps:
+        sys.stderr.write('Got no allowed deps. Please check if {0} is a ' \
+            'supported operating system.\n'.format(platform.system()))
         exit_code = 13
     else:
         actual_deps = get_actual_deps()
         if not actual_deps:
-            print 'List of deps is empty. Problems running the script helper?'
+            sys.stderr.write('Got no deps for the new binaries. Please check ' \
+                'the "{0}" script in the "build/" dir.\n'.format(script_helper))
             exit_code = 14
         else:
-            unwanted_deps = check_deps(expected_deps, actual_deps)
+            unwanted_deps = get_unwanted_deps(allowed_deps, actual_deps)
             if unwanted_deps:
-                print 'Got unwanted deps:'
+                sys.stderr.write('Got unwanted deps:\n')
                 for single_dep_to_print in unwanted_deps:
-                    print '\t' , single_dep_to_print
+                    sys.stderr.write('\t{0}\n'.format(single_dep_to_print))
                 exit_code = 15
 
     sys.exit(exit_code)

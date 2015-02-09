@@ -33,7 +33,18 @@ host_platform = get_platform()
 COMPILED_WITH_PYDEBUG = ('--with-pydebug' in sysconfig.get_config_var("CONFIG_ARGS"))
 
 # This global variable is used to hold the list of modules to be disabled.
-disabled_module_list = [ 'bz2' ]
+disabled_module_list = [
+    '_bsddb',
+    '_curses',
+    '_curses_panel',
+    '_sqlite3',
+    '_tkinter',
+    'bz2',
+    'dbm',
+    'gdbm',
+    'readline',
+    'sunaudiodev',
+     ]
 
 def add_dir_to_list(dirlist, dir):
     """Add the directory 'dir' to the list 'dirlist' (at the front) if

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# Outputs a sorted list of dependencies for the python binary and .so files
-# in the current directory and its subdirectories (to be run in 'build/').
+# Uses 'ldd' or equivalents to list all dependencies for the python binary and
+# .so files in the current hierarchy of directories (to be run in 'build/').
 
 set -o nounset
 set -o errexit
@@ -22,5 +22,5 @@ if [ "$os" = "SunOS" ]; then
 fi
 
 # This portable invocation of find will get a raw list of linked libs
-# for the current binaries in the current sub-directory: 'build'.
+# for the current binaries in the current sub-directory, usually 'build'.
 find ./ -type f \( -name "python" -o -name "*.so" \) -exec $checker {} \;

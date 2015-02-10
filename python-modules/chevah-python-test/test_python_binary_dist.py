@@ -60,7 +60,8 @@ def get_allowed_deps():
                     'libpcre.so.1',
                 ])
     elif platform_system == 'aix':
-        # This is the standard list of deps for AIX 5.3.
+        # This is the standard list of deps for AIX 5.3. Some of the links
+        # for these libs moved in newer versions from '/usr/lib/' to '/lib/'.
         allowed_deps = [
             '/unix',
             'libbsd.a',

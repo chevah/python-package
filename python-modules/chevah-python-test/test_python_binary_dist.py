@@ -125,9 +125,11 @@ def get_allowed_deps():
     return allowed_deps
 
 
-def get_actual_deps():
+def get_actual_deps(script_helper):
     """
-    Return the list of actual deps for the newly-built binaries.
+    Return a list of unique dependencies for the newly-built binaries.
+    script_helper is a shell script that uses ldd (or equivalents) to examine
+    dependencies for all binaries in the current sub-directory.
     """
     try:
         raw_deps = subprocess.check_output(script_helper).splitlines()
@@ -136,23 +138,28 @@ def get_actual_deps():
     else:
         libs_deps = []
         for line in raw_deps:
-            # We exclude any occuring lines listing the examined files as we
-            # know they start with './' (this is a problem in AIX and OS X).
-            if line[:2] != './' :
-                libs_deps.append(line.split()[0])
-        return list(set(libs_deps))
+            if line.startswith('./'):
+                # In some OS'es (at least AIX and OS X), the output includes
+                # the examined binaries and those lines start with "./". It's
+                # safe to ignore them because they point to paths in the
+                # current hierarchy of directories.
+                continue
+            # The first field in each line is the file name we actually need.
+            deps = line.split()[0]
+            libs_deps.append(deps)
+    return list(set(libs_deps))
 
 
 def get_unwanted_deps(allowed_deps, actual_deps):
     """
     Return unwanted deps for the newly-built binaries.
-    allowed_deps are hardcoded deps for binaries built for the current OS.
-    actual_deps are the deps found for the newly-built binaries.
+    allowed_deps is a list of strings representing the allowed dependencies
+    for binaries built for the current OS, hardcoded in get_allowed_deps().
+    May include the major versioning, eg. "libssl.so" or "libssl.so.1".
+    actual_deps is a list of strings representing the actual dependencies
+    for the newly-built binaries as gathered through get_actual_deps().
+    May include the path, eg. "libssl.so.1" or "/usr/lib/libssl.so.1".
     """
-    # Check actual deps one by one to see if there is a substring of each of
-    # them in any dep from the list of allowed deps. This is so that an actual
-    # dep of libssl.so.0.9.8 or libssl.so.1.0.0 matches an allowed dep of
-    # libssl.so when checking for OpenSSL.
     unwanted_deps = []
     for single_actual_dep in actual_deps:
         for single_allowed_dep in allowed_deps:
@@ -264,13 +271,13 @@ def main():
     # actual deps for the newly-built binaries returned by the script helper.
     allowed_deps = get_allowed_deps()
     if not allowed_deps:
-        sys.stderr.write('Got no allowed deps. Please check if {0} is a ' \
+        sys.stderr.write('Got no allowed deps. Please check if {0} is a '
             'supported operating system.\n'.format(platform.system()))
         exit_code = 13
     else:
-        actual_deps = get_actual_deps()
+        actual_deps = get_actual_deps(script_helper)
         if not actual_deps:
-            sys.stderr.write('Got no deps for the new binaries. Please check ' \
+            sys.stderr.write('Got no deps for the new binaries. Please check '
                 'the "{0}" script in the "build/" dir.\n'.format(script_helper))
             exit_code = 14
         else:

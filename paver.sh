@@ -410,15 +410,15 @@ detect_os() {
                 exit 13
             fi
             OS="sles${sles_version}"
-        elif [ -f /etc/lsb-release ] ; then
+        elif [ $(command -v lsb_release) ]; then
             lsb_release_id=$(lsb_release -is)
+            lsb_release_nr=$(lsb_release -sr)
             if [ $lsb_release_id = Ubuntu ]; then
-                ubuntu_release=`lsb_release -sr`
-                if [ "$ubuntu_release" \< "10.04" ] ; then
-                    echo "Ubuntu version is too old: ${ubuntu_release}"
+                if [ "$lsb_release_nr" \< "10.04" ] ; then
+                    echo "Ubuntu version is too old: ${lsb_release_nr}"
                     exit 13
                 fi
-                case $ubuntu_release in
+                case $lsb_release_nr in
                     '10.04' | '10.10' | '11.04' | '11.10')
                         OS='ubuntu1004'
                     ;;
@@ -430,8 +430,6 @@ detect_os() {
                     ;;
                 esac
             fi
-        else
-            OS='linux'
         fi
 
     elif [ "${OS}" = "darwin" ] ; then

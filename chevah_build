@@ -15,11 +15,11 @@
 UBUNTU_PACKAGES="gcc libssl-dev zlib1g-dev m4 texinfo"
 RHEL_PACKAGES="gcc openssl-devel zlib-devel m4 texinfo"
 SLES_PACKAGES="gcc openssl-devel zlib-devel m4 texinfo"
-# For the moment, we don't install anything on OS X, Solaris and AIX.
-# The build requires a C compiler, GNU make, m4, makeinfo (from texinfo,
-# optional) and the header files for OpenSSL and zlib. On platforms with
-# a choice of C compilers, you may choose one by setting/unsetting CC
-# and CXX in paver.sh.
+# For the moment, we don't install anything on OS X, Solaris, AIX and
+# unsupported Linux distros. The build requires a C compiler, GNU make, m4,
+# makeinfo (from texinfo, optional) and the header files for OpenSSL and zlib.
+# On platforms with a choice of C compilers, you may choose among them by
+# setting/unsetting CC and CXX in paver.sh.
 
 LIBFFI_VERSION=3.2.1
 GMP_VERSION=6.0.0
@@ -145,7 +145,7 @@ install_dependencies() {
             install_command='sudo zypper --non-interactive install
                             --auto-agree-with-licenses'
         ;;
-        aix*|solaris*|osx*)
+        linux|aix*|solaris*|osx*)
             packages=""
             install_command=''
         ;;

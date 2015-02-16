@@ -95,7 +95,10 @@ case $OS in
                 export CFLAGS="$CFLAGS -qmaxmem=-1 -q64"
             fi
         fi
-    ;;
+        ;;
+    hpux*)
+        export MAKE=gmake
+        ;;
     solaris*)
         # Solaris 10 has OpenSSL 0.9.7 and Python 2.7 versions starting with
         # 2.7.9 do not support it. More at https://bugs.python.org/issue20981.

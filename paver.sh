@@ -381,6 +381,9 @@ detect_os() {
 
     elif [ "${OS}" = "hp-ux" ] ; then
 
+        CC="cc"
+        CXX="aCC"
+
         ARCH=`uname -m`
 
         OS="hpux"

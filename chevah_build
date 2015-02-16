@@ -209,6 +209,7 @@ remove_dependencies() {
 
 help_text_clean="Clean the build."
 command_clean() {
+    echo "Cleaning build folder..."
     rm -rf ${BUILD_FOLDER}
 }
 

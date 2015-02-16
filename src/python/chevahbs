@@ -13,15 +13,6 @@ chevahbs_configure() {
 
     case $OS in
         "hpux"|"aix")
-            # In AIX we build _ctypes with external libffi, but not the system
-            # one. We use our libffi files and statically link against its libs.
-            execute mkdir -p build/libffi
-            execute cp $INSTALL_FOLDER/tmp/libffi/* build/libffi/
-            # The following two parameters are picked up by Python's setup.py
-            # and will convince it to use our external libffi for _ctypes.
-            export CPPFLAGS="${CPPFLAGS} -Ibuild/libffi/"
-            export LDFLAGS="${LDFLAGS} -Lbuild/libffi/"
-
             # These files are already created in the Python distribution,
             # but for some strange reason, make tries to recreate them.
             # We just touch them so that make will see them up to date.
@@ -54,6 +45,14 @@ chevahbs_configure() {
                 "
             ;;
         aix*)
+            # In AIX we build _ctypes with external libffi, but not the system
+            # one. We use our libffi files and statically link against its libs.
+            execute mkdir -p build/libffi
+            execute cp $INSTALL_FOLDER/tmp/libffi/* build/libffi/
+            # The following two parameters are picked up by Python's setup.py
+            # and will convince it to use our external libffi for _ctypes.
+            export CPPFLAGS="${CPPFLAGS} -Ibuild/libffi/"
+            export LDFLAGS="${LDFLAGS} -Lbuild/libffi/"
 
             # Workaround for http://bugs.python.org/issue21917
             echo "import os; os.__dict__.pop('O_NOFOLLOW', None)" \

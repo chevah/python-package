@@ -35,7 +35,7 @@ chevahbs_configure() {
             #BASECFLAGS="+DD64"
             #LDFLAGS="${LDFLAGS} +DD64 -lxnet"
             LDFLAGS="${LDFLAGS} -lxnet"
-            CONFIG_ARGS="${CONFIG_ARGS} --without-gcc --with-system-ffi"
+            CONFIG_ARGS="${CONFIG_ARGS} --without-gcc"
             ;;
         "ubuntu1004")
             # On Ubuntu there are no libXXX.o, but rather linked against the

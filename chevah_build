@@ -220,13 +220,20 @@ command_build() {
     command_clean
 
     case $OS in
-        aix*|hpux*|solaris*)
+        aix*solaris*)
             build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
     esac
 
-    # Build GMP on all platforms.
-    #build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
+    case $OS in
+        hpux*)
+            # Not working on HPUX with hp compiler.
+            ;;
+        *)
+            # Build GMP on all platforms.
+            build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
+            ;;
+    esac
 
     build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
 

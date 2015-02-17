@@ -9,7 +9,7 @@ RUN_PACKAGES = [
     'twisted==12.1.0-chevah3',
 
     # Buildbot is used for try scheduler
-    'buildbot==0.8.8.c1',
+    'buildbot==0.8.11.pre.143.gac88f1b.c2',
 
     # Required for some unicode handling.
     'unidecode',

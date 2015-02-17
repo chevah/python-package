@@ -381,8 +381,9 @@ detect_os() {
 
     elif [ "${OS}" = "hp-ux" ] ; then
 
-        CC="cc"
-        CXX="aCC"
+        # libffi and gmp does not compile with HP aC.
+        # CC="cc"
+        # CXX="aCC"
 
         ARCH=`uname -m`
 

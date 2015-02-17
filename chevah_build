@@ -227,7 +227,7 @@ command_build() {
     esac
 
     # Build GMP on all platforms.
-    build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
+    # build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
 
     build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
 

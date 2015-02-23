@@ -178,6 +178,10 @@ install_dependencies() {
 # installed by `install_dependencies` and leave the system clean.
 #
 remove_dependencies() {
+    local rpm_leaves
+    local zypper_options
+    local libzypp_version
+
     case $OS in
         ubuntu*)
             execute sudo apt-get --assume-yes --purge remove $INSTALLED_PACKAGES
@@ -191,12 +195,12 @@ remove_dependencies() {
                 # This partially works in RHEL 4 to 6 for automatically
                 # removing packages installed as dependencies (aka "leaves").
                 rhel_yum_autoremove() {
-                    RPM_LEAVES=$(package-cleanup --leaves --quiet 2>/dev/null \
+                    rpm_leaves=$(package-cleanup --leaves --quiet 2>/dev/null \
                         | egrep -v ^'Excluding|Finished')
-                    if [ -z "$RPM_LEAVES" ]; then
+                    if [ -z "$rpm_leaves" ]; then
                         (exit 0)
                     else
-                        execute sudo yum -y remove $RPM_LEAVES
+                        execute sudo yum -y remove $rpm_leaves
                         rhel_autoremove
                     fi
                 }
@@ -204,15 +208,15 @@ remove_dependencies() {
             fi
             ;;
         sles*)
-            ZYPPER_OPTIONS="--non-interactive"
+            zypper_options="--non-interactive"
             # zypper version 7.4 got support for automatically removing
             # unneeded packages, but only when removing installed packages.
             libzypp_version=$(rpm --query --queryformat '%{VERSION}' libzypp)
             IFS=. read -a libzypp_version_array <<< "$libzypp_version"
             if [ ${libzypp_version_array[0]} -gt 7 ]; then
-                ZYPPER_OPTIONS="$ZYPPER_OPTIONS --clean-deps"
+                zypper_options="$zypper_options --clean-deps"
             fi
-            execute sudo zypper $ZYPPER_OPTIONS remove $INSTALLED_PACKAGES
+            execute sudo zypper $zypper_options remove $INSTALLED_PACKAGES
             ;;
     esac
 }

@@ -384,10 +384,18 @@ detect_os() {
         # libffi and gmp does not compile with HP aC.
         # CC="cc"
         # CXX="aCC"
-
-        ARCH=`uname -m`
-
         OS="hpux"
+        ARCH=`uname -m`
+        raw_release=`uname -r`
+        case $raw_release in
+            'B.11.31')
+                OS="hpux1131"
+                ;;
+            *)
+                echo "HP-UX version is not supported: ${raw_release}."
+                exit 13
+                ;;
+        esac
 
     elif [ "${OS}" = "linux" ] ; then
 

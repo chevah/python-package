@@ -189,7 +189,8 @@ remove_dependencies() {
             ;;
         rhel*)
             execute sudo yum -y remove $INSTALLED_PACKAGES
-            if [ $OS \> 'rhel6' ]; then
+            # RHEL7's yum learned how to auto-remove installed dependencies.
+            if [ ${OS##rhel} -ge 7 ]; then
                 execute sudo yum -y autoremove
             else
                 # This partially works in RHEL 4 to 6 for automatically

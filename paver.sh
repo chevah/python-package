@@ -459,6 +459,8 @@ detect_os() {
         # Python has not been fully tested on AIX when compiled as a 64 bit
         # application and has math rounding error problems (at least with XL C).
         ARCH='ppc'
+    elif [ "$ARCH" = "aarch64" ]; then
+        ARCH='arm64'
     fi
 }
 

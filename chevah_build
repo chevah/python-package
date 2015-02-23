@@ -64,6 +64,10 @@ export CC
 # when not using gcc and thus silence the associated configure warning. However,
 # we'll need to set CPPFLAGS later for linking to statically-compiled libs.
 export CXX
+# Use PIC (Position Independent Code) with GCC on 64-bit arches.
+if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
+    export CFLAGS="${CFLAGS} -fPIC"
+fi
 
 LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
 INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST

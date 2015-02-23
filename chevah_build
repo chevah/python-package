@@ -12,9 +12,11 @@
 . ./functions.sh
 
 # List of OS packages required for building Python.
-UBUNTU_PACKAGES="gcc libssl-dev zlib1g-dev m4 texinfo"
-RHEL_PACKAGES="gcc openssl-devel zlib-devel m4 texinfo"
-SLES_PACKAGES="gcc openssl-devel zlib-devel m4 texinfo"
+UBUNTU_PACKAGES="gcc make libssl-dev zlib1g-dev m4 texinfo"
+RHEL_PACKAGES="gcc make openssl-devel zlib-devel m4 texinfo"
+SLES_PACKAGES="gcc make libopenssl-devel zlib-devel m4 texinfo"
+# List of OS packages requested to be installed by this script.
+INSTALLED_PACKAGES=""
 # For the moment, we don't install anything on OS X, Solaris, AIX and
 # unsupported Linux distros. The build requires a C compiler, GNU make, m4,
 # makeinfo (from texinfo, optional) and the header files for OpenSSL and zlib.
@@ -130,32 +132,42 @@ install_dependencies() {
 
     packages='packages-not-defined'
     install_command='install-command-not-defined'
+    check_command='check-command-not-defined'
 
     case $OS in
         ubuntu*)
             packages=$UBUNTU_PACKAGES
             install_command='sudo apt-get --assume-yes install'
+            check_command='dpkg --status'
         ;;
         rhel*)
             packages=$RHEL_PACKAGES
             install_command='sudo yum -y install'
+            check_command='rpm --query'
         ;;
         sles*)
             packages=$SLES_PACKAGES
             install_command='sudo zypper --non-interactive install
                             --auto-agree-with-licenses'
+            check_command='rpm --query'
         ;;
         linux|aix*|solaris*|osx*)
             packages=""
             install_command=''
+            check_command=''
         ;;
     esac
 
     # We install one package after another since some package managers
     # (I am looking at you yum) will exit with 0 exit code if at least
     # one package was successfully installed.
+    echo "Installing required packages..."
     for package in $packages ; do
-        execute $install_command $package
+    $check_command $package
+    if [ $? -ne 0 ]; then
+            execute $install_command $package \
+                && INSTALLED_PACKAGES="$INSTALLED_PACKAGES $package"
+        fi
     done
 
 }
@@ -168,11 +180,11 @@ install_dependencies() {
 remove_dependencies() {
     case $OS in
         ubuntu*)
-            execute sudo apt-get --assume-yes --purge remove $UBUNTU_PACKAGES
+            execute sudo apt-get --assume-yes --purge remove $INSTALLED_PACKAGES
             execute sudo apt-get --assume-yes --purge autoremove
             ;;
         rhel*)
-            execute sudo yum -y remove $RHEL_PACKAGES
+            execute sudo yum -y remove $INSTALLED_PACKAGES
             if [ $OS \> 'rhel6' ]; then
                 execute sudo yum -y autoremove
             else
@@ -184,7 +196,7 @@ remove_dependencies() {
                     if [ -z "$RPM_LEAVES" ]; then
                         (exit 0)
                     else
-                        execute sudo yum -y remove "$RPM_LEAVES"
+                        execute sudo yum -y remove $RPM_LEAVES
                         rhel_autoremove
                     fi
                 }
@@ -198,7 +210,7 @@ remove_dependencies() {
             if [ $(rpm -qv libzypp) \> 'libzypp-7.39' ]; then
                 ZYPPER_OPTIONS="$ZYPPER_OPTIONS --clean-deps"
             fi
-            execute sudo zypper $ZYPPER_OPTIONS remove $SLES_PACKAGES
+            execute sudo zypper $ZYPPER_OPTIONS remove $INSTALLED_PACKAGES
             ;;
     esac
 }

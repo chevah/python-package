@@ -431,7 +431,7 @@ detect_os() {
 
         OS="hpux"
         ARCH=$(uname -m)
-        os_version_raw=$(uname -r | cut -d'.' -f2)
+        os_version_raw=$(uname -r | cut -d'.' -f2-)
         check_os_version HP-UX 11.31 "$os_version_raw" os_version_fancy
 
     elif [ "${OS}" = "linux" ]; then

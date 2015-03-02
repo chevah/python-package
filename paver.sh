@@ -354,9 +354,9 @@ check_os_version() {
     local name_fancy="$1"
     local version_good="$2"
     local version_raw="$3"
-    local version_fancy="$4"
+    local version_chevah="$4"
     local version_constructed=''
-    local flag_supported='undetermined'
+    local flag_supported='good_enough'
     local version_raw_array
     local version_good_array
 
@@ -369,10 +369,10 @@ check_os_version() {
     for (( i=0 ; i < ${#version_good_array[@]}; i++ )); do
         version_constructed="${version_constructed}${version_raw_array[$i]}"
         if [ ${version_raw_array[$i]} -gt ${version_good_array[$i]} -a \
-            "$flag_supported" = 'undetermined' ]; then
+            "$flag_supported" = 'good_enough' ]; then
             flag_supported='true'
         elif [  ${version_raw_array[$i]} -lt ${version_good_array[$i]} -a \
-            "$flag_supported" = 'undetermined' ]; then
+            "$flag_supported" = 'good_enough' ]; then
             flag_supported='false'
         fi
     done
@@ -384,7 +384,7 @@ check_os_version() {
     fi
 
     # The sane way to return fancy values with a bash function is to use eval.
-    eval $version_fancy="'$version_constructed'"
+    eval $version_chevah="'$version_constructed'"
 }
 
 
@@ -408,9 +408,9 @@ detect_os() {
 
         ARCH=$(isainfo -n)
         os_version_raw=$(uname -r | cut -d'.' -f2)
-        check_os_version Solaris 10 "$os_version_raw" os_version_fancy
+        check_os_version Solaris 10 "$os_version_raw" os_version_chevah
 
-        OS="solaris${os_version_fancy}"
+        OS="solaris${os_version_chevah}"
 
     elif [ "${OS}" = "aix" ]; then
 
@@ -421,18 +421,19 @@ detect_os() {
 
         ARCH="ppc$(getconf HARDWARE_BITMODE)"
         os_version_raw=$(oslevel)
-        check_os_version AIX 5.3 "$os_version_raw" os_version_fancy
+        check_os_version AIX 5.3 "$os_version_raw" os_version_chevah
 
-        OS="aix${os_version_fancy}"
+        OS="aix${os_version_chevah}"
 
     elif [ "${OS}" = "hp-ux" ]; then
 
         # libffi and GMP do not compile with the HP compiler, so we use GCC.
 
-        OS="hpux"
         ARCH=$(uname -m)
         os_version_raw=$(uname -r | cut -d'.' -f2-)
-        check_os_version HP-UX 11.31 "$os_version_raw" os_version_fancy
+        check_os_version HP-UX 11.31 "$os_version_raw" os_version_chevah
+
+        OS="hpux${os_version_chevah}"
 
     elif [ "${OS}" = "linux" ]; then
 
@@ -445,8 +446,8 @@ detect_os() {
                 os_version_raw=$(\
                     cat /etc/redhat-release | sed s/.*release// | cut -d' ' -f2)
                 check_os_version "Red Hat Enterprise Linux" 4 \
-                    "$os_version_raw" os_version_fancy
-                OS="rhel${os_version_fancy}"
+                    "$os_version_raw" os_version_chevah
+                OS="rhel${os_version_chevah}"
             fi
         elif [ -f /etc/SuSE-release ]; then
             # Avoid getting confused by SUSE derivatives such as OpenSUSE.
@@ -454,21 +455,21 @@ detect_os() {
                 os_version_raw=$(\
                     grep VERSION /etc/SuSE-release | cut -d' ' -f3)
                 check_os_version "SUSE Linux Enterprise Server" 11 \
-                    "$os_version_raw" os_version_fancy
-                OS="sles${os_version_fancy}"
+                    "$os_version_raw" os_version_chevah
+                OS="sles${os_version_chevah}"
             fi
         elif [ $(command -v lsb_release) ]; then
             lsb_release_id=$(lsb_release -is)
             os_version_raw=$(lsb_release -rs)
             if [ $lsb_release_id = Ubuntu ]; then
                 check_os_version "Ubuntu Long-term Support" 10.04 \
-                    "$os_version_raw" os_version_fancy
+                    "$os_version_raw" os_version_chevah
                 # Only Long-term Support versions are oficially endorsed, thus
-                # $os_version_fancy should end in 04 and the first two digits
+                # $os_version_chevah should end in 04 and the first two digits
                 # should represent an even year.
-                if [ ${os_version_fancy%%04} != ${os_version_fancy} -a \
-                    $(( ${os_version_fancy%%04} % 2 )) -eq 0 ]; then
-                    OS="ubuntu${os_version_fancy}"
+                if [ ${os_version_chevah%%04} != ${os_version_chevah} -a \
+                    $(( ${os_version_chevah%%04} % 2 )) -eq 0 ]; then
+                    OS="ubuntu${os_version_chevah}"
                 fi
             fi
         fi
@@ -477,7 +478,7 @@ detect_os() {
         ARCH=$(uname -m)
 
         os_version_raw=$(sw_vers -productVersion)
-        check_os_version "Mac OS X" 10.4 "$os_version_raw" os_version_fancy
+        check_os_version "Mac OS X" 10.4 "$os_version_raw" os_version_chevah
 
         # For now, no matter the actual OS X version returned, we use '108'.
         OS="osx108"

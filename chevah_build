@@ -166,10 +166,12 @@ install_dependencies() {
     # (I am looking at you yum) will exit with 0 exit code if at least
     # one package was successfully installed.
     if [ -n "$packages" ]; then
-        echo "Installing required packages using sudo..."
+        echo "Checking for packages to be installed..."
         for package in $packages ; do
+            echo "Checking if $package is installed..."
             $check_command $package
             if [ $? -ne 0 ]; then
+                echo "Installing $package using ${install_command}..."
                 execute $install_command $package \
                     && INSTALLED_PACKAGES="$INSTALLED_PACKAGES $package"
             fi

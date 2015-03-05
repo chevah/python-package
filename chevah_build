@@ -16,7 +16,7 @@ UBUNTU_PACKAGES="gcc make libssl-dev zlib1g-dev m4 texinfo"
 RHEL_PACKAGES="gcc make openssl-devel zlib-devel m4 texinfo"
 SLES_PACKAGES="gcc make libopenssl-devel zlib-devel m4 texinfo"
 # List of OS packages requested to be installed by this script.
-INSTALLED_PACKAGES=""
+INSTALLED_PACKAGES=''
 # For the moment, we don't install anything on OS X, Solaris, AIX and
 # unsupported Linux distros. The build requires a C compiler, GNU make, m4,
 # makeinfo (from texinfo, optional) and the header files for OpenSSL and zlib.
@@ -151,8 +151,7 @@ install_dependencies() {
         ;;
         sles*)
             packages=$SLES_PACKAGES
-            install_command='sudo zypper --non-interactive install
-                            --auto-agree-with-licenses'
+            install_command='sudo zypper --non-interactive install -l'
             check_command='rpm --query'
         ;;
         linux|aix*|solaris*|osx*)
@@ -188,6 +187,10 @@ remove_dependencies() {
     local rpm_leaves
     local zypper_options
     local libzypp_version
+
+    if [ -n "$INSTALLED_PACKAGES" ]; then
+        echo "Uninstalling the following packages: $INSTALLED_PACKAGES"
+    fi
 
     case $OS in
         ubuntu*)

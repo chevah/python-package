@@ -230,7 +230,10 @@ remove_dependencies() {
 
 help_text_clean="Clean the build."
 command_clean() {
-    rm -rf ${BUILD_FOLDER}
+    if [ -e ${BUILD_FOLDER} ]; then
+        echo 'Previous build sub-directory found. Removing...'
+        rm -rf ${BUILD_FOLDER}
+    fi
 }
 
 help_text_build="Create the Python binaries for current OS."

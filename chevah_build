@@ -47,8 +47,6 @@ fi
 PYTHON_VERSION=`cut -d' ' -f 2 DEFAULT_VALUES`
 OS=`cut -d' ' -f 3 DEFAULT_VALUES`
 ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
-CC=`cut -d' ' -f 5 DEFAULT_VALUES`
-CXX=`cut -d' ' -f 6 DEFAULT_VALUES`
 TIMESTAMP=`date +'%Y%m%d'`
 rm DEFAULT_VALUES
 
@@ -61,11 +59,11 @@ export ARCH
 # Explicitly choose the C compiler in order to make it possible to switch
 # between native compilers and GCC on platforms such as AIX and Solaris.
 # For that, paver.sh has the relevant lines to edit.
-export CC
+export CC='gcc'
 # CXX is not really needed, we export it to make sure g++ won't get picked up
 # when not using gcc and thus silence the associated configure warning. However,
 # we'll need to set CPPFLAGS later for linking to statically-compiled libs.
-export CXX
+export CXX='g++'
 # Use PIC (Position Independent Code) with GCC on 64-bit arches.
 if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
     export CFLAGS="${CFLAGS} -fPIC"
@@ -80,6 +78,10 @@ export MAKE=make
 
 case $OS in
     aix*)
+        # By default, we use IBM's XL C compiler. Comment these two for GCC.
+        # Beware that GCC 4.2 from IBM's RPMs will fail with GMP and Python!
+        CC="xlc_r"
+        CXX="xlC_r"
         export MAKE=gmake
         export PATH=/usr/vac/bin:$PATH
         export CFLAGS="-O2"
@@ -108,6 +110,9 @@ case $OS in
         if [ "$OS" = "solaris10" ]; then
             PYTHON_BUILD_VERSION=2.7.8
         fi
+        # By default, we use Sun's Studio compiler. Comment these two for GCC.
+        export CC="cc"
+        export CXX="CC"
         # This is the default-included GNU make and its counterpart: makeinfo.
         export MAKE=/usr/sfw/bin/gmake
         export MAKEINFO=/usr/sfw/bin/makeinfo
@@ -125,6 +130,10 @@ case $OS in
             export LDFLAGS="-m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
             export CFLAGS="-m64"
         fi
+    ;;
+    hpux*)
+        # libffi and GMP do not compile with the HP compiler, so we use GCC.
+        export MAKE=gmake
     ;;
 esac
 
@@ -249,10 +258,7 @@ command_build() {
     command_clean
 
     case $OS in
-        aix*)
-            build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
-            ;;
-        solaris*)
+        aix*|solaris*|hpux*)
             build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
     esac

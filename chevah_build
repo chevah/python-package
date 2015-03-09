@@ -132,7 +132,8 @@ case $OS in
         fi
     ;;
     hpux*)
-        # libffi and GMP do not compile with the HP compiler, so we use GCC.
+        # For HP-UX we haven't managed yet to compile libffi and GMP with the
+        # HP compiler, so we are NOT exporting custom values for CC and CXX.
         export MAKE=gmake
     ;;
 esac

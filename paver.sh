@@ -62,8 +62,6 @@ CLEAN_PYTHON_BINARY_DIST_CACHE=""
 # Put default values and create them as global variables.
 OS='not-detected-yet'
 ARCH='x86'
-CC='gcc'
-CXX='g++'
 
 
 clean_build() {
@@ -160,8 +158,7 @@ update_path_variables() {
 
 
 write_default_values() {
-    echo ${BUILD_FOLDER} ${PYTHON_VERSION} ${OS} ${ARCH} ${CC} ${CXX} \
-        > DEFAULT_VALUES
+    echo ${BUILD_FOLDER} ${PYTHON_VERSION} ${OS} ${ARCH} > DEFAULT_VALUES
 }
 
 
@@ -402,10 +399,6 @@ detect_os() {
 
     elif [ "${OS}" = "sunos" ]; then
 
-        # By default, we use Sun's Studio compiler. Comment these two for GCC.
-        CC="cc"
-        CXX="CC"
-
         ARCH=$(isainfo -n)
         os_version_raw=$(uname -r | cut -d'.' -f2)
         check_os_version Solaris 10 "$os_version_raw" os_version_chevah
@@ -414,11 +407,6 @@ detect_os() {
 
     elif [ "${OS}" = "aix" ]; then
 
-        # By default, we use IBM's XL C compiler. Comment these two for GCC.
-        # Beware that GCC 4.2 from IBM's RPMs will fail with GMP and Python!
-        CC="xlc_r"
-        CXX="xlC_r"
-
         ARCH="ppc$(getconf HARDWARE_BITMODE)"
         os_version_raw=$(oslevel)
         check_os_version AIX 5.3 "$os_version_raw" os_version_chevah
@@ -426,8 +414,6 @@ detect_os() {
         OS="aix${os_version_chevah}"
 
     elif [ "${OS}" = "hp-ux" ]; then
-
-        # libffi and GMP do not compile with the HP compiler, so we use GCC.
 
         ARCH=$(uname -m)
         os_version_raw=$(uname -r | cut -d'.' -f2-)

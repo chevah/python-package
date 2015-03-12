@@ -12,9 +12,11 @@
 . ./functions.sh
 
 # List of OS packages required for building Python.
-UBUNTU_PACKAGES="gcc libssl-dev zlib1g-dev m4 texinfo"
-RHEL_PACKAGES="gcc openssl-devel zlib-devel m4 texinfo"
-SLES_PACKAGES="gcc openssl-devel zlib-devel m4 texinfo"
+UBUNTU_PACKAGES="gcc make libssl-dev zlib1g-dev m4 texinfo"
+RHEL_PACKAGES="gcc make openssl-devel zlib-devel m4 texinfo"
+SLES_PACKAGES="gcc make libopenssl-devel zlib-devel m4 texinfo"
+# List of OS packages requested to be installed by this script.
+INSTALLED_PACKAGES=''
 # For the moment, we don't install anything on OS X, Solaris, AIX and
 # unsupported Linux distros. The build requires a C compiler, GNU make, m4,
 # makeinfo (from texinfo, optional) and the header files for OpenSSL and zlib.
@@ -45,8 +47,6 @@ fi
 PYTHON_VERSION=`cut -d' ' -f 2 DEFAULT_VALUES`
 OS=`cut -d' ' -f 3 DEFAULT_VALUES`
 ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
-CC=`cut -d' ' -f 5 DEFAULT_VALUES`
-CXX=`cut -d' ' -f 6 DEFAULT_VALUES`
 TIMESTAMP=`date +'%Y%m%d'`
 rm DEFAULT_VALUES
 
@@ -59,11 +59,15 @@ export ARCH
 # Explicitly choose the C compiler in order to make it possible to switch
 # between native compilers and GCC on platforms such as AIX and Solaris.
 # For that, paver.sh has the relevant lines to edit.
-export CC
+export CC='gcc'
 # CXX is not really needed, we export it to make sure g++ won't get picked up
 # when not using gcc and thus silence the associated configure warning. However,
 # we'll need to set CPPFLAGS later for linking to statically-compiled libs.
-export CXX
+export CXX='g++'
+# Use PIC (Position Independent Code) with GCC on 64-bit arches.
+if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
+    export CFLAGS="${CFLAGS} -fPIC"
+fi
 
 LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
 INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST
@@ -74,6 +78,10 @@ export MAKE=make
 
 case $OS in
     aix*)
+        # By default, we use IBM's XL C compiler. Comment these two for GCC.
+        # Beware that GCC 4.2 from IBM's RPMs will fail with GMP and Python!
+        CC="xlc_r"
+        CXX="xlC_r"
         export MAKE=gmake
         export PATH=/usr/vac/bin:$PATH
         export CFLAGS="-O2"
@@ -105,6 +113,9 @@ case $OS in
         if [ "$OS" = "solaris10" ]; then
             PYTHON_BUILD_VERSION=2.7.8
         fi
+        # By default, we use Sun's Studio compiler. Comment these two for GCC.
+        export CC="cc"
+        export CXX="CC"
         # This is the default-included GNU make and its counterpart: makeinfo.
         export MAKE=/usr/sfw/bin/gmake
         export MAKEINFO=/usr/sfw/bin/makeinfo
@@ -123,6 +134,11 @@ case $OS in
             export CFLAGS="-m64"
         fi
     ;;
+    hpux*)
+        # For HP-UX we haven't managed yet to compile libffi and GMP with the
+        # HP compiler, so we are NOT exporting custom values for CC and CXX.
+        export MAKE=gmake
+    ;;
 esac
 
 
@@ -133,34 +149,46 @@ install_dependencies() {
 
     packages='packages-not-defined'
     install_command='install-command-not-defined'
+    check_command='check-command-not-defined'
 
     case $OS in
         ubuntu*)
             packages=$UBUNTU_PACKAGES
             install_command='sudo apt-get --assume-yes install'
+            check_command='dpkg --status'
         ;;
         rhel*)
             packages=$RHEL_PACKAGES
             install_command='sudo yum -y install'
+            check_command='rpm --query'
         ;;
         sles*)
             packages=$SLES_PACKAGES
-            install_command='sudo zypper --non-interactive install
-                            --auto-agree-with-licenses'
+            install_command='sudo zypper --non-interactive install -l'
+            check_command='rpm --query'
         ;;
         linux|aix*|solaris*|osx*|hpux*)
-            packages=""
+            packages=''
             install_command=''
+            check_command=''
         ;;
     esac
 
     # We install one package after another since some package managers
     # (I am looking at you yum) will exit with 0 exit code if at least
     # one package was successfully installed.
-    for package in $packages ; do
-        execute $install_command $package
-    done
-
+    if [ -n "$packages" ]; then
+        echo "Checking for packages to be installed..."
+        for package in $packages ; do
+            echo "Checking if $package is installed..."
+            $check_command $package
+            if [ $? -ne 0 ]; then
+                echo "Installing $package using ${install_command}..."
+                execute $install_command $package \
+                    && INSTALLED_PACKAGES="$INSTALLED_PACKAGES $package"
+            fi
+        done
+    fi
 }
 
 
@@ -169,25 +197,34 @@ install_dependencies() {
 # installed by `install_dependencies` and leave the system clean.
 #
 remove_dependencies() {
+    local rpm_leaves
+    local zypper_options
+    local libzypp_version
+
+    if [ -n "$INSTALLED_PACKAGES" ]; then
+        echo "Uninstalling the following packages: $INSTALLED_PACKAGES"
+    fi
+
     case $OS in
         ubuntu*)
-            execute sudo apt-get --assume-yes --purge remove $UBUNTU_PACKAGES
+            execute sudo apt-get --assume-yes --purge remove $INSTALLED_PACKAGES
             execute sudo apt-get --assume-yes --purge autoremove
             ;;
         rhel*)
-            execute sudo yum -y remove $RHEL_PACKAGES
-            if [ $OS \> 'rhel6' ]; then
+            execute sudo yum -y remove $INSTALLED_PACKAGES
+            # RHEL7's yum learned how to auto-remove installed dependencies.
+            if [ ${OS##rhel} -ge 7 ]; then
                 execute sudo yum -y autoremove
             else
                 # This partially works in RHEL 4 to 6 for automatically
                 # removing packages installed as dependencies (aka "leaves").
                 rhel_yum_autoremove() {
-                    RPM_LEAVES=$(package-cleanup --leaves --quiet 2>/dev/null \
+                    rpm_leaves=$(package-cleanup --leaves --quiet 2>/dev/null \
                         | egrep -v ^'Excluding|Finished')
-                    if [ -z "$RPM_LEAVES" ]; then
+                    if [ -z "$rpm_leaves" ]; then
                         (exit 0)
                     else
-                        execute sudo yum -y remove "$RPM_LEAVES"
+                        execute sudo yum -y remove $rpm_leaves
                         rhel_autoremove
                     fi
                 }
@@ -195,13 +232,15 @@ remove_dependencies() {
             fi
             ;;
         sles*)
-            ZYPPER_OPTIONS="--non-interactive"
+            zypper_options="--non-interactive"
             # zypper version 7.4 got support for automatically removing
             # unneeded packages, but only when removing installed packages.
-            if [ $(rpm -qv libzypp) \> 'libzypp-7.39' ]; then
-                ZYPPER_OPTIONS="$ZYPPER_OPTIONS --clean-deps"
+            libzypp_version=$(rpm --query --queryformat '%{VERSION}' libzypp)
+            IFS=. read -a libzypp_version_array <<< "$libzypp_version"
+            if [ ${libzypp_version_array[0]} -gt 7 ]; then
+                zypper_options="$zypper_options --clean-deps"
             fi
-            execute sudo zypper $ZYPPER_OPTIONS remove $SLES_PACKAGES
+            execute sudo zypper $zypper_options remove $INSTALLED_PACKAGES
             ;;
     esac
 }
@@ -209,8 +248,10 @@ remove_dependencies() {
 
 help_text_clean="Clean the build."
 command_clean() {
-    echo "Cleaning build folder..."
-    rm -rf ${BUILD_FOLDER}
+    if [ -e ${BUILD_FOLDER} ]; then
+        echo 'Previous build sub-directory found. Removing...'
+        rm -rf ${BUILD_FOLDER}
+    fi
 }
 
 help_text_build="Create the Python binaries for current OS."

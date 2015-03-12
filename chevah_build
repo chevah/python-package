@@ -221,7 +221,7 @@ command_build() {
     command_clean
 
     case $OS in
-        aix*solaris*|hpux*)
+        aix*|solaris*|hpux*)
             build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
     esac

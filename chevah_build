@@ -191,7 +191,7 @@ install_dependencies() {
 
 
 #
-# This function should do the best to remove the packages previously
+# This function should do its best to remove the packages previously
 # installed by `install_dependencies` and leave the system clean.
 #
 remove_dependencies() {
@@ -201,6 +201,8 @@ remove_dependencies() {
 
     if [ -n "$INSTALLED_PACKAGES" ]; then
         echo "Uninstalling the following packages: $INSTALLED_PACKAGES"
+    else
+        return
     fi
 
     case $OS in

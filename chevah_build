@@ -107,7 +107,7 @@ case $OS in
     ;;
     solaris*)
         if [ "$OS" = "solaris10" ]; then
-            # Solaris 10 has OpenSSL 0.9.7 and Python 2.7 versions starting with
+            # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with
             # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
             PYTHON_BUILD_VERSION=2.7.8
             # These are the default-included GNU make and makeinfo.

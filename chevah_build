@@ -78,10 +78,11 @@ export MAKE=make
 
 case $OS in
     aix*)
-        # By default, we use IBM's XL C compiler. Comment these two for GCC.
-        # Beware that GCC 4.2 from IBM's RPMs will fail with GMP and Python!
-        CC="xlc_r"
-        CXX="xlC_r"
+        # By default, we use IBM's XL C compiler. Remove or comment out the
+        # CC and CXX lines to use GCC. However, beware that GCC 4.2 from
+        # IBM's RPMs will fail with GMP and Python!
+        export CC="xlc_r"
+        export CXX="xlC_r"
         export MAKE=gmake
         export PATH=/usr/vac/bin:$PATH
         export CFLAGS="-O2"
@@ -105,20 +106,20 @@ case $OS in
         fi
     ;;
     solaris*)
-        # Solaris 10 has OpenSSL 0.9.7 and Python 2.7 versions starting with
-        # 2.7.9 do not support it. More at https://bugs.python.org/issue20981.
         if [ "$OS" = "solaris10" ]; then
+            # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with
+            # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
             PYTHON_BUILD_VERSION=2.7.8
+            # These are the default-included GNU make and makeinfo.
+            export MAKE=/usr/sfw/bin/gmake
+            export MAKEINFO=/usr/sfw/bin/makeinfo
+            # We favour the BSD-flavoured "install" over the default one.
+            # "ar", "nm" and "ld" are included by default in the same path.
+            export PATH=/usr/ccs/bin/:$PATH
         fi
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
         export CC="cc"
         export CXX="CC"
-        # This is the default-included GNU make and its counterpart: makeinfo.
-        export MAKE=/usr/sfw/bin/gmake
-        export MAKEINFO=/usr/sfw/bin/makeinfo
-        # We favour the BSD-flavoured "install" over the default one.
-        # "ar", "nm" and "ld" are included by default in the same path.
-        export PATH=/usr/ccs/bin/:$PATH
         # GCC is not in the usual PATH, we add the path to it if we want it.
         if [ "${CC}" = "gcc" ]; then
             export PATH="$PATH:/usr/sfw/bin/"
@@ -190,7 +191,7 @@ install_dependencies() {
 
 
 #
-# This function should do the best to remove the packages previously
+# This function should do its best to remove the packages previously
 # installed by `install_dependencies` and leave the system clean.
 #
 remove_dependencies() {
@@ -200,6 +201,8 @@ remove_dependencies() {
 
     if [ -n "$INSTALLED_PACKAGES" ]; then
         echo "Uninstalling the following packages: $INSTALLED_PACKAGES"
+    else
+        return
     fi
 
     case $OS in

@@ -185,6 +185,38 @@ def get_unwanted_deps(allowed_deps, actual_deps):
     return unwanted_deps
 
 
+def test_dependencies():
+    """
+    Compare the list of allowed deps for the current OS with the list of
+    actual deps for the newly-built binaries returned by the script helper.
+
+    Return 0 on success, non zero on error.
+    """
+    if os.name == 'nt':
+        # Not supported on Windows.
+        return 0
+
+    allowed_deps = get_allowed_deps()
+    if not allowed_deps:
+        sys.stderr.write('Got no allowed deps. Please check if {0} is a '
+            'supported operating system.\n'.format(platform.system()))
+        return 13
+
+    actual_deps = get_actual_deps(script_helper)
+    if not actual_deps:
+        sys.stderr.write('Got no deps for the new binaries. Please check '
+            'the "{0}" script in the "build/" dir.\n'.format(script_helper))
+        return 14
+
+    unwanted_deps = get_unwanted_deps(allowed_deps, actual_deps)
+    if unwanted_deps:
+        sys.stderr.write('Got unwanted deps:\n')
+        for single_dep_to_print in unwanted_deps:
+            sys.stderr.write('\t{0}\n'.format(single_dep_to_print))
+        return 15
+
+    return 0
+
 def main():
     """
     Launch tests to check required modules and OS-specific dependencies.
@@ -204,7 +236,7 @@ def main():
         _hashlib
     except:
         sys.stderr.write('standard "ssl" missing.\n')
-        exit_code = 2
+        exit_code = 1
 
     try:
         from OpenSSL import SSL, crypto, rand
@@ -213,65 +245,73 @@ def main():
         rand
     except:
         sys.stderr.write('"OpenSSL" missing.\n')
-        exit_code = 3
+        exit_code = 1
 
     try:
         import Crypto
         Crypto
     except:
         sys.stderr.write('"PyCrypto" missing.\n')
-        exit_code = 4
-
-    try:
-        import crypt
-        crypt
-    except:
-        sys.stderr.write('"crypt" missing.\n')
-        exit_code = 5
-
-    try:
-        import pysqlite2
-        pysqlite2
-    except:
-        sys.stderr.write('"pysqlite2" missing.\n')
-        exit_code = 6
-
-    try:
-        import setproctitle
-        setproctitle
-    except:
-        sys.stderr.write('"setproctitle" missing.\n')
-        exit_code = 7
+        exit_code = 1
 
     try:
         from ctypes import CDLL
         CDLL
     except:
         sys.stderr.write('"ctypes - CDLL" missing.\n')
-        exit_code = 8
+        exit_code = 1
 
     try:
         from ctypes.util import find_library
         find_library
     except:
         sys.stderr.write('"ctypes.utils - find_library" missing.\n')
-        exit_code = 9
+        exit_code = 1
 
-    try:
-        from Crypto.PublicKey import _fastmath
-        _fastmath
-    except:
-        sys.stderr.write('Crypto.PublicKey._fastmath missing. No GMP?\n')
-        exit_code = 10
-
-    # Windows specific modules.
     if os.name == 'nt':
+        # Windows specific modules.
         try:
             from ctypes import windll
             windll
         except:
             sys.stderr.write('"ctypes - windll" missing.\n')
-            exit_code = 11
+            exit_code = 1
+        try:
+            import sqlite3
+            sqlite3
+        except:
+            sys.stderr.write('"sqlite3" missing.\n')
+            exit_code = 1
+
+    else:
+        # Linux and Unix checks.
+        try:
+            import pysqlite2
+            pysqlite2
+        except:
+            sys.stderr.write('"pysqlite2" missing.\n')
+            exit_code = 1
+
+        try:
+            import setproctitle
+            setproctitle
+        except:
+            sys.stderr.write('"setproctitle" missing.\n')
+            exit_code = 1
+
+        try:
+            import crypt
+            crypt
+        except:
+            sys.stderr.write('"crypt" missing.\n')
+            exit_code = 1
+
+        try:
+            from Crypto.PublicKey import _fastmath
+            _fastmath
+        except:
+            sys.stderr.write('Crypto.PublicKey._fastmath missing. No GMP?\n')
+            exit_code = 1
 
     if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
         # On Linux and Solaris we need spwd, but not on AIX or OS X.
@@ -280,28 +320,9 @@ def main():
             spwd
         except:
             sys.stderr.write('spwd missing.\n')
-            exit_code = 12
+            exit_code = 1
 
-    # Compare the list of allowed deps for the current OS with the list of
-    # actual deps for the newly-built binaries returned by the script helper.
-    allowed_deps = get_allowed_deps()
-    if not allowed_deps:
-        sys.stderr.write('Got no allowed deps. Please check if {0} is a '
-            'supported operating system.\n'.format(platform.system()))
-        exit_code = 13
-    else:
-        actual_deps = get_actual_deps(script_helper)
-        if not actual_deps:
-            sys.stderr.write('Got no deps for the new binaries. Please check '
-                'the "{0}" script in the "build/" dir.\n'.format(script_helper))
-            exit_code = 14
-        else:
-            unwanted_deps = get_unwanted_deps(allowed_deps, actual_deps)
-            if unwanted_deps:
-                sys.stderr.write('Got unwanted deps:\n')
-                for single_dep_to_print in unwanted_deps:
-                    sys.stderr.write('\t{0}\n'.format(single_dep_to_print))
-                exit_code = 15
+    exit_code = test_dependencies() | exit_code
 
     sys.exit(exit_code)
 

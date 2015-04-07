@@ -70,6 +70,7 @@ if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
 fi
 
 LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
+LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/bin/python
 INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST
 PYTHON_BIN=$INSTALL_FOLDER/bin/python
 PYTHON_BUILD_FOLDER="$PYTHON_VERSION-$OS-$ARCH"
@@ -137,6 +138,9 @@ case $OS in
         # HP compiler, so we are NOT exporting custom values for CC and CXX.
         export MAKE=gmake
     ;;
+    windows*)
+        LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/python
+        ;;
 esac
 
 
@@ -165,7 +169,7 @@ install_dependencies() {
             install_command='sudo zypper --non-interactive install -l'
             check_command='rpm --query'
         ;;
-        linux|aix*|solaris*|osx*)
+        linux|windows|aix*|solaris*|osx*)
             packages=''
             install_command=''
             check_command=''
@@ -267,27 +271,40 @@ command_build() {
             ;;
     esac
 
-    # Build GMP on all platforms.
-    build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
 
-    build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
+    case $OS in
+        windows*)
+            # For Windows we don't build everthing from source yet.
+            echo "Skipping GMP"
+            build 'python' "Python-$PYTHON_BUILD_VERSION-windows" ${PYTHON_BUILD_FOLDER}
+            echo "Skipping sqlite and extra libraries"
+            # For Windows we don't build everthing from source yet.
+            echo "Skipping cleaing install folder"
+            ;;
+        *)
+            # Build GMP on all other platforms.
+            build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
 
-    command_build_sqlite
+            build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
 
-    command_build_python_extra_libraries
+            command_build_sqlite
 
-    execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
-        # Clean the build folder.
-        execute rm -rf tmp
-        execute mkdir -p lib/config
-        safe_move share lib/config
-        safe_move pysqlite2-doc lib/config
-        # Move all bin to lib/config
-        safe_move bin lib/config
-        execute mkdir bin
-        # Copy back python binary
-        execute cp lib/config/bin/$PYTHON_VERSION bin/python
-    execute popd
+            command_build_python_extra_libraries
+
+            execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
+                # Clean the build folder.
+                execute rm -rf tmp
+                execute mkdir -p lib/config
+                safe_move share lib/config
+                safe_move pysqlite2-doc lib/config
+                # Move all bin to lib/config
+                safe_move bin lib/config
+                execute mkdir bin
+                # Copy back python binary
+                execute cp lib/config/bin/$PYTHON_VERSION bin/python
+            execute popd
+            ;;
+    esac
 
     remove_dependencies
 
@@ -401,7 +418,7 @@ command_test() {
     execute cp python-modules/chevah-python-test/${test_file} build/
     execute cp python-modules/chevah-python-test/get_binaries_deps.sh build/
     execute pushd build
-    execute ./$LOCAL_PYTHON_BINARY_DIST/bin/python ${test_file}
+    execute $LOCAL_PYTHON_BINARY ${test_file}
     execute popd
 }
 

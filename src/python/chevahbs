@@ -71,7 +71,14 @@ chevahbs_configure() {
             ;;
     esac
 
-    execute ./configure --prefix="" $CONFIG_ARGS
+    case $OS in
+        windows)
+            echo "Skip configure."
+            ;;
+        *)
+            execute ./configure --prefix="" $CONFIG_ARGS
+            ;;
+    esac
 
     case $OS in
         "hpux")
@@ -85,13 +92,44 @@ chevahbs_configure() {
 
 
 chevahbs_compile() {
-    execute $MAKE
+    case $OS in
+        windows)
+            echo "Skip make."
+            ;;
+        *)
+            execute $MAKE
+            ;;
+    esac
 }
 
 
 chevahbs_install() {
     install_folder=$1
-    execute $MAKE install DESTDIR=$INSTALL_FOLDER
+    case $OS in
+        windows)
+            # On Windows we don't build from source but rather create the
+            # distribution from precombiled binaries.
+            current_win_path=`pwd -W | sed 's|\/|\\\\|g'`
+            install_win_path=`cd $INSTALL_FOLDER && pwd -W | sed 's|\/|\\\\|g'`
+            echo "Extracting MSI to $install_win_path"
+            execute msiexec \
+                //a $current_win_path\\python-installer.msi \
+                //qn TARGETDIR=$install_win_path
+            echo "Installing setuptool + pip + binaries"
+            execute $INSTALL_FOLDER/python ez_setup.py
+            execute $INSTALL_FOLDER/python \
+                get-pip.py \
+                    -i http://pypi.chevah.com:10042/simple
+                    --trusted-host=pypi.chevah.com
+            execute $INSTALL_FOLDER/python -m pip\
+                install -i http://pypi.chevah.com:10042/simple \
+                --trusted-host=pypi.chevah.com \
+                pyopenssl==0.14 pypiwin32 pycrypto
+            ;;
+        *)
+            execute $MAKE install DESTDIR=$INSTALL_FOLDER
+            ;;
+    esac
 }
 
 

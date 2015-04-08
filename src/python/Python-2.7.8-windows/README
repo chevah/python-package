@@ -1,8 +1,19 @@
-We don't build the Python from source yet.
+We don't build the Python from source, yet but we do compile some modules.
 
-* Get MSI installer from official Python website and copy+rename it here.
-* For setuptools get latest ez_setup.py but also copy the setuptools-VER.zip
-  from PyPi to avoid touching the network and making sure it will work in the
-  future.
-* For pip get latest get-pip.py.
-* Make sure you have soures and wheels on the private PyPi server.
+The system on which Python distribution is created needs to have the
+Microsoft Visual C++ Compiler for Python 2.7 installed
+http://www.microsoft.com/en-us/download/details.aspx?id=44266
+
+
+Get Visual C++ nonsxs redistributables and copy them in the `redistributables'
+folder.
+
+Get MSI installer from official Python website and copy + rename it here.
+
+For setuptools get latest ez_setup.py but also copy the setuptools-VER.zip
+from PyPi to avoid touching the network and making sure it will work in the
+future.
+
+For pip get latest get-pip.py
+
+Make sure you have sources and wheels on the private PyPi server

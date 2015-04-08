@@ -134,6 +134,11 @@ chevahbs_install() {
             echo "assemblyIdentity for python27.dll"
             grep assemblyIdentity -a $INSTALL_FOLDER/python27.dll
 
+            FileUnsigner \
+                $INSTALL_FOLDER/python.exe
+                $INSTALL_FOLDER/pythonw.exe
+                $INSTALL_FOLDER/python27.dll
+
             echo "Installing setuptool + pip + binaries"
             execute $INSTALL_FOLDER/python ez_setup.py
             execute $INSTALL_FOLDER/python \

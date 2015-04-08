@@ -111,10 +111,23 @@ chevahbs_install() {
             # distribution from precombiled binaries.
             current_win_path=`pwd -W | sed 's|\/|\\\\|g'`
             install_win_path=`cd $INSTALL_FOLDER && pwd -W | sed 's|\/|\\\\|g'`
+
             echo "Extracting MSI to $install_win_path"
             execute msiexec \
                 //a $current_win_path\\python-installer.msi \
                 //qn TARGETDIR=$install_win_path
+
+            echo "Copying redistributables"
+            exec cp redistributables/* $INSTALL_FOLDER
+
+            echo "Patching .exe and .dll"
+            sed 's| publicKeyToken=\x27[[:alnum:]]\+\x27||' \
+                -i $INSTALL_FOLDER/python.exe
+            sed 's| publicKeyToken=\x27[[:alnum:]]\+\x27||' \
+                -i $INSTALL_FOLDER/pythonw.exe
+            sed 's| publicKeyToken=\x27[[:alnum:]]\+\x27||' \
+                -i $INSTALL_FOLDER/python27.dll
+
             echo "Installing setuptool + pip + binaries"
             execute $INSTALL_FOLDER/python ez_setup.py
             execute $INSTALL_FOLDER/python \

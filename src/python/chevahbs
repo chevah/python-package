@@ -118,7 +118,7 @@ chevahbs_install() {
                 //qn TARGETDIR=$install_win_path
 
             echo "Copying redistributables"
-            execute cp redistributables/* $INSTALL_FOLDER
+            execute cp redistributables/9.00.30729.6161/* $INSTALL_FOLDER
 
             echo "Patching .exe and .dll"
             sed 's| publicKeyToken="[[:alnum:]]\+"||' \

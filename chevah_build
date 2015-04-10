@@ -270,8 +270,15 @@ command_build() {
             ;;
     esac
 
-    # Build GMP on all platforms.
-    # build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
+    case $OS in
+        hpux*)
+            echo 'GMP not supported on HP-UX.'
+            ;;
+        *)
+            # Build GMP on all other platforms.
+            build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
+            ;;
+    esac
 
     build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
 

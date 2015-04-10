@@ -83,31 +83,46 @@ def get_allowed_deps():
                 'libthread.a',
             ])
     elif platform_system == 'sunos':
-        # This is the standard list of deps for a Solaris 10 build.
-        # For now, we include the major versions for Solaris libs.
+        # This is the common list of deps for Solaris 10 & 11 builds.
         allowed_deps = [
-            'libaio.so.1',
             'libc.so.1',
-            'libcrypt_i.so.1',
-            'libcrypto.so.0.9.7',
-            'libcrypto_extra.so.0.9.7',
             'libdl.so.1',
-            'libdoor.so.1',
-            'libgen.so.1',
             'libintl.so.1',
             'libm.so.2',
             'libmd.so.1',
             'libmp.so.2',
             'libnsl.so.1',
-            'librt.so.1',
-            'libscf.so.1',
             'libsocket.so.1',
             'libsqlite3.so.0',
-            'libssl.so.0.9.7',
-            'libssl_extra.so.0.9.7',
-            'libuutil.so.1',
             'libz.so.1',
             ]
+        # On Solaris, platform.release() can be: '5.9'. '5.10', '5.11' etc.
+        solaris_version = platform.release().split('.')[1]
+        if solaris_version == '10':
+            # Specific deps to add for Solaris 10.
+            allowed_deps.extend([
+                'libaio.so.1',
+                'libcrypt_i.so.1',
+                'libcrypto.so.0.9.7',
+                'libcrypto_extra.so.0.9.7',
+                'libdoor.so.1',
+                'libgen.so.1',
+                'librt.so.1',
+                'libscf.so.1',
+                'libssl.so.0.9.7',
+                'libssl_extra.so.0.9.7',
+                'libuutil.so.1',
+                ])
+        elif solaris_version == '11':
+            # Specific deps to add for Solaris 11.
+            allowed_deps.extend([
+                'libcrypt.so.1',
+                'libcrypto.so.1.0.0',
+                'libcryptoutil.so.1',
+                'libelf.so.1',
+                'libsoftcrypto.so.1',
+                'libssl.so.1.0.0',
+                ])
     elif platform_system == 'darwin':
         # This is the minimum list of deps for OS X.
         allowed_deps = [

@@ -137,7 +137,7 @@ chevahbs_install() {
             delcert \
                 $INSTALL_FOLDER/python.exe \
                 $INSTALL_FOLDER/pythonw.exe \
-                $INSTALL_FOLDER/python27.dll \
+                $INSTALL_FOLDER/python27.dll
 
             echo "Installing setuptool + pip + binaries"
             execute $INSTALL_FOLDER/python ez_setup.py

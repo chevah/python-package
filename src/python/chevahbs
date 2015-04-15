@@ -129,7 +129,7 @@ chevahbs_install() {
             execute $INSTALL_FOLDER/python ez_setup.py
             execute $INSTALL_FOLDER/python \
                 get-pip.py \
-                    -i http://pypi.chevah.com:10042/simple
+                    -i http://pypi.chevah.com:10042/simple \
                     --trusted-host=pypi.chevah.com
             execute $INSTALL_FOLDER/python -m pip\
                 install -i http://pypi.chevah.com:10042/simple \

@@ -139,7 +139,7 @@ case $OS in
         export MAKE=gmake
     ;;
     windows*)
-        LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/python
+        LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
         ;;
 esac
 

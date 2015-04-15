@@ -1,11 +1,14 @@
 We don't build the Python from source, yet but we do compile some modules.
 
-The system on which Python distribution is created needs to have the
-Microsoft Visual C++ Compiler for Python 2.7 installed
-http://www.microsoft.com/en-us/download/details.aspx?id=44266
 
 
-Get Visual C++ nonsxs redistributables and copy them in the `redistributables'
+The system on which Python distribution is created needs to have:
+* Microsoft Visual C++ Redistributables
+  http://www.microsoft.com/en-us/download/details.aspx?id=5582
+* Microsoft Visual C++ Compiler for Python 2.7 installed
+  http://www.microsoft.com/en-us/download/details.aspx?id=44266
+
+Get Visual C++ nonSxS redistributables and copy them in the `redistributables'
 folder.
 
 Get MSI installer from official Python website and copy + rename it here.
@@ -17,3 +20,11 @@ future.
 For pip get latest get-pip.py
 
 Make sure you have sources and wheels on the private PyPi server
+
+Please note that VC compiler is used by default by pip. To manually enable
+it, make sure you have latest setuptools:
+
+1. Enter MSVC for Python command prompt
+2. SET DISTUTILS_USE_SDK=1
+3. SET MSSdk=1
+4. python.exe setup.py build

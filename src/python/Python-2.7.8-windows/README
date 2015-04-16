@@ -1,7 +1,5 @@
 We don't build the Python from source, yet but we do compile some modules.
 
-
-
 The system on which Python distribution is created needs to have:
 * Microsoft Visual C++ Redistributables
   http://www.microsoft.com/en-us/download/details.aspx?id=5582
@@ -20,6 +18,9 @@ future.
 For pip get latest get-pip.py
 
 Make sure you have sources and wheels on the private PyPi server
+
+Get the manifest-wiper from here:
+https://bitbucket.org/alibotean/sxs-manifest-wiper
 
 Please note that VC compiler is used by default by pip. To manually enable
 it, make sure you have latest setuptools:

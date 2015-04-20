@@ -106,6 +106,16 @@ case $OS in
         fi
     ;;
     solaris*)
+        # By default, we use Sun's Studio compiler. Comment these two for GCC.
+        export CC="cc"
+        export CXX="CC"
+        # GCC is not in the usual PATH, we add the path to it if we want it.
+        if [ "${CC}" = "gcc" ]; then
+            export PATH="$PATH:/usr/sfw/bin/"
+        fi
+        if [ "${ARCH%64}" != "$ARCH" ]; then
+            export CFLAGS="-m64"
+        fi
         if [ "$OS" = "solaris10" ]; then
             # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with
             # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
@@ -116,20 +126,12 @@ case $OS in
             # We favour the BSD-flavoured "install" over the default one.
             # "ar", "nm" and "ld" are included by default in the same path.
             export PATH=/usr/ccs/bin/:$PATH
-        fi
-        # By default, we use Sun's Studio compiler. Comment these two for GCC.
-        export CC="cc"
-        export CXX="CC"
-        # GCC is not in the usual PATH, we add the path to it if we want it.
-        if [ "${CC}" = "gcc" ]; then
-            export PATH="$PATH:/usr/sfw/bin/"
-        fi
-        # And this is where the GNU libs are in Solaris 10, including OpenSSL.
-        if [ "${ARCH%64}" = "$ARCH" ]; then
-            export LDFLAGS="-L/usr/sfw/lib -R/usr/sfw/lib"
-        else
-            export LDFLAGS="-m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
-            export CFLAGS="-m64"
+            # And this is where the GNU libs are in Solaris 10, including OpenSSL.
+            if [ "${ARCH%64}" = "$ARCH" ]; then
+                export LDFLAGS="-L/usr/sfw/lib -R/usr/sfw/lib"
+            else
+                export LDFLAGS="-m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
+            fi
         fi
     ;;
     hpux*)

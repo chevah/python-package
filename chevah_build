@@ -376,14 +376,16 @@ initialize_python_module(){
                 # Copy special link steps in local folder.
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
-                # This is needed for pyOpenSSL.
-                if [ "${ARCH%64}" = "$ARCH" ]; then
-                    execute $PYTHON_BIN setup.py build_ext -I/usr/sfw/include \
-                        -L/usr/sfw/lib
-                else
-                    execute $PYTHON_BIN setup.py build_ext -I/usr/sfw/include \
-                        -L/usr/sfw/lib/64
-                fi
+                if [ "$OS" = "solaris10" ]; then
+                    # This is needed for pyOpenSSL.in Solaris 10
+                    if [ "${ARCH%64}" = "$ARCH" ]; then
+                        execute $PYTHON_BIN setup.py build_ext \
+                            -I/usr/sfw/include -L/usr/sfw/lib
+                    else
+                        execute $PYTHON_BIN setup.py build_ext \
+                            -I/usr/sfw/include -L/usr/sfw/lib/64
+                   fi
+               fi
             ;;
         esac
     execute popd

@@ -459,6 +459,9 @@ class build_ext (Command):
         if not (self.force or newer_group(depends, ext_path, 'newer')):
             log.debug("skipping '%s' extension (up-to-date)", ext.name)
             return
+        elif ext.name.startswith('pysqlite'):
+            log.debug("skipping '%s' extension (chevah hack)", ext.name)
+            return
         else:
             log.info("building '%s' extension", ext.name)
 

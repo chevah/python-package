@@ -230,8 +230,8 @@ def main():
         exit_code = 5
 
     try:
-        import pysqlite2
-        pysqlite2
+        from pysqlite2 import test
+        test.test()
     except:
         sys.stderr.write('"pysqlite2" missing.\n')
         exit_code = 6

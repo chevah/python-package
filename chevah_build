@@ -377,7 +377,7 @@ initialize_python_module(){
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
                 if [ "$OS" = "solaris10" ]; then
-                    # This is needed for pyOpenSSL.in Solaris 10
+                    # Needed to build pyOpenSSL in Solaris 10.
                     if [ "${ARCH%64}" = "$ARCH" ]; then
                         execute $PYTHON_BIN setup.py build_ext \
                             -I/usr/sfw/include -L/usr/sfw/lib

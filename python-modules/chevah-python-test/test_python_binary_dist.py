@@ -93,7 +93,7 @@ def get_allowed_deps():
             'libmp.so.2',
             'libnsl.so.1',
             'libsocket.so.1',
-            'libsqlite3.so.0',
+            'libsqlite3.so',
             'libz.so.1',
             ]
         # On Solaris, platform.release() can be: '5.9'. '5.10', '5.11' etc.
@@ -111,6 +111,7 @@ def get_allowed_deps():
                 'libscf.so.1',
                 'libssl.so.0.9.7',
                 'libssl_extra.so.0.9.7',
+                'libthread.so.1',
                 'libuutil.so.1',
                 ])
         elif solaris_version == '11':

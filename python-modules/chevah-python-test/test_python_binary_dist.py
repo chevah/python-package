@@ -81,7 +81,7 @@ def get_allowed_deps():
         if aix_version >= 7:
             allowed_deps.extend([
                 'libthread.a',
-            ])
+                ])
     elif platform_system == 'sunos':
         # This is the common list of deps for Solaris 10 & 11 builds.
         allowed_deps = [
@@ -96,6 +96,11 @@ def get_allowed_deps():
             'libsqlite3.so',
             'libz.so.1',
             ]
+        if platform.processor() == 'sparc':
+            allowed_deps.extend([
+                'libc_psr.so.1',
+                'libmd_psr.so.1',
+                ])
         # On Solaris, platform.release() can be: '5.9'. '5.10', '5.11' etc.
         solaris_version = platform.release().split('.')[1]
         if solaris_version == '10':

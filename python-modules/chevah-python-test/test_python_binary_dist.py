@@ -81,7 +81,7 @@ def get_allowed_deps():
         if aix_version >= 7:
             allowed_deps.extend([
                 'libthread.a',
-            ])
+                ])
     elif platform_system == 'sunos':
         # This is the common list of deps for Solaris 10 & 11 builds.
         allowed_deps = [
@@ -93,9 +93,14 @@ def get_allowed_deps():
             'libmp.so.2',
             'libnsl.so.1',
             'libsocket.so.1',
-            'libsqlite3.so.0',
+            'libsqlite3.so',
             'libz.so.1',
             ]
+        if platform.processor() == 'sparc':
+            allowed_deps.extend([
+                'libc_psr.so.1',
+                'libmd_psr.so.1',
+                ])
         # On Solaris, platform.release() can be: '5.9'. '5.10', '5.11' etc.
         solaris_version = platform.release().split('.')[1]
         if solaris_version == '10':
@@ -111,6 +116,7 @@ def get_allowed_deps():
                 'libscf.so.1',
                 'libssl.so.0.9.7',
                 'libssl_extra.so.0.9.7',
+                'libthread.so.1',
                 'libuutil.so.1',
                 ])
         elif solaris_version == '11':
@@ -230,8 +236,8 @@ def main():
         exit_code = 5
 
     try:
-        import pysqlite2
-        pysqlite2
+        from pysqlite2 import test
+        test.test()
     except:
         sys.stderr.write('"pysqlite2" missing.\n')
         exit_code = 6

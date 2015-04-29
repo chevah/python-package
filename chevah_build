@@ -106,6 +106,20 @@ case $OS in
         fi
     ;;
     solaris*)
+        # By default, we use Sun's Studio compiler. Comment these two for GCC.
+        export CC="cc"
+        export CXX="CC"
+        # Here's where the system-included GCC is to be found.
+        if [ "${CC}" = "gcc" ]; then
+            export PATH="$PATH:/usr/sfw/bin/"
+        fi
+        # And this is where the GNU libs are in Solaris 10, including OpenSSL.
+        if [ "${ARCH%64}" = "$ARCH" ]; then
+            export LDFLAGS="-L/usr/sfw/lib -R/usr/sfw/lib"
+        else
+            export LDFLAGS="-m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
+            export CFLAGS="-m64 -xcode=abs64"
+        fi
         if [ "$OS" = "solaris10" ]; then
             # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with
             # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
@@ -116,20 +130,12 @@ case $OS in
             # We favour the BSD-flavoured "install" over the default one.
             # "ar", "nm" and "ld" are included by default in the same path.
             export PATH=/usr/ccs/bin/:$PATH
-        fi
-        # By default, we use Sun's Studio compiler. Comment these two for GCC.
-        export CC="cc"
-        export CXX="CC"
-        # GCC is not in the usual PATH, we add the path to it if we want it.
-        if [ "${CC}" = "gcc" ]; then
-            export PATH="$PATH:/usr/sfw/bin/"
-        fi
-        # And this is where the GNU libs are in Solaris 10, including OpenSSL.
-        if [ "${ARCH%64}" = "$ARCH" ]; then
-            export LDFLAGS="-L/usr/sfw/lib -R/usr/sfw/lib"
-        else
-            export LDFLAGS="-m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
-            export CFLAGS="-m64"
+            # sqlite3 lib location in all Solaris'es (incl. 10s10 for Sparc).
+            if [ "${ARCH%64}" = "$ARCH" ]; then
+                export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"
+            else
+                export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
+            fi
         fi
     ;;
     hpux*)
@@ -376,13 +382,20 @@ initialize_python_module(){
                 # Copy special link steps in local folder.
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
-                # This is needed for pyOpenSSL.
-                if [ "${ARCH%64}" = "$ARCH" ]; then
-                    execute $PYTHON_BIN setup.py build_ext -I/usr/sfw/include \
-                        -L/usr/sfw/lib
-                else
-                    execute $PYTHON_BIN setup.py build_ext -I/usr/sfw/include \
-                        -L/usr/sfw/lib/64
+                if [ "$OS" = "solaris10" ]; then
+                    # Needed to build pyOpenSSL and pysqlite in Solaris 10.
+                    # Make sure the headers for OpenSSL and sqlite3 are present
+                    # in /usr/sfw/include (only one location allowed, it seems).
+                    if [ "${ARCH%64}" = "$ARCH" ]; then
+                        execute $PYTHON_BIN setup.py build_ext \
+                            -I/usr/sfw/include \
+                            -L/usr/sfw/lib -L/usr/lib/mps
+                    else
+                        execute $PYTHON_BIN setup.py build_ext \
+                            -I/usr/sfw/include \
+                            -L/usr/sfw/lib/64 -L/usr/lib/mps/64
+
+                    fi
                 fi
             ;;
         esac

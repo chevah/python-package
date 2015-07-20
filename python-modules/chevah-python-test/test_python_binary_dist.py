@@ -31,6 +31,9 @@ def get_allowed_deps():
             'libz.so',
             'linux-gate.so',
             'linux-vdso.so',
+            'libncurses.so',
+            'libncursesw.so',
+            'libreadline.so',
             ]
         # Distro-specific deps to add. Now we may specify major versions too.
         linux_distro_name = platform.linux_distribution()[0]

@@ -131,6 +131,8 @@ def get_allowed_deps():
                 'libelf.so.1',
                 'libsoftcrypto.so.1',
                 'libssl.so.1.0.0',
+                'libreadline.so.5',
+                'libncurses.so.5',
                 ])
     elif platform_system == 'darwin':
         # This is the minimum list of deps for OS X.

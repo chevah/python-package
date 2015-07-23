@@ -42,9 +42,12 @@ disabled_module_list = [
     'bz2',
     'dbm',
     'gdbm',
-    'readline',
     'sunaudiodev',
      ]
+
+# Compile readline module only on platforms whitelisted below.
+if host_platform not in ('linux2', 'sunos5'):
+    disabled_module_list.append('readline')
 
 def add_dir_to_list(dirlist, dir):
     """Add the directory 'dir' to the list 'dirlist' (at the front) if

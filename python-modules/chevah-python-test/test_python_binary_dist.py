@@ -31,6 +31,9 @@ def get_allowed_deps():
             'libz.so',
             'linux-gate.so',
             'linux-vdso.so',
+            'libncurses.so',
+            'libncursesw.so',
+            'libreadline.so',
             ]
         # Distro-specific deps to add. Now we may specify major versions too.
         linux_distro_name = platform.linux_distribution()[0]
@@ -128,6 +131,8 @@ def get_allowed_deps():
                 'libelf.so.1',
                 'libsoftcrypto.so.1',
                 'libssl.so.1.0.0',
+                'libreadline.so.5',
+                'libncurses.so.5',
                 ])
     elif platform_system == 'darwin':
         # This is the minimum list of deps for OS X.

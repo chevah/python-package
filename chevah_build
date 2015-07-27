@@ -25,6 +25,7 @@ INSTALLED_PACKAGES=''
 
 LIBFFI_VERSION=3.2.1
 GMP_VERSION=6.0.0
+LIBEDIT_VERSION=20150325-3.1
 PYTHON_BUILD_VERSION=2.7.8
 PYSQLITE_VERSION=2.6.3
 SQLITE_VERSION=3.8.1
@@ -54,7 +55,7 @@ rm DEFAULT_VALUES
 # package. This way we are able to force a 32bit build on a 64bit machine,
 # for example by exporting ARCH in paver.sh as "x86" instead of "x64" or
 # "ppc" instead of "ppc64".
-# We also use $ARCH when building the statically compiled libs: libffi and GMP.
+# We also use $ARCH when building the statically compiled libffi and GMP.
 export ARCH
 # Explicitly choose the C compiler in order to make it possible to switch
 # between native compilers and GCC on platforms such as AIX and Solaris.
@@ -276,6 +277,15 @@ command_build() {
     # Build GMP on all platforms.
     build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
 
+    # Statically build the BSD libedit on all platforms to avoid linking to
+    # the GPL'ed readline library usually needed for the 'readline' module.
+    build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
+    mkdir $INSTALL_FOLDER/{include,lib}
+    cp -r $INSTALL_FOLDER/tmp/libedit/{editline/,*.h} $INSTALL_FOLDER/include/
+    cp $INSTALL_FOLDER/tmp/libedit/libedit* $INSTALL_FOLDER/lib/
+    export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"
+    export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
+
     build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
 
     command_build_sqlite
@@ -336,10 +346,9 @@ command_build_python_extra_libraries() {
 
     # We need GMP or MPIR for fast math in PyCrypto. We use GMP because
     # its devs do a better job of supporting exotic platforms such as AIX.
+    # CPPFLAGS and LDFLAGS already point to the these 'include' and 'lib' dirs.
     cp $INSTALL_FOLDER/tmp/gmp/gmp.h $INSTALL_FOLDER/include
     cp $INSTALL_FOLDER/tmp/gmp/libgmp* $INSTALL_FOLDER/lib
-    export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"
-    export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
 
     for library in $EXTRA_LIBRARIES ; do
         # Library is in the form pyopenssl/PyOpenssl-2.4.5

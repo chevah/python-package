@@ -45,8 +45,8 @@ disabled_module_list = [
     'sunaudiodev',
     ]
 
-# Compile readline module only on platforms whitelisted below.
-if host_platform not in ('linux2', 'sunos5'):
+# Compile the readline module only on platforms whitelisted below.
+if host_platform not in ('linux2'):
     disabled_module_list.append('readline')
 
 def add_dir_to_list(dirlist, dir):
@@ -714,8 +714,8 @@ class PyBuildExt(build_ext):
         else:
             missing.extend(['imageop'])
 
-        # readline
-        do_readline = self.compiler.find_library_file(lib_dirs, 'readline')
+        # For this build, use the BSD libedit instead of GNU's readline.
+        do_readline = self.compiler.find_library_file(lib_dirs, 'edit')
         readline_termcap_library = ""
         curses_library = ""
         # Determine if readline is already linked against curses or tinfo.
@@ -768,7 +768,7 @@ class PyBuildExt(build_ext):
             else:
                 readline_extra_link_args = ()
 
-            readline_libs = ['readline']
+            readline_libs = ['edit']
             if readline_termcap_library:
                 pass # Issue 7384: Already linked against curses or tinfo.
             elif curses_library:

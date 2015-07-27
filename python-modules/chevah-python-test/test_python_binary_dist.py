@@ -15,8 +15,8 @@ def get_allowed_deps():
     """
     allowed_deps = []
     if platform_system == 'linux':
-        # The minimal list of deps covering Debian, Ubuntu and SUSE:
-        # glibc, openssl, zlib, and ncurses (for the 'readline' module).
+        # The minimal list of deps for Linux: glibc, openssl, zlib,
+        # and, for readline support through libedit, a curses library.
         allowed_deps = [
             'ld-linux',
             'libc.so',
@@ -50,15 +50,31 @@ def get_allowed_deps():
                     'libkrb5support.so.0',
                     'libselinux.so.1',
                     'libsepol.so.1',
-                ])
+                    ])
             if rhel_version >= 6:
                 allowed_deps.extend([
                     'libfreebl3.so',
-                ])
+                    'libtinfo.so.5',
+                    ])
             if rhel_version >= 7:
                 allowed_deps.extend([
                     'liblzma.so.5',
                     'libpcre.so.1',
+                    ])
+        elif ('SUSE' in linux_distro_name):
+            sles_version = int(platform.linux_distribution()[1])
+            if sles_version == 12:
+                allowed_deps.extend([
+                    'libtinfo.so.5',
+                    ])
+        elif ('Ubuntu' in linux_distro_name):
+            allowed_deps.extend([
+                'libtinfo.so.5',
+                ])
+        else:
+            allowed_deps.extend([
+                'libncurses.so.5',
+                'libtinfo.so.5',
                 ])
     elif platform_system == 'aix':
         # This is the standard list of deps for AIX 5.3. Some of the links
@@ -271,13 +287,6 @@ def main():
         sys.stderr.write('Crypto.PublicKey._fastmath missing. No GMP?\n')
         exit_code = 10
 
-    try:
-        import readline
-        readline.clear_history()
-    except:
-        sys.stderr.write('"readline" missing.\n')
-        exit_code = 16
-
     # Windows specific modules.
     if os.name == 'nt':
         try:
@@ -296,26 +305,33 @@ def main():
             sys.stderr.write('spwd missing.\n')
             exit_code = 12
 
+    try:
+        import readline
+        readline.clear_history()
+    except:
+        sys.stderr.write('"readline" missing.\n')
+        exit_code = 13
+
     # Compare the list of allowed deps for the current OS with the list of
     # actual deps for the newly-built binaries returned by the script helper.
     allowed_deps = get_allowed_deps()
     if not allowed_deps:
         sys.stderr.write('Got no allowed deps. Please check if {0} is a '
             'supported operating system.\n'.format(platform.system()))
-        exit_code = 13
+        exit_code = 101
     else:
         actual_deps = get_actual_deps(script_helper)
         if not actual_deps:
             sys.stderr.write('Got no deps for the new binaries. Please check '
                 'the "{0}" script in the "build/" dir.\n'.format(script_helper))
-            exit_code = 14
+            exit_code = 102
         else:
             unwanted_deps = get_unwanted_deps(allowed_deps, actual_deps)
             if unwanted_deps:
                 sys.stderr.write('Got unwanted deps:\n')
                 for single_dep_to_print in unwanted_deps:
                     sys.stderr.write('\t{0}\n'.format(single_dep_to_print))
-                exit_code = 15
+                exit_code = 103
 
     sys.exit(exit_code)
 

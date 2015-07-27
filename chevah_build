@@ -12,16 +12,19 @@
 . ./functions.sh
 
 # List of OS packages required for building Python.
-UBUNTU_PACKAGES="gcc make libssl-dev zlib1g-dev m4 texinfo"
-RHEL_PACKAGES="gcc make openssl-devel zlib-devel m4 texinfo"
-SLES_PACKAGES="gcc make libopenssl-devel zlib-devel m4 texinfo"
+COMMON_PACKAGES="gcc make m4 automake libtool texinfo"
+UBUNTU_PACKAGES="$COMMON_PACKAGES libssl-dev zlib1g-dev libncurses5-dev"
+RHEL_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel ncurses-devel"
+SLES_PACKAGES="$COMMON_PACKAGES libopenssl-devel zlib-devel ncurses-devel"
 # List of OS packages requested to be installed by this script.
 INSTALLED_PACKAGES=''
-# For the moment, we don't install anything on OS X, Solaris, AIX and
+# For now, we don't install anything on OS X, Solaris, AIX, and
 # unsupported Linux distros. The build requires a C compiler, GNU make, m4,
-# makeinfo (from texinfo, optional) and the header files for OpenSSL and zlib.
-# On platforms with a choice of C compilers, you may choose among them by
-# setting/unsetting CC and CXX in paver.sh.
+# the header files for OpenSSL and zlib, and optionally texinfo.
+# To build libedit for the readline module, we need the headers of
+# a curses library, automake and libtool.
+# On platforms with a choice of C compilers, you may choose among the
+# available compilers by setting CC and CXX further in this script.
 
 LIBFFI_VERSION=3.2.1
 GMP_VERSION=6.0.0
@@ -59,7 +62,6 @@ rm DEFAULT_VALUES
 export ARCH
 # Explicitly choose the C compiler in order to make it possible to switch
 # between native compilers and GCC on platforms such as AIX and Solaris.
-# For that, paver.sh has the relevant lines to edit.
 export CC='gcc'
 # CXX is not really needed, we export it to make sure g++ won't get picked up
 # when not using gcc and thus silence the associated configure warning. However,
@@ -203,7 +205,8 @@ install_dependencies() {
 #
 remove_dependencies() {
     local rpm_leaves
-    local zypper_options
+    local zypper_global_opts
+    local zypper_command_opts
     local libzypp_version
 
     if [ -n "$INSTALLED_PACKAGES" ]; then
@@ -239,15 +242,16 @@ remove_dependencies() {
             fi
             ;;
         sles*)
-            zypper_options="--non-interactive"
+            zypper_global_opts="--non-interactive"
             # zypper version 7.4 got support for automatically removing
             # unneeded packages, but only when removing installed packages.
             libzypp_version=$(rpm --query --queryformat '%{VERSION}' libzypp)
             IFS=. read -a libzypp_version_array <<< "$libzypp_version"
             if [ ${libzypp_version_array[0]} -gt 7 ]; then
-                zypper_options="$zypper_options --clean-deps"
+                zypper_command_opts="--clean-deps"
             fi
-            execute sudo zypper $zypper_options remove $INSTALLED_PACKAGES
+            execute sudo zypper $zypper_global_opts remove \
+                $zypper_command_opts $INSTALLED_PACKAGES
             ;;
     esac
 }
@@ -280,7 +284,7 @@ command_build() {
     # Statically build the BSD libedit on all platforms to avoid linking to
     # the GPL'ed readline library usually needed for the 'readline' module.
     build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
-    mkdir $INSTALL_FOLDER/{include,lib}
+    mkdir -p $INSTALL_FOLDER/{include,lib}
     cp -r $INSTALL_FOLDER/tmp/libedit/{editline/,*.h} $INSTALL_FOLDER/include/
     cp $INSTALL_FOLDER/tmp/libedit/libedit* $INSTALL_FOLDER/lib/
     export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"

@@ -10,6 +10,13 @@ chevahbs_configure() {
     # We want static builds only, so that we don't have to mess with LIBPATH.
     # Support for Unicode (wide-char/UTF-8) is added with "--enable-widec".
     CONF_OPTS="--disable-shared --enable-static --enable-widec"
+    execute mkdir m4
+    # RHEL 5 has an older autoconf and we can't auto-reconfigure.
+    if grep "release 5" /etc/redhat-release >/dev/null 2>&1; then
+        >&2 echo "This seems to be a RHEL 5 system, skipping autoreconf..."
+    else
+        execute autoreconf --install --force
+    fi
     execute ./configure --prefix="" $CONF_OPTS
 }
 

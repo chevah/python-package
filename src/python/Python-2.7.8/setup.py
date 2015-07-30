@@ -2137,8 +2137,8 @@ class PyBuildExt(build_ext):
             # in /usr/include/ffi
             inc_dirs.append('/usr/include/ffi')
 
-        # On AIX we hack the libffi in current folder to simplify the build.
-        if host_platform == 'aix5' or host_platform == 'sunos5' :
+        # On AIX and Solaris, we build ffi and install it in "build/ffi".
+        if host_platform.startswith('aix') or host_platform == 'sunos5':
             inc_dirs.append('build/libffi')
 
         ffi_inc = [sysconfig.get_config_var("LIBFFI_INCLUDEDIR")]
@@ -2157,8 +2157,8 @@ class PyBuildExt(build_ext):
         ffi_lib = None
         ffi_lib_dirs = lib_dirs[:]
 
-        # On AIX we hack the libffi in current folder to simplify the build.
-        if host_platform == 'aix5' or host_platform == 'sunos5':
+        # On AIX and Solaris, there's no OS-bundled libffi.
+        if host_platform.startswith('aix') or host_platform == 'sunos5':
             ffi_lib_dirs.append('build/libffi')
 
         if ffi_inc is not None:
@@ -2169,8 +2169,8 @@ class PyBuildExt(build_ext):
 
         if ffi_inc and ffi_lib:
             ext.include_dirs.extend(ffi_inc)
-            # On AIX we link the ffi static and dynamic on all other systems.
-            if host_platform.startswith('aix') or host_platform.startswith('sunos'):
+            # On AIX and Solaris, there's no OS-bundled libffi.
+            if host_platform.startswith('aix') or host_platform == 'sunos5':
                 ext.extra_objects.append('build/libffi/libffi.a')
             else:
                 ext.libraries.append(ffi_lib)

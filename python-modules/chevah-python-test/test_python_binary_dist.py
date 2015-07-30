@@ -72,6 +72,7 @@ def get_allowed_deps():
                 'libtinfo.so.5',
                 ])
         else:
+            # For generic Linux distros, such as Debian.
             allowed_deps.extend([
                 'libncurses.so.5',
                 'libtinfo.so.5',
@@ -284,7 +285,7 @@ def main():
         from Crypto.PublicKey import _fastmath
         _fastmath
     except:
-        sys.stderr.write('Crypto.PublicKey._fastmath missing. No GMP?\n')
+        sys.stderr.write('"Crypto.PublicKey._fastmath" missing. No GMP?\n')
         exit_code = 10
 
     # Windows specific modules.
@@ -296,21 +297,23 @@ def main():
             sys.stderr.write('"ctypes - windll" missing.\n')
             exit_code = 11
 
+    # On Linux and Solaris we need spwd, but not on AIX or OS X.
     if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
-        # On Linux and Solaris we need spwd, but not on AIX or OS X.
         try:
             import spwd
             spwd
         except:
-            sys.stderr.write('spwd missing.\n')
+            sys.stderr.write('"spwd" missing.\n')
             exit_code = 12
 
-    try:
-        import readline
-        readline.clear_history()
-    except:
-        sys.stderr.write('"readline" missing.\n')
-        exit_code = 13
+    # We compile the readline module using libedit only on selected platforms.
+    if platform_system == 'linux':
+        try:
+            import readline
+            readline.clear_history()
+        except:
+            sys.stderr.write('"readline" missing.\n')
+            exit_code = 13
 
     # Compare the list of allowed deps for the current OS with the list of
     # actual deps for the newly-built binaries returned by the script helper.

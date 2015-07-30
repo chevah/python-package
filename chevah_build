@@ -64,8 +64,8 @@ export ARCH
 # between native compilers and GCC on platforms such as AIX and Solaris.
 export CC='gcc'
 # CXX is not really needed, we export it to make sure g++ won't get picked up
-# when not using gcc and thus silence the associated configure warning. However,
-# we'll need to set CPPFLAGS later for linking to statically-compiled libs.
+# when not using gcc, and thus silence the associated configure warning.
+# However, we set $CPPFLAGS later for linking to statically-compiled libs.
 export CXX='g++'
 # Use PIC (Position Independent Code) with GCC on 64-bit arches.
 if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
@@ -278,17 +278,25 @@ command_build() {
             ;;
     esac
 
-    # Build GMP on all platforms.
+    # Build GMP statically on all platforms, copy headers and libs in a temp
+    # location, and update $CPPFLAGS and $LDFLAGS accordingly. For any other
+    # statically-compiled lib, such as libedit, we'll need these shell vars.
     build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
-
-    # Statically build the BSD libedit on all platforms to avoid linking to
-    # the GPL'ed readline library usually needed for the 'readline' module.
-    build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
     mkdir -p $INSTALL_FOLDER/{include,lib}
-    cp -r $INSTALL_FOLDER/tmp/libedit/{editline/,*.h} $INSTALL_FOLDER/include/
-    cp $INSTALL_FOLDER/tmp/libedit/libedit* $INSTALL_FOLDER/lib/
     export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"
     export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
+
+    # Statically build the BSD libedit on selected platforms to get readline
+    # support without linking to the GPL'ed readline.
+    # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
+    case $OS in
+        ubuntu*|rhel*|sles*|linux)
+            build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
+            cp -r $INSTALL_FOLDER/tmp/libedit/{editline/,*.h} \
+                $INSTALL_FOLDER/include/
+            cp $INSTALL_FOLDER/tmp/libedit/libedit* $INSTALL_FOLDER/lib/
+            ;;
+    esac
 
     build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
 
@@ -350,7 +358,7 @@ command_build_python_extra_libraries() {
 
     # We need GMP or MPIR for fast math in PyCrypto. We use GMP because
     # its devs do a better job of supporting exotic platforms such as AIX.
-    # CPPFLAGS and LDFLAGS already point to the these 'include' and 'lib' dirs.
+    # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
     cp $INSTALL_FOLDER/tmp/gmp/gmp.h $INSTALL_FOLDER/include
     cp $INSTALL_FOLDER/tmp/gmp/libgmp* $INSTALL_FOLDER/lib
 

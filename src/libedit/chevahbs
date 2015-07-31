@@ -1,0 +1,48 @@
+#!/bin/bash
+#
+# Chevah Build Script for libedit.
+#
+# Import shared code.
+. ./functions.sh
+
+
+chevahbs_configure() {
+    # We want static builds only, so that we don't have to mess with LIBPATH.
+    # Support for Unicode (wide-char/UTF-8) is added with "--enable-widec".
+    CONF_OPTS="--disable-shared --enable-static --enable-widec"
+    execute mkdir m4
+    # RHEL 5 has an older autoconf, and we can't auto-reconfigure.
+    case $OS in
+        rhel5)
+            # This redirects the echo output to stderr.
+            >&2 echo "This seems to be a RHEL 5 system, skipping autoreconf..."
+        ;;
+        *)
+            execute autoreconf --install --force
+        ;;
+    esac
+    execute ./configure --prefix="" $CONF_OPTS
+}
+
+
+chevahbs_compile() {
+    execute $MAKE
+}
+
+
+chevahbs_install() {
+    install_folder=$1
+    # We copy the includes and libs manually to a temporary location, and
+    # we instruct the compiler to link against our lib by augmenting CPPFLAGS
+    # with the include's location and LDFLAGS with the location of the libs.
+    local temp_folder=$INSTALL_FOLDER/tmp/libedit/
+    execute mkdir -p $temp_folder
+    execute cp src/.libs/* $temp_folder
+    execute ranlib $temp_folder/libedit.a
+    execute chmod +x $temp_folder/libedit.a
+    execute cp -r src/*.h src/editline/ $temp_folder
+}
+
+
+select_chevahbs_command $@
+

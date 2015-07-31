@@ -45,8 +45,8 @@ disabled_module_list = [
     'sunaudiodev',
     ]
 
-# Compile readline module only on platforms whitelisted below.
-if host_platform not in ('linux2', 'sunos5'):
+# Compile the readline module only on platforms whitelisted below.
+if host_platform not in ('linux2'):
     disabled_module_list.append('readline')
 
 def add_dir_to_list(dirlist, dir):
@@ -714,8 +714,8 @@ class PyBuildExt(build_ext):
         else:
             missing.extend(['imageop'])
 
-        # readline
-        do_readline = self.compiler.find_library_file(lib_dirs, 'readline')
+        # For this build, use the BSD libedit instead of GNU's readline.
+        do_readline = self.compiler.find_library_file(lib_dirs, 'edit')
         readline_termcap_library = ""
         curses_library = ""
         # Determine if readline is already linked against curses or tinfo.
@@ -768,7 +768,7 @@ class PyBuildExt(build_ext):
             else:
                 readline_extra_link_args = ()
 
-            readline_libs = ['readline']
+            readline_libs = ['edit']
             if readline_termcap_library:
                 pass # Issue 7384: Already linked against curses or tinfo.
             elif curses_library:
@@ -2137,8 +2137,8 @@ class PyBuildExt(build_ext):
             # in /usr/include/ffi
             inc_dirs.append('/usr/include/ffi')
 
-        # On AIX we hack the libffi in current folder to simplify the build.
-        if host_platform == 'aix5' or host_platform == 'sunos5' :
+        # On AIX and Solaris, we build ffi and install it in "build/ffi".
+        if host_platform.startswith('aix') or host_platform == 'sunos5':
             inc_dirs.append('build/libffi')
 
         ffi_inc = [sysconfig.get_config_var("LIBFFI_INCLUDEDIR")]
@@ -2157,8 +2157,8 @@ class PyBuildExt(build_ext):
         ffi_lib = None
         ffi_lib_dirs = lib_dirs[:]
 
-        # On AIX we hack the libffi in current folder to simplify the build.
-        if host_platform == 'aix5' or host_platform == 'sunos5':
+        # On AIX and Solaris, there's no OS-bundled libffi.
+        if host_platform.startswith('aix') or host_platform == 'sunos5':
             ffi_lib_dirs.append('build/libffi')
 
         if ffi_inc is not None:
@@ -2169,8 +2169,8 @@ class PyBuildExt(build_ext):
 
         if ffi_inc and ffi_lib:
             ext.include_dirs.extend(ffi_inc)
-            # On AIX we link the ffi static and dynamic on all other systems.
-            if host_platform.startswith('aix') or host_platform.startswith('sunos'):
+            # On AIX and Solaris, there's no OS-bundled libffi.
+            if host_platform.startswith('aix') or host_platform == 'sunos5':
                 ext.extra_objects.append('build/libffi/libffi.a')
             else:
                 ext.libraries.append(ffi_lib)

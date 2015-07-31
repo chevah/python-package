@@ -450,8 +450,8 @@ detect_os() {
             if [ $lsb_release_id = Ubuntu ]; then
                 check_os_version "Ubuntu Long-term Support" 10.04 \
                     "$os_version_raw" os_version_chevah
-                # Only Long-term Support versions are oficially endorsed, thus
-                # $os_version_chevah should end in 04 and the first two digits
+                # Only Long-term Support versions are officially endorsed, thus
+                # $os_version_chevah should end in 04, and the first two digits
                 # should represent an even year.
                 if [ ${os_version_chevah%%04} != ${os_version_chevah} -a \
                     $(( ${os_version_chevah%%04} % 2 )) -eq 0 ]; then

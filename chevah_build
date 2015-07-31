@@ -12,19 +12,23 @@
 . ./functions.sh
 
 # List of OS packages required for building Python.
-UBUNTU_PACKAGES="gcc make libssl-dev zlib1g-dev m4 texinfo"
-RHEL_PACKAGES="gcc make openssl-devel zlib-devel m4 texinfo"
-SLES_PACKAGES="gcc make libopenssl-devel zlib-devel m4 texinfo"
+COMMON_PACKAGES="gcc make m4 automake libtool texinfo"
+UBUNTU_PACKAGES="$COMMON_PACKAGES libssl-dev zlib1g-dev libncurses5-dev"
+RHEL_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel ncurses-devel"
+SLES_PACKAGES="$COMMON_PACKAGES libopenssl-devel zlib-devel ncurses-devel"
 # List of OS packages requested to be installed by this script.
 INSTALLED_PACKAGES=''
-# For the moment, we don't install anything on OS X, Solaris, AIX and
+# For now, we don't install anything on OS X, Solaris, AIX, and
 # unsupported Linux distros. The build requires a C compiler, GNU make, m4,
-# makeinfo (from texinfo, optional) and the header files for OpenSSL and zlib.
-# On platforms with a choice of C compilers, you may choose among them by
-# setting/unsetting CC and CXX in paver.sh.
+# the header files for OpenSSL and zlib, and optionally texinfo.
+# To build libedit for the readline module, we need the headers of
+# a curses library, automake and libtool.
+# On platforms with a choice of C compilers, you may choose among the
+# available compilers by setting CC and CXX further in this script.
 
 LIBFFI_VERSION=3.2.1
 GMP_VERSION=6.0.0
+LIBEDIT_VERSION=20150325-3.1
 PYTHON_BUILD_VERSION=2.7.8
 PYSQLITE_VERSION=2.6.3
 SQLITE_VERSION=3.8.1
@@ -54,15 +58,14 @@ rm DEFAULT_VALUES
 # package. This way we are able to force a 32bit build on a 64bit machine,
 # for example by exporting ARCH in paver.sh as "x86" instead of "x64" or
 # "ppc" instead of "ppc64".
-# We also use $ARCH when building the statically compiled libs: libffi and GMP.
+# We also use $ARCH when building the statically compiled libffi and GMP.
 export ARCH
 # Explicitly choose the C compiler in order to make it possible to switch
 # between native compilers and GCC on platforms such as AIX and Solaris.
-# For that, paver.sh has the relevant lines to edit.
 export CC='gcc'
 # CXX is not really needed, we export it to make sure g++ won't get picked up
-# when not using gcc and thus silence the associated configure warning. However,
-# we'll need to set CPPFLAGS later for linking to statically-compiled libs.
+# when not using gcc, and thus silence the associated configure warning.
+# However, we set $CPPFLAGS later for linking to statically-compiled libs.
 export CXX='g++'
 # Use PIC (Position Independent Code) with GCC on 64-bit arches.
 if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
@@ -85,7 +88,7 @@ case $OS in
         export CXX="xlC_r"
         export MAKE=gmake
         export PATH=/usr/vac/bin:$PATH
-        export CFLAGS="-O2"
+        export CFLAGS="$CFLAGS -O2"
         # IBM's OpenSSL libs are mixed 32/64bit binaries in AIX, so we need to
         # be specific about what kind of build we want, because otherwise we
         # might get 64bit libraries (eg. when building GMP).
@@ -115,10 +118,10 @@ case $OS in
         fi
         # And this is where the GNU libs are in Solaris 10, including OpenSSL.
         if [ "${ARCH%64}" = "$ARCH" ]; then
-            export LDFLAGS="-L/usr/sfw/lib -R/usr/sfw/lib"
+            export LDFLAGS="$LDFLAGS -L/usr/sfw/lib -R/usr/sfw/lib"
         else
-            export LDFLAGS="-m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
-            export CFLAGS="-m64 -xcode=abs64"
+            export LDFLAGS="$LDFLAGS -m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
+            export CFLAGS="$CFLAGS -m64 -xcode=abs64"
         fi
         if [ "$OS" = "solaris10" ]; then
             # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with
@@ -202,7 +205,8 @@ install_dependencies() {
 #
 remove_dependencies() {
     local rpm_leaves
-    local zypper_options
+    local zypper_global_opts
+    local zypper_command_opts
     local libzypp_version
 
     if [ -n "$INSTALLED_PACKAGES" ]; then
@@ -238,15 +242,16 @@ remove_dependencies() {
             fi
             ;;
         sles*)
-            zypper_options="--non-interactive"
+            zypper_global_opts="--non-interactive"
             # zypper version 7.4 got support for automatically removing
             # unneeded packages, but only when removing installed packages.
             libzypp_version=$(rpm --query --queryformat '%{VERSION}' libzypp)
             IFS=. read -a libzypp_version_array <<< "$libzypp_version"
             if [ ${libzypp_version_array[0]} -gt 7 ]; then
-                zypper_options="$zypper_options --clean-deps"
+                zypper_command_opts="--clean-deps"
             fi
-            execute sudo zypper $zypper_options remove $INSTALLED_PACKAGES
+            execute sudo zypper $zypper_global_opts remove \
+                $zypper_command_opts $INSTALLED_PACKAGES
             ;;
     esac
 }
@@ -273,8 +278,25 @@ command_build() {
             ;;
     esac
 
-    # Build GMP on all platforms.
+    # Build GMP statically on all platforms, copy headers and libs in a temp
+    # location, and update $CPPFLAGS and $LDFLAGS accordingly. For any other
+    # statically-compiled lib, such as libedit, we'll need these shell vars.
     build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
+    mkdir -p $INSTALL_FOLDER/{include,lib}
+    export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"
+    export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
+
+    # Statically build the BSD libedit on selected platforms to get readline
+    # support without linking to the GPL'ed readline.
+    # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
+    case $OS in
+        ubuntu*|rhel*|sles*|linux)
+            build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
+            cp -r $INSTALL_FOLDER/tmp/libedit/{editline/,*.h} \
+                $INSTALL_FOLDER/include/
+            cp $INSTALL_FOLDER/tmp/libedit/libedit* $INSTALL_FOLDER/lib/
+            ;;
+    esac
 
     build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
 
@@ -336,10 +358,9 @@ command_build_python_extra_libraries() {
 
     # We need GMP or MPIR for fast math in PyCrypto. We use GMP because
     # its devs do a better job of supporting exotic platforms such as AIX.
+    # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
     cp $INSTALL_FOLDER/tmp/gmp/gmp.h $INSTALL_FOLDER/include
     cp $INSTALL_FOLDER/tmp/gmp/libgmp* $INSTALL_FOLDER/lib
-    export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"
-    export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
 
     for library in $EXTRA_LIBRARIES ; do
         # Library is in the form pyopenssl/PyOpenssl-2.4.5

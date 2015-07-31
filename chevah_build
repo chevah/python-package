@@ -121,7 +121,11 @@ case $OS in
             export LDFLAGS="$LDFLAGS -L/usr/sfw/lib -R/usr/sfw/lib"
         else
             export LDFLAGS="$LDFLAGS -m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
-            export CFLAGS="$CFLAGS -m64 -xcode=abs64"
+            export CFLAGS="$CFLAGS -m64"
+            if [ ${ARCH} = "sparc64" ]; then
+                # Required for compiling GMP.
+                export CFLAGS="$CFLAGS -xcode=abs64"
+            fi
         fi
         if [ "$OS" = "solaris10" ]; then
             # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with

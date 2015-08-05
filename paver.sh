@@ -464,7 +464,7 @@ detect_os() {
         ARCH=$(uname -m)
 
         os_version_raw=$(sw_vers -productVersion)
-        check_os_version "Mac OS X" 10.4 "$os_version_raw" os_version_chevah
+        check_os_version "Mac OS X" 10.8 "$os_version_raw" os_version_chevah
 
         # For now, no matter the actual OS X version returned, we use '108'.
         OS="osx108"

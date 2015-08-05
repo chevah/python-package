@@ -107,7 +107,7 @@ case $OS in
                 export CFLAGS="$CFLAGS -qmaxmem=-1 -q64"
             fi
         fi
-    ;;
+        ;;
     solaris*)
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
         export CC="cc"
@@ -140,12 +140,17 @@ case $OS in
                 export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
             fi
         fi
-    ;;
+        ;;
     hpux*)
         # For HP-UX we haven't managed yet to compile libffi and GMP with the
         # HP compiler, so we are NOT exporting custom values for CC and CXX.
         export MAKE=gmake
-    ;;
+        ;;
+    osx*)
+        export CC="clang"
+        export CXX="clang++"
+        export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
+        ;;
 esac
 
 

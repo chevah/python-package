@@ -157,7 +157,6 @@ def get_allowed_deps():
             'SystemConfiguration.framework/Versions/A/SystemConfiguration',
             'libSystem.B.dylib',
             'libcrypto.0.9.8.dylib',
-            'libgcc_s.1.dylib',
             'libssl.0.9.8.dylib',
             'libz.1.dylib',
             ]

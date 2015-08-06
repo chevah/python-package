@@ -307,7 +307,7 @@ def main():
             exit_code = 12
 
     # We compile the readline module using libedit only on selected platforms.
-    if platform_system == 'linux':
+    if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
         try:
             import readline
             readline.clear_history()

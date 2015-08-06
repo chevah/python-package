@@ -2,7 +2,6 @@
 #include <string.h>
 #include <signal.h>
 #include <sys/wait.h>
-#include <err.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -12,6 +11,25 @@
 
 #include <histedit.h>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+/* On Solaris 10, you can't simply include err.h */
+#ifdef HAVE_ERR_H
+#include <err.h>
+#else
+# include <errno.h>
+# include <string.h>
+# define err(exitcode, format, args...) \
+   errx(exitcode, format ": %s", ## args, strerror(errno))
+# define errx(exitcode, format, args...) \
+   { warnx(format, ## args); exit(exitcode); }
+# define warn(format, args...) \
+   warnx(format ": %s", ## args, strerror(errno))
+# define warnx(format, args...) \
+   fprintf(stderr, format "\n", ## args)
+#endif
 
 static int continuation;
 volatile sig_atomic_t gotsig;

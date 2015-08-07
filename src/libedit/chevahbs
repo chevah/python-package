@@ -11,7 +11,7 @@ chevahbs_configure() {
     # Support for Unicode (wide-char/UTF-8) is added with "--enable-widec".
     CONF_OPTS="--disable-shared --enable-static --enable-widec"
     execute mkdir m4
-    # RHEL 5 has an older autoconf, and we can't auto-reconfigure.
+    # RHEL 4 and 5 have an older autoconf, and we can't auto-reconfigure.
     case $OS in
         rhel4|rhel5)
             # This redirects the echo output to stderr.

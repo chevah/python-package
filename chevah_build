@@ -67,10 +67,6 @@ export CC='gcc'
 # when not using gcc, and thus silence the associated configure warning.
 # However, we set $CPPFLAGS later for linking to statically-compiled libs.
 export CXX='g++'
-# Use PIC (Position Independent Code) with GCC on 64-bit arches.
-if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
-    export CFLAGS="${CFLAGS} -fPIC"
-fi
 
 LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
 INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST
@@ -112,6 +108,7 @@ case $OS in
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
         export CC="cc"
         export CXX="CC"
+        export MAKE="gmake"
         # Here's where the system-included GCC is to be found.
         if [ "${CC}" = "gcc" ]; then
             export PATH="$PATH:/usr/sfw/bin/"
@@ -152,6 +149,10 @@ case $OS in
     ;;
 esac
 
+# Use PIC (Position Independent Code) with GCC on 64-bit arches.
+if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
+    export CFLAGS="${CFLAGS} -fPIC"
+fi
 
 #
 # Install OS package required to build Python.
@@ -294,7 +295,7 @@ command_build() {
     # support without linking to the GPL'ed readline.
     # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
     case $OS in
-        ubuntu*|rhel*|sles*|linux|solaris*)
+        ubuntu*|rhel*|sles*|linux)
             build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
             cp -r $INSTALL_FOLDER/tmp/libedit/{editline/,*.h} \
                 $INSTALL_FOLDER/include/

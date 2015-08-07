@@ -119,10 +119,6 @@ case $OS in
         else
             export LDFLAGS="$LDFLAGS -m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
             export CFLAGS="$CFLAGS -m64"
-            if [ ${ARCH} = "sparc64" ]; then
-                # Required for compiling GMP.
-                export CFLAGS="$CFLAGS -xcode=abs64"
-            fi
         fi
         if [ "$OS" = "solaris10" ]; then
             # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with
@@ -152,6 +148,14 @@ esac
 # Use PIC (Position Independent Code) with GCC on 64-bit arches.
 if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
     export CFLAGS="${CFLAGS} -fPIC"
+elif [ "${OS%solaris*}" = "" ]; then
+    if [ ${ARCH} = "sparc64" ]; then
+        # Required for compiling GMP.
+        export CFLAGS="$CFLAGS -xcode=abs64"
+    elif [ ${ARCH} = "x64" ]; then
+        # Required for libedit, which has a simpler configure setup.
+        export CFLAGS="$CFLAGS -xcode=pic32"
+    fi
 fi
 
 #
@@ -295,7 +299,7 @@ command_build() {
     # support without linking to the GPL'ed readline.
     # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
     case $OS in
-        ubuntu*|rhel*|sles*|linux)
+        ubuntu*|rhel*|sles*|linux|solaris*)
             build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
             cp -r $INSTALL_FOLDER/tmp/libedit/{editline/,*.h} \
                 $INSTALL_FOLDER/include/

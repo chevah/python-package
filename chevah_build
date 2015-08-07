@@ -113,7 +113,7 @@ case $OS in
         if [ "${CC}" = "gcc" ]; then
             export PATH="$PATH:/usr/sfw/bin/"
         fi
-        # And this is where the GNU libs are in Solaris 10, including OpenSSL.
+        # The location for GNU libs in Solaris, including OpenSSL in Solaris 10.
         if [ "${ARCH%64}" = "$ARCH" ]; then
             export LDFLAGS="$LDFLAGS -L/usr/sfw/lib -R/usr/sfw/lib"
         else
@@ -145,15 +145,16 @@ case $OS in
     ;;
 esac
 
-# Use PIC (Position Independent Code) with GCC on 64-bit arches.
+# Compiler-dependet flags. At this moment we should know what compiler is used.
 if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
+    # Use PIC (Position Independent Code) with GCC on 64-bit arches.
     export CFLAGS="${CFLAGS} -fPIC"
 elif [ "${OS%solaris*}" = "" ]; then
     if [ ${ARCH} = "sparc64" ]; then
-        # Required for compiling GMP.
+        # Required for compiling GMP on Solaris for SPARC with Sun Studio.
         export CFLAGS="$CFLAGS -xcode=abs64"
     elif [ ${ARCH} = "x64" ]; then
-        # Required for libedit, which has a simpler configure setup.
+        # Required for linking to libedit, which has a simpler configure setup.
         export CFLAGS="$CFLAGS -xcode=pic32"
     fi
 fi

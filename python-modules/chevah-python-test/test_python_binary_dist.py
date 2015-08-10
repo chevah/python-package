@@ -111,7 +111,6 @@ def get_allowed_deps():
             'libmp.so.2',
             'libnsl.so.1',
             'libsocket.so.1',
-            'libsqlite3.so',
             'libz.so.1',
             ]
         if platform.processor() == 'sparc':
@@ -128,10 +127,12 @@ def get_allowed_deps():
                 'libcrypt_i.so.1',
                 'libcrypto.so.0.9.7',
                 'libcrypto_extra.so.0.9.7',
+                'libcurses.so.1',
                 'libdoor.so.1',
                 'libgen.so.1',
                 'librt.so.1',
                 'libscf.so.1',
+                'libsqlite3.so',
                 'libssl.so.0.9.7',
                 'libssl_extra.so.0.9.7',
                 'libthread.so.1',
@@ -144,7 +145,9 @@ def get_allowed_deps():
                 'libcrypto.so.1.0.0',
                 'libcryptoutil.so.1',
                 'libelf.so.1',
+                'libncurses.so.5',
                 'libsoftcrypto.so.1',
+                'libsqlite3.so.0',
                 'libssl.so.1.0.0',
                 ])
     elif platform_system == 'darwin':
@@ -307,10 +310,10 @@ def main():
             exit_code = 12
 
     # We compile the readline module using libedit only on selected platforms.
-    if platform_system == 'linux':
+    if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
         try:
             import readline
-            readline.clear_history()
+            readline.get_history_length()
         except:
             sys.stderr.write('"readline" missing.\n')
             exit_code = 13

@@ -67,10 +67,6 @@ export CC='gcc'
 # when not using gcc, and thus silence the associated configure warning.
 # However, we set $CPPFLAGS later for linking to statically-compiled libs.
 export CXX='g++'
-# Use PIC (Position Independent Code) with GCC on 64-bit arches.
-if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
-    export CFLAGS="${CFLAGS} -fPIC"
-fi
 
 LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
 INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST
@@ -112,16 +108,17 @@ case $OS in
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
         export CC="cc"
         export CXX="CC"
+        export MAKE="gmake"
         # Here's where the system-included GCC is to be found.
         if [ "${CC}" = "gcc" ]; then
             export PATH="$PATH:/usr/sfw/bin/"
         fi
-        # And this is where the GNU libs are in Solaris 10, including OpenSSL.
+        # The location for GNU libs in Solaris, including OpenSSL in Solaris 10.
         if [ "${ARCH%64}" = "$ARCH" ]; then
             export LDFLAGS="$LDFLAGS -L/usr/sfw/lib -R/usr/sfw/lib"
         else
             export LDFLAGS="$LDFLAGS -m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
-            export CFLAGS="$CFLAGS -m64 -xcode=abs64"
+            export CFLAGS="$CFLAGS -m64"
         fi
         if [ "$OS" = "solaris10" ]; then
             # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with
@@ -148,6 +145,19 @@ case $OS in
     ;;
 esac
 
+# Compiler-dependent flags. At this moment we should know what compiler is used.
+if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
+    # Use PIC (Position Independent Code) with GCC on 64-bit arches.
+    export CFLAGS="${CFLAGS} -fPIC"
+elif [ "${OS%solaris*}" = "" ]; then
+    if [ ${ARCH} = "sparc64" ]; then
+        # Required for compiling GMP on Solaris for SPARC with Sun Studio.
+        export CFLAGS="$CFLAGS -xcode=abs64"
+    elif [ ${ARCH} = "x64" ]; then
+        # Required for linking to libedit, which has a simpler configure setup.
+        export CFLAGS="$CFLAGS -xcode=pic32"
+    fi
+fi
 
 #
 # Install OS package required to build Python.
@@ -290,7 +300,7 @@ command_build() {
     # support without linking to the GPL'ed readline.
     # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
     case $OS in
-        ubuntu*|rhel*|sles*|linux)
+        ubuntu*|rhel*|sles*|linux|solaris*)
             build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
             cp -r $INSTALL_FOLDER/tmp/libedit/{editline/,*.h} \
                 $INSTALL_FOLDER/include/
@@ -398,27 +408,25 @@ initialize_python_module(){
                 # Copy special link steps in local folder.
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
-            ;;
+                ;;
             solaris*)
                 # Copy special link steps in local folder.
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
+                extra_args=""
                 if [ "$OS" = "solaris10" ]; then
+                    extra_args="$extra_args -I/usr/sfw/include"
                     # Needed to build pyOpenSSL and pysqlite in Solaris 10.
                     # Make sure the headers for OpenSSL and sqlite3 are present
                     # in /usr/sfw/include (only one location allowed, it seems).
                     if [ "${ARCH%64}" = "$ARCH" ]; then
-                        execute $PYTHON_BIN setup.py build_ext \
-                            -I/usr/sfw/include \
-                            -L/usr/sfw/lib -L/usr/lib/mps
+                        extra_args="$extra_args -L/usr/sfw/lib -L/usr/lib/mps"
                     else
-                        execute $PYTHON_BIN setup.py build_ext \
-                            -I/usr/sfw/include \
-                            -L/usr/sfw/lib/64 -L/usr/lib/mps/64
-
+                        extra_args="$extra_args -L/usr/sfw/lib/64 -L/usr/lib/mps/64"
                     fi
                 fi
-            ;;
+                execute $PYTHON_BIN setup.py build_ext $extra_args
+                ;;
         esac
     execute popd
 }

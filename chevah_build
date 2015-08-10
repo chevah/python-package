@@ -145,7 +145,7 @@ case $OS in
     ;;
 esac
 
-# Compiler-dependet flags. At this moment we should know what compiler is used.
+# Compiler-dependent flags. At this moment we should know what compiler is used.
 if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
     # Use PIC (Position Independent Code) with GCC on 64-bit arches.
     export CFLAGS="${CFLAGS} -fPIC"

@@ -184,7 +184,7 @@ install_dependencies() {
             install_command='sudo zypper --non-interactive install -l'
             check_command='rpm --query'
         ;;
-        linux|aix*|solaris*|osx*)
+        *)
             packages=''
             install_command=''
             check_command=''

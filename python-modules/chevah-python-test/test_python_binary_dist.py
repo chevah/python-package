@@ -151,7 +151,7 @@ def get_allowed_deps():
                 'libssl.so.1.0.0',
                 ])
     elif platform_system == 'darwin':
-        # This is the minimum list of deps for OS X.
+        # This is the minimum list of deps for OS X 10.8, sans versions.
         allowed_deps = [
             'ApplicationServices.framework/Versions/A/ApplicationServices',
             'Carbon.framework/Versions/A/Carbon',
@@ -163,6 +163,18 @@ def get_allowed_deps():
             'libgcc_s.1.dylib',
             'libssl.0.9.8.dylib',
             'libz.1.dylib',
+            ]
+    elif platform_system == 'openbsd':
+        # This is the minimum list of deps for OpenBSD 5.7, sans versions.
+        allowed_deps = [
+            '/usr/lib/libc.so',
+            '/usr/lib/libcrypto.so',
+            '/usr/lib/libm.so',
+            '/usr/lib/libpthread.so',
+            '/usr/lib/libssl.so',
+            '/usr/lib/libutil.so',
+            '/usr/lib/libz.so',
+            '/usr/libexec/ld.so',
             ]
     return allowed_deps
 
@@ -186,8 +198,18 @@ def get_actual_deps(script_helper):
                 # safe to ignore them because they point to paths in the
                 # current hierarchy of directories.
                 continue
-            # The first field in each line is the file name we actually need.
-            deps = line.split()[0]
+            if platform_system == 'openbsd':
+                # OpenBSD's ldd output is very particular, the name of the
+                # examined files are in the 6th field. Which also includes a
+                # header name, of which we'll get rid in the following check.
+                deps = line.split()[6]
+                # It also outputs the examined binaries with full path, so we
+                # use the fact that there are no libs outside /usr in OpenBSD.
+                if not deps.startswith('/usr'):
+                    continue
+            else:
+                # Usually, the first field in each line is the needed file name.
+                deps = line.split()[0]
             libs_deps.append(deps)
     return list(set(libs_deps))
 

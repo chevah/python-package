@@ -469,6 +469,15 @@ detect_os() {
         # For now, no matter the actual OS X version returned, we use '108'.
         OS="osx108"
 
+    elif [ "${OS}" = "openbsd" ]; then
+        ARCH=$(uname -m)
+
+        os_version_raw=$(uname -r)
+        check_os_version "OpenBSD" 5.7 "$os_version_raw" os_version_chevah
+
+        # For now, no matter the actual OpenBSD version returned, we use '57'.
+        OS="openbsd57"
+
     else
         echo 'Unsupported operating system:' $OS
         exit 14

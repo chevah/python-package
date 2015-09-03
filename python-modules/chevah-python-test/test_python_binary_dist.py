@@ -200,8 +200,8 @@ def get_actual_deps(script_helper):
                 continue
             if platform_system == 'openbsd':
                 # OpenBSD's ldd output is very particular, the name of the
-                # examined files are in the 6th field. Which also includes a
-                # header name, of which we'll get rid in the following check.
+                # examined files are in the 6th colon. Which also includes a
+                # colon name, of which we'll get rid in the following check.
                 deps = line.split()[6]
                 # It also outputs the examined binaries with full path, so we
                 # use the fact that there are no libs outside /usr in OpenBSD.

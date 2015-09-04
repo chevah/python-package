@@ -458,6 +458,17 @@ detect_os() {
                     OS="ubuntu${os_version_chevah}"
                 fi
             fi
+            if [ -f /etc/os-release ]; then
+                # Check for Raspbian, which is a Debian unofficial derivative.
+                grep -i "raspbian" /etc/os-release > /dev/null
+                if [ $? -eq 0 ]; then
+                    check_os_version "Raspbian Linux" 7 \
+                        "$os_version_raw" os_version_chevah
+                    # For now, we only generate a Raspbian version 7.x package,
+                    # and we should use that in Raspbian version 8.x too.
+                    OS="raspbian7"
+                fi
+            fi
         fi
 
     elif [ "${OS}" = "darwin" ]; then

@@ -19,9 +19,12 @@ chevahbs_configure() {
             # https://www.gentoo.org/proj/en/base/amd64/howtos/index.xml?part=1&chap=3#doc_chap7
             CONF_OPTS="$CONF_OPTS --with-pic"
         fi
-    elif [ x${ARCH} == x"armv7l"  ]; then
-        CONF_OPTS="$CONF_OPTS --build=armcortexa8neon-unknown-linux-gnueabihf --with-pic"
     fi
+    case $OS in
+        raspbian*)
+            CONF_OPTS="$CONF_OPTS --build=armcortexa8neon-unknown-linux-gnueabihf --with-pic"
+        ;;
+    esac
     execute ./configure --prefix="" $CONF_OPTS
 }
 

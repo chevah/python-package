@@ -72,6 +72,16 @@ def get_allowed_deps():
                 'libtinfo.so.5',
                 ])
         else:
+            try:
+                os_release_dump = open("/etc/os-release")
+            except:
+                sys.stderr.write('Linux distro with no os-release in /etc?')
+            else:
+                if 'raspbian' in os_release_dump.read():
+                    allowed_deps.extend([
+                        'libcofi_rpi.so',
+                        'libgcc_s.so.1',
+                        ])
             # For generic Linux distros, such as Debian.
             allowed_deps.extend([
                 'libncurses.so.5',

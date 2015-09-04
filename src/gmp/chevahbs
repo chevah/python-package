@@ -20,7 +20,7 @@ chevahbs_configure() {
             CONF_OPTS="$CONF_OPTS --with-pic"
         fi
     elif [ x${ARCH} == x"armv7l"  ]; then
-        CONF_OPTS="$CONF_OPTS --build=armcortexa8neon-unknown-linux-gnueabihf"
+        CONF_OPTS="$CONF_OPTS --build=armcortexa8neon-unknown-linux-gnueabihf --with-pic"
     fi
     execute ./configure --prefix="" $CONF_OPTS
 }

@@ -443,6 +443,17 @@ detect_os() {
                     "$os_version_raw" os_version_chevah
                 OS="sles${os_version_chevah}"
             fi
+        elif [ -f /etc/rpi-issue ]; then
+            # Raspbian is a special case, a Debian unofficial derivative.
+            if egrep -q ^'NAME="Raspbian GNU/Linux' /etc/os-release; then
+                os_version_raw=$(\
+                    grep ^'VERSION_ID=' /etc/os-release | cut -d'"' -f2)
+                check_os_version "Raspbian GNU/Linux" 7 \
+                    "$os_version_raw" os_version_chevah
+                # For now, we only generate a Raspbian version 7.x package,
+                # and we should use that in newer Raspbian versions too.
+                OS="raspbian7"
+            fi
         elif [ $(command -v lsb_release) ]; then
             lsb_release_id=$(lsb_release -is)
             os_version_raw=$(lsb_release -rs)
@@ -456,14 +467,6 @@ detect_os() {
                     $(( ${os_version_chevah%%04} % 2 )) -eq 0 ]; then
                     OS="ubuntu${os_version_chevah}"
                 fi
-            fi
-            # Check for Raspbian, which is a Debian unofficial derivative.
-            if grep --quiet raspbian /etc/os-release 2>/dev/null; then
-                check_os_version "Raspbian Linux" 7 \
-                    "$os_version_raw" os_version_chevah
-                # For now, we only generate a Raspbian version 7.x package,
-                # and we should use that in Raspbian version 8.x too.
-                OS="raspbian7"
             fi
         fi
 

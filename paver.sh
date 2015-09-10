@@ -427,8 +427,7 @@ detect_os() {
 
         if [ -f /etc/redhat-release ]; then
             # Avoid getting confused by Red Hat derivatives such as Fedora.
-            egrep 'Red\ Hat|CentOS|Scientific' /etc/redhat-release > /dev/null
-            if [ $? -eq 0 ]; then
+            if egrep -q 'Red\ Hat|CentOS|Scientific' /etc/redhat-release; then
                 os_version_raw=$(\
                     cat /etc/redhat-release | sed s/.*release// | cut -d' ' -f2)
                 check_os_version "Red Hat Enterprise Linux" 4 \
@@ -458,16 +457,13 @@ detect_os() {
                     OS="ubuntu${os_version_chevah}"
                 fi
             fi
-            if [ -f /etc/os-release ]; then
-                # Check for Raspbian, which is a Debian unofficial derivative.
-                grep -i "raspbian" /etc/os-release > /dev/null
-                if [ $? -eq 0 ]; then
-                    check_os_version "Raspbian Linux" 7 \
-                        "$os_version_raw" os_version_chevah
-                    # For now, we only generate a Raspbian version 7.x package,
-                    # and we should use that in Raspbian version 8.x too.
-                    OS="raspbian7"
-                fi
+            # Check for Raspbian, which is a Debian unofficial derivative.
+            if grep --quiet raspbian /etc/os-release 2>/dev/null; then
+                check_os_version "Raspbian Linux" 7 \
+                    "$os_version_raw" os_version_chevah
+                # For now, we only generate a Raspbian version 7.x package,
+                # and we should use that in Raspbian version 8.x too.
+                OS="raspbian7"
             fi
         fi
 

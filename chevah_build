@@ -13,14 +13,14 @@
 
 # List of OS packages required for building Python.
 COMMON_PACKAGES="gcc make m4 automake libtool texinfo"
-UBUNTU_PACKAGES="$COMMON_PACKAGES libssl-dev zlib1g-dev libncurses5-dev"
+DEBIAN_PACKAGES="$COMMON_PACKAGES libssl-dev zlib1g-dev libncurses5-dev"
 RHEL_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel ncurses-devel"
 SLES_PACKAGES="$COMMON_PACKAGES libopenssl-devel zlib-devel ncurses-devel"
 # List of OS packages requested to be installed by this script.
 INSTALLED_PACKAGES=''
 # For now, we don't install anything on OS X, Solaris, AIX, and
 # unsupported Linux distros. The build requires a C compiler, GNU make, m4,
-# the header files for OpenSSL and zlib, and optionally texinfo.
+# the header files for OpenSSL and zlib, and (optionally) texinfo.
 # To build libedit for the readline module, we need the headers of
 # a curses library, automake and libtool.
 # On platforms with a choice of C compilers, you may choose among the
@@ -169,8 +169,9 @@ install_dependencies() {
     check_command='check-command-not-defined'
 
     case $OS in
-        ubuntu*)
-            packages=$UBUNTU_PACKAGES
+        # Debian-derived distros are similar in this regard.
+        ubuntu*|raspbian*)
+            packages=$DEBIAN_PACKAGES
             install_command='sudo apt-get --assume-yes install'
             check_command='dpkg --status'
         ;;
@@ -184,7 +185,7 @@ install_dependencies() {
             install_command='sudo zypper --non-interactive install -l'
             check_command='rpm --query'
         ;;
-        linux|aix*|solaris*|osx*)
+        *)
             packages=''
             install_command=''
             check_command=''
@@ -226,7 +227,7 @@ remove_dependencies() {
     fi
 
     case $OS in
-        ubuntu*)
+        ubuntu*|raspbian*)
             execute sudo apt-get --assume-yes --purge remove $INSTALLED_PACKAGES
             execute sudo apt-get --assume-yes --purge autoremove
             ;;
@@ -300,7 +301,7 @@ command_build() {
     # support without linking to the GPL'ed readline.
     # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
     case $OS in
-        ubuntu*|rhel*|sles*|linux|solaris*)
+        ubuntu*|raspbian*|rhel*|sles*|linux|solaris*)
             build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
             cp -r $INSTALL_FOLDER/tmp/libedit/{editline/,*.h} \
                 $INSTALL_FOLDER/include/

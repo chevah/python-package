@@ -43,16 +43,16 @@ PROG=$0
 DIST_FOLDER='dist'
 BUILD_FOLDER='build'
 
-# Get default values from main paver script.
-./paver.sh detect_os
+# Get default values from main paver script through the env variable.
+OS_DEFAULT_VALUES=`./paver.sh detect_os`
 if [ "$?" -ne 0 ]; then
+    echo "Error detecting OS. Please check './paver.sh detect_os'."
     exit 1
 fi
-PYTHON_VERSION=`cut -d' ' -f 2 DEFAULT_VALUES`
-OS=`cut -d' ' -f 3 DEFAULT_VALUES`
-ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
+PYTHON_VERSION=`echo $OS_DEFAULT_VALUES | cut -d' ' -f 2`
+OS=`echo $OS_DEFAULT_VALUES | cut -d' ' -f 3`
+ARCH=`echo $OS_DEFAULT_VALUES | cut -d' ' -f 4`
 TIMESTAMP=`date +'%Y%m%d'`
-rm DEFAULT_VALUES
 
 # In Solaris and AIX we use $ARCH to choose if we build a 32bit or 64bit
 # package. This way we are able to force a 32bit build on a 64bit machine,

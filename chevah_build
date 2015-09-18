@@ -8,6 +8,9 @@
 # publish_staging
 #
 
+# Script initialization.
+set -o pipefail
+
 # Import shared code.
 . ./functions.sh
 

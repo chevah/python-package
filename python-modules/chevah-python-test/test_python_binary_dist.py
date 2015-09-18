@@ -72,6 +72,13 @@ def get_allowed_deps():
                 'libtinfo.so.5',
                 ])
         else:
+            # Raspbian is a special case... If this file exists, we assume the
+            # distro passes the more stringent checks in paver.sh during build.
+            if os.path.isfile("/etc/rpi-issue"):
+                allowed_deps.extend([
+                    'libcofi_rpi.so',
+                    'libgcc_s.so.1',
+                    ])
             # For generic Linux distros, such as Debian.
             allowed_deps.extend([
                 'libncurses.so.5',

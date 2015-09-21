@@ -3,7 +3,6 @@
 # See LICENSE for details.
 #
 # Helper script for bootstraping the build system on Unix/Msys.
-# It will write the default values into 'DEFAULT_VALUES' file.
 #
 # To use this script you will need to publish binary archive files for the
 # following components:
@@ -15,7 +14,7 @@
 # It will delegate the argument to the paver script, with the exception of
 # these commands:
 # * clean - remove everything, except cache
-# * detect_os - create DEFAULT_VALUES and exit
+# * detect_os - detect OS and output values accordingly for OS_DEFAULT_VALUES
 # * get_python - download Python distribution in cache
 # * get_agent - download Rexx/Putty distribution in cache
 #
@@ -72,8 +71,6 @@ clean_build() {
     delete_folder ${DIST_FOLDER}
     echo "Removing publish..."
     delete_folder 'publish'
-    echo "Cleaning project temporary files..."
-    rm -f DEFAULT_VALUES
     echo "Cleaning pyc files ..."
     if [ $OS = "rhel4" ]; then
         # RHEL 4 don't support + option in -exec
@@ -158,7 +155,8 @@ update_path_variables() {
 
 
 write_default_values() {
-    echo ${BUILD_FOLDER} ${PYTHON_VERSION} ${OS} ${ARCH} > DEFAULT_VALUES
+    # We used to write them to a temp file, but now we write them to output.
+    echo ${BUILD_FOLDER} ${PYTHON_VERSION} ${OS} ${ARCH}
 }
 
 
@@ -312,14 +310,14 @@ install_dependencies(){
     exit_code=$?
     set -e
     if [ $exit_code -ne 0 ]; then
-        echo 'Failed to run the inital "paver deps" command.'
+        echo 'Failed to run the initial "paver deps" command.'
         exit 1
     fi
 }
 
 
 #
-# Chech that we have a pavement.py in the current dir.
+# Check that we have a pavement.py in the current dir.
 # otherwise it means we are out of the source folder and paver can not be
 # used there.
 #
@@ -493,7 +491,7 @@ detect_os() {
         ARCH='sparc64'
     elif [ "$ARCH" = "ppc64" ]; then
         # Python has not been fully tested on AIX when compiled as a 64 bit
-        # application and has math rounding error problems (at least with XL C).
+        # binary, and has math rounding error problems (at least with XL C).
         ARCH='ppc'
     elif [ "$ARCH" = "aarch64" ]; then
         ARCH='arm64'

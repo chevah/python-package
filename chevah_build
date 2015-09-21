@@ -61,7 +61,10 @@ TIMESTAMP=`date +'%Y%m%d'`
 # package. This way we are able to force a 32bit build on a 64bit machine,
 # for example by exporting ARCH in paver.sh as "x86" instead of "x64" or
 # "ppc" instead of "ppc64".
-# We also use $ARCH when building the statically compiled libffi and GMP.
+# We also use $ARCH when building the statically compiled libffi and GMP,
+# thus the need to export it.
+# Calling the new Python binary when installing the dependencies in paver.sh
+# also requires this to be exported.
 export ARCH
 # Explicitly choose the C compiler in order to make it possible to switch
 # between native compilers and GCC on platforms such as AIX and Solaris.

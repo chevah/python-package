@@ -298,10 +298,12 @@ command_build() {
     export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
 
     # Statically build the BSD libedit on selected platforms to get readline
-    # support without linking to the GPL'ed readline.
+    # support without linking to the GPL-only readline. We don't do this for
+    # generic Linux builds because the result depends on the local ncurses
+    # libs (ncurses, ncursesw, tinfo, others?), and the result is not portable.
     # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
     case $OS in
-        ubuntu*|raspbian*|rhel*|sles*|linux|solaris*)
+        ubuntu*|raspbian*|rhel*|sles*|solaris*)
             build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
             cp -r $INSTALL_FOLDER/tmp/libedit/{editline/,*.h} \
                 $INSTALL_FOLDER/include/

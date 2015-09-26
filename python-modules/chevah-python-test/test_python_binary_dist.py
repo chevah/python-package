@@ -7,6 +7,7 @@ import subprocess
 
 script_helper = './get_binaries_deps.sh'
 platform_system = platform.system().lower()
+test_for_readline = False
 
 
 def get_allowed_deps():
@@ -36,6 +37,7 @@ def get_allowed_deps():
         # Distro-specific deps to add. Now we may specify major versions too.
         linux_distro_name = platform.linux_distribution()[0]
         if ('Red Hat' in linux_distro_name) or ('CentOS' in linux_distro_name):
+            test_for_readline = True
             allowed_deps.extend([
                 'libcom_err.so.2',
                 'libgssapi_krb5.so.2',
@@ -62,12 +64,14 @@ def get_allowed_deps():
                     'libpcre.so.1',
                     ])
         elif ('SUSE' in linux_distro_name):
+            test_for_readline = True
             sles_version = int(platform.linux_distribution()[1])
             if sles_version == 12:
                 allowed_deps.extend([
                     'libtinfo.so.5',
                     ])
         elif ('Ubuntu' in linux_distro_name):
+            test_for_readline = True
             allowed_deps.extend([
                 'libtinfo.so.5',
                 ])
@@ -79,11 +83,6 @@ def get_allowed_deps():
                     'libcofi_rpi.so',
                     'libgcc_s.so.1',
                     ])
-            # For generic Linux distros, such as Debian.
-            allowed_deps.extend([
-                'libncurses.so.5',
-                'libtinfo.so.5',
-                ])
     elif platform_system == 'aix':
         # This is the standard list of deps for AIX 5.3. Some of the links
         # for these libs moved in newer versions from '/usr/lib/' to '/lib/'.
@@ -108,6 +107,7 @@ def get_allowed_deps():
                 'libthread.a',
                 ])
     elif platform_system == 'sunos':
+        test_for_readline = True
         # This is the common list of deps for Solaris 10 & 11 builds.
         allowed_deps = [
             'libc.so.1',
@@ -317,7 +317,7 @@ def main():
             exit_code = 12
 
     # We compile the readline module using libedit only on selected platforms.
-    if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
+    if test_for_readline:
         try:
             import readline
             readline.get_history_length()

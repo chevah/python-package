@@ -279,7 +279,7 @@ command_build() {
             build 'python' "Python-$PYTHON_BUILD_VERSION-windows" ${PYTHON_BUILD_FOLDER}
             echo "Skipping sqlite and extra libraries"
             # For Windows we don't build everthing from source yet.
-            echo "Skipping cleaing install folder"
+            echo "Skipping cleaning install folder"
             ;;
         *)
             # Build GMP on all other platforms.

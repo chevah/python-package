@@ -35,8 +35,9 @@ def get_allowed_deps():
             'linux-vdso.so',
             ]
         # Distro-specific deps to add. Now we may specify major versions too.
-        linux_distro_name = platform.linux_distribution()[0]
-        if ('Red Hat' in linux_distro_name) or ('CentOS' in linux_distro_name):
+        with open('../DEFAULT_VALUES') as default_values_file:
+            chevah_os = default_values_file.read().split(' ')[2]
+        if ('rhel' in chevah_os):
             test_for_readline = True
             allowed_deps.extend([
                 'libcom_err.so.2',
@@ -45,7 +46,7 @@ def get_allowed_deps():
                 'libkrb5.so.3',
                 'libresolv.so.2',
                 ])
-            rhel_version = int(platform.linux_distribution()[1].split('.')[0])
+            rhel_version = int(chevah_os[4:])
             if rhel_version >= 5:
                 allowed_deps.extend([
                     'libkeyutils.so.1',
@@ -63,29 +64,26 @@ def get_allowed_deps():
                     'liblzma.so.5',
                     'libpcre.so.1',
                     ])
-        elif ('SUSE' in linux_distro_name):
+        elif ('sles' in chevah_os):
             test_for_readline = True
-            sles_version = int(platform.linux_distribution()[1])
+            sles_version = int(chevah_os[4:])
             if sles_version == 12:
                 allowed_deps.extend([
                     'libtinfo.so.5',
                     ])
-        elif ('Ubuntu' in linux_distro_name):
+        elif ('ubuntu' in chevah_os):
             test_for_readline = True
             allowed_deps.extend([
                 'libtinfo.so.5',
                 ])
-        else:
-            if os.path.isfile("/etc/rpi-issue"):
-                # Raspbian is special... If this file exists, we assume the
-                # distro passes the tougher checks in paver.sh during build.
-                test_for_readline = True
-                allowed_deps.extend([
-                    'libcofi_rpi.so',
-                    'libgcc_s.so.1',
-                    'libncurses.so.5',
-                    'libtinfo.so.5',
-                    ])
+        elif ('raspbian' in chevah_os):
+            test_for_readline = True
+            allowed_deps.extend([
+                'libcofi_rpi.so',
+                'libgcc_s.so.1',
+                'libncurses.so.5',
+                'libtinfo.so.5',
+                ])
     elif platform_system == 'aix':
         # This is the standard list of deps for AIX 5.3. Some of the links
         # for these libs moved in newer versions from '/usr/lib/' to '/lib/'.

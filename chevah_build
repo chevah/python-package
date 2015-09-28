@@ -52,7 +52,6 @@ PYTHON_VERSION=`cut -d' ' -f 2 DEFAULT_VALUES`
 OS=`cut -d' ' -f 3 DEFAULT_VALUES`
 ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 TIMESTAMP=`date +'%Y%m%d'`
-rm DEFAULT_VALUES
 
 # In Solaris and AIX we use $ARCH to choose if we build a 32bit or 64bit
 # package. This way we are able to force a 32bit build on a 64bit machine,

@@ -135,7 +135,7 @@ chevahbs_install() {
             execute $destination/python -m pip\
                 install -i http://pypi.chevah.com:10042/simple \
                 --trusted-host=pypi.chevah.com \
-                pyopenssl==0.14 pypiwin32 pycrypto
+                pyopenssl==0.13 pypiwin32 pycrypto
             ;;
         *)
             execute $MAKE install DESTDIR=$INSTALL_FOLDER

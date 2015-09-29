@@ -146,7 +146,7 @@ chevahbs_install() {
                 $destination/lib/site-packages/pip-6.1.1.dist-info
             # add cp65001 as an utf-8 alias.
             execute \
-                sed "s|# utf_8 codec|# utf_8 codec\n    'cp65001'            : 'utf_8',|" < $destination/lib/encodings/aliases.py > $destination/lib/encondigns/aliases.py
+                sed "s|# utf_8 codec|# utf_8 codec\n    'cp65001'            : 'utf_8',\n|" < $destination/lib/encodings/aliases.py > $destination/lib/encodings/aliases.py
             ;;
         *)
             execute $MAKE install DESTDIR=$INSTALL_FOLDER

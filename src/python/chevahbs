@@ -137,16 +137,16 @@ chevahbs_install() {
                 --trusted-host=pypi.chevah.com \
                 pypiwin32 pycrypto
             # Manually install pyOpenSSL 0.13.
-            execute unzip -o -d $destination/lib/lib/site-packages \
+            execute unzip -o -d $destination/lib/site-packages \
                 pyopenssl-0.13.zip
             # Remove pip.
             execute rm -d -f \
-                $destination/lib/lib/site-packages/pip
+                $destination/lib/site-packages/pip
             execute rm -d -f \
-                $destination/lib/lib/site-packages/pip-6.1.1.dist-info
+                $destination/lib/site-packages/pip-6.1.1.dist-info
             # add cp65001 as an utf-8 alias.
             execute \
-                sed "s|# utf_8 codec|# utf_8 codec\n    'cp65001'            : 'utf_8',|" < $destination/lib/lib/encodings/aliases.py > $destination/lib/lib/encondigns/aliases.py
+                sed "s|# utf_8 codec|# utf_8 codec\n    'cp65001'            : 'utf_8',|" < $destination/lib/encodings/aliases.py > $destination/lib/encondigns/aliases.py
             ;;
         *)
             execute $MAKE install DESTDIR=$INSTALL_FOLDER

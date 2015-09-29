@@ -140,9 +140,9 @@ chevahbs_install() {
             execute unzip -o -d $destination/lib/site-packages \
                 pyopenssl-0.13.zip
             # Remove pip.
-            execute rm -d -f \
+            execute rm -d -f -r \
                 $destination/lib/site-packages/pip
-            execute rm -d -f \
+            execute rm -d -f -r \
                 $destination/lib/site-packages/pip-6.1.1.dist-info
             # add cp65001 as an utf-8 alias.
             execute \

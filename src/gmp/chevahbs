@@ -20,6 +20,11 @@ chevahbs_configure() {
             CONF_OPTS="$CONF_OPTS --with-pic"
         fi
     fi
+    case $OS in
+        raspbian*)
+            CONF_OPTS="$CONF_OPTS --build=armcortexa8neon-unknown-linux-gnueabihf --with-pic"
+        ;;
+    esac
     execute ./configure --prefix="" $CONF_OPTS
 }
 

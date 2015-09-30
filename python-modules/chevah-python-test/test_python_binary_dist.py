@@ -7,6 +7,7 @@ import subprocess
 
 script_helper = './get_binaries_deps.sh'
 platform_system = platform.system().lower()
+test_for_readline = False
 
 
 def get_allowed_deps():
@@ -15,8 +16,8 @@ def get_allowed_deps():
     """
     allowed_deps = []
     if platform_system == 'linux':
-        # The minimal list of deps covering Debian, Ubuntu and SUSE:
-        # glibc, openssl and zlib.
+        # The minimal list of deps for Linux: glibc, openssl, zlib,
+        # and, for readline support through libedit, a curses library.
         allowed_deps = [
             'ld-linux',
             'libc.so',
@@ -24,6 +25,7 @@ def get_allowed_deps():
             'libcrypto.so',
             'libdl.so',
             'libm.so',
+            'libncursesw.so',
             'libnsl.so',
             'libpthread.so',
             'libssl.so',
@@ -33,8 +35,10 @@ def get_allowed_deps():
             'linux-vdso.so',
             ]
         # Distro-specific deps to add. Now we may specify major versions too.
-        linux_distro_name = platform.linux_distribution()[0]
-        if ('Red Hat' in linux_distro_name) or ('CentOS' in linux_distro_name):
+        with open('../DEFAULT_VALUES') as default_values_file:
+            chevah_os = default_values_file.read().split(' ')[2]
+        if ('rhel' in chevah_os):
+            test_for_readline = True
             allowed_deps.extend([
                 'libcom_err.so.2',
                 'libgssapi_krb5.so.2',
@@ -42,22 +46,43 @@ def get_allowed_deps():
                 'libkrb5.so.3',
                 'libresolv.so.2',
                 ])
-            rhel_version = int(platform.linux_distribution()[1].split('.')[0])
+            rhel_version = int(chevah_os[4:])
             if rhel_version >= 5:
                 allowed_deps.extend([
                     'libkeyutils.so.1',
                     'libkrb5support.so.0',
                     'libselinux.so.1',
                     'libsepol.so.1',
-                ])
+                    ])
             if rhel_version >= 6:
                 allowed_deps.extend([
                     'libfreebl3.so',
-                ])
+                    'libtinfo.so.5',
+                    ])
             if rhel_version >= 7:
                 allowed_deps.extend([
                     'liblzma.so.5',
                     'libpcre.so.1',
+                    ])
+        elif ('sles' in chevah_os):
+            test_for_readline = True
+            sles_version = int(chevah_os[4:])
+            if sles_version == 12:
+                allowed_deps.extend([
+                    'libtinfo.so.5',
+                    ])
+        elif ('ubuntu' in chevah_os):
+            test_for_readline = True
+            allowed_deps.extend([
+                'libtinfo.so.5',
+                ])
+        elif ('raspbian' in chevah_os):
+            test_for_readline = True
+            allowed_deps.extend([
+                'libcofi_rpi.so',
+                'libgcc_s.so.1',
+                'libncurses.so.5',
+                'libtinfo.so.5',
                 ])
     elif platform_system == 'aix':
         # This is the standard list of deps for AIX 5.3. Some of the links
@@ -81,8 +106,9 @@ def get_allowed_deps():
         if aix_version >= 7:
             allowed_deps.extend([
                 'libthread.a',
-            ])
+                ])
     elif platform_system == 'sunos':
+        test_for_readline = True
         # This is the common list of deps for Solaris 10 & 11 builds.
         allowed_deps = [
             'libc.so.1',
@@ -93,9 +119,13 @@ def get_allowed_deps():
             'libmp.so.2',
             'libnsl.so.1',
             'libsocket.so.1',
-            'libsqlite3.so.0',
             'libz.so.1',
             ]
+        if platform.processor() == 'sparc':
+            allowed_deps.extend([
+                'libc_psr.so.1',
+                'libmd_psr.so.1',
+                ])
         # On Solaris, platform.release() can be: '5.9'. '5.10', '5.11' etc.
         solaris_version = platform.release().split('.')[1]
         if solaris_version == '10':
@@ -105,12 +135,15 @@ def get_allowed_deps():
                 'libcrypt_i.so.1',
                 'libcrypto.so.0.9.7',
                 'libcrypto_extra.so.0.9.7',
+                'libcurses.so.1',
                 'libdoor.so.1',
                 'libgen.so.1',
                 'librt.so.1',
                 'libscf.so.1',
+                'libsqlite3.so',
                 'libssl.so.0.9.7',
                 'libssl_extra.so.0.9.7',
+                'libthread.so.1',
                 'libuutil.so.1',
                 ])
         elif solaris_version == '11':
@@ -120,7 +153,9 @@ def get_allowed_deps():
                 'libcrypto.so.1.0.0',
                 'libcryptoutil.so.1',
                 'libelf.so.1',
+                'libncurses.so.5',
                 'libsoftcrypto.so.1',
+                'libsqlite3.so.0',
                 'libssl.so.1.0.0',
                 ])
     elif platform_system == 'darwin':
@@ -236,7 +271,7 @@ def main():
         _hashlib
     except:
         sys.stderr.write('standard "ssl" missing.\n')
-        exit_code = 1
+        exit_code = 2
 
     try:
         from OpenSSL import SSL, crypto, rand
@@ -245,31 +280,59 @@ def main():
         rand
     except:
         sys.stderr.write('"OpenSSL" missing.\n')
-        exit_code = 1
+        exit_code = 3
 
     try:
         import Crypto
         Crypto
     except:
         sys.stderr.write('"PyCrypto" missing.\n')
-        exit_code = 1
+        exit_code = 4
+
+    try:
+        import crypt
+        crypt
+    except:
+        sys.stderr.write('"crypt" missing.\n')
+        exit_code = 5
+
+    try:
+        from pysqlite2 import test
+        test.test()
+    except:
+        sys.stderr.write('"pysqlite2" missing.\n')
+        exit_code = 6
+
+    try:
+        import setproctitle
+        setproctitle
+    except:
+        sys.stderr.write('"setproctitle" missing.\n')
+        exit_code = 7
 
     try:
         from ctypes import CDLL
         CDLL
     except:
         sys.stderr.write('"ctypes - CDLL" missing.\n')
-        exit_code = 1
+        exit_code = 8
 
     try:
         from ctypes.util import find_library
         find_library
     except:
         sys.stderr.write('"ctypes.utils - find_library" missing.\n')
-        exit_code = 1
+        exit_code = 9
 
+    try:
+        from Crypto.PublicKey import _fastmath
+        _fastmath
+    except:
+        sys.stderr.write('"Crypto.PublicKey._fastmath" missing. No GMP?\n')
+        exit_code = 10
+
+    # Windows specific modules.
     if os.name == 'nt':
-        # Windows specific modules.
         try:
             from ctypes import windll
             windll
@@ -314,15 +377,26 @@ def main():
             exit_code = 1
 
     if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
-        # On Linux and Solaris we need spwd, but not on AIX or OS X.
         try:
             import spwd
             spwd
         except:
-            sys.stderr.write('spwd missing.\n')
+            sys.stderr.write('"spwd" missing.\n')
             exit_code = 1
 
+    # We compile the readline module using libedit only on selected platforms.
+    if test_for_readline:
+        try:
+            import readline
+            readline.get_history_length()
+        except:
+            sys.stderr.write('"readline" missing.\n')
+            exit_code = 13
+
     exit_code = test_dependencies() | exit_code
+        exit_code = 13
+            exit_code = 14
+                exit_code = 15
 
     sys.exit(exit_code)
 

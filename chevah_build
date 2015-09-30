@@ -301,7 +301,7 @@ command_build() {
             # For Windows we don't build everthing from source yet.
             echo "Skipping cleaning install folder"
             ;;
-        *)
+    esac
 
     # Build GMP statically on all platforms, copy headers and libs in a temp
     # location, and update $CPPFLAGS and $LDFLAGS accordingly. For any other

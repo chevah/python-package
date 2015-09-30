@@ -166,7 +166,6 @@ fi
 # Install OS package required to build Python.
 #
 install_dependencies() {
-
     packages='packages-not-defined'
     install_command='install-command-not-defined'
     check_command='check-command-not-defined'
@@ -188,7 +187,7 @@ install_dependencies() {
             install_command='sudo zypper --non-interactive install -l'
             check_command='rpm --query'
         ;;
-        linux|aix*|solaris*|osx*)
+        linux|aix*|solaris*|osx*|windows*)
             packages=''
             install_command=''
             check_command=''

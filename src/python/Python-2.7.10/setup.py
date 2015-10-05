@@ -33,7 +33,21 @@ host_platform = get_platform()
 COMPILED_WITH_PYDEBUG = ('--with-pydebug' in sysconfig.get_config_var("CONFIG_ARGS"))
 
 # This global variable is used to hold the list of modules to be disabled.
-disabled_module_list = []
+disabled_module_list = [
+    '_bsddb',
+    '_curses',
+    '_curses_panel',
+    '_sqlite3',
+    '_tkinter',
+    'bz2',
+    'dbm',
+    'gdbm',
+    'sunaudiodev',
+    ]
+
+# Compile the readline module only on platforms whitelisted below.
+if host_platform not in ('linux2', 'sunos5' ):
+    disabled_module_list.append('readline')
 
 def add_dir_to_list(dirlist, dir):
     """Add the directory 'dir' to the list 'dirlist' (at the front) if
@@ -702,8 +716,8 @@ class PyBuildExt(build_ext):
         else:
             missing.extend(['imageop'])
 
-        # readline
-        do_readline = self.compiler.find_library_file(lib_dirs, 'readline')
+        # For this build, use the BSD libedit instead of GNU's readline.
+        do_readline = self.compiler.find_library_file(lib_dirs, 'edit')
         readline_termcap_library = ""
         curses_library = ""
         # Determine if readline is already linked against curses or tinfo.
@@ -756,7 +770,7 @@ class PyBuildExt(build_ext):
             else:
                 readline_extra_link_args = ()
 
-            readline_libs = ['readline']
+            readline_libs = ['edit']
             if readline_termcap_library:
                 pass # Issue 7384: Already linked against curses or tinfo.
             elif curses_library:
@@ -773,11 +787,13 @@ class PyBuildExt(build_ext):
             missing.append('readline')
 
         # crypt module.
-
-        if self.compiler.find_library_file(lib_dirs, 'crypt'):
+        libs = []
+        if host_platform == 'sunos5':
+            # http://bugs.python.org/issue1471934 (64bit Solaris 8-10)
+            if self.compiler.find_library_file(lib_dirs, 'crypt_i'):
+                libs = ['crypt_i']
+        elif self.compiler.find_library_file(lib_dirs, 'crypt'):
             libs = ['crypt']
-        else:
-            libs = []
         exts.append( Extension('crypt', ['cryptmodule.c'], libraries=libs) )
 
         # CSV files
@@ -790,6 +806,7 @@ class PyBuildExt(build_ext):
         # Detect SSL support for the socket module (via _ssl)
         search_for_ssl_incs_in = [
                               '/usr/local/ssl/include',
+                              '/usr/sfw/include/',
                               '/usr/contrib/ssl/include/'
                              ]
         ssl_incs = find_file('openssl/ssl.h', inc_dirs,
@@ -797,10 +814,23 @@ class PyBuildExt(build_ext):
                              )
         if ssl_incs is not None:
             krb5_h = find_file('krb5.h', inc_dirs,
-                               ['/usr/kerberos/include'])
+                               ['/usr/kerberos/include',
+                                '/usr/include/kerberosv5/'
+                               ])
             if krb5_h:
                 ssl_incs += krb5_h
-        ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
+        # On Solaris 10 the OpenSSL libs live in /usr/sfw/lib.
+        if host_platform == 'sunos5':
+            # Determine if we need to set the path to 64bit OpenSSL libs.
+            arch_env = os.environ.get('ARCH')
+            if '64' in arch_env:
+                ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
+                                         [ '/usr/sfw/lib/64' ] )
+            else:
+                ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
+                                         [ '/usr/sfw/lib' ] )
+        else:
+            ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
                                      ['/usr/local/ssl/lib',
                                       '/usr/contrib/ssl/lib/'
                                      ] )
@@ -2059,6 +2089,7 @@ class PyBuildExt(build_ext):
         include_dirs = []
         extra_compile_args = []
         extra_link_args = []
+        extra_objects = []
         sources = ['_ctypes/_ctypes.c',
                    '_ctypes/callbacks.c',
                    '_ctypes/callproc.c',
@@ -2092,6 +2123,7 @@ class PyBuildExt(build_ext):
                         include_dirs=include_dirs,
                         extra_compile_args=extra_compile_args,
                         extra_link_args=extra_link_args,
+                        extra_objects=extra_objects,
                         libraries=[],
                         sources=sources,
                         depends=depends)
@@ -2107,6 +2139,10 @@ class PyBuildExt(build_ext):
             # in /usr/include/ffi
             inc_dirs.append('/usr/include/ffi')
 
+        # On AIX and Solaris, we build ffi and install it in "build/ffi".
+        if host_platform.startswith('aix') or host_platform == 'sunos5':
+            inc_dirs.append('build/libffi')
+
         ffi_inc = [sysconfig.get_config_var("LIBFFI_INCLUDEDIR")]
         if not ffi_inc or ffi_inc[0] == '':
             ffi_inc = find_file('ffi.h', [], inc_dirs)
@@ -2121,15 +2157,25 @@ class PyBuildExt(build_ext):
                 if line.startswith('#define LIBFFI_H'):
                     break
         ffi_lib = None
+        ffi_lib_dirs = lib_dirs[:]
+
+        # On AIX and Solaris, there's no OS-bundled libffi.
+        if host_platform.startswith('aix') or host_platform == 'sunos5':
+            ffi_lib_dirs.append('build/libffi')
+
         if ffi_inc is not None:
             for lib_name in ('ffi_convenience', 'ffi_pic', 'ffi'):
-                if (self.compiler.find_library_file(lib_dirs, lib_name)):
+                if (self.compiler.find_library_file(ffi_lib_dirs, lib_name)):
                     ffi_lib = lib_name
                     break
 
         if ffi_inc and ffi_lib:
             ext.include_dirs.extend(ffi_inc)
-            ext.libraries.append(ffi_lib)
+            # On AIX and Solaris, there's no OS-bundled libffi.
+            if host_platform.startswith('aix') or host_platform == 'sunos5':
+                ext.extra_objects.append('build/libffi/libffi.a')
+            else:
+                ext.libraries.append(ffi_lib)
             self.use_system_libffi = True
 
 

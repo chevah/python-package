@@ -142,7 +142,7 @@ case $OS in
         # HP compiler, so we are NOT exporting custom values for CC and CXX.
         export MAKE=gmake
     ;;
-    rhel4*)
+    rhel4)
         # RHEL4 has OpenSSL 0.9.7, but Python 2 versions starting with
         # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
         PYTHON_BUILD_VERSION=2.7.8

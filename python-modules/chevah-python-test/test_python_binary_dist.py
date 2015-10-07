@@ -289,12 +289,28 @@ def main():
         sys.stderr.write('"PyCrypto" missing.\n')
         exit_code = 4
 
-    try:
-        import crypt
-        crypt
-    except:
-        sys.stderr.write('"crypt" missing.\n')
-        exit_code = 5
+    if os.name != 'nt':
+        # Module only available on Linux / Unix
+        try:
+            import crypt
+            crypt
+        except:
+            sys.stderr.write('"crypt" missing.\n')
+            exit_code = 5
+
+        try:
+            import setproctitle
+            setproctitle
+        except:
+            sys.stderr.write('"setproctitle" missing.\n')
+            exit_code = 7
+
+        try:
+            from Crypto.PublicKey import _fastmath
+            _fastmath
+        except:
+            sys.stderr.write('"Crypto.PublicKey._fastmath" missing. No GMP?\n')
+            exit_code = 10
 
     try:
         from pysqlite2 import test
@@ -302,13 +318,6 @@ def main():
     except:
         sys.stderr.write('"pysqlite2" missing.\n')
         exit_code = 6
-
-    try:
-        import setproctitle
-        setproctitle
-    except:
-        sys.stderr.write('"setproctitle" missing.\n')
-        exit_code = 7
 
     try:
         from ctypes import CDLL
@@ -323,13 +332,6 @@ def main():
     except:
         sys.stderr.write('"ctypes.utils - find_library" missing.\n')
         exit_code = 9
-
-    try:
-        from Crypto.PublicKey import _fastmath
-        _fastmath
-    except:
-        sys.stderr.write('"Crypto.PublicKey._fastmath" missing. No GMP?\n')
-        exit_code = 10
 
     # Windows specific modules.
     if os.name == 'nt':
@@ -393,10 +395,7 @@ def main():
             sys.stderr.write('"readline" missing.\n')
             exit_code = 13
 
-    exit_code = test_dependencies() | exit_code
-        exit_code = 13
-            exit_code = 14
-                exit_code = 15
+        exit_code = test_dependencies() | exit_code
 
     sys.exit(exit_code)
 

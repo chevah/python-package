@@ -150,6 +150,8 @@ case $OS in
     ;;
     windows*)
         LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
+        # For Windows we are still at 2.7.8.
+        PYTHON_BUILD_VERSION=2.7.8
         ;;
 esac
 
@@ -295,22 +297,32 @@ command_build() {
             build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
     esac
-    
+
     case $OS in
         windows*)
-            # For Windows we don't build everthing from source yet.
+            # For Windows we don't build everything from source yet.
             echo "Skipping GMP"
             build 'python' "Python-$PYTHON_BUILD_VERSION-windows" ${PYTHON_BUILD_FOLDER}
             echo "Skipping sqlite and extra libraries"
-            # For Windows we don't build everthing from source yet.
+            # For Windows we don't build every thing from source yet.
             echo "Skipping cleaning install folder"
             ;;
     esac
 
-    # Build GMP statically on all platforms, copy headers and libs in a temp
-    # location, and update $CPPFLAGS and $LDFLAGS accordingly. For any other
-    # statically-compiled lib, such as libedit, we'll need these shell vars.
-    build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
+    case $OS in
+        windows*)
+            # For Windows we don't build everything from source yet.
+            echo "Skipping GMP"
+            ;;
+        *)
+            # Build GMP statically on all platforms, copy headers and libs in
+            # a temp location, and update $CPPFLAGS and $LDFLAGS accordingly.
+            # For any other statically-compiled lib, such as libedit,
+            # we'll need these shell vars.
+            build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
+            ;;
+    esac
+
     mkdir -p $INSTALL_FOLDER/{include,lib}
     export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"
     export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
@@ -329,24 +341,33 @@ command_build() {
             ;;
     esac
 
-    build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
+    case $OS in
+        windows*)
+            build 'python' "Python-$PYTHON_BUILD_VERSION-windows" ${PYTHON_BUILD_FOLDER}
+            echo "Skipping sqlite and extra libraries"
+            # For Windows we don't build every thing from source yet.
+            echo "Skipping cleaning install folder"
+            ;;
+        *)
+            build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
 
-    command_build_sqlite
+            command_build_sqlite
 
-    command_build_python_extra_libraries
+            command_build_python_extra_libraries
 
-    execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
-        # Clean the build folder.
-        execute rm -rf tmp
-        execute mkdir -p lib/config
-        safe_move share lib/config
-        safe_move pysqlite2-doc lib/config
-        # Move all bin to lib/config
-        safe_move bin lib/config
-        execute mkdir bin
-        # Copy back python binary
-        execute cp lib/config/bin/$PYTHON_VERSION bin/python
-    execute popd
+            execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
+                # Clean the build folder.
+                execute rm -rf tmp
+                execute mkdir -p lib/config
+                safe_move share lib/config
+                safe_move pysqlite2-doc lib/config
+                # Move all bin to lib/config
+                safe_move bin lib/config
+                execute mkdir bin
+                # Copy back python binary
+                execute cp lib/config/bin/$PYTHON_VERSION bin/python
+            execute popd
+    esac
 
     remove_dependencies
 

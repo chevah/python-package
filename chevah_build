@@ -146,6 +146,7 @@ case $OS in
         export CC="clang"
         export CXX="clang++"
         export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
+        export MACOSX_DEPLOYMENT_TARGET=10.8
         ;;
     rhel4)
         # RHEL4 has OpenSSL 0.9.7, but Python 2 versions starting with

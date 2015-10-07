@@ -49,19 +49,18 @@ chevahbs_configure() {
                 --with-system-ffi \
                 "
             ;;
-        solaris*)
-            # In Solaris the default OpenSSL installation lives in /usr/sfw/.
+        solaris10)
+            # In Solaris 10, the default OpenSSL is installed in /usr/sfw/.
             # Both include options are needed to match both the native Sun
             # Studio compiler and GCC.
             if [ "${ARCH%64}" = "$ARCH" ]; then
                 echo "_ssl _ssl.c -I/usr/sfw/include" \
                     "-I/usr/sfw/include/openssl -L/usr/sfw/lib" \
-                    " -R/usr/sfw/lib -lssl -lcrypto" >> Modules/Setup.local
+                    "-R/usr/sfw/lib -lssl -lcrypto" >> Modules/Setup.local
             else
-                CONFIG_ARGS="${CONFIG_ARGS} CFLAGS=-m64 LDFLAGS=-m64"
                 echo "_ssl _ssl.c -I/usr/sfw/include" \
                     "-I/usr/sfw/include/openssl -L/usr/sfw/lib/64" \
-                    " -R/usr/sfw/lib/64 -lssl -lcrypto" >> Modules/Setup.local
+                    "-R/usr/sfw/lib/64 -lssl -lcrypto" >> Modules/Setup.local
             fi
             ;;
         hpux*)

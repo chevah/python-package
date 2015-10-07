@@ -7,6 +7,7 @@ import subprocess
 
 script_helper = './get_binaries_deps.sh'
 platform_system = platform.system().lower()
+test_for_readline = False
 
 
 def get_allowed_deps():
@@ -34,8 +35,10 @@ def get_allowed_deps():
             'linux-vdso.so',
             ]
         # Distro-specific deps to add. Now we may specify major versions too.
-        linux_distro_name = platform.linux_distribution()[0]
-        if ('Red Hat' in linux_distro_name) or ('CentOS' in linux_distro_name):
+        with open('../DEFAULT_VALUES') as default_values_file:
+            chevah_os = default_values_file.read().split(' ')[2]
+        if ('rhel' in chevah_os):
+            test_for_readline = True
             allowed_deps.extend([
                 'libcom_err.so.2',
                 'libgssapi_krb5.so.2',
@@ -43,7 +46,7 @@ def get_allowed_deps():
                 'libkrb5.so.3',
                 'libresolv.so.2',
                 ])
-            rhel_version = int(platform.linux_distribution()[1].split('.')[0])
+            rhel_version = int(chevah_os[4:])
             if rhel_version >= 5:
                 allowed_deps.extend([
                     'libkeyutils.so.1',
@@ -61,19 +64,23 @@ def get_allowed_deps():
                     'liblzma.so.5',
                     'libpcre.so.1',
                     ])
-        elif ('SUSE' in linux_distro_name):
-            sles_version = int(platform.linux_distribution()[1])
+        elif ('sles' in chevah_os):
+            test_for_readline = True
+            sles_version = int(chevah_os[4:])
             if sles_version == 12:
                 allowed_deps.extend([
                     'libtinfo.so.5',
                     ])
-        elif ('Ubuntu' in linux_distro_name):
+        elif ('ubuntu' in chevah_os):
+            test_for_readline = True
             allowed_deps.extend([
                 'libtinfo.so.5',
                 ])
-        else:
-            # For generic Linux distros, such as Debian.
+        elif ('raspbian' in chevah_os):
+            test_for_readline = True
             allowed_deps.extend([
+                'libcofi_rpi.so',
+                'libgcc_s.so.1',
                 'libncurses.so.5',
                 'libtinfo.so.5',
                 ])
@@ -101,6 +108,7 @@ def get_allowed_deps():
                 'libthread.a',
                 ])
     elif platform_system == 'sunos':
+        test_for_readline = True
         # This is the common list of deps for Solaris 10 & 11 builds.
         allowed_deps = [
             'libc.so.1',
@@ -111,7 +119,6 @@ def get_allowed_deps():
             'libmp.so.2',
             'libnsl.so.1',
             'libsocket.so.1',
-            'libsqlite3.so',
             'libz.so.1',
             ]
         if platform.processor() == 'sparc':
@@ -128,10 +135,12 @@ def get_allowed_deps():
                 'libcrypt_i.so.1',
                 'libcrypto.so.0.9.7',
                 'libcrypto_extra.so.0.9.7',
+                'libcurses.so.1',
                 'libdoor.so.1',
                 'libgen.so.1',
                 'librt.so.1',
                 'libscf.so.1',
+                'libsqlite3.so',
                 'libssl.so.0.9.7',
                 'libssl_extra.so.0.9.7',
                 'libthread.so.1',
@@ -144,7 +153,9 @@ def get_allowed_deps():
                 'libcrypto.so.1.0.0',
                 'libcryptoutil.so.1',
                 'libelf.so.1',
+                'libncurses.so.5',
                 'libsoftcrypto.so.1',
+                'libsqlite3.so.0',
                 'libssl.so.1.0.0',
                 ])
     elif platform_system == 'darwin':
@@ -306,10 +317,10 @@ def main():
             exit_code = 12
 
     # We compile the readline module using libedit only on selected platforms.
-    if platform_system == 'linux':
+    if test_for_readline:
         try:
             import readline
-            readline.clear_history()
+            readline.get_history_length()
         except:
             sys.stderr.write('"readline" missing.\n')
             exit_code = 13

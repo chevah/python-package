@@ -3,7 +3,7 @@
 # See LICENSE for details.
 #
 # Helper script for bootstraping the build system on Unix/Msys.
-# It will write the default values into 'DEFAULT_VALUES' file.
+# It will write the default values in the 'DEFAULT_VALUES' file.
 #
 # To use this script you will need to publish binary archive files for the
 # following components:
@@ -15,7 +15,7 @@
 # It will delegate the argument to the paver script, with the exception of
 # these commands:
 # * clean - remove everything, except cache
-# * detect_os - create DEFAULT_VALUES and exit
+# * detect_os - detect operating system, create the DEFAULT_VALUES file and exit
 # * get_python - download Python distribution in cache
 # * get_agent - download Rexx/Putty distribution in cache
 #
@@ -312,14 +312,14 @@ install_dependencies(){
     exit_code=$?
     set -e
     if [ $exit_code -ne 0 ]; then
-        echo 'Failed to run the inital "paver deps" command.'
+        echo 'Failed to run the initial "paver deps" command.'
         exit 1
     fi
 }
 
 
 #
-# Chech that we have a pavement.py in the current dir.
+# Check that we have a pavement.py in the current dir.
 # otherwise it means we are out of the source folder and paver can not be
 # used there.
 #
@@ -427,8 +427,7 @@ detect_os() {
 
         if [ -f /etc/redhat-release ]; then
             # Avoid getting confused by Red Hat derivatives such as Fedora.
-            egrep 'Red\ Hat|CentOS|Scientific' /etc/redhat-release > /dev/null
-            if [ $? -eq 0 ]; then
+            if egrep -q 'Red\ Hat|CentOS|Scientific' /etc/redhat-release; then
                 os_version_raw=$(\
                     cat /etc/redhat-release | sed s/.*release// | cut -d' ' -f2)
                 check_os_version "Red Hat Enterprise Linux" 4 \
@@ -443,6 +442,17 @@ detect_os() {
                 check_os_version "SUSE Linux Enterprise Server" 11 \
                     "$os_version_raw" os_version_chevah
                 OS="sles${os_version_chevah}"
+            fi
+        elif [ -f /etc/rpi-issue ]; then
+            # Raspbian is a special case, a Debian unofficial derivative.
+            if egrep -q ^'NAME="Raspbian GNU/Linux' /etc/os-release; then
+                os_version_raw=$(\
+                    grep ^'VERSION_ID=' /etc/os-release | cut -d'"' -f2)
+                check_os_version "Raspbian GNU/Linux" 7 \
+                    "$os_version_raw" os_version_chevah
+                # For now, we only generate a Raspbian version 7.x package,
+                # and we should use that in newer Raspbian versions too.
+                OS="raspbian7"
             fi
         elif [ $(command -v lsb_release) ]; then
             lsb_release_id=$(lsb_release -is)
@@ -483,7 +493,7 @@ detect_os() {
         ARCH='sparc64'
     elif [ "$ARCH" = "ppc64" ]; then
         # Python has not been fully tested on AIX when compiled as a 64 bit
-        # application and has math rounding error problems (at least with XL C).
+        # binary, and has math rounding error problems (at least with XL C).
         ARCH='ppc'
     elif [ "$ARCH" = "aarch64" ]; then
         ARCH='arm64'

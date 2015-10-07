@@ -82,6 +82,9 @@ AC_CHECK_HEADERS([fcntl.h limits.h malloc.h stdlib.h string.h sys/ioctl.h sys/pa
 
 AC_CHECK_HEADER([termios.h], [], [AC_MSG_ERROR([termios.h is required!])],[])
 
+# Solaris 10 doesn't have it.
+AC_CHECK_HEADERS([err.h])
+
 ## include curses.h to prevent "Present But Cannot Be Compiled"
 AC_CHECK_HEADERS([term.h],,,
 [[#if HAVE_CURSES_H

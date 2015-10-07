@@ -13,14 +13,14 @@
 
 # List of OS packages required for building Python.
 COMMON_PACKAGES="gcc make m4 automake libtool texinfo"
-UBUNTU_PACKAGES="$COMMON_PACKAGES libssl-dev zlib1g-dev libncurses5-dev"
+DEBIAN_PACKAGES="$COMMON_PACKAGES libssl-dev zlib1g-dev libncurses5-dev"
 RHEL_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel ncurses-devel"
 SLES_PACKAGES="$COMMON_PACKAGES libopenssl-devel zlib-devel ncurses-devel"
 # List of OS packages requested to be installed by this script.
 INSTALLED_PACKAGES=''
 # For now, we don't install anything on OS X, Solaris, AIX, and
 # unsupported Linux distros. The build requires a C compiler, GNU make, m4,
-# the header files for OpenSSL and zlib, and optionally texinfo.
+# the header files for OpenSSL and zlib, and (optionally) texinfo.
 # To build libedit for the readline module, we need the headers of
 # a curses library, automake and libtool.
 # On platforms with a choice of C compilers, you may choose among the
@@ -52,7 +52,6 @@ PYTHON_VERSION=`cut -d' ' -f 2 DEFAULT_VALUES`
 OS=`cut -d' ' -f 3 DEFAULT_VALUES`
 ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 TIMESTAMP=`date +'%Y%m%d'`
-rm DEFAULT_VALUES
 
 # In Solaris and AIX we use $ARCH to choose if we build a 32bit or 64bit
 # package. This way we are able to force a 32bit build on a 64bit machine,
@@ -67,10 +66,6 @@ export CC='gcc'
 # when not using gcc, and thus silence the associated configure warning.
 # However, we set $CPPFLAGS later for linking to statically-compiled libs.
 export CXX='g++'
-# Use PIC (Position Independent Code) with GCC on 64-bit arches.
-if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
-    export CFLAGS="${CFLAGS} -fPIC"
-fi
 
 LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
 INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST
@@ -112,16 +107,17 @@ case $OS in
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
         export CC="cc"
         export CXX="CC"
+        export MAKE="gmake"
         # Here's where the system-included GCC is to be found.
         if [ "${CC}" = "gcc" ]; then
             export PATH="$PATH:/usr/sfw/bin/"
         fi
-        # And this is where the GNU libs are in Solaris 10, including OpenSSL.
+        # The location for GNU libs in Solaris, including OpenSSL in Solaris 10.
         if [ "${ARCH%64}" = "$ARCH" ]; then
             export LDFLAGS="$LDFLAGS -L/usr/sfw/lib -R/usr/sfw/lib"
         else
             export LDFLAGS="$LDFLAGS -m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
-            export CFLAGS="$CFLAGS -m64 -xcode=abs64"
+            export CFLAGS="$CFLAGS -m64"
         fi
         if [ "$OS" = "solaris10" ]; then
             # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with
@@ -153,6 +149,19 @@ case $OS in
         ;;
 esac
 
+# Compiler-dependent flags. At this moment we should know what compiler is used.
+if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
+    # Use PIC (Position Independent Code) with GCC on 64-bit arches.
+    export CFLAGS="${CFLAGS} -fPIC"
+elif [ "${OS%solaris*}" = "" ]; then
+    if [ ${ARCH} = "sparc64" ]; then
+        # Required for compiling GMP on Solaris for SPARC with Sun Studio.
+        export CFLAGS="$CFLAGS -xcode=abs64"
+    elif [ ${ARCH} = "x64" ]; then
+        # Required for linking to libedit, which has a simpler configure setup.
+        export CFLAGS="$CFLAGS -xcode=pic32"
+    fi
+fi
 
 #
 # Install OS package required to build Python.
@@ -164,8 +173,9 @@ install_dependencies() {
     check_command='check-command-not-defined'
 
     case $OS in
-        ubuntu*)
-            packages=$UBUNTU_PACKAGES
+        # Debian-derived distros are similar in this regard.
+        ubuntu*|raspbian*)
+            packages=$DEBIAN_PACKAGES
             install_command='sudo apt-get --assume-yes install'
             check_command='dpkg --status'
         ;;
@@ -179,7 +189,7 @@ install_dependencies() {
             install_command='sudo zypper --non-interactive install -l'
             check_command='rpm --query'
         ;;
-        linux|aix*|solaris*|osx*)
+        *)
             packages=''
             install_command=''
             check_command=''
@@ -221,7 +231,7 @@ remove_dependencies() {
     fi
 
     case $OS in
-        ubuntu*)
+        ubuntu*|raspbian*)
             execute sudo apt-get --assume-yes --purge remove $INSTALLED_PACKAGES
             execute sudo apt-get --assume-yes --purge autoremove
             ;;
@@ -292,10 +302,12 @@ command_build() {
     export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
 
     # Statically build the BSD libedit on selected platforms to get readline
-    # support without linking to the GPL'ed readline.
+    # support without linking to the GPL-only readline. We don't do this for
+    # generic Linux builds because the result depends on the local ncurses
+    # libs (ncurses, ncursesw, tinfo, others?), and the result is not portable.
     # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
     case $OS in
-        ubuntu*|rhel*|sles*|linux)
+        ubuntu*|raspbian*|rhel*|sles*|solaris*)
             build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
             cp -r $INSTALL_FOLDER/tmp/libedit/{editline/,*.h} \
                 $INSTALL_FOLDER/include/
@@ -403,27 +415,25 @@ initialize_python_module(){
                 # Copy special link steps in local folder.
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
-            ;;
+                ;;
             solaris*)
                 # Copy special link steps in local folder.
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
+                extra_args=""
                 if [ "$OS" = "solaris10" ]; then
+                    extra_args="$extra_args -I/usr/sfw/include"
                     # Needed to build pyOpenSSL and pysqlite in Solaris 10.
                     # Make sure the headers for OpenSSL and sqlite3 are present
                     # in /usr/sfw/include (only one location allowed, it seems).
                     if [ "${ARCH%64}" = "$ARCH" ]; then
-                        execute $PYTHON_BIN setup.py build_ext \
-                            -I/usr/sfw/include \
-                            -L/usr/sfw/lib -L/usr/lib/mps
+                        extra_args="$extra_args -L/usr/sfw/lib -L/usr/lib/mps"
                     else
-                        execute $PYTHON_BIN setup.py build_ext \
-                            -I/usr/sfw/include \
-                            -L/usr/sfw/lib/64 -L/usr/lib/mps/64
-
+                        extra_args="$extra_args -L/usr/sfw/lib/64 -L/usr/lib/mps/64"
                     fi
                 fi
-            ;;
+                execute $PYTHON_BIN setup.py build_ext $extra_args
+                ;;
         esac
     execute popd
 }

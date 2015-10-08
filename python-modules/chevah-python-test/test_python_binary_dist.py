@@ -159,7 +159,7 @@ def get_allowed_deps():
                 'libssl.so.1.0.0',
                 ])
     elif platform_system == 'darwin':
-        # This is the minimum list of deps for OS X.
+        # This is the list of deps for OS X.
         allowed_deps = [
             'ApplicationServices.framework/Versions/A/ApplicationServices',
             'Carbon.framework/Versions/A/Carbon',
@@ -168,7 +168,6 @@ def get_allowed_deps():
             'SystemConfiguration.framework/Versions/A/SystemConfiguration',
             'libSystem.B.dylib',
             'libcrypto.0.9.8.dylib',
-            'libgcc_s.1.dylib',
             'libssl.0.9.8.dylib',
             'libz.1.dylib',
             ]

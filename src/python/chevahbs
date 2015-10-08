@@ -12,11 +12,6 @@ chevahbs_configure() {
     CONFIGURE_ENVIRONMENT=""
 
     case $OS in
-        "hpux")
-            export EXTRA_CFLAGS="-D_REENTRANT"
-            export LIBS="-lpthread"
-            CONFIG_ARGS="${CONFIG_ARGS} --without-gcc --without-ctypes"
-            ;;
         "ubuntu1004")
             # On Ubuntu there are no libXXX.o, but rather linked against the
             # full version number.
@@ -67,6 +62,14 @@ chevahbs_configure() {
                     "-I/usr/sfw/include/openssl -L/usr/sfw/lib/64" \
                     "-R/usr/sfw/lib/64 -lssl -lcrypto" >> Modules/Setup.local
             fi
+            ;;
+        hpux*)
+            export EXTRA_CFLAGS="-D_REENTRANT"
+            export LIBS="-lpthread"
+            CONFIG_ARGS="${CONFIG_ARGS} --without-gcc --without-ctypes"
+            ;;
+        osx*)
+            CONFIG_ARGS="${CONFIG_ARGS} --without-gcc"
             ;;
     esac
 

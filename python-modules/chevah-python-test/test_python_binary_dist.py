@@ -103,7 +103,7 @@ def get_allowed_deps():
             ]
         # sys.platform could be 'aix5', 'aix6' etc.
         aix_version = int(sys.platform[-1])
-        if aix_version >= 7:
+        if aix_version >= 6:
             allowed_deps.extend([
                 'libthread.a',
                 ])

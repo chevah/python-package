@@ -29,7 +29,7 @@ INSTALLED_PACKAGES=''
 LIBFFI_VERSION=3.2.1
 GMP_VERSION=6.0.0
 LIBEDIT_VERSION=20150325-3.1
-PYTHON_BUILD_VERSION=2.7.8
+PYTHON_BUILD_VERSION=2.7.10
 PYSQLITE_VERSION=2.6.3
 SQLITE_VERSION=3.8.1
 
@@ -52,7 +52,6 @@ PYTHON_VERSION=`cut -d' ' -f 2 DEFAULT_VALUES`
 OS=`cut -d' ' -f 3 DEFAULT_VALUES`
 ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 TIMESTAMP=`date +'%Y%m%d'`
-rm DEFAULT_VALUES
 
 # In Solaris and AIX we use $ARCH to choose if we build a 32bit or 64bit
 # package. This way we are able to force a 32bit build on a 64bit machine,
@@ -103,7 +102,7 @@ case $OS in
                 export CFLAGS="$CFLAGS -qmaxmem=-1 -q64"
             fi
         fi
-    ;;
+        ;;
     solaris*)
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
         export CC="cc"
@@ -137,12 +136,23 @@ case $OS in
                 export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
             fi
         fi
-    ;;
+        ;;
     hpux*)
         # For HP-UX we haven't managed yet to compile libffi and GMP with the
         # HP compiler, so we are NOT exporting custom values for CC and CXX.
         export MAKE=gmake
-    ;;
+        ;;
+    osx*)
+        export CC="clang"
+        export CXX="clang++"
+        export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
+        export MACOSX_DEPLOYMENT_TARGET=10.8
+        ;;
+    rhel4)
+        # RHEL4 has OpenSSL 0.9.7, but Python 2 versions starting with
+        # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
+        PYTHON_BUILD_VERSION=2.7.8
+        ;;
 esac
 
 # Compiler-dependent flags. At this moment we should know what compiler is used.
@@ -298,10 +308,12 @@ command_build() {
     export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
 
     # Statically build the BSD libedit on selected platforms to get readline
-    # support without linking to the GPL'ed readline.
+    # support without linking to the GPL-only readline. We don't do this for
+    # generic Linux builds because the result depends on the local ncurses
+    # libs (ncurses, ncursesw, tinfo, others?), and the result is not portable.
     # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
     case $OS in
-        ubuntu*|raspbian*|rhel*|sles*|linux|solaris*)
+        ubuntu*|raspbian*|rhel*|sles*|solaris*)
             build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
             cp -r $INSTALL_FOLDER/tmp/libedit/{editline/,*.h} \
                 $INSTALL_FOLDER/include/

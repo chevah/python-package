@@ -7,6 +7,7 @@ import subprocess
 
 script_helper = './get_binaries_deps.sh'
 platform_system = platform.system().lower()
+test_for_readline = False
 
 
 def get_allowed_deps():
@@ -34,8 +35,10 @@ def get_allowed_deps():
             'linux-vdso.so',
             ]
         # Distro-specific deps to add. Now we may specify major versions too.
-        linux_distro_name = platform.linux_distribution()[0]
-        if ('Red Hat' in linux_distro_name) or ('CentOS' in linux_distro_name):
+        with open('../DEFAULT_VALUES') as default_values_file:
+            chevah_os = default_values_file.read().split(' ')[2]
+        if ('rhel' in chevah_os):
+            test_for_readline = True
             allowed_deps.extend([
                 'libcom_err.so.2',
                 'libgssapi_krb5.so.2',
@@ -43,7 +46,7 @@ def get_allowed_deps():
                 'libkrb5.so.3',
                 'libresolv.so.2',
                 ])
-            rhel_version = int(platform.linux_distribution()[1].split('.')[0])
+            rhel_version = int(chevah_os[4:])
             if rhel_version >= 5:
                 allowed_deps.extend([
                     'libkeyutils.so.1',
@@ -61,26 +64,23 @@ def get_allowed_deps():
                     'liblzma.so.5',
                     'libpcre.so.1',
                     ])
-        elif ('SUSE' in linux_distro_name):
-            sles_version = int(platform.linux_distribution()[1])
+        elif ('sles' in chevah_os):
+            test_for_readline = True
+            sles_version = int(chevah_os[4:])
             if sles_version == 12:
                 allowed_deps.extend([
                     'libtinfo.so.5',
                     ])
-        elif ('Ubuntu' in linux_distro_name):
+        elif ('ubuntu' in chevah_os):
+            test_for_readline = True
             allowed_deps.extend([
                 'libtinfo.so.5',
                 ])
-        else:
-            # Raspbian is a special case... If this file exists, we assume the
-            # distro passes the more stringent checks in paver.sh during build.
-            if os.path.isfile("/etc/rpi-issue"):
-                allowed_deps.extend([
-                    'libcofi_rpi.so',
-                    'libgcc_s.so.1',
-                    ])
-            # For generic Linux distros, such as Debian.
+        elif ('raspbian' in chevah_os):
+            test_for_readline = True
             allowed_deps.extend([
+                'libcofi_rpi.so',
+                'libgcc_s.so.1',
                 'libncurses.so.5',
                 'libtinfo.so.5',
                 ])
@@ -103,11 +103,12 @@ def get_allowed_deps():
             ]
         # sys.platform could be 'aix5', 'aix6' etc.
         aix_version = int(sys.platform[-1])
-        if aix_version >= 7:
+        if aix_version >= 6:
             allowed_deps.extend([
                 'libthread.a',
                 ])
     elif platform_system == 'sunos':
+        test_for_readline = True
         # This is the common list of deps for Solaris 10 & 11 builds.
         allowed_deps = [
             'libc.so.1',
@@ -158,7 +159,7 @@ def get_allowed_deps():
                 'libssl.so.1.0.0',
                 ])
     elif platform_system == 'darwin':
-        # This is the minimum list of deps for OS X 10.8, sans versions.
+        # This is the list of deps for OS X.
         allowed_deps = [
             'ApplicationServices.framework/Versions/A/ApplicationServices',
             'Carbon.framework/Versions/A/Carbon',
@@ -167,7 +168,6 @@ def get_allowed_deps():
             'SystemConfiguration.framework/Versions/A/SystemConfiguration',
             'libSystem.B.dylib',
             'libcrypto.0.9.8.dylib',
-            'libgcc_s.1.dylib',
             'libssl.0.9.8.dylib',
             'libz.1.dylib',
             ]
@@ -339,7 +339,7 @@ def main():
             exit_code = 12
 
     # We compile the readline module using libedit only on selected platforms.
-    if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
+    if test_for_readline:
         try:
             import readline
             readline.get_history_length()

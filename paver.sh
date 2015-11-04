@@ -3,7 +3,7 @@
 # See LICENSE for details.
 #
 # Helper script for bootstraping the build system on Unix/Msys.
-# It will write the default values into 'DEFAULT_VALUES' file.
+# It will write the default values in the 'DEFAULT_VALUES' file.
 #
 # To use this script you will need to publish binary archive files for the
 # following components:
@@ -15,7 +15,7 @@
 # It will delegate the argument to the paver script, with the exception of
 # these commands:
 # * clean - remove everything, except cache
-# * detect_os - create DEFAULT_VALUES and exit
+# * detect_os - detect operating system, create the DEFAULT_VALUES file and exit
 # * get_python - download Python distribution in cache
 # * get_agent - download Rexx/Putty distribution in cache
 #
@@ -312,14 +312,14 @@ install_dependencies(){
     exit_code=$?
     set -e
     if [ $exit_code -ne 0 ]; then
-        echo 'Failed to run the inital "paver deps" command.'
+        echo 'Failed to run the initial "paver deps" command.'
         exit 1
     fi
 }
 
 
 #
-# Chech that we have a pavement.py in the current dir.
+# Check that we have a pavement.py in the current dir.
 # otherwise it means we are out of the source folder and paver can not be
 # used there.
 #
@@ -474,7 +474,7 @@ detect_os() {
         ARCH=$(uname -m)
 
         os_version_raw=$(sw_vers -productVersion)
-        check_os_version "Mac OS X" 10.4 "$os_version_raw" os_version_chevah
+        check_os_version "Mac OS X" 10.8 "$os_version_raw" os_version_chevah
 
         # For now, no matter the actual OS X version returned, we use '108'.
         OS="osx108"
@@ -502,7 +502,7 @@ detect_os() {
         ARCH='sparc64'
     elif [ "$ARCH" = "ppc64" ]; then
         # Python has not been fully tested on AIX when compiled as a 64 bit
-        # application and has math rounding error problems (at least with XL C).
+        # binary, and has math rounding error problems (at least with XL C).
         ARCH='ppc'
     elif [ "$ARCH" = "aarch64" ]; then
         ARCH='arm64'

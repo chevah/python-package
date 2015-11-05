@@ -245,7 +245,7 @@ static PyMethodDef rand_methods[] = {
 #ifdef MS_WINDOWS
     { "screen",    (PyCFunction)rand_screen,       METH_VARARGS, rand_screen_doc },
 #endif
-#ifndef __OpenBSD__
+#ifndef LIBRESSL_VERSION_NUMBER
     { "egd",       (PyCFunction)rand_egd,          METH_VARARGS, rand_egd_doc },
 #endif
     { "cleanup",   (PyCFunction)rand_cleanup,      METH_VARARGS, rand_cleanup_doc },

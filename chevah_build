@@ -293,11 +293,7 @@ command_build() {
     # Clean the build dir to avoid contamination from previous builds.
     command_clean
 
-    case $OS in
-        aix*|solaris*|hpux*)
-            build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
-            ;;
-    esac
+    build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
 
     # Build GMP statically on all platforms, copy headers and libs in a temp
     # location, and update $CPPFLAGS and $LDFLAGS accordingly. For any other

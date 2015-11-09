@@ -25,7 +25,7 @@ def get_allowed_deps():
             'libcrypto.so',
             'libdl.so',
             'libm.so',
-            'libncursesw.so',
+            #'libncursesw.so',
             'libnsl.so',
             'libpthread.so',
             'libssl.so',
@@ -81,7 +81,7 @@ def get_allowed_deps():
             allowed_deps.extend([
                 'libcofi_rpi.so',
                 'libgcc_s.so.1',
-                'libncurses.so.5',
+                #'libncurses.so.5',
                 'libtinfo.so.5',
                 ])
     elif platform_system == 'aix':
@@ -153,7 +153,7 @@ def get_allowed_deps():
                 'libcrypto.so.1.0.0',
                 'libcryptoutil.so.1',
                 'libelf.so.1',
-                'libncurses.so.5',
+                '#libncurses.so.5',
                 'libsoftcrypto.so.1',
                 'libsqlite3.so.0',
                 'libssl.so.1.0.0',
@@ -261,6 +261,13 @@ def main():
     except:
         sys.stderr.write('standard "ssl" missing.\n')
         exit_code = 2
+
+    try:
+        from cryptography.hazmat.backends.openssl.backend import backend
+        backend.openssl_version_text()
+    except:
+        sys.stderr.write('"cryptography" failure.\n')
+        exit_code = 3
 
     try:
         from OpenSSL import SSL, crypto, rand

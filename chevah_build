@@ -32,12 +32,18 @@ LIBEDIT_VERSION=20150325-3.1
 PYTHON_BUILD_VERSION=2.7.10
 PYSQLITE_VERSION=2.6.3
 SQLITE_VERSION=3.8.1
+PIP_VERSION=7.1.2
 
 EXTRA_LIBRARIES="\
-   python-modules/pyOpenSSL-0.13 \
+   python-modules/cffi-1.3.0 \
    python-modules/pycrypto-2.6.1 \
    python-modules/python-setproctitle-1.1.8.dev0 \
    "
+
+PIP_INSTALLABLE="\
+    cryptography==1.1 \
+    pyopenssl==0.15.1 \
+    "
 
 PROG=$0
 DIST_FOLDER='dist'
@@ -71,8 +77,10 @@ LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
 INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST
 PYTHON_BIN=$INSTALL_FOLDER/bin/python
 PYTHON_BUILD_FOLDER="$PYTHON_VERSION-$OS-$ARCH"
+PIP_BIN=$INSTALL_FOLDER/bin/pip
 
 export MAKE=make
+export CHEVAH_BUILD_PATH=$INSTALL_FOLDER
 
 case $OS in
     aix*)
@@ -382,7 +390,7 @@ command_build_python_extra_libraries() {
     cp $INSTALL_FOLDER/tmp/gmp/libgmp* $INSTALL_FOLDER/lib
 
     for library in $EXTRA_LIBRARIES ; do
-        # Library is in the form pyopenssl/PyOpenssl-2.4.5
+        # Library is in the form cffi/cffi-2.4.5
         version_folder=${library#*/}
         target_folder=${BUILD_FOLDER}/$version_folder
 
@@ -402,7 +410,7 @@ command_build_python_extra_libraries() {
 #
 initialize_python_module(){
     source_folder=$1
-    larget_folder=$1
+    target_folder=$1
 
     execute rm -rf $target_folder
     execute cp -r $source_folder $target_folder
@@ -425,8 +433,8 @@ initialize_python_module(){
                 extra_args=""
                 if [ "$OS" = "solaris10" ]; then
                     extra_args="$extra_args -I/usr/sfw/include"
-                    # Needed to build pyOpenSSL and pysqlite in Solaris 10.
-                    # Make sure the headers for OpenSSL and sqlite3 are present
+                    # Needed to build pysqlite in Solaris 10.
+                    # Make sure the headers for sqlite3 are present
                     # in /usr/sfw/include (only one location allowed, it seems).
                     if [ "${ARCH%64}" = "$ARCH" ]; then
                         extra_args="$extra_args -L/usr/sfw/lib -L/usr/lib/mps"

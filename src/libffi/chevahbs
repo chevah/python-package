@@ -19,10 +19,10 @@ chevahbs_compile() {
 
 chevahbs_install() {
     execute $MAKE install DESTDIR=$INSTALL_FOLDER
-
     # libffi installs its headers in $PREFIX/lib/libffi-$VERSION/include,
     # instead of $PREFIX/include, so we copy them manually to the default
     # location.
+    execute mkdir -p $INSTALL_FOLDER/include
     execute cp $INSTALL_FOLDER/lib/libffi-*/include/* $INSTALL_FOLDER/include
 }
 

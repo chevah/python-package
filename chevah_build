@@ -13,9 +13,9 @@
 
 # List of OS packages required for building Python.
 COMMON_PACKAGES="gcc make m4 automake libtool texinfo"
-DEBIAN_PACKAGES="$COMMON_PACKAGES libssl-dev zlib1g-dev libncurses5-dev"
-RHEL_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel ncurses-devel"
-SLES_PACKAGES="$COMMON_PACKAGES libopenssl-devel zlib-devel ncurses-devel"
+DEBIAN_PACKAGES="$COMMON_PACKAGES libssl-dev zlib1g-dev"
+RHEL_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel"
+SLES_PACKAGES="$COMMON_PACKAGES libopenssl-devel zlib-devel"
 # List of OS packages requested to be installed by this script.
 INSTALLED_PACKAGES=''
 # For now, we don't install anything on OS X, Solaris, AIX, and
@@ -301,6 +301,7 @@ command_build() {
     # Clean the build dir to avoid contamination from previous builds.
     command_clean
 
+    execute mkdir -p ${PYTHON_BUILD_FOLDER}
     build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
 
     # Build GMP statically on all platforms, copy headers and libs in a temp
@@ -327,9 +328,18 @@ command_build() {
 
     build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
 
+
+    execute pushd ${BUILD_FOLDER}
+        execute wget http://binary.chevah.com/production/python/pip/get-pip-$PIP_VERSION.py \
+            -O get-pip.py
+        execute $PYTHON_BIN get-pip.py
+        execute $PIP_BIN install -U $PIP_INSTALLABLE
+    execute popd
+
     command_build_sqlite
 
     command_build_python_extra_libraries
+
 
     execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
         # Clean the build folder.
@@ -410,7 +420,7 @@ command_build_python_extra_libraries() {
 #
 initialize_python_module(){
     source_folder=$1
-    target_folder=$1
+    target_folder=$2
 
     execute rm -rf $target_folder
     execute cp -r $source_folder $target_folder

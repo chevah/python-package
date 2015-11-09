@@ -17,15 +17,15 @@ def get_allowed_deps():
     allowed_deps = []
     if platform_system == 'linux':
         # The minimal list of deps for Linux: glibc, openssl, zlib,
-        # and, for readline support through libedit, a curses library.
+        # and, for readline support through libedit.
         allowed_deps = [
             'ld-linux',
             'libc.so',
+            'libgcc_s.so.1',
             'libcrypt.so',
             'libcrypto.so',
             'libdl.so',
             'libm.so',
-            #'libncursesw.so',
             'libnsl.so',
             'libpthread.so',
             'libssl.so',
@@ -81,7 +81,6 @@ def get_allowed_deps():
             allowed_deps.extend([
                 'libcofi_rpi.so',
                 'libgcc_s.so.1',
-                #'libncurses.so.5',
                 'libtinfo.so.5',
                 ])
     elif platform_system == 'aix':
@@ -135,7 +134,6 @@ def get_allowed_deps():
                 'libcrypt_i.so.1',
                 'libcrypto.so.0.9.7',
                 'libcrypto_extra.so.0.9.7',
-                'libcurses.so.1',
                 'libdoor.so.1',
                 'libgen.so.1',
                 'librt.so.1',
@@ -153,7 +151,6 @@ def get_allowed_deps():
                 'libcrypto.so.1.0.0',
                 'libcryptoutil.so.1',
                 'libelf.so.1',
-                '#libncurses.so.5',
                 'libsoftcrypto.so.1',
                 'libsqlite3.so.0',
                 'libssl.so.1.0.0',

@@ -31,7 +31,6 @@ chevahbs_compile() {
 
 
 chevahbs_install() {
-    install_folder=$1
     # We copy the includes and libs manually to a temporary location, and
     # we instruct the compiler to link against our lib by augmenting CPPFLAGS
     # with the include's location and LDFLAGS with the location of the libs.

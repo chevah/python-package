@@ -117,6 +117,12 @@ if 'freebsd' in sys.platform:
 if __name__ == '__main__':
     from setuptools import setup, Distribution, Extension
 
+    build_path = os.environ.get('CHEVAH_BUILD_PATH')
+    libffi_path = os.path.join(build_path, 'lib', 'libffi.a')
+    # We will statically link libffi.
+    libraries = []
+    extra_link_args = [libffi_path]
+
     class CFFIDistribution(Distribution):
         def has_ext_modules(self):
             # Event if we don't have extension modules (e.g. on PyPy) we want to

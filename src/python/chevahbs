@@ -117,12 +117,12 @@ chevahbs_install() {
     case $OS in
         windows)
             local destination=$INSTALL_FOLDER/lib
-            local redistributables=../../redistributables/
+            local redistributables=../../win-tools/redistributables/
             local manifest_wiper=../../win-tools/manifest-wiper.exe
             local get_pip=../../python-modules/get-pip.py
 
             # On Windows we don't build from source but rather create the
-            # distribution from precombiled binaries.
+            # distribution from pre-compiled binaries.
             current_win_path=`pwd -W | sed 's|\/|\\\\|g'`
             install_win_path=`cd $INSTALL_FOLDER && pwd -W | sed 's|\/|\\\\|g'`
 

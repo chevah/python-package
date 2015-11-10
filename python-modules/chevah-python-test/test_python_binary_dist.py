@@ -274,13 +274,6 @@ def main():
         exit_code = 2
 
     try:
-        from cryptography.hazmat.backends.openssl.backend import backend
-        backend.openssl_version_text()
-    except:
-        sys.stderr.write('"cryptography" failure.\n')
-        exit_code = 3
-
-    try:
         from OpenSSL import SSL, crypto, rand
         SSL
         crypto
@@ -354,6 +347,17 @@ def main():
         except:
             sys.stderr.write('"sqlite3" missing.\n')
             exit_code = 1
+
+        # For now cryptography is only available on Winodws
+        try:
+            from cryptography.hazmat.backends.openssl.backend import backend
+            openssl_version = backend.openssl_version_text()
+        except:
+            sys.stderr.write('"cryptography" failure.\n')
+            exit_code = 3
+        else:
+            # Check OpenSSL version.
+            assert openssl_version = '1.0.2d'
 
     else:
         # Linux and Unix checks.

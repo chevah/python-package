@@ -103,7 +103,7 @@ case $OS in
                 export CFLAGS="$CFLAGS -qmaxmem=-1 -q64"
             fi
         fi
-    ;;
+        ;;
     solaris*)
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
         export CC="cc"
@@ -137,17 +137,23 @@ case $OS in
                 export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
             fi
         fi
-    ;;
+        ;;
     hpux*)
         # For HP-UX we haven't managed yet to compile libffi and GMP with the
         # HP compiler, so we are NOT exporting custom values for CC and CXX.
         export MAKE=gmake
-    ;;
+        ;;
+    osx*)
+        export CC="clang"
+        export CXX="clang++"
+        export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
+        export MACOSX_DEPLOYMENT_TARGET=10.8
+        ;;
     rhel4)
         # RHEL4 has OpenSSL 0.9.7, but Python 2 versions starting with
         # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
         PYTHON_BUILD_VERSION=2.7.8
-    ;;
+        ;;
     windows*)
         LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
         PYTHON_BUILD_VERSION=2.7.10

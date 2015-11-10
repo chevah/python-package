@@ -1604,6 +1604,7 @@ using the ssl() function.");
 static PyObject *
 PySSL_RAND_egd(PyObject *self, PyObject *arg)
 {
+#ifndef LIBRESSL_VERSION_NUMBER
     int bytes;
 
     if (!PyString_Check(arg))
@@ -1618,6 +1619,12 @@ PySSL_RAND_egd(PyObject *self, PyObject *arg)
         return NULL;
     }
     return PyInt_FromLong(bytes);
+#else
+        PyErr_SetString(PySSLErrorObject,
+                        "external EGD connection not allowed when using LibreSSL:"
+                        "no data to seed the PRNG via PySSL_RAND_egd");
+        return NULL;
+#endif
 }
 
 PyDoc_STRVAR(PySSL_RAND_egd_doc,

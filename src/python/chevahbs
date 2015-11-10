@@ -140,7 +140,10 @@ chevahbs_install() {
                 six-1.10.0-py2.py3-none-any.whl
             # Manually install cryptography 1.0.2
             execute unzip -o -d $destination/lib/site-packages \
-                cryptography-1.0.2-cp26-none-win32.whl
+                enum34-1.0.4.zip
+            # Manually install cryptography 1.0.2
+            execute unzip -o -d $destination/lib/site-packages \
+                cryptography-1.1-cp27-none-win32.whl
             # Manually install pyOpenSSL 0.15.1.
             execute unzip -o -d $destination/lib/site-packages \
                 pyOpenSSL-0.15.1-py2.py3-none-any.whl

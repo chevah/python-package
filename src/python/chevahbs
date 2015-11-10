@@ -134,16 +134,7 @@ chevahbs_install() {
             execute $destination/python -m pip\
                 install -i http://pypi.chevah.com:10042/simple \
                 --trusted-host=pypi.chevah.com \
-                pypiwin32 pycrypto
-            # Manually install six 1.10.0
-            execute unzip -o -d $destination/lib/site-packages \
-                six-1.10.0-py2.py3-none-any.whl
-            # Manually install cryptography 1.0.2
-            execute unzip -o -d $destination/lib/site-packages \
-                enum34-1.0.4.zip
-            # Manually install cryptography 1.0.2
-            execute unzip -o -d $destination/lib/site-packages \
-                cryptography-1.1-cp27-none-win32.whl
+                pypiwin32 pycrypto enum34 idna ipaddress pyasn1 six cryptography
             # Manually install pyOpenSSL 0.15.1.
             execute unzip -o -d $destination/lib/site-packages \
                 pyOpenSSL-0.15.1-py2.py3-none-any.whl

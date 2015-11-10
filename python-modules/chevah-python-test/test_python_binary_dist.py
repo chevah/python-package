@@ -378,7 +378,7 @@ def main():
             exit_code = 3
         else:
             # Check OpenSSL version.
-            assert openssl_version == '1.0.2d'
+            assert openssl_version == u'OpenSSL 1.0.2d 9 Jul 2015'
 
     else:
         # Linux and Unix checks.

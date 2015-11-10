@@ -274,6 +274,13 @@ def main():
         exit_code = 2
 
     try:
+        from cryptography.hazmat.backends.openssl.backend import backend
+        backend.openssl_version_text()
+    except:
+        sys.stderr.write('"cryptography" failure.\n')
+        exit_code = 3
+
+    try:
         from OpenSSL import SSL, crypto, rand
         SSL
         crypto
@@ -313,10 +320,10 @@ def main():
             exit_code = 10
 
     try:
-        from pysqlite2 import test
-        test.test()
+        import sqlite3
+        sqlite3
     except:
-        sys.stderr.write('"pysqlite2" missing.\n')
+        sys.stderr.write('"sqlite3" missing.\n')
         exit_code = 6
 
     try:
@@ -350,13 +357,6 @@ def main():
 
     else:
         # Linux and Unix checks.
-        try:
-            import pysqlite2
-            pysqlite2
-        except:
-            sys.stderr.write('"pysqlite2" missing.\n')
-            exit_code = 1
-
         try:
             import setproctitle
             setproctitle
@@ -398,6 +398,7 @@ def main():
         exit_code = test_dependencies() | exit_code
 
     sys.exit(exit_code)
+
 
 if __name__ == '__main__':
     main()

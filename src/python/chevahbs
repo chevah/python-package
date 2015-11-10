@@ -135,14 +135,23 @@ chevahbs_install() {
                 install -i http://pypi.chevah.com:10042/simple \
                 --trusted-host=pypi.chevah.com \
                 pypiwin32 pycrypto
-            # Manually install pyOpenSSL 0.13.
+            # Manually install six 1.10.0
             execute unzip -o -d $destination/lib/site-packages \
-                pyopenssl-0.13.zip
+                six-1.10.0-py2.py3-none-any.whl
+            # Manually install cryptography 1.0.2
+            execute unzip -o -d $destination/lib/site-packages \
+                cryptography-1.0.2-cp26-none-win32.whl
+            # Manually install pyOpenSSL 0.15.1.
+            execute unzip -o -d $destination/lib/site-packages \
+                pyOpenSSL-0.15.1-py2.py3-none-any.whl
             # Remove pip.
             execute rm -d -f -r \
                 $destination/lib/site-packages/pip
             execute rm -d -f -r \
                 $destination/lib/site-packages/pip-6.1.1.dist-info
+            # Remove Python MSI installer.
+            execute rm -f
+                $destination/lib/python-installer.msi
             # add cp65001 as an utf-8 alias.
             execute mv $destination/lib/encodings/aliases.py $destination/lib/encodings/aliases.old
             execute \

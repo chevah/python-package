@@ -11,13 +11,9 @@ folder.
 
 Get MSI installer from official Python website and copy + rename it here.
 
-For setuptools get latest ez_setup.py but also copy the setuptools-VER.zip
-from PyPi to avoid touching the network and making sure it will work in the
-future.
+For pip get latest get-pip.py in copy it in /python-modules/get-pip.py
 
-For pip get latest get-pip.py
-
-Make sure you have sources and wheels on the private PyPi server
+Make sure you have sources and wheels on the private PyPi server.
 
 Get the manifest-wiper from here:
 https://bitbucket.org/alibotean/sxs-manifest-wiper

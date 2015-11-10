@@ -5,6 +5,16 @@
 # Import shared code.
 . ./functions.sh
 
+PIP_ARGS="\
+    -i http://pypi.chevah.com:10042/simple \
+    --trusted-host=pypi.chevah.com \
+    "
+PIP_INSTALLABLES_WIN="\
+    pypiwin32==219 \
+    pycrypto==2.6.1 \
+    cryptography==1.1 \
+    pyOpenSSL==0.15.1 \
+    "
 
 chevahbs_configure() {
     CONFIG_ARGS="--disable-shared"
@@ -107,6 +117,10 @@ chevahbs_install() {
     case $OS in
         windows)
             local destination=$INSTALL_FOLDER/lib
+            local redistributables=../../redistributables/
+            local manifest_wiper=../../win-tools/manifest-wiper.exe
+            local get_pip=../../python-modules/get-pip.py
+
             # On Windows we don't build from source but rather create the
             # distribution from precombiled binaries.
             current_win_path=`pwd -W | sed 's|\/|\\\\|g'`
@@ -118,36 +132,27 @@ chevahbs_install() {
                 //qn TARGETDIR=$install_win_path\\lib
 
             echo "Copying redistributables"
-            execute cp redistributables/9.00.30729.6161/* $destination
+            execute cp $redistributables/9.00.30729.6161/* $destination
 
             echo "Patching python(w).exe and python27.dll"
-            manifest-wiper.exe $destination/python.exe
-            manifest-wiper.exe $destination/pythonw.exe
-            manifest-wiper.exe $destination/python27.dll
+            $manifest_wiper $destination/python.exe
+            $manifest_wiper $destination/pythonw.exe
+            $manifest_wiper $destination/python27.dll
 
-            echo "Installing setuptool + pip + binaries"
-            execute $destination/python ez_setup.py
-            execute $destination/python \
-                get-pip.py \
-                    -i http://pypi.chevah.com:10042/simple \
-                    --trusted-host=pypi.chevah.com
-            execute $destination/python -m pip\
-                install -i http://pypi.chevah.com:10042/simple \
-                --trusted-host=pypi.chevah.com \
-                pypiwin32 pycrypto cryptography==1.1
-            # Manually install pyOpenSSL 0.15.1.
-            execute unzip -o -d $destination/lib/site-packages \
-                pyOpenSSL-0.15.1-py2.py3-none-any.whl
+            echo "Installing pip + binary modules"
+            execute $destination/python $get_pip $PIP_ARGS
+            execute $destination/python -m pip \
+                install $PIP_ARGS $PIP_INSTALLABLES_WIN
             # Remove pip.
-            execute rm -d -f -r \
-                $destination/lib/site-packages/pip
-            execute rm -d -f -r \
-                $destination/lib/site-packages/pip-6.1.1.dist-info
+            execute $destination/python -m pip uninstall -y pip
+
             # Remove Python MSI installer.
-            execute rm -f
-                $destination/python-installer.msi
+            execute rm -f python-installer.msi
+
             # add cp65001 as an utf-8 alias.
-            execute mv $destination/lib/encodings/aliases.py $destination/lib/encodings/aliases.old
+            execute mv \
+                $destination/lib/encodings/aliases.py \
+                $destination/lib/encodings/aliases.old
             execute \
                 sed "s|# utf_8 codec|# utf_8 codec\n    'cp65001'            : 'utf_8',|" < $destination/lib/encodings/aliases.old > $destination/lib/encodings/aliases.py
             ;;

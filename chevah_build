@@ -150,8 +150,7 @@ case $OS in
     ;;
     windows*)
         LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
-        # For Windows we are still at 2.7.8.
-        PYTHON_BUILD_VERSION=2.7.8
+        PYTHON_BUILD_VERSION=2.7.10
         ;;
 esac
 

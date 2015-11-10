@@ -1,0 +1,39 @@
+We don't build the Python from source, yet but we do compile some modules.
+
+The system on which Python distribution is created needs to have:
+
+* Microsoft Visual C++ Redistributables
+  http://www.microsoft.com/en-us/download/details.aspx?id=5582
+* Microsoft Visual C++ Compiler for Python 2.7 installed
+  http://www.microsoft.com/en-us/download/details.aspx?id=44266
+
+Get Visual C++ nonSxS redistributables and copy them in the `redistributables'
+folder.
+
+Get MSI installer from official Python website and copy + rename it here.
+
+For pip get latest get-pip.py in copy it in /python-modules/get-pip.py
+
+Make sure you have sources and wheels on the private PyPi server.
+
+Get the manifest-wiper from here:
+https://bitbucket.org/alibotean/sxs-manifest-wiper
+
+Create or update python.exe.manifest, pythonw.exe.manifest and
+python27.dll.manifest to use the installed VC++ redistributable version.
+
+Once you've updated them copy them in the redistributable folder.
+
+We use a custom, non embedded manifest file in order not to dependend
+on our users for installing this as a prerequisite.
+
+In order to get rid of the embedded manifests that come with the
+official Python distribution we use sxs-manufest-wiper mentioned above.
+
+Please note that VC compiler is used by default by pip. To manually enable
+it, make sure you have latest setuptools:
+
+1. Enter MSVC for Python command prompt
+2. SET DISTUTILS_USE_SDK=1
+3. SET MSSdk=1
+4. python.exe setup.py build

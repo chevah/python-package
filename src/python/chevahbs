@@ -145,7 +145,7 @@ chevahbs_install() {
                 $destination/lib/site-packages/pip-6.1.1.dist-info
             # Remove Python MSI installer.
             execute rm -f
-                $destination/lib/python-installer.msi
+                $destination/python-installer.msi
             # add cp65001 as an utf-8 alias.
             execute mv $destination/lib/encodings/aliases.py $destination/lib/encodings/aliases.old
             execute \

@@ -151,7 +151,7 @@ chevahbs_install() {
 
             # Remove Python MSI installer.
             echo "Removing: $destination/python-installer.msi"
-            execute rm -f -V $destination/python-installer.msi
+            execute rm -f --verbose $destination/python-installer.msi
 
             # add cp65001 as an utf-8 alias.
             execute mv \

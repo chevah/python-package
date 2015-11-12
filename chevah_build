@@ -302,15 +302,19 @@ command_build() {
     command_clean
 
     execute mkdir -p ${PYTHON_BUILD_FOLDER}
-    build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
-
-    # Build GMP statically on all platforms, copy headers and libs in a temp
-    # location, and update $CPPFLAGS and $LDFLAGS accordingly. For any other
-    # statically-compiled lib, such as libedit, we'll need these shell vars.
-    build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
-    mkdir -p $INSTALL_FOLDER/{include,lib}
+    # These dirs are needed for libffi/gmp/libedit to copy headers and libs to.
+    # We update $CPPFLAGS and $LDFLAGS accordingly, so that they get picked up.
+    execute mkdir -p $INSTALL_FOLDER/{include,lib}
     export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"
     export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
+
+    build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
+
+    # We need GMP or MPIR for fast math in PyCrypto. We use GMP because
+    # its devs do a better job of supporting exotic platforms such as AIX.
+    build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
+    cp $INSTALL_FOLDER/tmp/gmp/gmp.h $INSTALL_FOLDER/include/
+    cp $INSTALL_FOLDER/tmp/gmp/libgmp* $INSTALL_FOLDER/lib/
 
     # Statically build the BSD libedit on selected platforms to get readline
     # support without linking to the GPL-only readline. We don't do this for
@@ -328,9 +332,9 @@ command_build() {
 
     build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
 
-
     execute pushd ${BUILD_FOLDER}
-        execute wget http://binary.chevah.com/production/python/pip/get-pip-$PIP_VERSION.py \
+        execute wget \
+            http://binary.chevah.com/production/python/pip/get-pip-$PIP_VERSION.py \
             -O get-pip.py
         execute $PYTHON_BIN get-pip.py
         # Beware! The shebang is too long for some OS'es, so we use $PYTHON_BIN.
@@ -393,12 +397,6 @@ command_build_python_extra_libraries() {
     makefile_orig=$INSTALL_FOLDER/lib/$PYTHON_VERSION/config/Makefile.orig
     execute cp $makefile $makefile_orig
     sed "s#^prefix=.*#prefix= $INSTALL_FOLDER#" $makefile_orig > $makefile
-
-    # We need GMP or MPIR for fast math in PyCrypto. We use GMP because
-    # its devs do a better job of supporting exotic platforms such as AIX.
-    # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
-    cp $INSTALL_FOLDER/tmp/gmp/gmp.h $INSTALL_FOLDER/include
-    cp $INSTALL_FOLDER/tmp/gmp/libgmp* $INSTALL_FOLDER/lib
 
     for library in $EXTRA_LIBRARIES ; do
         # Library is in the form cffi/cffi-2.4.5

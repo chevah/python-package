@@ -38,9 +38,8 @@ chevahbs_compile() {
 
 
 chevahbs_install() {
-    # As with libffi, we copy the files manually to a temporary location and
-    # then we get them from there before compiling PyCrypto. We'll also have
-    # to instruct the compiler to link against our GMP by augmenting CPPFLAGS
+    # We copy the includes and libs manually to a temporary location, and
+    # we instruct the compiler to link against our lib by augmenting CPPFLAGS
     # with the include's location and LDFLAGS with the location of the libs.
     local temp_folder=$INSTALL_FOLDER/tmp/gmp/
     execute mkdir -p $temp_folder

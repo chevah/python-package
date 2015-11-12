@@ -5,7 +5,6 @@
 # Import shared code.
 . ./functions.sh
 
-
 chevahbs_configure() {
     # We want only static build so that we don't have to mess with LIBPATH.
     execute ./configure --prefix="" --disable-shared --enable-static
@@ -18,12 +17,9 @@ chevahbs_compile() {
 
 
 chevahbs_install() {
-    execute $MAKE install DESTDIR=$INSTALL_FOLDER
-    # libffi installs its headers in $PREFIX/lib/libffi-$VERSION/include,
-    # instead of $PREFIX/include, so we copy them manually to the default
-    # location.
-    execute mkdir -p $INSTALL_FOLDER/include
-    execute cp $INSTALL_FOLDER/lib/libffi-*/include/* $INSTALL_FOLDER/include
+    # 'make install' fails in some non-Linux OS'es, so we copy them manually.
+    execute cp */include/*.h $INSTALL_FOLDER/include/
+    execute cp -r */.libs/libffi* $INSTALL_FOLDER/lib/
 }
 
 

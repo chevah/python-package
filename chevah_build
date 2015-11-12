@@ -40,6 +40,11 @@ EXTRA_LIBRARIES="\
    python-modules/python-setproctitle-1.1.8.dev0 \
    "
 
+PIP_ARGS="\
+    -i http://pypi.chevah.com:10042/simple \
+    --trusted-host=pypi.chevah.com \
+    "
+
 PIP_INSTALLABLE="\
     cryptography==1.1 \
     pyopenssl==0.15.1 \
@@ -77,7 +82,9 @@ LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
 INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST
 PYTHON_BIN=$INSTALL_FOLDER/bin/python
 PYTHON_BUILD_FOLDER="$PYTHON_VERSION-$OS-$ARCH"
-PIP_BIN=$INSTALL_FOLDER/bin/pip
+# Beware! The shebang is too long for some OS'es, so we use $PYTHON_BIN.
+PIP_BIN=$PYTHON_BIN $INSTALL_FOLDER/bin/pip
+
 
 export MAKE=make
 export CHEVAH_BUILD_PATH=$INSTALL_FOLDER
@@ -336,9 +343,8 @@ command_build() {
         execute wget \
             http://binary.chevah.com/production/python/pip/get-pip-$PIP_VERSION.py \
             -O get-pip.py
-        execute $PYTHON_BIN get-pip.py
-        # Beware! The shebang is too long for some OS'es, so we use $PYTHON_BIN.
-        execute $PYTHON_BIN $PIP_BIN install -U $PIP_INSTALLABLE
+        execute $PYTHON_BIN get-pip.py $PIP_ARGS
+        execute $PIP_BIN install $PIP_ARGS -U $PIP_INSTALLABLE
     execute popd
 
     command_build_sqlite

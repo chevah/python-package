@@ -41,13 +41,8 @@ EXTRA_LIBRARIES="\
    "
 
 PIP_ARGS="\
-    --index-url http://pypi.chevah.com:10042/simple \
+    --index-url=http://pypi.chevah.com:10042/simple \
     --trusted-host=pypi.chevah.com \
-    "
-
-PIP_INSTALLABLE="\
-    cryptography==1.1 \
-    pyopenssl==0.15.1 \
     "
 
 PROG=$0
@@ -339,18 +334,25 @@ command_build() {
 
     build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
 
+    # Install PIP and setuptools.
     execute pushd ${BUILD_FOLDER}
         execute wget \
             http://binary.chevah.com/production/python/pip/get-pip-$PIP_VERSION.py \
             -O get-pip.py
         execute $PYTHON_BIN get-pip.py $PIP_ARGS
-        execute $PIP_BIN install $PIP_ARGS -U $PIP_INSTALLABLE
     execute popd
 
+    # Extra libs with source in this repo.
     command_build_sqlite
-
     command_build_python_extra_libraries
 
+    # Extra libs with source packages.
+    execute pushd ${BUILD_FOLDER}
+        # pycparser is installed first as setup_requires is ugly.
+        # https://pip.pypa.io/en/stable/reference/pip_install/#controlling-setup-requires
+        execute $PIP_BIN install $PIP_ARGS -U pycparser==2.14
+        execute $PIP_BIN install $PIP_ARGS -U cryptography==1.1
+    execute popd
 
     execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
         # Clean the build folder.
@@ -411,9 +413,9 @@ command_build_python_extra_libraries() {
 
         initialize_python_module $library $target_folder
 
-        execute pushd $target_folder
-            execute $PYTHON_BIN setup.py install
-        execute popd
+        # execute pushd $target_folder
+        #     execute $PYTHON_BIN setup.py install
+        # execute popd
 
     done
     execute mv $makefile_orig $makefile
@@ -457,6 +459,8 @@ initialize_python_module(){
                         extra_args="$extra_args -L/usr/sfw/lib/64 -L/usr/lib/mps/64"
                     fi
                 fi
+                # Run pip just to get all the dependencies.
+                $PIP_BIN install $PIP_ARGS .
                 execute $PYTHON_BIN setup.py build_ext $extra_args
                 ;;
         esac

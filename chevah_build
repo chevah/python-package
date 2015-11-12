@@ -41,7 +41,7 @@ EXTRA_LIBRARIES="\
    "
 
 PIP_ARGS="\
-    -i http://pypi.chevah.com:10042/simple \
+    --index-url http://pypi.chevah.com:10042/simple \
     --trusted-host=pypi.chevah.com \
     "
 
@@ -83,7 +83,7 @@ INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST
 PYTHON_BIN=$INSTALL_FOLDER/bin/python
 PYTHON_BUILD_FOLDER="$PYTHON_VERSION-$OS-$ARCH"
 # Beware! The shebang is too long for some OS'es, so we use $PYTHON_BIN.
-PIP_BIN=$PYTHON_BIN $INSTALL_FOLDER/bin/pip
+PIP_BIN="$PYTHON_BIN $INSTALL_FOLDER/bin/pip"
 
 
 export MAKE=make

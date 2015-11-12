@@ -121,6 +121,7 @@ chevahbs_install() {
         windows)
             local destination=$INSTALL_FOLDER/lib
             local redistributables=../../win-tools/redistributables/
+            local redistributable_version=9.00.30729.6161
             local manifest_wiper=../../win-tools/manifest-wiper.exe
             local get_pip=../../python-modules/get-pip.py
 
@@ -135,7 +136,7 @@ chevahbs_install() {
                 //qn TARGETDIR=$install_win_path\\lib
 
             echo "Copying redistributables"
-            execute cp $redistributables/9.00.30729.6161/* $destination
+            execute cp $redistributables/$redistributable_version/* $destination
 
             echo "Extracting manifests for python(w).exe and python27.dll"
             $manifest_wiper --verbose \

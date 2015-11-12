@@ -2,33 +2,41 @@ We don't build the Python from source, yet but we do compile some modules.
 
 The system on which Python distribution is created needs to have:
 
-* Microsoft Visual C++ Redistributables
-  http://www.microsoft.com/en-us/download/details.aspx?id=5582
+* Microsoft Visual C++ Redistributables for Visual Studio 2008 (VC+ 9.00)
+  https://support.microsoft.com/en-us/kb/2977003
 * Microsoft Visual C++ Compiler for Python 2.7 installed
   http://www.microsoft.com/en-us/download/details.aspx?id=44266
 
-Get Visual C++ nonSxS redistributables and copy them in the `redistributables'
+Steps for preparing the distributables:
+
+* Get Visual C++ nonSxS redistributables and copy them in the `redistributables'
 folder.
+* Use an archive manager (7Zip) to extract the following dll files from the
+redistributable arhive: nosxs_msvcr90.dll, nosxs_msvcp90.dll, nosxs_msvcm90.dll
+* Rename them to msvcr90.dll, msvcp90.dll, msvcm90.dll
+* Create an assembly file named Microsoft.VC90.CRT.manifest with the following
+content:
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+    <noInheritable></noInheritable>
+    <assemblyIdentity type="win32" name="Microsoft.VC90.CRT" version="9.00.30729.6161" processorArchitecture="x86"></assemblyIdentity>
+    <file name="msvcr90.dll"></file>
+    <file name="msvcp90.dll"></file>
+    <file name="msvcm90.dll"></file>
+</assembly>
+
+* You will need to replace the version tag with the redistributable version
+you are using. The example is for the latest available version.
+* Get the SxS Manifest Wiper from: https://bitbucket.org/alibotean/sxs-manifest-wiper
+* Edit chevahbs and update the `redistributable_version` value accordingly,
+change the version for sed manifest generation section as well.
 
 Get MSI installer from official Python website and copy + rename it here.
 
 For pip get latest get-pip.py in copy it in /python-modules/get-pip.py
 
 Make sure you have sources and wheels on the private PyPi server.
-
-Get the manifest-wiper from here:
-https://bitbucket.org/alibotean/sxs-manifest-wiper
-
-Create or update python.exe.manifest, pythonw.exe.manifest and
-python27.dll.manifest to use the installed VC++ redistributable version.
-
-Once you've updated them copy them in the redistributable folder.
-
-We use a custom, non embedded manifest file in order not to dependend
-on our users for installing this as a prerequisite.
-
-In order to get rid of the embedded manifests that come with the
-official Python distribution we use sxs-manufest-wiper mentioned above.
 
 Please note that VC compiler is used by default by pip. To manually enable
 it, make sure you have latest setuptools:

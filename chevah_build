@@ -333,7 +333,8 @@ command_build() {
         execute wget http://binary.chevah.com/production/python/pip/get-pip-$PIP_VERSION.py \
             -O get-pip.py
         execute $PYTHON_BIN get-pip.py
-        execute $PIP_BIN install -U $PIP_INSTALLABLE
+        # Beware! The shebang is too long for some OS'es, so we use $PYTHON_BIN.
+        execute $PYTHON_BIN $PIP_BIN install -U $PIP_INSTALLABLE
     execute popd
 
     command_build_sqlite

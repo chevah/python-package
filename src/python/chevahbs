@@ -85,7 +85,7 @@ chevahbs_configure() {
 
     case $OS in
         windows)
-            echo "Skip configure."
+            echo "Skip configure on Windows."
             ;;
         *)
             execute ./configure --prefix="" $CONFIG_ARGS
@@ -106,7 +106,7 @@ chevahbs_configure() {
 chevahbs_compile() {
     case $OS in
         windows)
-            echo "Skip make."
+            echo "Skip make on Windows."
             ;;
         *)
             execute $MAKE

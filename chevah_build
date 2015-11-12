@@ -155,8 +155,8 @@ case $OS in
         PYTHON_BUILD_VERSION=2.7.8
         ;;
     windows*)
+        # On Windows, python executable is installed at a different path.
         LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
-        PYTHON_BUILD_VERSION=2.7.10
         ;;
 esac
 
@@ -178,6 +178,7 @@ fi
 # Install OS package required to build Python.
 #
 install_dependencies() {
+
     packages='packages-not-defined'
     install_command='install-command-not-defined'
     check_command='check-command-not-defined'
@@ -199,7 +200,7 @@ install_dependencies() {
             install_command='sudo zypper --non-interactive install -l'
             check_command='rpm --query'
         ;;
-        linux|aix*|solaris*|osx*|windows*)
+        *)
             packages=''
             install_command=''
             check_command=''
@@ -300,17 +301,6 @@ command_build() {
     case $OS in
         aix*|solaris*|hpux*)
             build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
-            ;;
-    esac
-
-    case $OS in
-        windows*)
-            # For Windows we don't build everything from source yet.
-            echo "Skipping GMP"
-            build 'python' "Python-$PYTHON_BUILD_VERSION-windows" ${PYTHON_BUILD_FOLDER}
-            echo "Skipping sqlite and extra libraries"
-            # For Windows we don't build every thing from source yet.
-            echo "Skipping cleaning install folder"
             ;;
     esac
 

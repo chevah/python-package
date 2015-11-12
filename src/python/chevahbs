@@ -149,10 +149,10 @@ chevahbs_install() {
                 $destination/python27.dll
 
             echo "Patching manifests to use our redistributable version"
-            execute sed 's|version="9.0.21022.8"|version="9.00.30729.6161"|' < $destination/python.exe.embedded > $destination/python.exe.manifest
-            execute sed 's|version="9.0.21022.8"|version="9.00.30729.6161"|' < $destination/pythonw.exe.embedded > $destination/pythonw.exe.manifest
-            execute sed 's|version="9.0.21022.8"|version="9.00.30729.6161"|' < $destination/python27.dll.embedded > $destination/python27.dll.manifest
-            # execute rm -f --verbose $destination/*.embedded
+            execute sed -e 's|version="9.0.21022.8"|version="9.00.30729.6161"|' -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' < $destination/python.exe.embedded > $destination/python.exe.manifest
+            execute sed -e 's|version="9.0.21022.8"|version="9.00.30729.6161"|' -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' < $destination/pythonw.exe.embedded > $destination/pythonw.exe.manifest
+            execute sed -e 's|version="9.0.21022.8"|version="9.00.30729.6161"|' -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' < $destination/python27.dll.embedded > $destination/python27.dll.manifest
+            execute rm -f --verbose $destination/*.embedded
 
             echo "Installing pip + binary modules"
             execute $destination/python $get_pip $PIP_ARGS

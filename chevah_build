@@ -413,9 +413,9 @@ command_build_python_extra_libraries() {
 
         initialize_python_module $library $target_folder
 
-        # execute pushd $target_folder
-        #     execute $PYTHON_BIN setup.py install
-        # execute popd
+        execute pushd $target_folder
+            execute $PYTHON_BIN setup.py install
+        execute popd
 
     done
     execute mv $makefile_orig $makefile

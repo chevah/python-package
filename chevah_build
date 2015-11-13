@@ -266,7 +266,7 @@ remove_dependencies() {
                         (exit 0)
                     else
                         execute sudo yum -y remove $rpm_leaves
-                        rhel_autoremove
+                        rhel_yum_autoremove
                     fi
                 }
                 rhel_yum_autoremove

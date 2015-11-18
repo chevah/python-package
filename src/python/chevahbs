@@ -5,6 +5,16 @@
 # Import shared code.
 . ./functions.sh
 
+PIP_ARGS="\
+    -i http://pypi.chevah.com:10042/simple \
+    --trusted-host=pypi.chevah.com \
+    "
+PIP_INSTALLABLES_WIN="\
+    pypiwin32==219 \
+    pycrypto==2.6.1 \
+    cryptography==1.1 \
+    pyOpenSSL==0.15.1 \
+    "
 
 chevahbs_configure() {
     CONFIG_ARGS="--disable-shared"
@@ -73,7 +83,14 @@ chevahbs_configure() {
             ;;
     esac
 
-    execute ./configure --prefix="" $CONFIG_ARGS
+    case $OS in
+        windows)
+            echo "Skip configure on Windows."
+            ;;
+        *)
+            execute ./configure --prefix="" $CONFIG_ARGS
+            ;;
+    esac
 
     case $OS in
         "hpux")
@@ -87,13 +104,79 @@ chevahbs_configure() {
 
 
 chevahbs_compile() {
-    execute $MAKE
+    case $OS in
+        windows)
+            echo "Skip make on Windows."
+            ;;
+        *)
+            execute $MAKE
+            ;;
+    esac
 }
 
 
 chevahbs_install() {
     install_folder=$1
-    execute $MAKE install DESTDIR=$INSTALL_FOLDER
+    case $OS in
+        windows)
+            local destination=$INSTALL_FOLDER/lib
+            local redistributables=../../win-tools/redistributables/
+            local redistributable_version=9.00.30729.6161
+            local manifest_wiper=../../win-tools/manifest-wiper.exe
+            local get_pip=../../python-modules/get-pip.py
+
+            # On Windows we don't build from source but rather create the
+            # distribution from pre-compiled binaries.
+            current_win_path=`pwd -W | sed 's|\/|\\\\|g'`
+            install_win_path=`cd $INSTALL_FOLDER && pwd -W | sed 's|\/|\\\\|g'`
+
+            echo "Extracting MSI to $install_win_path"
+            execute msiexec \
+                //a $current_win_path\\python-installer.msi \
+                //qn TARGETDIR=$install_win_path\\lib
+
+            echo "Copying redistributables"
+            execute cp $redistributables/$redistributable_version/* $destination
+
+            echo "Extracting manifests for python(w).exe and python27.dll"
+            $manifest_wiper --verbose \
+                --extract $destination/python.exe.embedded \
+                $destination/python.exe
+            $manifest_wiper --verbose \
+                --extract $destination/pythonw.exe.embedded \
+                $destination/pythonw.exe
+            $manifest_wiper --verbose \
+                --extract $destination/python27.dll.embedded \
+                $destination/python27.dll
+
+            echo "Patching manifests to use our redistributable version"
+            execute sed -e 's|version="9.0.21022.8"|version="9.00.30729.6161"|' -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' < $destination/python.exe.embedded > $destination/python.exe.manifest
+            execute sed -e 's|version="9.0.21022.8"|version="9.00.30729.6161"|' -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' < $destination/pythonw.exe.embedded > $destination/pythonw.exe.manifest
+            execute sed -e 's|version="9.0.21022.8"|version="9.00.30729.6161"|' -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' < $destination/python27.dll.embedded > $destination/python27.dll.manifest
+            execute rm -f --verbose $destination/*.embedded
+
+            echo "Installing pip + binary modules"
+            execute $destination/python $get_pip $PIP_ARGS
+            execute $destination/python -m pip \
+                install $PIP_ARGS $PIP_INSTALLABLES_WIN
+            # Remove pip.
+            execute $destination/python -m pip uninstall -y pip
+
+            # Remove Python MSI installer.
+            echo "Removing: $destination/python-installer.msi"
+            execute rm -f --verbose $destination/python-installer.msi
+
+            # add cp65001 as an utf-8 alias.
+            execute mv \
+                $destination/lib/encodings/aliases.py \
+                $destination/lib/encodings/aliases.old
+            execute \
+                sed "s|# utf_8 codec|# utf_8 codec\n    'cp65001'            : 'utf_8',|" < $destination/lib/encodings/aliases.old > $destination/lib/encodings/aliases.py
+            ;;
+        *)
+            execute $MAKE install DESTDIR=$INSTALL_FOLDER
+            ;;
+    esac
 }
 
 

@@ -149,16 +149,6 @@ chevahbs_install() {
                 --extract $destination/python27.dll.embedded \
                 $destination/python27.dll
 
-            $manifest_wiper --verbose \
-                --extract $destination/Lib/site-packages/win32/pythonservice.exe.embedded \
-                $destination/Lib/site-packages/win32/pythonservice.exe
-            $manifest_wiper --verbose \
-                --extract $destination/Lib/site-packages/win32/perfmondata.dll.embedded \
-                $destination/Lib/site-packages/win32/perfmondata.dll
-            $manifest_wiper --verbose \
-                --extract $destination/Lib/site-packages/pywin32_system32/pythoncomloader27.dll.embedded \
-                $destination/Lib/site-packages/pywin32_system32/pythoncomloader27.dll
-
             echo "Patching manifests to use our redistributable version"
             execute sed -e 's|version="9.0.21022.8"|version="9.00.30729.6161"|' -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' < $destination/python.exe.embedded > $destination/python.exe.manifest
             execute sed -e 's|version="9.0.21022.8"|version="9.00.30729.6161"|' -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' < $destination/pythonw.exe.embedded > $destination/pythonw.exe.manifest
@@ -173,6 +163,16 @@ chevahbs_install() {
             execute $destination/python -m pip uninstall -y pip
 
             echo "Patching pyWin32 manifests to use our redistributable version"
+            $manifest_wiper --verbose \
+                --extract $destination/Lib/site-packages/win32/pythonservice.exe.embedded \
+                $destination/Lib/site-packages/win32/pythonservice.exe
+            $manifest_wiper --verbose \
+                --extract $destination/Lib/site-packages/win32/perfmondata.dll.embedded \
+                $destination/Lib/site-packages/win32/perfmondata.dll
+            $manifest_wiper --verbose \
+                --extract $destination/Lib/site-packages/pywin32_system32/pythoncomloader27.dll.embedded \
+                $destination/Lib/site-packages/pywin32_system32/pythoncomloader27.dll
+
             execute sed -e 's|version="9.0.21022.8"|version="9.00.30729.6161"|' -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' < $destination/Lib/site-packages/win32/pythonservice.exe.embedded > $destination/Lib/site-packages/win32/pythonservice.exe.manifest
             execute sed -e 's|version="9.0.21022.8"|version="9.00.30729.6161"|' -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' < $destination/Lib/site-packages/win32/perfmondata.dll.embedded > $destination/Lib/site-packages/win32/perfmondata.dll.manifest
             execute rm -f --verbose $desination/Lib/site-packages/win32/*.embedded
@@ -180,6 +180,7 @@ chevahbs_install() {
             execute rm -f --verbose $desination/Lib/site-packages/pywin32_system32/*.embedded
 
             echo "Copy Python runtime to pyWin32 package"
+            execute cp $destination/*CRT.manifest $destination/Lib/site-packages/win32/
             execute cp $destination/python27.dll.manifest $destination/Lib/site-packages/win32/
             execute cp $destination/python27.dll $destination/Lib/site-packages/win32/
             execute cp $destination/msvc?90.dll $destination/Lib/site-packages/win32/

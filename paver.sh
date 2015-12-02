@@ -272,6 +272,10 @@ copy_python() {
             echo "No ${pip_package}. Start downloading it..."
             get_binary_dist "$pip_package" "$PIP_INDEX/packages"
         fi
+
+        # Remove existing pip and install new one.
+        rm -rf ${PYTHON_LIB}/site-packages/pip
+        rm -rf ${PYTHON_LIB}/site-packages/pip*.dist-info
         cp -RL "${CACHE_FOLDER}/$pip_package/pip" ${PYTHON_LIB}/site-packages/
 
         if [ ! -d ${CACHE_FOLDER}/$setuptools_package ]; then

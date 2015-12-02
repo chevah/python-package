@@ -334,13 +334,6 @@ def main():
             exit_code = 10
 
     try:
-        import sqlite3
-        sqlite3
-    except:
-        sys.stderr.write('"sqlite3" missing.\n')
-        exit_code = 6
-
-    try:
         from ctypes import CDLL
         CDLL
     except:
@@ -367,7 +360,7 @@ def main():
             sqlite3
         except:
             sys.stderr.write('"sqlite3" missing.\n')
-            exit_code = 1
+            exit_code = 6
 
         # For now cryptography is only available on Winodws
         try:
@@ -383,25 +376,33 @@ def main():
     else:
         # Linux and Unix checks.
         try:
-            import setproctitle
-            setproctitle
-        except:
-            sys.stderr.write('"setproctitle" missing.\n')
-            exit_code = 1
-
-        try:
             import crypt
             crypt
         except:
             sys.stderr.write('"crypt" missing.\n')
-            exit_code = 1
+            exit_code = 5
+
+        try:
+            import pysqlite2
+            pysqlite2
+        except:
+            sys.stderr.write('"pysqlite2" missing.\n')
+            exit_code = 6
+
+        try:
+            import setproctitle
+            setproctitle
+        except:
+            sys.stderr.write('"setproctitle" missing.\n')
+            exit_code = 7
 
         try:
             from Crypto.PublicKey import _fastmath
             _fastmath
         except:
             sys.stderr.write('Crypto.PublicKey._fastmath missing. No GMP?\n')
-            exit_code = 1
+            exit_code = 10
+
 
     if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
         try:

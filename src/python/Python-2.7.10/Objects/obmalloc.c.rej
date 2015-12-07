@@ -1,0 +1,34 @@
+--- Objects/obmalloc.c	(revision 1189)
++++ Objects/obmalloc.c	(revision 1209)
+@@ -648,7 +719,15 @@
+     arenaobj = unused_arena_objects;
+     unused_arena_objects = arenaobj->nextarena;
+     assert(arenaobj->address == 0);
++#ifdef WITH_PYMALLOC_MMAP
++    arenaobj->address = (uptr)CALL_MMAP(ARENA_SIZE);
++#else
++#ifdef WITH_DLMALLOC
++    arenaobj->address = (uptr)dlmalloc(ARENA_SIZE);
++#else
+     arenaobj->address = (uptr)malloc(ARENA_SIZE);
++#endif /* WITH_DLMALLOC */
++#endif /* WITH_PYMALLOC_MMAP */
+     if (arenaobj->address == 0) {
+         /* The allocation failed: return NULL after putting the
+          * arenaobj back.
+@@ -1118,7 +1201,15 @@
+                 unused_arena_objects = ao;
+ 
+                 /* Free the entire arena. */
++#ifdef WITH_PYMALLOC_MMAP
++                CALL_MUNMAP((void *)ao->address, ARENA_SIZE);
++#else
++#ifdef WITH_DLMALLOC
++                dlfree((void *)ao->address);
++#else
+                 free((void *)ao->address);
++#endif /* WITH_DLMALLOC */
++#endif /* WITH_PYMALLOC_MMAP */
+                 ao->address = 0;                        /* mark unassociated */
+                 --narenas_currently_allocated;
+ 

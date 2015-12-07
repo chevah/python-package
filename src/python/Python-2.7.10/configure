@@ -805,7 +805,7 @@ enable_ipv6
 with_doc_strings
 with_tsc
 with_pymalloc
-with_pymalloc_map
+with_pymalloc_mmap
 with_dlmalloc
 with_valgrind
 with_wctype_functions
@@ -10129,22 +10129,22 @@ $as_echo "$with_pymalloc" >&6; }
 $as_echo_n "checking for --with-pymalloc-map... " >&6; }
 
 # Check whether --with-pymalloc-map was given.
-if test "${with_pymalloc_map+set}" = set; then :
-  withval=$with_pymalloc_map;
+if test "${with_pymalloc_mmap+set}" = set; then :
+  withval=$with_pymalloc_mmap;
 fi
 
 
-if test -z "$with_pymalloc_map"
-then with_pymalloc_map="yes"
+if test -z "$with_pymalloc_mmap"
+then with_pymalloc_mmap="yes"
 fi
-if test "$with_pymalloc_map" != "no"
+if test "$with_pymalloc_mmap" != "no"
 then
 
-$as_echo "#define WITH_PYMALLOC_MAP 1" >>confdefs.h
+$as_echo "#define WITH_PYMALLOC_MMAP 1" >>confdefs.h
 
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_pymalloc_map" >&5
-$as_echo "$with_pymalloc_map" >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_pymalloc_mmap" >&5
+$as_echo "$with_pymalloc_mmap" >&6; }
 
 # Check for the custom dlmalloc support
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for --with-dlmalloc" >&5

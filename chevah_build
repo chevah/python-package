@@ -318,7 +318,7 @@ command_build() {
             # a temp location, and update $CPPFLAGS and $LDFLAGS accordingly.
             # For any other statically-compiled lib, such as libedit,
             # we'll need these shell vars.
-            build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
+            #build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
     esac
 

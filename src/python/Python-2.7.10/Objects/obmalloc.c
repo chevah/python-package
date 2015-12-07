@@ -581,7 +581,12 @@ new_arena(void)
             return NULL;                /* overflow */
 #endif
         nbytes = numarenas * sizeof(*arenas);
+
+#ifdef WITH_DLMALLOC
+        arenaobj = (struct arena_object *)dlrealloc(arenas, nbytes);
+#else
         arenaobj = (struct arena_object *)realloc(arenas, nbytes);
+#endif
         if (arenaobj == NULL)
             return NULL;
         arenas = arenaobj;
@@ -988,10 +993,10 @@ redirect:
      */
     if (nbytes == 0)
         nbytes = 1;
-#ifndef WITH_DLMALLOC
-    return (void *)malloc(nbytes);
-#else
+#ifdef WITH_DLMALLOC
     return (void *)dlmalloc(nbytes);
+#else
+    return (void *)malloc(nbytes);
 #endif
 }
 
@@ -1224,10 +1229,10 @@ PyObject_Free(void *p)
 redirect:
 #endif
     /* We didn't allocate this address. */
-#ifndef WITH_DLMALLOC
-    free(p);
-#else
+#ifdef WITH_DLMALLOC
     dlfree(p);
+#else
+    free(p);
 #endif
 }
 
@@ -1307,10 +1312,10 @@ PyObject_Realloc(void *p, size_t nbytes)
      * at p.  Instead we punt:  let C continue to manage this block.
      */
     if (nbytes)
-#ifndef WITH_DLMALLOC
-        return realloc(p, nbytes);
-#else
+#ifdef WITH_DLMALLOC
         return dlrealloc(p, nbytes);
+#else
+        return realloc(p, nbytes);
 #endif
     /* C doesn't define the result of realloc(p, 0) (it may or may not
      * return NULL then), but Python's docs promise that nbytes==0 never
@@ -1318,10 +1323,10 @@ PyObject_Realloc(void *p, size_t nbytes)
      * to begin with.  Even then, we can't be sure that realloc() won't
      * return NULL.
      */
-#ifndef WITH_DLMALLOC
-    bp = realloc(p, 1);
-#else
+#ifdef WITH_DLMALLOC
     bp = dlrealloc(p, 1);
+#else
+    bp = realloc(p, 1);
 #endif
     return bp ? bp : p;
 }

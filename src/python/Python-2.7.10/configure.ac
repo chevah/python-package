@@ -4023,7 +4023,7 @@ fi
 AC_MSG_CHECKING(for --with-pymalloc-mmap)
 AC_ARG_WITH(pymalloc-mmap,
             AC_HELP_STRING(--with(out)-pymalloc-mmap, Use mmap if possible in pymalloc),
-  [case "${with_pymalloc_map}" in
+  [case "${with_pymalloc_mmap}" in
   no)
     with_pymalloc_mmap=no
     ;;

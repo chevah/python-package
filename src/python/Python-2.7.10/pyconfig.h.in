@@ -769,6 +769,9 @@
 /* Define to 1 if you have the <sys/mkdev.h> header file. */
 #undef HAVE_SYS_MKDEV_H
 
+/* Define to 1 if you have the <sys/mman.h> header file. */
+#undef HAVE_SYS_MMAN_H
+
 /* Define to 1 if you have the <sys/modem.h> header file. */
 #undef HAVE_SYS_MODEM_H
 
@@ -1107,6 +1110,9 @@
 /* Define if WINDOW in curses.h offers a field _flags. */
 #undef WINDOW_HAS_FLAGS
 
+/* Define if you want to use the dlmalloc cutomized malloc implementation. */
+#undef WITH_DLMALLOC
+
 /* Define if you want documentation strings in extension modules */
 #undef WITH_DOC_STRINGS
 
@@ -1124,6 +1130,9 @@
 
 /* Define if you want to compile in Python-specific mallocs */
 #undef WITH_PYMALLOC
+
+/* Define if you want to use mmap in pymalloc. */
+#undef WITH_PYMALLOC_MMAP
 
 /* Define if you want to compile in rudimentary thread support */
 #undef WITH_THREAD

@@ -191,6 +191,7 @@ MACHDEP_OBJS=	@MACHDEP_OBJS@
 LIBOBJDIR=	Python/
 LIBOBJS=	@LIBOBJS@
 UNICODE_OBJS=   @UNICODE_OBJS@
+DLMALLOC_OBJS=  @DLMALLOC_OBJS@
 
 PYTHON=		python$(EXE)
 BUILDPYTHON=	python$(BUILDEXE)
@@ -277,7 +278,8 @@ PGOBJS=		\
 		Python/pyctype.o \
 		Parser/tokenizer_pgen.o \
 		Parser/printgrammar.o \
-		Parser/pgenmain.o
+		Parser/pgenmain.o \
+		$(DLMALLOC_OBJS)
 
 PARSER_HEADERS= \
 		Parser/parser.h \
@@ -389,7 +391,8 @@ OBJECT_OBJS=	\
 		Objects/tupleobject.o \
 		Objects/typeobject.o \
 		Objects/weakrefobject.o \
-		$(UNICODE_OBJS)
+		$(UNICODE_OBJS) \
+		$(DLMALLOC_OBJS)
 
 
 ##########################################################################

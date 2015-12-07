@@ -1526,7 +1526,7 @@ ieeefp.h io.h langinfo.h libintl.h poll.h process.h pthread.h \
 shadow.h signal.h stdint.h stropts.h termios.h thread.h \
 unistd.h utime.h \
 sys/audioio.h sys/bsdtty.h sys/epoll.h sys/event.h sys/file.h sys/loadavg.h \
-sys/lock.h sys/mkdev.h sys/modem.h \
+sys/lock.h sys/mkdev.h sys/mman.h sys/modem.h \
 sys/param.h sys/poll.h sys/select.h sys/socket.h sys/statvfs.h sys/stat.h \
 sys/termio.h sys/time.h \
 sys/times.h sys/types.h sys/un.h sys/utsname.h sys/wait.h pty.h libutil.h \
@@ -4018,6 +4018,48 @@ else
        PY_UNICODE_TYPE="no type found"
   fi
   AC_MSG_RESULT($PY_UNICODE_TYPE)
+fi
+
+AC_MSG_CHECKING(for --with-pymalloc-mmap)
+AC_ARG_WITH(pymalloc-mmap,
+            AC_HELP_STRING(--with(out)-pymalloc-mmap, Use mmap if possible in pymalloc),
+  [case "${with_pymalloc_map}" in
+  no)
+    with_pymalloc_mmap=no
+    ;;
+  *)
+    with_pymalloc_mmap=yes
+    ;;
+  esac])
+AC_MSG_RESULT($with_pymalloc_mmap)
+if test "$with_pymalloc_mmap" = "yes"
+then
+  AC_CHECK_LIB(c, mmap,
+    AC_DEFINE(WITH_PYMALLOC_MMAP, 1, [Define if you want to use mmap in pymalloc.]),
+    AC_MSG_ERROR([mmap is not available]))
+fi
+
+AC_MSG_CHECKING(for --with-dlmalloc)
+AC_ARG_WITH(dlmalloc,
+            AC_HELP_STRING(--with(out)-dlmalloc, Enable customized malloc),
+  [case "${with_dlmalloc}" in
+  no)
+    with_dlmalloc=no
+    ;;
+  *)
+    with_dlmalloc=yes
+    ;;
+  esac])
+AC_MSG_RESULT($with_dlmalloc)
+
+AC_SUBST(DLMALLOC_OBJS)
+if test "$with_dlmalloc" = "yes"
+then
+  DLMALLOC_OBJS="Objects/malloc.o"
+  AC_DEFINE(WITH_DLMALLOC, 1,
+            [Define if you want to use the dlmalloc cutomized malloc implementation.])
+else
+  DLMALLOC_OBJS=""
 fi
 
 # check for endianness

@@ -355,6 +355,77 @@ SIMPLELOCK_DECL(_malloc_lock)
 #define LOCK_INIT()     SIMPLELOCK_INIT(_malloc_lock)
 #define LOCK_FINI()     SIMPLELOCK_FINI(_malloc_lock)
 
+
+/*
+ * mmap
+ */
+#ifdef WITH_PYMALLOC_MMAP
+
+#ifndef MS_WINDOWS
+
+#ifdef HAVE_SYS_MMAN_H
+#include <sys/mman.h>
+#endif /* HAVE_SYS_MMAN_H */
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
+#endif /* HAVE_FCNTL_H */
+
+#define CALL_MUNMAP(a, s)    munmap((a), (s))
+#define MMAP_PROT            (PROT_READ|PROT_WRITE)
+#if !defined(MAP_ANONYMOUS) && defined(MAP_ANON)
+#define MAP_ANONYMOUS        MAP_ANON
+#endif /* MAP_ANON */
+#ifdef MAP_ANONYMOUS
+#define MMAP_FLAGS           (MAP_PRIVATE|MAP_ANONYMOUS)
+#define CALL_MMAP(s)         mmap(0, (s), MMAP_PROT, MMAP_FLAGS, -1, 0)
+#else /* MAP_ANONYMOUS */
+/*
+   Nearly all versions of mmap support MAP_ANONYMOUS, so the following
+   is unlikely to be needed, but is supplied just in case.
+*/
+#define MMAP_FLAGS           (MAP_PRIVATE)
+static int dev_zero_fd = -1; /* Cached file descriptor for /dev/zero. */
+#define CALL_MMAP(s) ((dev_zero_fd < 0) ? \
+           (dev_zero_fd = open("/dev/zero", O_RDWR), \
+            mmap(0, (s), MMAP_PROT, MMAP_FLAGS, dev_zero_fd, 0)) : \
+            mmap(0, (s), MMAP_PROT, MMAP_FLAGS, dev_zero_fd, 0))
+#endif /* MAP_ANONYMOUS */
+
+#else /* MS_WINDOWS */
+
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
+/* Win32 MMAP via VirtualAlloc, use MEM_TOP_DOWN to minimize interference */
+static void* win32mmap(size_t size) {
+  void* ptr = VirtualAlloc(0, size, MEM_RESERVE|MEM_COMMIT|MEM_TOP_DOWN,
+                           PAGE_READWRITE);
+  return (ptr != 0)? ptr: MFAIL;
+}
+
+/* This function supports releasing coalesed segments */
+static int win32munmap(void* ptr, size_t size) {
+  MEMORY_BASIC_INFORMATION minfo;
+  char* cptr = ptr;
+  while (size) {
+    if (VirtualQuery(cptr, &minfo, sizeof(minfo)) == 0)
+      return -1;
+    if (minfo.BaseAddress != cptr || minfo.AllocationBase != cptr ||
+        minfo.State != MEM_COMMIT || minfo.RegionSize > size)
+      return -1;
+    if (VirtualFree(cptr, 0, MEM_RELEASE) == 0)
+      return -1;
+    cptr += minfo.RegionSize;
+    size -= minfo.RegionSize;
+  }
+  return 0;
+}
+
+#define CALL_MMAP(s)         win32mmap(s)
+#define CALL_MUNMAP(a, s)    win32munmap((a), (s))
+#endif /* WIN32 */
+#endif /* WITH_PYMALLOC_MMAP */
+
 /*
  * Pool table -- headed, circular, doubly-linked lists of partially used pools.
 
@@ -617,6 +688,18 @@ new_arena(void)
                    MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
     err = (address == MAP_FAILED);
 #else
+#ifdef WITH_PYMALLOC_MMAP
+    address = CALL_MMAP(ARENA_SIZE);
+    err = (address == 0);
+#else
+#ifdef WITH_DLMALLOC
+    address = dlmalloc(ARENA_SIZE);
+    err = (address == 0);
+#else
+    address = malloc(ARENA_SIZE);
+    err = (address == 0);
+#endif /* WITH_DLMALLOC */
+#endif /* WITH_PYMALLOC_MMAP */
     address = malloc(ARENA_SIZE);
     err = (address == 0);
 #endif    
@@ -983,7 +1066,11 @@ redirect:
      */
     if (nbytes == 0)
         nbytes = 1;
+#ifndef WITH_DLMALLOC
     return (void *)malloc(nbytes);
+#else
+    return (void *)dlmalloc(nbytes);
+#endif
 }
 
 /* free */
@@ -1101,7 +1188,15 @@ PyObject_Free(void *p)
 #ifdef ARENAS_USE_MMAP
                 munmap((void *)ao->address, ARENA_SIZE);
 #else
+#ifdef WITH_PYMALLOC_MMAP
+                CALL_MUNMAP((void *)ao->address, ARENA_SIZE);
+#else
+#ifdef WITH_DLMALLOC
+                dlfree((void *)ao->address);
+#else
                 free((void *)ao->address);
+#endif /* WITH_DLMALLOC */
+#endif /* WITH_PYMALLOC_MMAP */
 #endif
                 ao->address = 0;                        /* mark unassociated */
                 --narenas_currently_allocated;
@@ -1211,7 +1306,11 @@ PyObject_Free(void *p)
 redirect:
 #endif
     /* We didn't allocate this address. */
+#ifndef WITH_DLMALLOC
     free(p);
+#else
+    dlfree(p);
+#endif
 }
 
 /* realloc.  If p is NULL, this acts like malloc(nbytes).  Else if nbytes==0,
@@ -1290,14 +1389,22 @@ PyObject_Realloc(void *p, size_t nbytes)
      * at p.  Instead we punt:  let C continue to manage this block.
      */
     if (nbytes)
+#ifndef WITH_DLMALLOC
         return realloc(p, nbytes);
+#else
+        return dlrealloc(p, nbytes);
+#endif
     /* C doesn't define the result of realloc(p, 0) (it may or may not
      * return NULL then), but Python's docs promise that nbytes==0 never
      * returns NULL.  We don't pass 0 to realloc(), to avoid that endcase
      * to begin with.  Even then, we can't be sure that realloc() won't
      * return NULL.
      */
+#ifndef WITH_DLMALLOC
     bp = realloc(p, 1);
+#else
+    bp = dlrealloc(p, 1);
+#endif
     return bp ? bp : p;
 }
 

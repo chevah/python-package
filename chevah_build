@@ -31,13 +31,34 @@ GMP_VERSION=6.0.0
 LIBEDIT_VERSION=20150325-3.1
 PYTHON_BUILD_VERSION=2.7.10
 PYSQLITE_VERSION=2.6.3
+PIP_VERSION=7.1.2
 SQLITE_VERSION=3.8.1
+# pycparser needs to be explicitly installed to work around setuptools auto
+# dependencies.
+PYCPARSER_VERSION=2.14
 
 EXTRA_LIBRARIES="\
-   python-modules/pyOpenSSL-0.13 \
+   python-modules/cffi-1.3.0 \
+   python-modules/cryptography-1.2.dev1-e4b8b45 \
    python-modules/pycrypto-2.6.1 \
    python-modules/python-setproctitle-1.1.8.dev0 \
    "
+
+# For all platforms.
+PIP_INSTALLABLES="\
+    pyOpenSSL==0.15.1 \
+    "
+
+# Installed using pip only on windows.
+PIP_INSTALLABLES_WIN="\
+    pypiwin32==219 \
+    pycrypto==2.6.1 \
+    "
+
+PIP_ARGS="\
+    --index-url=http://pypi.chevah.com:10042/simple \
+    --trusted-host=pypi.chevah.com \
+    "
 
 PROG=$0
 DIST_FOLDER='dist'
@@ -72,8 +93,12 @@ LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/bin/python
 INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST
 PYTHON_BIN=$INSTALL_FOLDER/bin/python
 PYTHON_BUILD_FOLDER="$PYTHON_VERSION-$OS-$ARCH"
+# Beware! The shebang is too long for some OS'es, so we use $PYTHON_BIN.
+PIP_BIN="$PYTHON_BIN $INSTALL_FOLDER/bin/pip"
+
 
 export MAKE=make
+export CHEVAH_BUILD_PATH=$INSTALL_FOLDER
 
 case $OS in
     aix*)
@@ -265,7 +290,7 @@ remove_dependencies() {
                         (exit 0)
                     else
                         execute sudo yum -y remove $rpm_leaves
-                        rhel_autoremove
+                        rhel_yum_autoremove
                     fi
                 }
                 rhel_yum_autoremove
@@ -302,29 +327,29 @@ command_build() {
     # Clean the build dir to avoid contamination from previous builds.
     command_clean
 
-    case $OS in
-        aix*|solaris*|hpux*)
-            build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
-            ;;
-    esac
+    execute mkdir -p ${PYTHON_BUILD_FOLDER}
+    # These dirs are needed for libffi/gmp/libedit to copy headers and libs to.
+    # We update $CPPFLAGS and $LDFLAGS accordingly, so that they get picked up.
+    execute mkdir -p $INSTALL_FOLDER/{include,lib}
+    export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"
+    export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
+
 
     case $OS in
         windows*)
             # For Windows we don't build everything from source yet.
-            echo "Skipping GMP"
+            echo "Skipping libffi, GMP"
             ;;
         *)
-            # Build GMP statically on all platforms, copy headers and libs in
-            # a temp location, and update $CPPFLAGS and $LDFLAGS accordingly.
-            # For any other statically-compiled lib, such as libedit,
-            # we'll need these shell vars.
+            build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
+
+            # We need GMP or MPIR for fast math in PyCrypto. We use GMP because
+            # its devs do a better job of supporting exotic platforms such as AIX.
             build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
+            cp $INSTALL_FOLDER/tmp/gmp/gmp.h $INSTALL_FOLDER/include/
+            cp $INSTALL_FOLDER/tmp/gmp/libgmp* $INSTALL_FOLDER/lib/
             ;;
     esac
-
-    mkdir -p $INSTALL_FOLDER/{include,lib}
-    export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"
-    export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
 
     # Statically build the BSD libedit on selected platforms to get readline
     # support without linking to the GPL-only readline. We don't do this for
@@ -344,16 +369,32 @@ command_build() {
         windows*)
             build 'python' "Python-$PYTHON_BUILD_VERSION-windows" ${PYTHON_BUILD_FOLDER}
             echo "Skipping sqlite and extra libraries"
+            install_pip
+            execute $PYTHON_BIN -m pip \
+                install $PIP_ARGS $PIP_INSTALLABLES_WIN
+            ;;
+        *)
+            build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
+            install_pip
+            # Extra libs with source in this repo.
+            command_build_sqlite
+            command_build_python_extra_libraries
+    esac
+
+    execute $PYTHON_BIN -m pip install $PIP_ARGS $PIP_INSTALLABLES
+
+    # Extra libs with source packages.
+    execute pushd ${BUILD_FOLDER}
+        execute $PIP_BIN install $PIP_ARGS -U $PIP_INSTALLABLES
+    execute popd
+
+    # Cleaning the build folder.
+    case $OS in
+        windows*)
             # For Windows we don't build every thing from source yet.
             echo "Skipping cleaning install folder"
             ;;
         *)
-            build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
-
-            command_build_sqlite
-
-            command_build_python_extra_libraries
-
             execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
                 # Clean the build folder.
                 execute rm -rf tmp
@@ -365,12 +406,25 @@ command_build() {
                 execute mkdir bin
                 # Copy back python binary
                 execute cp lib/config/bin/$PYTHON_VERSION bin/python
+                execute cp lib/config/bin/pip bin/pip
             execute popd
     esac
 
     remove_dependencies
 
     make_dist 'python' ${PYTHON_BUILD_FOLDER}
+}
+
+
+#
+# Install PIP
+#
+install_pip() {
+    echo "Installing pip + setuptools"
+    execute $PYTHON_BIN python-modules/pip/get-pip-$PIP_VERSION.py $PIP_ARGS
+    # pycparser is installed first as setup_requires is ugly.
+    # https://pip.pypa.io/en/stable/reference/pip_install/#controlling-setup-requires
+    execute $PIP_BIN install $PIP_ARGS -U pycparser==$PYCPARSER_VERSION
 }
 
 
@@ -407,14 +461,8 @@ command_build_python_extra_libraries() {
     execute cp $makefile $makefile_orig
     sed "s#^prefix=.*#prefix= $INSTALL_FOLDER#" $makefile_orig > $makefile
 
-    # We need GMP or MPIR for fast math in PyCrypto. We use GMP because
-    # its devs do a better job of supporting exotic platforms such as AIX.
-    # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
-    cp $INSTALL_FOLDER/tmp/gmp/gmp.h $INSTALL_FOLDER/include
-    cp $INSTALL_FOLDER/tmp/gmp/libgmp* $INSTALL_FOLDER/lib
-
     for library in $EXTRA_LIBRARIES ; do
-        # Library is in the form pyopenssl/PyOpenssl-2.4.5
+        # Library is in the form cffi/cffi-2.4.5
         version_folder=${library#*/}
         target_folder=${BUILD_FOLDER}/$version_folder
 
@@ -434,7 +482,7 @@ command_build_python_extra_libraries() {
 #
 initialize_python_module(){
     source_folder=$1
-    larget_folder=$1
+    target_folder=$2
 
     execute rm -rf $target_folder
     execute cp -r $source_folder $target_folder
@@ -457,8 +505,8 @@ initialize_python_module(){
                 extra_args=""
                 if [ "$OS" = "solaris10" ]; then
                     extra_args="$extra_args -I/usr/sfw/include"
-                    # Needed to build pyOpenSSL and pysqlite in Solaris 10.
-                    # Make sure the headers for OpenSSL and sqlite3 are present
+                    # Needed to build pysqlite in Solaris 10.
+                    # Make sure the headers for sqlite3 are present
                     # in /usr/sfw/include (only one location allowed, it seems).
                     if [ "${ARCH%64}" = "$ARCH" ]; then
                         extra_args="$extra_args -L/usr/sfw/lib -L/usr/lib/mps"
@@ -466,6 +514,8 @@ initialize_python_module(){
                         extra_args="$extra_args -L/usr/sfw/lib/64 -L/usr/lib/mps/64"
                     fi
                 fi
+                # Run pip just to get all the dependencies.
+                $PIP_BIN install $PIP_ARGS .
                 execute $PYTHON_BIN setup.py build_ext $extra_args
                 ;;
         esac

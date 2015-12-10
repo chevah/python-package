@@ -5,6 +5,8 @@ import sys
 import platform
 import subprocess
 
+OPENSSL_VERSION_WINDOWS = u'OpenSSL 1.0.2d 9 Jul 2015'
+
 script_helper = './get_binaries_deps.sh'
 platform_system = platform.system().lower()
 test_for_readline = False
@@ -296,10 +298,17 @@ def main():
 
     try:
         from cryptography.hazmat.backends.openssl.backend import backend
-        backend.openssl_version_text()
+        openssl_version = backend.openssl_version_text()
     except Exception as error:
         sys.stderr.write('"cryptography" failure: %s\n' % (error))
         exit_code = 3
+    else:
+        if os.name == 'nt':
+            # Check OpenSSL version for Windows.
+            assert openssl_version == OPENSSL_VERSION_WINDOWS
+        else:
+            # On Linux and Unix we don't check the version.
+            pass
 
     try:
         import Crypto
@@ -359,17 +368,6 @@ def main():
         except:
             sys.stderr.write('"sqlite3" missing.\n')
             exit_code = 6
-
-        # For now cryptography is only available on Winodws
-        try:
-            from cryptography.hazmat.backends.openssl.backend import backend
-            openssl_version = backend.openssl_version_text()
-        except:
-            sys.stderr.write('"cryptography" failure.\n')
-            exit_code = 3
-        else:
-            # Check OpenSSL version.
-            assert openssl_version == u'OpenSSL 1.0.2d 9 Jul 2015'
 
     else:
         # Linux and Unix checks.

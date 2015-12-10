@@ -32,10 +32,10 @@ LIBEDIT_VERSION=20150325-3.1
 PYTHON_BUILD_VERSION=2.7.10
 PYSQLITE_VERSION=2.6.3
 SQLITE_VERSION=3.8.1
-PIP_VERSION=7.1.2
 
 EXTRA_LIBRARIES="\
    python-modules/cffi-1.3.0 \
+   python-modules/cryptography-1.2.dev1 \
    python-modules/pycrypto-2.6.1 \
    python-modules/python-setproctitle-1.1.8.dev0 \
    "
@@ -359,14 +359,6 @@ command_build() {
             ;;
         *)
             build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
-
-            # Install PIP and setuptools.
-            execute pushd ${BUILD_FOLDER}
-                execute wget \
-                    http://binary.chevah.com/production/python/pip/get-pip-$PIP_VERSION.py \
-                    -O get-pip.py
-                execute $PYTHON_BIN get-pip.py $PIP_ARGS
-            execute popd
 
             # Extra libs with source in this repo.
             command_build_sqlite

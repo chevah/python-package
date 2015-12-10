@@ -385,10 +385,6 @@ command_build() {
 
     # Extra libs with source packages.
     execute pushd ${BUILD_FOLDER}
-        # pycparser is installed first as setup_requires is ugly.
-        # https://pip.pypa.io/en/stable/reference/pip_install/#controlling-setup-requires
-        execute $PIP_BIN install $PIP_ARGS -U \
-            pycparser==$PYCPARSER_VERSION
         execute $PIP_BIN install $PIP_ARGS -U $PIP_INSTALLABLES
     execute popd
 
@@ -426,6 +422,9 @@ command_build() {
 install_pip() {
     echo "Installing pip + setuptools"
     execute $PYTHON_BIN python-modules/pip/get-pip-$PIP_VERSION.py $PIP_ARGS
+    # pycparser is installed first as setup_requires is ugly.
+    # https://pip.pypa.io/en/stable/reference/pip_install/#controlling-setup-requires
+    execute $PIP_BIN install $PIP_ARGS -U pycparser==$PYCPARSER_VERSION
 }
 
 

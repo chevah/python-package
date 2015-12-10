@@ -5,16 +5,6 @@
 # Import shared code.
 . ./functions.sh
 
-PIP_ARGS="\
-    -i http://pypi.chevah.com:10042/simple \
-    --trusted-host=pypi.chevah.com \
-    "
-PIP_INSTALLABLES_WIN="\
-    pypiwin32==219 \
-    pycrypto==2.6.1 \
-    cryptography==1.1 \
-    pyOpenSSL==0.15.1 \
-    "
 
 chevahbs_configure() {
     CONFIG_ARGS="--disable-shared"
@@ -118,13 +108,13 @@ chevahbs_compile() {
 
 chevahbs_install() {
     install_folder=$1
+
     case $OS in
         windows)
             local destination=$INSTALL_FOLDER/lib
             local redistributables=../../win-tools/redistributables/
             local redistributable_version=9.00.30729.6161
             local manifest_wiper=../../win-tools/manifest-wiper.exe
-            local get_pip=../../python-modules/get-pip.py
 
             # On Windows we don't build from source but rather create the
             # distribution from pre-compiled binaries.
@@ -155,13 +145,6 @@ chevahbs_install() {
             execute sed -e 's|version="9.0.21022.8"|version="9.00.30729.6161"|' -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' < $destination/pythonw.exe.embedded > $destination/pythonw.exe.manifest
             execute sed -e 's|version="9.0.21022.8"|version="9.00.30729.6161"|' -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' < $destination/python27.dll.embedded > $destination/python27.dll.manifest
             execute rm -f --verbose $destination/*.embedded
-      
-            echo "Installing pip + binary modules"
-            execute $destination/python $get_pip $PIP_ARGS
-            execute $destination/python -m pip \
-                install $PIP_ARGS $PIP_INSTALLABLES_WIN
-            # Remove pip.
-            execute $destination/python -m pip uninstall -y pip
 
             echo "Patching pyWin32 manifests to use our redistributable version"
             $manifest_wiper --verbose \

@@ -31,7 +31,11 @@ GMP_VERSION=6.0.0
 LIBEDIT_VERSION=20150325-3.1
 PYTHON_BUILD_VERSION=2.7.10
 PYSQLITE_VERSION=2.6.3
+PIP_VERSION=7.1.2
 SQLITE_VERSION=3.8.1
+# pycparser needs to be explicitly installed to work around setuptools auto
+# dependencies.
+PYCPARSER_VERSION=2.14
 
 EXTRA_LIBRARIES="\
    python-modules/cffi-1.3.0 \
@@ -39,6 +43,17 @@ EXTRA_LIBRARIES="\
    python-modules/pycrypto-2.6.1 \
    python-modules/python-setproctitle-1.1.8.dev0 \
    "
+
+# For all platforms.
+PIP_INSTALLABLES="\
+    pyOpenSSL==0.15.1 \
+    "
+
+# Installed using pip only on windows.
+PIP_INSTALLABLES_WIN="\
+    pypiwin32==219 \
+    pycrypto==2.6.1 \
+    "
 
 PIP_ARGS="\
     --index-url=http://pypi.chevah.com:10042/simple \
@@ -354,25 +369,36 @@ command_build() {
         windows*)
             build 'python' "Python-$PYTHON_BUILD_VERSION-windows" ${PYTHON_BUILD_FOLDER}
             echo "Skipping sqlite and extra libraries"
+            install_pip
+            execute $PYTHON_BIN -m pip \
+                install $PIP_ARGS $PIP_INSTALLABLES_WIN
+            ;;
+        *)
+            build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
+            install_pip
+            # Extra libs with source in this repo.
+            command_build_sqlite
+            command_build_python_extra_libraries
+    esac
+
+    execute $PYTHON_BIN -m pip install $PIP_ARGS $PIP_INSTALLABLES
+
+    # Extra libs with source packages.
+    execute pushd ${BUILD_FOLDER}
+        # pycparser is installed first as setup_requires is ugly.
+        # https://pip.pypa.io/en/stable/reference/pip_install/#controlling-setup-requires
+        execute $PIP_BIN install $PIP_ARGS -U \
+            pycparser==$PYCPARSER_VERSION
+        execute $PIP_BIN install $PIP_ARGS -U $PIP_INSTALLABLES
+    execute popd
+
+    # Cleaning the build folder.
+    case $OS in
+        windows*)
             # For Windows we don't build every thing from source yet.
             echo "Skipping cleaning install folder"
             ;;
         *)
-            build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
-
-            # Extra libs with source in this repo.
-            command_build_sqlite
-
-            command_build_python_extra_libraries
-
-            # Extra libs with source packages.
-            execute pushd ${BUILD_FOLDER}
-                # pycparser is installed first as setup_requires is ugly.
-                # https://pip.pypa.io/en/stable/reference/pip_install/#controlling-setup-requires
-                execute $PIP_BIN install $PIP_ARGS -U pycparser==2.14
-                execute $PIP_BIN install $PIP_ARGS -U cryptography==1.1
-            execute popd
-
             execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
                 # Clean the build folder.
                 execute rm -rf tmp
@@ -384,12 +410,22 @@ command_build() {
                 execute mkdir bin
                 # Copy back python binary
                 execute cp lib/config/bin/$PYTHON_VERSION bin/python
+                execute cp lib/config/bin/pip bin/pip
             execute popd
     esac
 
     remove_dependencies
 
     make_dist 'python' ${PYTHON_BUILD_FOLDER}
+}
+
+
+#
+# Install PIP
+#
+install_pip() {
+    echo "Installing pip + setuptools"
+    execute $PYTHON_BIN python-modules/pip/get-pip-$PIP_VERSION.py $PIP_ARGS
 }
 
 

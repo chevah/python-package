@@ -74,6 +74,7 @@ export CC='gcc'
 export CXX='g++'
 
 LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
+LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/bin/python
 INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST
 PYTHON_BIN=$INSTALL_FOLDER/bin/python
 PYTHON_BUILD_FOLDER="$PYTHON_VERSION-$OS-$ARCH"
@@ -158,10 +159,18 @@ case $OS in
         export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
         export MACOSX_DEPLOYMENT_TARGET=10.8
         ;;
+    freebsd*)
+        export CC="clang"
+        export CXX="clang++"
+        ;;
     rhel4)
         # RHEL4 has OpenSSL 0.9.7, but Python 2 versions starting with
         # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
         PYTHON_BUILD_VERSION=2.7.8
+        ;;
+    windows*)
+        # On Windows, python executable is installed at a different path.
+        LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
         ;;
 esac
 
@@ -310,13 +319,22 @@ command_build() {
     export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"
     export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
 
-    build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
 
-    # We need GMP or MPIR for fast math in PyCrypto. We use GMP because
-    # its devs do a better job of supporting exotic platforms such as AIX.
-    build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
-    cp $INSTALL_FOLDER/tmp/gmp/gmp.h $INSTALL_FOLDER/include/
-    cp $INSTALL_FOLDER/tmp/gmp/libgmp* $INSTALL_FOLDER/lib/
+    case $OS in
+        windows*)
+            # For Windows we don't build everything from source yet.
+            echo "Skipping libffi, GMP"
+            ;;
+        *)
+            build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
+
+            # We need GMP or MPIR for fast math in PyCrypto. We use GMP because
+            # its devs do a better job of supporting exotic platforms such as AIX.
+            build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
+            cp $INSTALL_FOLDER/tmp/gmp/gmp.h $INSTALL_FOLDER/include/
+            cp $INSTALL_FOLDER/tmp/gmp/libgmp* $INSTALL_FOLDER/lib/
+            ;;
+    esac
 
     # Statically build the BSD libedit on selected platforms to get readline
     # support without linking to the GPL-only readline. We don't do this for
@@ -332,40 +350,50 @@ command_build() {
             ;;
     esac
 
-    build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
+    case $OS in
+        windows*)
+            build 'python' "Python-$PYTHON_BUILD_VERSION-windows" ${PYTHON_BUILD_FOLDER}
+            echo "Skipping sqlite and extra libraries"
+            # For Windows we don't build every thing from source yet.
+            echo "Skipping cleaning install folder"
+            ;;
+        *)
+            build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
 
-    # Install PIP and setuptools.
-    execute pushd ${BUILD_FOLDER}
-        execute wget \
-            http://binary.chevah.com/production/python/pip/get-pip-$PIP_VERSION.py \
-            -O get-pip.py
-        execute $PYTHON_BIN get-pip.py $PIP_ARGS
-    execute popd
+            # Install PIP and setuptools.
+            execute pushd ${BUILD_FOLDER}
+                execute wget \
+                    http://binary.chevah.com/production/python/pip/get-pip-$PIP_VERSION.py \
+                    -O get-pip.py
+                execute $PYTHON_BIN get-pip.py $PIP_ARGS
+            execute popd
 
-    # Extra libs with source in this repo.
-    command_build_sqlite
-    command_build_python_extra_libraries
+            # Extra libs with source in this repo.
+            command_build_sqlite
 
-    # Extra libs with source packages.
-    execute pushd ${BUILD_FOLDER}
-        # pycparser is installed first as setup_requires is ugly.
-        # https://pip.pypa.io/en/stable/reference/pip_install/#controlling-setup-requires
-        execute $PIP_BIN install $PIP_ARGS -U pycparser==2.14
-        execute $PIP_BIN install $PIP_ARGS -U cryptography==1.1
-    execute popd
+            command_build_python_extra_libraries
 
-    execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
-        # Clean the build folder.
-        execute rm -rf tmp
-        execute mkdir -p lib/config
-        safe_move share lib/config
-        safe_move pysqlite2-doc lib/config
-        # Move all bin to lib/config
-        safe_move bin lib/config
-        execute mkdir bin
-        # Copy back python binary
-        execute cp lib/config/bin/$PYTHON_VERSION bin/python
-    execute popd
+            # Extra libs with source packages.
+            execute pushd ${BUILD_FOLDER}
+                # pycparser is installed first as setup_requires is ugly.
+                # https://pip.pypa.io/en/stable/reference/pip_install/#controlling-setup-requires
+                execute $PIP_BIN install $PIP_ARGS -U pycparser==2.14
+                execute $PIP_BIN install $PIP_ARGS -U cryptography==1.1
+            execute popd
+
+            execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
+                # Clean the build folder.
+                execute rm -rf tmp
+                execute mkdir -p lib/config
+                safe_move share lib/config
+                safe_move pysqlite2-doc lib/config
+                # Move all bin to lib/config
+                safe_move bin lib/config
+                execute mkdir bin
+                # Copy back python binary
+                execute cp lib/config/bin/$PYTHON_VERSION bin/python
+            execute popd
+    esac
 
     remove_dependencies
 
@@ -479,7 +507,7 @@ command_test() {
     execute cp python-modules/chevah-python-test/${test_file} build/
     execute cp python-modules/chevah-python-test/get_binaries_deps.sh build/
     execute pushd build
-    execute ./$LOCAL_PYTHON_BINARY_DIST/bin/python ${test_file}
+    execute $LOCAL_PYTHON_BINARY ${test_file}
     execute popd
 }
 

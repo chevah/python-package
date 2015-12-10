@@ -272,6 +272,10 @@ copy_python() {
             echo "No ${pip_package}. Start downloading it..."
             get_binary_dist "$pip_package" "$PIP_INDEX/packages"
         fi
+
+        # Remove existing pip and install new one.
+        rm -rf ${PYTHON_LIB}/site-packages/pip
+        rm -rf ${PYTHON_LIB}/site-packages/pip*.dist-info
         cp -RL "${CACHE_FOLDER}/$pip_package/pip" ${PYTHON_LIB}/site-packages/
 
         if [ ! -d ${CACHE_FOLDER}/$setuptools_package ]; then
@@ -478,6 +482,15 @@ detect_os() {
 
         # For now, no matter the actual OS X version returned, we use '108'.
         OS="osx108"
+
+    elif [ "${OS}" = "freebsd" ]; then
+        ARCH=$(uname -m)
+
+        os_version_raw=$(uname -r | cut -d'.' -f1)
+        check_os_version "FreeBSD" 10 "$os_version_raw" os_version_chevah
+
+        # For now, no matter the actual FreeBSD version returned, we use '10'.
+        OS="freebsd10"
 
     elif [ "${OS}" = "openbsd" ]; then
         ARCH=$(uname -m)

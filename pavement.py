@@ -9,7 +9,7 @@ RUN_PACKAGES = [
     'twisted==12.1.0-chevah3',
 
     # Buildbot is used for try scheduler
-    'buildbot==0.8.11.pre.143.gac88f1b.c2',
+    'buildbot==0.8.11.c7',
 
     # Required for some unicode handling.
     'unidecode',
@@ -47,10 +47,13 @@ SETUP['pocket-lint']['include_folders'] = ['src']
 SETUP['pocket-lint']['exclude_files'] = []
 SETUP['test']['package'] = None
 
-SETUP['pypi']['index_url'] = 'http://pypi.chevah.com:10042/simple'
-SETUP['github']['repo'] = 'chevah/python-package'
-SETUP['buildbot']['server'] = 'build.chevah.com'
-SETUP['buildbot']['web_url'] = 'http://build.chevah.com:10088'
+SETUP['pypi']['index_url'] = 'http://pypi.chevah.com/simple'
+
+SETUP['repository']['name'] = u'python-package'
+SETUP['repository']['github'] = 'https://github.com/chevah/python-package'
+SETUP['buildbot']['builders_filter'] = u'python-package'
+SETUP['buildbot']['server'] = 'buildbot.chevah.com'
+SETUP['buildbot']['web_url'] = 'https://buildbot.chevah.com:10433'
 
 
 @task

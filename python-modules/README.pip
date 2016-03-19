@@ -1,0 +1,2 @@
+We distribute a copy of get-pip.py here so that we can run this without
+touching HTTPS servers or random sites... or re-downloading it at each build.

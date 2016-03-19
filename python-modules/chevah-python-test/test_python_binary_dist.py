@@ -371,7 +371,11 @@ def main():
             exit_code = 3
         else:
             # Check OpenSSL version.
-            assert openssl_version == u'OpenSSL 1.0.2d 9 Jul 2015'
+            expecting = u'OpenSSL 1.0.2g  1 Mar 2016'
+            if openssl_version != expecting:
+                sys.stderr.write(
+                    'Expecting %s got %s.\n' % (expecting, openssl_version))
+                exit_code = 3
 
     else:
         # Linux and Unix checks.

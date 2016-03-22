@@ -28,4 +28,4 @@ Do a testing build (files go in http://binary.chevah.com/testing/python/)::
 Do a production build
 (files go in http://binary.chevah.com/production/python/)::
 
-    paver test_remote NAME_OF_BUILDER --properties=force_upload_production=yes
+    paver test_remote NAME_OF_BUILDER --force-upload-production

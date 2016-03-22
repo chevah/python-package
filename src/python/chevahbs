@@ -6,7 +6,7 @@
 . ./functions.sh
 
 PIP_ARGS="\
-    -i http://pypi.chevah.com:10042/simple \
+    -i http://pypi.chevah.com/simple \
     --trusted-host=pypi.chevah.com \
     "
 PIP_INSTALLABLES_WIN="\

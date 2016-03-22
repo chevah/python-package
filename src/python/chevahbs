@@ -50,10 +50,6 @@ chevahbs_configure() {
             # Workaround for http://bugs.python.org/issue21917
             echo "import os; os.__dict__.pop('O_NOFOLLOW', None)" \
                 >> Lib/site-packages/sitecustomize.py
-            # These files are already created in the Python distribution,
-            # but for some strange reason, make tries to recreate them.
-            # We just touch them so that make will see them up to date.
-            touch Include/Python-ast.h Python/Python-ast.c
             # MAXMEM option with a value greater than 8192.
             CONFIG_ARGS="${CONFIG_ARGS} \
                 --with-system-ffi \
@@ -89,6 +85,10 @@ chevahbs_configure() {
             ;;
         *)
             execute ./configure --prefix="" $CONFIG_ARGS
+            # These files are already created in the Python distribution,
+            # but for some strange reason, make tries to recreate them.
+            # We just touch them so that make will see them up to date.
+            touch Include/Python-ast.h Python/Python-ast.c
             ;;
     esac
 

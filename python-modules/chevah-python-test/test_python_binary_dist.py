@@ -279,33 +279,37 @@ def main():
     Exit with a relevant error code.
     """
     exit_code = 0
+    import sys
+    print 'python %s' % (sys.version,)
 
     try:
         import zlib
-        zlib
+        print 'zlib %s' % (zlib.__version__,)
     except:
         sys.stderr.write('"zlib" missing.\n')
         exit_code = 1
 
     try:
         import _hashlib
+        import ssl
         _hashlib
+        print 'stdlib ssl %s' % (ssl.OPENSSL_VERSION,)
     except:
         sys.stderr.write('standard "ssl" missing.\n')
         exit_code = 2
 
     try:
         from OpenSSL import SSL, crypto, rand
-        SSL
         crypto
         rand
+        print 'pyopenssl %s' %(OpenSSL.__version__,)
     except:
         sys.stderr.write('"OpenSSL" missing.\n')
         exit_code = 3
 
     try:
         import Crypto
-        Crypto
+        print 'PyCrypto %s' % (Crypto.__version__,)
     except:
         sys.stderr.write('"PyCrypto" missing.\n')
         exit_code = 4
@@ -336,6 +340,7 @@ def main():
     try:
         from ctypes import CDLL
         CDLL
+        print 'ctypes %s' % (ctypes.__version__,)
     except:
         sys.stderr.write('"ctypes - CDLL" missing.\n')
         exit_code = 8
@@ -395,7 +400,7 @@ def main():
 
         try:
             import setproctitle
-            setproctitle
+            print 'setproctitle %s' % (setproctitle.__version__,)
         except:
             sys.stderr.write('"setproctitle" missing.\n')
             exit_code = 7

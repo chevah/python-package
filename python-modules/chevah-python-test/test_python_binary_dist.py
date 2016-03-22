@@ -299,12 +299,12 @@ def main():
         exit_code = 2
 
     try:
-        from OpenSSL import SSL, crypto, rand
+        from OpenSSL import SSL, crypto, rand, __version__ as pyopenssl_version
         crypto
         rand
-        print 'pyopenssl %s' %(OpenSSL.__version__,)
-    except:
-        sys.stderr.write('"OpenSSL" missing.\n')
+        print 'pyopenssl %s' % (pyopenssl_version,)
+    except Exception as error:
+        sys.stderr.write('"OpenSSL" missing. %s\n' % (error,))
         exit_code = 3
 
     try:
@@ -339,10 +339,11 @@ def main():
 
     try:
         from ctypes import CDLL
+        import ctypes
         CDLL
         print 'ctypes %s' % (ctypes.__version__,)
     except:
-        sys.stderr.write('"ctypes - CDLL" missing.\n')
+        sys.stderr.write('"ctypes - CDLL" missing. %s\n')
         exit_code = 8
 
     try:

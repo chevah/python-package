@@ -6,10 +6,10 @@ Build script for Python binary distribution.
 
 RUN_PACKAGES = [
     'zope.interface==3.8.0',
-    'twisted==12.1.0-chevah3',
+    'twisted==12.1.0-chevah11',
 
     # Buildbot is used for try scheduler
-    'buildbot==0.8.11.pre.143.gac88f1b.c2',
+    'buildbot==0.8.11.c7',
 
     # Required for some unicode handling.
     'unidecode',
@@ -41,16 +41,16 @@ test_review
 
 SETUP['product']['name'] = 'python'
 SETUP['folders']['source'] = u'src'
-SETUP['repository']['name'] = u'python-package'
 SETUP['pocket-lint']['include_files'] = ['pavement.py']
 SETUP['pocket-lint']['include_folders'] = ['src']
 SETUP['pocket-lint']['exclude_files'] = []
 SETUP['test']['package'] = None
 
-SETUP['pypi']['index_url'] = 'http://pypi.chevah.com:10042/simple'
-SETUP['github']['repo'] = 'chevah/python-package'
-SETUP['buildbot']['server'] = 'build.chevah.com'
-SETUP['buildbot']['web_url'] = 'http://build.chevah.com:10088'
+SETUP['pypi']['index_url'] = 'http://pypi.chevah.com/simple'
+SETUP['repository']['name'] = u'python-package'
+SETUP['repository']['github'] = 'https://github.com/chevah/python-package'
+SETUP['buildbot']['server'] = 'buildbot.chevah.com'
+SETUP['buildbot']['web_url'] = 'https://build.chevah.com:10443'
 
 
 @task

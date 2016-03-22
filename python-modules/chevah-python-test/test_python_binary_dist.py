@@ -302,7 +302,10 @@ def main():
         from OpenSSL import SSL, crypto, rand, __version__ as pyopenssl_version
         crypto
         rand
-        print 'pyopenssl %s' % (pyopenssl_version,)
+        print 'pyopenssl %s - OpenSSL %s' % (
+            pyopenssl_version,
+            SSL.SSLeay_version(SSL.SSLEAY_VERSION),
+            )
     except Exception as error:
         sys.stderr.write('"OpenSSL" missing. %s\n' % (error,))
         exit_code = 3

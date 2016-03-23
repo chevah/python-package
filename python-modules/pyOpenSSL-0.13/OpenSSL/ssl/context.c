@@ -279,17 +279,17 @@ global_tlsext_servername_callback(const SSL *ssl, int *alert, void *arg) {
 /*
  * More recent builds of OpenSSL may have SSLv2 completely disabled.
  */
-// #ifdef OPENSSL_NO_SSL2
+#if defined(OPENSSL_NO_SSL2) || defined(NO_SSL2)
 #define SSLv2_METHOD_TEXT ""
-// #else
-// #define SSLv2_METHOD_TEXT "SSLv2_METHOD, "
-// #endif
+#else
+#define SSLv2_METHOD_TEXT "SSLv2_METHOD, "
+#endif
 
-// #ifdef OPENSSL_NO_SSL3
+#if defined(OPENSSL_NO_SSL3) || defined(NO_SSL3)
 #define SSLv3_METHOD_TEXT ""
-// #else
-// #define SSLv3_METHOD_TEXT "SSLv3_METHOD, "
-// #endif
+#else
+#define SSLv3_METHOD_TEXT "SSLv3_METHOD, "
+#endif
 
 static char ssl_Context_doc[] = "\n\
 Context(method) -> Context instance\n\
@@ -1204,23 +1204,23 @@ ssl_Context_init(ssl_ContextObj *self, int i_method) {
 
     switch (i_method) {
         case ssl_SSLv2_METHOD:
-// #ifdef OPENSSL_NO_SSL2
+#if defined(OPENSSL_NO_SSL2) || defined(NO_SSL2)
             PyErr_SetString(PyExc_ValueError, "SSLv2_METHOD not supported by this version of OpenSSL");
             return NULL;
-// #else
-//             method = SSLv2_method();
-// #endif
+#else
+            method = SSLv2_method();
+#endif
             break;
         case ssl_SSLv23_METHOD:
             method = SSLv23_method();
             break;
         case ssl_SSLv3_METHOD:
-// #ifdef OPENSSL_NO_SSL3
+#if defined(OPENSSL_NO_SSL3) || defined(NO_SSL3)
             PyErr_SetString(PyExc_ValueError, "SSLv3_METHOD not supported by this version of OpenSSL");
             return NULL;
-// #else
-//             method = SSLv3_method();
-// #endif
+#else
+            method = SSLv3_method();
+#endif
             break;
         case ssl_TLSv1_METHOD:
             method = TLSv1_method();

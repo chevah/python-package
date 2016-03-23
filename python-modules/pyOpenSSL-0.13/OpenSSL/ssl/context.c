@@ -279,12 +279,17 @@ global_tlsext_servername_callback(const SSL *ssl, int *alert, void *arg) {
 /*
  * More recent builds of OpenSSL may have SSLv2 completely disabled.
  */
-#ifdef OPENSSL_NO_SSL2
+// #ifdef OPENSSL_NO_SSL2
 #define SSLv2_METHOD_TEXT ""
-#else
-#define SSLv2_METHOD_TEXT "SSLv2_METHOD, "
-#endif
+// #else
+// #define SSLv2_METHOD_TEXT "SSLv2_METHOD, "
+// #endif
 
+// #ifdef OPENSSL_NO_SSL3
+#define SSLv3_METHOD_TEXT ""
+// #else
+// #define SSLv3_METHOD_TEXT "SSLv3_METHOD, "
+// #endif
 
 static char ssl_Context_doc[] = "\n\
 Context(method) -> Context instance\n\
@@ -292,11 +297,12 @@ Context(method) -> Context instance\n\
 OpenSSL.SSL.Context instances define the parameters for setting up new SSL\n\
 connections.\n\
 \n\
-@param method: One of " SSLv2_METHOD_TEXT "SSLv3_METHOD, SSLv23_METHOD, or\n\
+@param method: One of " SSLv2_METHOD_TEXT SSLv3_METHOD_TEXT "SSLv23_METHOD, or\n\
                TLSv1_METHOD.\n\
 ";
 
 #undef SSLv2_METHOD_TEXT
+#undef SSLv3_METHOD_TEXT
 
 static char ssl_Context_load_verify_locations_doc[] = "\n\
 Let SSL know where we can find trusted certificates for the certificate\n\
@@ -562,7 +568,7 @@ ssl_Context_use_certificate(ssl_ContextObj *self, PyObject *args)
     if (cert == NULL) {
         return NULL;
     }
-    
+
     if (!SSL_CTX_use_certificate(self->ctx, cert->x509))
     {
         exception_from_error_queue(ssl_Error);
@@ -1198,18 +1204,23 @@ ssl_Context_init(ssl_ContextObj *self, int i_method) {
 
     switch (i_method) {
         case ssl_SSLv2_METHOD:
-#ifdef OPENSSL_NO_SSL2
+// #ifdef OPENSSL_NO_SSL2
             PyErr_SetString(PyExc_ValueError, "SSLv2_METHOD not supported by this version of OpenSSL");
             return NULL;
-#else      
-            method = SSLv2_method();
-#endif
+// #else
+//             method = SSLv2_method();
+// #endif
             break;
         case ssl_SSLv23_METHOD:
             method = SSLv23_method();
             break;
         case ssl_SSLv3_METHOD:
-            method = SSLv3_method();
+// #ifdef OPENSSL_NO_SSL3
+            PyErr_SetString(PyExc_ValueError, "SSLv3_METHOD not supported by this version of OpenSSL");
+            return NULL;
+// #else
+//             method = SSLv3_method();
+// #endif
             break;
         case ssl_TLSv1_METHOD:
             method = TLSv1_method();

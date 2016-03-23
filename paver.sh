@@ -486,9 +486,11 @@ detect_os() {
                     $(( ${os_version_chevah%%04} % 2 )) -eq 0 ]; then
                     OS="ubuntu${os_version_chevah}"
                 fi
+            elif [ $lsb_release_id = Arch ]; then
+                # Arch is a rolling distro, no version information
+                OS="archlinux"
             fi
         fi
-
     elif [ "${OS}" = "darwin" ]; then
         ARCH=$(uname -m)
 

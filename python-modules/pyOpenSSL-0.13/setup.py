@@ -182,18 +182,14 @@ else:
     Libraries = ['ssl', 'crypto']
     BuildExtension = build_ext
 
+
+
 def mkExtension(name):
     modname = 'OpenSSL.' + name
     src = globals()[name.lower() + '_src']
     dep = globals()[name.lower() + '_dep']
-    macros = []
-    if os.getenv('NO_SSL2'):
-        macros.append(('NO_SSL2', '1'))
-    if os.getenv('NO_SSL3'):
-        macros.append(('NO_SSL3', '1'))
     return Extension(modname, src, libraries=Libraries, depends=dep,
-                     include_dirs=IncludeDirs, library_dirs=LibraryDirs,
-                     define_macros=macros)
+                     include_dirs=IncludeDirs, library_dirs=LibraryDirs)
 
 
 setup(name='pyOpenSSL', version=__version__,

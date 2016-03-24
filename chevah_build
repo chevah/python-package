@@ -162,12 +162,6 @@ case $OS in
         # On Windows, python executable is installed at a different path.
         LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
         ;;
-    archlinux)
-        # On ArchLinux we build python and pyopenssl without
-        # SSLv2 and SSLv3 support
-        export NO_SSL2=1
-        export NO_SSL3=1
-        ;;
 esac
 
 # Compiler-dependent flags. At this moment we should know what compiler is used.
@@ -338,7 +332,7 @@ command_build() {
     # libs (ncurses, ncursesw, tinfo, others?), and the result is not portable.
     # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
     case $OS in
-        ubuntu*|arch*|raspbian*|rhel*|sles*|solaris*)
+        ubuntu*|raspbian*|rhel*|sles*|solaris*)
             build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
             cp -r $INSTALL_FOLDER/tmp/libedit/{editline/,*.h} \
                 $INSTALL_FOLDER/include/

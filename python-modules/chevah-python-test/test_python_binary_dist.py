@@ -417,12 +417,21 @@ def main():
             exit_code = 10
 
 
-    if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
+    if platform_system in ['linux', 'sunos']:
         try:
             import spwd
             spwd
         except:
             sys.stderr.write('"spwd" missing.\n')
+            exit_code = 1
+
+    if platform_system ['openbsd', 'freebsd']:
+        try:
+            import dbm
+            import whichdb
+            dbm.open('/etc/pwd')
+        except:
+            sys.stderr.write('"dbm" missing.\n')
             exit_code = 1
 
     # We compile the readline module using libedit only on selected platforms.

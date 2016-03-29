@@ -428,6 +428,17 @@ command_build_python_extra_libraries() {
     cp $INSTALL_FOLDER/tmp/gmp/gmp.h $INSTALL_FOLDER/include
     cp $INSTALL_FOLDER/tmp/gmp/libgmp* $INSTALL_FOLDER/lib
 
+    case $OS in
+        archlinux)
+            # Install pip as we will need setuptools to build cffi
+            PIP_ARGS="\
+                -i http://pypi.chevah.com/simple \
+                --trusted-host=pypi.chevah.com \
+            "
+            execute $PYTHON_BIN python-modules/get-pip.py $PIP_ARGS
+        ;;
+    esac
+
     for library in $EXTRA_LIBRARIES ; do
         # Library is in the form pyopenssl/PyOpenssl-2.4.5
         version_folder=${library#*/}
@@ -444,11 +455,7 @@ command_build_python_extra_libraries() {
 
     case $OS in
         archlinux)
-            PIP_ARGS="\
-                -i http://pypi.chevah.com/simple \
-                --trusted-host=pypi.chevah.com \
-            "
-            execute $PYTHON_BIN python-modules/get-pip.py $PIP_ARGS
+            # Install pyOpenSSL 16.0.0 from pypi.chevah.com
             execute $PYTHON_BIN -m pip \
                 install $PIP_ARGS pyOpenSSL==16.0.0
         ;;

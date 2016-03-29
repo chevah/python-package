@@ -169,10 +169,9 @@ case $OS in
         # Also OpenSSL is built without SSLv3 support, so we need to build
         # Python and cryptography against it to have them working properly
         # in this environment.
-        # setuptools and cffi are needed to build cryptography.
+        # cffi is needed to build cryptography.
 
         EXTRA_LIBRARIES="\
-           python-modules/setuptools-20.3.1 \
            python-modules/cffi-1.5.2 \
            python-modules/pycrypto-2.6.1 \
            python-modules/python-setproctitle-1.1.8.dev0 \

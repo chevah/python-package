@@ -74,6 +74,7 @@ PYTHON_BIN=$INSTALL_FOLDER/bin/python
 PYTHON_BUILD_FOLDER="$PYTHON_VERSION-$OS-$ARCH"
 
 export MAKE=make
+export CHEVAH_BUILD_PATH=$INSTALL_FOLDER
 
 case $OS in
     aix*)
@@ -161,6 +162,21 @@ case $OS in
     windows*)
         # On Windows, python executable is installed at a different path.
         LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
+        ;;
+    archlinux)
+        # ArchLinux has OpenSSL >= 1.0.2, pyOpenSSL 0.13 won't build against it
+        # so we use pyOpenSSL 16.0.0 and it's dependency python-cryptography.
+        # Also OpenSSL is built without SSLv3 support, so we need to build
+        # Python and cryptography against it to have them working properly
+        # in this environment.
+        # setuptools and cffi are needed to build cryptography.
+
+        EXTRA_LIBRARIES="\
+           python-modules/setuptools-20.3.1 \
+           python-modules/cffi-1.5.2 \
+           python-modules/pycrypto-2.6.1 \
+           python-modules/python-setproctitle-1.1.8.dev0 \
+        "
         ;;
 esac
 
@@ -303,7 +319,7 @@ command_build() {
     command_clean
 
     case $OS in
-        aix*|solaris*|hpux*)
+        aix*|solaris*|hpux*|archlinux)
             build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
     esac
@@ -332,7 +348,7 @@ command_build() {
     # libs (ncurses, ncursesw, tinfo, others?), and the result is not portable.
     # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
     case $OS in
-        ubuntu*|raspbian*|rhel*|sles*|solaris*)
+        ubuntu*|raspbian*|rhel*|sles*|solaris*|archlinux)
             build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
             cp -r $INSTALL_FOLDER/tmp/libedit/{editline/,*.h} \
                 $INSTALL_FOLDER/include/
@@ -426,6 +442,18 @@ command_build_python_extra_libraries() {
 
     done
     execute mv $makefile_orig $makefile
+
+    case $OS in
+        archlinux)
+            PIP_ARGS="\
+                -i http://pypi.chevah.com/simple \
+                --trusted-host=pypi.chevah.com \
+            "
+            execute $PYTHON_BIN python-modules/get-pip.py $PIP_ARGS
+            execute $PYTHON_BIN -m pip \
+                install $PIP_ARGS pyOpenSSL==16.0.0
+        ;;
+    esac
 }
 
 
@@ -434,14 +462,18 @@ command_build_python_extra_libraries() {
 #
 initialize_python_module(){
     source_folder=$1
-    larget_folder=$1
+    target_folder=$2
 
     execute rm -rf $target_folder
     execute cp -r $source_folder $target_folder
     execute pushd $target_folder
         if [ -f setup.cfg ] ; then
+            echo "[build_ext]" >> setup.cfg
             echo "include_dirs=$INSTALL_FOLDER/include" >> setup.cfg
             echo "library_dirs=$INSTALL_FOLDER/lib" >> setup.cfg
+            echo "[easy_install]" >> setup.cfg
+            echo "find_links=http://pypi.chevah.com/" >> setup.cfg
+            echo "allow_hosts=*pypi.chevah.com*" >> setup.cfg
         fi
 
         case $OS in

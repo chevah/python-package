@@ -299,6 +299,17 @@ def main():
         exit_code = 2
 
     try:
+        from cryptography.hazmat.backends.openssl.backend import backend
+        import cryptography
+        print 'cryptography %s - OpenSSL %s' % (
+            cryptography.__version__,
+            backend.openssl_version_text()
+            )
+    except:
+        sys.stderr.write('"cryptography" failure.\n')
+        exit_code = 3
+
+    try:
         from OpenSSL import SSL, crypto, rand, __version__ as pyopenssl_version
         crypto
         rand

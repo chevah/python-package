@@ -2,7 +2,7 @@
 #
 # Chevah Build Script for libffi.
 #
-# For now it is supported only on AIX and Solaris.
+# For now it is supported only on AIX, Solaris and ArchLinux.
 #
 # Import shared code.
 . ./functions.sh
@@ -20,21 +20,13 @@ chevahbs_compile() {
 
 
 chevahbs_install() {
-    install_folder=$1
+    execute $MAKE install DESTDIR=$INSTALL_FOLDER
 
-    if [ x${ARCH##ppc} != x"$ARCH" ]; then
-        # libffi installs its headers in $PREFIX/lib/libffi-$VERSION/include,
-        # instead of $PREFIX/include, so we copy them manually to a temporary
-        # location.
-        # From there we will copy them just in time for building Python sources.
-        # For Python's setup.py to pick them up, we will augment CPPFLAGS with
-        # the include's location and LDFLAGS with the location of the libs.
-        local temp_folder=$INSTALL_FOLDER/tmp/libffi
-        execute mkdir -p $temp_folder
-
-        execute cp powerpc-ibm-aix*/.libs/* $temp_folder
-        execute cp powerpc-ibm-aix*/include/*.h $temp_folder
-    fi
+    # libffi installs its headers in $PREFIX/lib/libffi-$VERSION/include,
+    # instead of $PREFIX/include, so we copy them manually to the default
+    # location.
+    execute mkdir -p $INSTALL_FOLDER/include
+    execute cp $INSTALL_FOLDER/lib/libffi-*/include/* $INSTALL_FOLDER/include
 }
 
 

@@ -464,7 +464,7 @@ detect_os() {
             fi
         elif [ -f /etc/arch-release ]; then
             # ArchLinux is a rolling distro, no version info available
-            OS=archlinux
+            OS="archlinux"
         elif [ -f /etc/rpi-issue ]; then
             # Raspbian is a special case, a Debian unofficial derivative.
             if egrep -q ^'NAME="Raspbian GNU/Linux' /etc/os-release; then

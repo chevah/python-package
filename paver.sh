@@ -462,6 +462,9 @@ detect_os() {
                     "$os_version_raw" os_version_chevah
                 OS="sles${os_version_chevah}"
             fi
+        elif [ -f /etc/arch-release ]; then
+            # ArchLinux is a rolling distro, no version info available
+            OS=archlinux
         elif [ -f /etc/rpi-issue ]; then
             # Raspbian is a special case, a Debian unofficial derivative.
             if egrep -q ^'NAME="Raspbian GNU/Linux' /etc/os-release; then
@@ -486,10 +489,7 @@ detect_os() {
                     $(( ${os_version_chevah%%04} % 2 )) -eq 0 ]; then
                     OS="ubuntu${os_version_chevah}"
                 fi
-            elif [ $lsb_release_id = Arch ]; then
-                # Arch is a rolling distro, no version information
-                OS="archlinux"
-            fi
+           fi
         fi
     elif [ "${OS}" = "darwin" ]; then
         ARCH=$(uname -m)

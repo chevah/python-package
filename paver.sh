@@ -62,8 +62,8 @@ ARCH='x86'
 
 # Initialize default values from paver.conf
 PYTHON_VERSION='python2.7'
-BINARY_DIST_URI='http://chevah.com/binary'
-PIP_INDEX='http://chevah.com/pypi'
+BINARY_DIST_URI='https://binary.chevah.com/production'
+PIP_INDEX='http://pypi.chevah.com'
 PAVER_VERSION='1.2.1'
 PIP_VERSION="1.4.1.c4"
 SETUPTOOLS_VERSION="1.4.1"
@@ -499,6 +499,24 @@ detect_os() {
 
         # For now, no matter the actual OS X version returned, we use '108'.
         OS="osx108"
+
+    elif [ "${OS}" = "freebsd" ]; then
+        ARCH=$(uname -m)
+
+        os_version_raw=$(uname -r | cut -d'.' -f1)
+        check_os_version "FreeBSD" 10 "$os_version_raw" os_version_chevah
+
+        # For now, no matter the actual FreeBSD version returned, we use '10'.
+        OS="freebsd10"
+
+    elif [ "${OS}" = "openbsd" ]; then
+        ARCH=$(uname -m)
+
+        os_version_raw=$(uname -r)
+        check_os_version "OpenBSD" 5.8 "$os_version_raw" os_version_chevah
+
+        # For now, no matter the actual OpenBSD version returned, we use '58'.
+        OS="openbsd58"
 
     else
         echo 'Unsupported operating system:' $OS

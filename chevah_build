@@ -59,6 +59,8 @@ TIMESTAMP=`date +'%Y%m%d'`
 # "ppc" instead of "ppc64".
 # We also use $ARCH when building the statically compiled libffi and GMP.
 export ARCH
+# We want to check if OS is archlinux when installing libffi
+export OS
 # Explicitly choose the C compiler in order to make it possible to switch
 # between native compilers and GCC on platforms such as AIX and Solaris.
 export CC='gcc'

@@ -34,7 +34,7 @@ chevahbs_install() {
 
         execute cp powerpc-ibm-aix*/.libs/* $temp_folder
         execute cp powerpc-ibm-aix*/include/*.h $temp_folder
-    else
+    elif [ x${OS}x == x"archlinux"x ]; then
         execute $MAKE install DESTDIR=$INSTALL_FOLDER
 
         # libffi installs its headers in $PREFIX/lib/libffi-$VERSION/include,

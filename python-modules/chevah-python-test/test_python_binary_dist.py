@@ -8,6 +8,8 @@ import subprocess
 script_helper = './get_binaries_deps.sh'
 platform_system = platform.system().lower()
 test_for_readline = False
+with open('../DEFAULT_VALUES') as default_values_file:
+    chevah_os = default_values_file.read().split(' ')[2]
 
 
 def get_allowed_deps():
@@ -35,8 +37,6 @@ def get_allowed_deps():
             'linux-vdso.so',
             ]
         # Distro-specific deps to add. Now we may specify major versions too.
-        with open('../DEFAULT_VALUES') as default_values_file:
-            chevah_os = default_values_file.read().split(' ')[2]
         if ('rhel' in chevah_os):
             test_for_readline = True
             allowed_deps.extend([
@@ -299,21 +299,17 @@ def main():
         exit_code = 2
 
     # cryptography module and pyOpenSSL 16.0.0 are only available on ArchLinux
-    with open('../DEFAULT_VALUES') as default_values_file:
-        chevah_os = default_values_file.read().split(' ')[2]
-        if chevah_os == "archlinux":
-            try:
-                from cryptography.hazmat.backends.openssl.backend import (
-                    backend
-                    )
-                import cryptography
-                print 'cryptography %s - OpenSSL %s' % (
-                    cryptography.__version__,
-                    backend.openssl_version_text()
-                    )
-            except:
-                sys.stderr.write('"cryptography" failure.\n')
-                exit_code = 14
+    if chevah_os == "archlinux":
+        try:
+            from cryptography.hazmat.backends.openssl.backend import backend
+            import cryptography
+            print 'cryptography %s - OpenSSL %s' % (
+                cryptography.__version__,
+                backend.openssl_version_text()
+                )
+        except:
+            sys.stderr.write('"cryptography" failure.\n')
+            exit_code = 14
 
     try:
         from OpenSSL import SSL, crypto, rand, __version__ as pyopenssl_version

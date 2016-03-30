@@ -5,10 +5,6 @@
 # Import shared code.
 . ./functions.sh
 
-PIP_ARGS="\
-    -i http://pypi.chevah.com/simple \
-    --trusted-host=pypi.chevah.com \
-    "
 PIP_INSTALLABLES_WIN="\
     pypiwin32==219 \
     pycrypto==2.6.1 \
@@ -199,6 +195,13 @@ chevahbs_install() {
             ;;
         *)
             execute $MAKE install DESTDIR=$INSTALL_FOLDER
+            ;;
+    esac
+
+    case $OS in
+        # For now we only install PIP on ArchLinux
+        "archlinux")
+            execute $INSTALL_FOLDER/bin/python ../../python-modules/get-pip.py $PIP_ARGS
             ;;
     esac
 }

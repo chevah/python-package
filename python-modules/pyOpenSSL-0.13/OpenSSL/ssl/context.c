@@ -285,11 +285,6 @@ global_tlsext_servername_callback(const SSL *ssl, int *alert, void *arg) {
 #define SSLv2_METHOD_TEXT "SSLv2_METHOD, "
 #endif
 
-#ifdef OPENSSL_NO_SSL3
-#define SSLv3_METHOD_TEXT ""
-#else
-#define SSLv3_METHOD_TEXT "SSLv3_METHOD, "
-#endif
 
 static char ssl_Context_doc[] = "\n\
 Context(method) -> Context instance\n\
@@ -297,12 +292,11 @@ Context(method) -> Context instance\n\
 OpenSSL.SSL.Context instances define the parameters for setting up new SSL\n\
 connections.\n\
 \n\
-@param method: One of " SSLv2_METHOD_TEXT SSLv3_METHOD_TEXT "SSLv23_METHOD, or\n\
+@param method: One of " SSLv2_METHOD_TEXT "SSLv3_METHOD, SSLv23_METHOD, or\n\
                TLSv1_METHOD.\n\
 ";
 
 #undef SSLv2_METHOD_TEXT
-#undef SSLv3_METHOD_TEXT
 
 static char ssl_Context_load_verify_locations_doc[] = "\n\
 Let SSL know where we can find trusted certificates for the certificate\n\
@@ -1215,12 +1209,7 @@ ssl_Context_init(ssl_ContextObj *self, int i_method) {
             method = SSLv23_method();
             break;
         case ssl_SSLv3_METHOD:
-#ifdef OPENSSL_NO_SSL3
-            PyErr_SetString(PyExc_ValueError, "SSLv3_METHOD not supported by this version of OpenSSL");
-            return NULL;
-#else
             method = SSLv3_method();
-#endif
             break;
         case ssl_TLSv1_METHOD:
             method = TLSv1_method();

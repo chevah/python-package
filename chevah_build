@@ -40,8 +40,10 @@ EXTRA_LIBRARIES="\
    python-modules/python-setproctitle-1.1.8.dev0 \
    "
 
-# We only use pip on ArchLinux and Windows builds
+# Empty here for now as we only use it in ArchLinux.
 PIP_LIBRARIES=""
+
+# Arguments that are sent when using pip.
 PIP_ARGS="\
     -i http://pypi.chevah.com/simple \
     --trusted-host=pypi.chevah.com \
@@ -66,8 +68,8 @@ TIMESTAMP=`date +'%Y%m%d'`
 # for example by exporting ARCH in paver.sh as "x86" instead of "x64" or
 # "ppc" instead of "ppc64".
 # We also use $ARCH when building the statically compiled libffi and GMP.
+# and $OS when building for ArchLinux
 export ARCH
-# We want to check if OS is archlinux when installing libffi
 export OS
 # Explicitly choose the C compiler in order to make it possible to switch
 # between native compilers and GCC on platforms such as AIX and Solaris.

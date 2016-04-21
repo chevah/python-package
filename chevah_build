@@ -149,7 +149,7 @@ case $OS in
         ;;
     archlinux|ubuntu1604)
         # Newer OS'es have OpenSSL >= 1.0.2, pyOpenSSL 0.13 won't build against
-	# it, so we use pyOpenSSL > 16.0.0 and its dep: python-cryptography.
+        # it, so we use pyOpenSSL >= 16.0.0 and its dep, python-cryptography.
         # Also, when OpenSSL is built without SSLv3 support, we need to build
         # Python and cryptography against it to have them working properly
         # in this environment.

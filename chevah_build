@@ -147,10 +147,10 @@ case $OS in
         fi
         BUILD_CFFI="yes"
         ;;
-    archlinux)
-        # ArchLinux has OpenSSL >= 1.0.2, pyOpenSSL 0.13 won't build against it
-        # so we use pyOpenSSL 16.0.0 and it's dependency python-cryptography.
-        # Also OpenSSL is built without SSLv3 support, so we need to build
+    archlinux|ubuntu1604)
+        # Newer OS'es have OpenSSL >= 1.0.2, pyOpenSSL 0.13 won't build against
+	# it, so we use pyOpenSSL > 16.0.0 and its dep: python-cryptography.
+        # Also, when OpenSSL is built without SSLv3 support, we need to build
         # Python and cryptography against it to have them working properly
         # in this environment.
         # cffi is needed to build cryptography.
@@ -213,12 +213,6 @@ case $OS in
         # RHEL4 has OpenSSL 0.9.7, but Python 2 versions starting with
         # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
         PYTHON_BUILD_VERSION=2.7.8
-        ;;
-    ubuntu1604)
-        # Latest Ubuntu version uses the new CFFI based libraries.
-        EXTRA_LIBRARIES=$EXTRA_LIBRARIES_CFFI
-        PIP_LIBRARIES=$PIP_LIBRARIES_EVERYWHERE
-        BUILD_CFFI="yes"
         ;;
     windows*)
         # On Windows, python executable is installed at a different path.

@@ -48,6 +48,14 @@ chevahbs_install() {
     execute cp .libs/* $temp_folder
     ranlib $temp_folder/libgmp.a
     execute cp gmp.h $temp_folder
+
+    # We need GMP or MPIR for fast math in PyCrypto. We use GMP because
+    # its devs do a better job of supporting exotic platforms such as AIX.
+    # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
+    mkdir -p $INSTALL_FOLDER/include
+    mkdir -p $INSTALL_FOLDER/lib
+    cp $INSTALL_FOLDER/tmp/gmp/gmp.h $INSTALL_FOLDER/include
+    cp $INSTALL_FOLDER/tmp/gmp/libgmp* $INSTALL_FOLDER/lib
 }
 
 

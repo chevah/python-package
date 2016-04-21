@@ -298,8 +298,9 @@ def main():
         sys.stderr.write('standard "ssl" missing.\n')
         exit_code = 2
 
-    # cryptography module and pyOpenSSL 16.0.0 are only available on ArchLinux
-    if chevah_os == "archlinux":
+    # cryptography module and latest pyOpenSSL are only available on
+    # few systems.
+    if chevah_os in ['archlinux', 'windows', 'ubuntu1604']:
         try:
             from cryptography.hazmat.backends.openssl.backend import backend
             import cryptography
@@ -307,6 +308,14 @@ def main():
                 cryptography.__version__,
                 backend.openssl_version_text()
                 )
+
+            if chevah_os == 'windows':
+                # Check OpenSSL version on windows.
+                expecting = u'OpenSSL 1.0.2g  1 Mar 2016'
+                if openssl_version != expecting:
+                    sys.stderr.write('Expecting %s got %s.\n' % (
+                        expecting, openssl_version))
+                    exit_code = 3
         except:
             sys.stderr.write('"cryptography" failure.\n')
             exit_code = 14
@@ -383,21 +392,6 @@ def main():
         except:
             sys.stderr.write('"sqlite3" missing.\n')
             exit_code = 6
-
-        # For now cryptography is only available on Winodws
-        try:
-            from cryptography.hazmat.backends.openssl.backend import backend
-            openssl_version = backend.openssl_version_text()
-        except:
-            sys.stderr.write('"cryptography" failure.\n')
-            exit_code = 3
-        else:
-            # Check OpenSSL version.
-            expecting = u'OpenSSL 1.0.2g  1 Mar 2016'
-            if openssl_version != expecting:
-                sys.stderr.write(
-                    'Expecting %s got %s.\n' % (expecting, openssl_version))
-                exit_code = 3
 
     else:
         # Linux and Unix checks.

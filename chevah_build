@@ -8,9 +8,6 @@
 # publish_staging
 #
 
-# Import shared code.
-. ./functions.sh
-
 # List of OS packages required for building Python.
 COMMON_PACKAGES="gcc make m4 automake libtool texinfo"
 DEBIAN_PACKAGES="$COMMON_PACKAGES libssl-dev zlib1g-dev libncurses5-dev"
@@ -34,6 +31,8 @@ PYTHON_BUILD_VERSION=2.7.10
 PYSQLITE_VERSION=2.6.3
 SQLITE_VERSION=3.8.1
 
+REDISTRIBUTABLE_VERSION="9.00.30729.6161"
+
 # pycparser needs to be explicitly installed to work around setuptools auto
 # dependencies.
 PYCPARSER_VERSION=2.14
@@ -54,6 +53,7 @@ EXTRA_LIBRARIES_CFFI="\
 # Empty here for now as we only use it some systems.
 # This should be populated with PIP_LIBRARIES_EVERYWHERE once non using
 # pip to install c modules is an exception.
+# On windows make sure you have cryptography binary wheel on pypi.
 PIP_LIBRARIES=""
 PIP_LIBRARIES_EVERYWHERE="\
     cryptography==1.3.1 \
@@ -74,6 +74,9 @@ PIP_ARGS="\
 PROG=$0
 DIST_FOLDER='dist'
 BUILD_FOLDER='build'
+
+# Import shared code.
+. ./functions.sh
 
 # Get default values from main paver script.
 ./paver.sh detect_os
@@ -109,10 +112,10 @@ PYTHON_BUILD_FOLDER="$PYTHON_VERSION-$OS-$ARCH"
 
 export MAKE=make
 
-# Used when building cffi on ArchLinux
+# Used when building cffi.
 export CHEVAH_BUILD_PATH=$INSTALL_FOLDER
-# Used when building python on Windows or ArchLinux
-export PIP_ARGS
+# Used when building on Windows.
+export REDISTRIBUTABLE_VERSION
 
 case $OS in
     aix*)
@@ -220,6 +223,7 @@ case $OS in
     windows*)
         # On Windows, python executable is installed at a different path.
         LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
+        PYTHON_BIN=$INSTALL_FOLDER/lib/python
         # On windows extra libraries are installed only using PIP.
         EXTRA_LIBRARIES=""
         PIP_LIBRARIES=$PIP_LIBRARIES_WIN
@@ -437,7 +441,7 @@ command_build() {
 #
 command_build_sqlite() {
 
-    if [ $OS = 'windows']; then
+    if [ $OS = 'windows' ]; then
         echo "Skipping sqlite on Windows"
         return
     fi
@@ -466,25 +470,23 @@ command_build_sqlite() {
 command_build_python_extra_libraries() {
 
     # Install the latest PIP and setuptools.
-    execute $INSTALL_FOLDER/bin/python python-modules/get-pip.py $PIP_ARGS
+    execute $PYTHON_BIN python-modules/get-pip.py $PIP_ARGS
 
     # pycparser is installed first as setup_requires is ugly.
     # https://pip.pypa.io/en/stable/reference/pip_install/#controlling-setup-requires
     execute $PYTHON_BIN -m pip \
         install $PIP_ARGS -U pycparser==$PYCPARSER_VERSION
 
-    # Update Python config Makefile to use the python that we have just
-    # created.
-    makefile=$INSTALL_FOLDER/lib/$PYTHON_VERSION/config/Makefile
-    makefile_orig=$INSTALL_FOLDER/lib/$PYTHON_VERSION/config/Makefile.orig
-    execute cp $makefile $makefile_orig
-    sed "s#^prefix=.*#prefix= $INSTALL_FOLDER#" $makefile_orig > $makefile
-
-    # We need GMP or MPIR for fast math in PyCrypto. We use GMP because
-    # its devs do a better job of supporting exotic platforms such as AIX.
-    # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
-    cp $INSTALL_FOLDER/tmp/gmp/gmp.h $INSTALL_FOLDER/include
-    cp $INSTALL_FOLDER/tmp/gmp/libgmp* $INSTALL_FOLDER/lib
+    if [ $OS = 'windows' ]; then
+        echo "Skipping makefile updating on Windows"
+    else
+        # Update Python config Makefile to use the python that we have just
+        # created.
+        makefile=$INSTALL_FOLDER/lib/$PYTHON_VERSION/config/Makefile
+        makefile_orig=$INSTALL_FOLDER/lib/$PYTHON_VERSION/config/Makefile.orig
+        execute cp $makefile $makefile_orig
+        sed "s#^prefix=.*#prefix= $INSTALL_FOLDER#" $makefile_orig > $makefile
+    fi
 
     for library in $EXTRA_LIBRARIES ; do
         # Library is in the form pyopenssl/PyOpenssl-2.4.5
@@ -500,9 +502,27 @@ command_build_python_extra_libraries() {
     done
 
     for library in $PIP_LIBRARIES ; do
-        execute $PYTHON_BIN -m pip \
-            install $PIP_ARGS $library
+        execute $PYTHON_BIN -m pip install $PIP_ARGS $library
     done
+
+    if [ $OS == "windows" ]; then
+        echo "Patching pyWin32 manifests to use our redistributable version"
+        wipe_manifest $INSTALL_FOLDER/Lib/site-packages/win32/pythonservice.exe
+        wipe_manifest $INSTALL_FOLDER/Lib/site-packages/win32/perfmondata.dll
+        wipe_manifest $INSTALL_FOLDER/Lib/site-packages/pywin32_system32/pythoncomloader27.dll
+
+        echo "Copy Python runtime to pyWin32 package"
+        execute cp $INSTALL_FOLDER/*CRT.manifest \
+            $INSTALL_FOLDER/Lib/site-packages/win32/
+        execute cp $INSTALL_FOLDER/python27.dll.manifest \
+            $INSTALL_FOLDER/Lib/site-packages/win32/
+        execute cp $INSTALL_FOLDER/python27.dll \
+            $INSTALL_FOLDER/Lib/site-packages/win32/
+        execute cp $INSTALL_FOLDER/msvc?90.dll \
+            $INSTALL_FOLDER/Lib/site-packages/win32/
+        execute cp $INSTALL_FOLDER/Lib/site-packages/pywin32_system32/*.dll \
+            $INSTALL_FOLDER/Lib/site-packages/win32/
+    fi
 
     execute mv $makefile_orig $makefile
 }

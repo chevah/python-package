@@ -5,13 +5,6 @@
 # Import shared code.
 . ./functions.sh
 
-PIP_INSTALLABLES_WIN="\
-    pypiwin32==219 \
-    pycrypto==2.6.1 \
-    cryptography==1.3 \
-    pyOpenSSL==16.0.0 \
-    "
-
 chevahbs_configure() {
     CONFIG_ARGS="--disable-shared"
 
@@ -151,12 +144,8 @@ chevahbs_install() {
             execute sed -e 's|version="9.0.21022.8"|version="9.00.30729.6161"|' -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' < $destination/python27.dll.embedded > $destination/python27.dll.manifest
             execute rm -f --verbose $destination/*.embedded
 
-            echo "Installing pip + binary modules"
+            echo "Installing pip"
             execute $destination/python $get_pip $PIP_ARGS
-            execute $destination/python -m pip \
-                install $PIP_ARGS $PIP_INSTALLABLES_WIN
-            # Remove pip.
-            execute $destination/python -m pip uninstall -y pip
 
             echo "Patching pyWin32 manifests to use our redistributable version"
             $manifest_wiper --verbose \
@@ -195,13 +184,6 @@ chevahbs_install() {
             ;;
         *)
             execute $MAKE install DESTDIR=$INSTALL_FOLDER
-            ;;
-    esac
-
-    case $OS in
-        # For now we only install PIP on ArchLinux
-        "archlinux")
-            execute $INSTALL_FOLDER/bin/python ../../python-modules/get-pip.py $PIP_ARGS
             ;;
     esac
 }

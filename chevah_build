@@ -223,7 +223,9 @@ case $OS in
         # On windows extra libraries are installed only using PIP.
         EXTRA_LIBRARIES=""
         PIP_LIBRARIES=$PIP_LIBRARIES_WIN
+        # We don't build cffi as it is available as a wheel in pypi.
         BUILD_CFFI="no"
+        PYTHON_BUILD_VERSION="$PYTHON_BUILD_VERSION-windows"
         ;;
 esac
 

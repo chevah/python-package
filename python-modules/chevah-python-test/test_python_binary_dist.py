@@ -304,10 +304,9 @@ def main():
         try:
             from cryptography.hazmat.backends.openssl.backend import backend
             import cryptography
+            openssl_version = backend.openssl_version_text()
             print 'cryptography %s - OpenSSL %s' % (
-                cryptography.__version__,
-                backend.openssl_version_text()
-                )
+                cryptography.__version__, openssl_version)
 
             if chevah_os == 'windows':
                 # Check OpenSSL version on windows.
@@ -316,8 +315,8 @@ def main():
                     sys.stderr.write('Expecting %s got %s.\n' % (
                         expecting, openssl_version))
                     exit_code = 3
-        except:
-            sys.stderr.write('"cryptography" failure.\n')
+        except Exception as error:
+            sys.stderr.write('"cryptography" failure. %s\n' % (error,))
             exit_code = 14
 
     try:

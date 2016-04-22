@@ -478,6 +478,7 @@ command_build_python_extra_libraries() {
         # created.
         makefile=$INSTALL_FOLDER/lib/$PYTHON_VERSION/config/Makefile
         makefile_orig=$INSTALL_FOLDER/lib/$PYTHON_VERSION/config/Makefile.orig
+
         execute cp $makefile $makefile_orig
         sed "s#^prefix=.*#prefix= $INSTALL_FOLDER#" $makefile_orig > $makefile
     fi
@@ -501,24 +502,23 @@ command_build_python_extra_libraries() {
 
     if [ $OS == "windows" ]; then
         echo "Patching pyWin32 manifests to use our redistributable version"
-        wipe_manifest $INSTALL_FOLDER/Lib/site-packages/win32/pythonservice.exe
-        wipe_manifest $INSTALL_FOLDER/Lib/site-packages/win32/perfmondata.dll
-        wipe_manifest $INSTALL_FOLDER/Lib/site-packages/pywin32_system32/pythoncomloader27.dll
+        wipe_manifest $INSTALL_FOLDER/lib/Lib/site-packages/win32/pythonservice.exe
+        wipe_manifest $INSTALL_FOLDER/lib/Lib/site-packages/win32/perfmondata.dll
+        wipe_manifest $INSTALL_FOLDER/lib/Lib/site-packages/pywin32_system32/pythoncomloader27.dll
 
         echo "Copy Python runtime to pyWin32 package"
-        execute cp $INSTALL_FOLDER/*CRT.manifest \
-            $INSTALL_FOLDER/Lib/site-packages/win32/
-        execute cp $INSTALL_FOLDER/python27.dll.manifest \
-            $INSTALL_FOLDER/Lib/site-packages/win32/
-        execute cp $INSTALL_FOLDER/python27.dll \
-            $INSTALL_FOLDER/Lib/site-packages/win32/
-        execute cp $INSTALL_FOLDER/msvc?90.dll \
-            $INSTALL_FOLDER/Lib/site-packages/win32/
-        execute cp $INSTALL_FOLDER/Lib/site-packages/pywin32_system32/*.dll \
-            $INSTALL_FOLDER/Lib/site-packages/win32/
+        execute cp $INSTALL_FOLDER/lib/*CRT.manifest \
+            $INSTALL_FOLDER/lib/Lib/site-packages/win32/
+        execute cp $INSTALL_FOLDER/lib/python27.dll.manifest \
+            $INSTALL_FOLDER/lib/Lib/site-packages/win32/
+        execute cp $INSTALL_FOLDER/lib/python27.dll \
+            $INSTALL_FOLDER/lib/Lib/site-packages/win32/
+        execute cp $INSTALL_FOLDER/lib/msvc?90.dll \
+            $INSTALL_FOLDER/lib/Lib/site-packages/win32/
+        execute cp $INSTALL_FOLDER/lib/Lib/site-packages/pywin32_system32/*.dll \
+            $INSTALL_FOLDER/lib/Lib/site-packages/win32/
     fi
 
-    execute mv $makefile_orig $makefile
 }
 
 

@@ -300,7 +300,22 @@ def main():
 
     # cryptography module and latest pyOpenSSL are only available on
     # few systems.
-    if chevah_os in ['archlinux', 'windows', 'ubuntu1604']:
+    if chevah_os in [
+        'archlinux',
+        'openbsd58',
+        'osx108',
+        'raspbian7',
+        'rhel5',
+        'rhel6',
+        'rhel7',
+        'sles11',
+        'sles12',
+        'solaris11',
+        'ubuntu1204',
+        'ubuntu1404',
+        'ubuntu1604',
+        'windows',
+            ]:
         try:
             from cryptography.hazmat.backends.openssl.backend import backend
             import cryptography

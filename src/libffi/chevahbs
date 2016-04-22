@@ -42,6 +42,11 @@ chevahbs_install() {
         # location.
         execute mkdir -p $INSTALL_FOLDER/include
         execute cp $INSTALL_FOLDER/lib/libffi-*/include/* $INSTALL_FOLDER/include
+        # On some systems libffi in installed in /lib64 and then cffi is
+        # searching for it in /lib.
+        # THis affect RHEL, SLES and OpenBSD.
+        cp $INSTALL_FOLDER/lib64/* $INSTALL_FOLDER/lib
+        echo 'cffi done... here to ignore a possible previous error'
     fi
 }
 

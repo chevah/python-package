@@ -147,7 +147,7 @@ case $OS in
         fi
         BUILD_CFFI="yes"
         ;;
-    archlinux|ubuntu1604)
+    archlinux|ubuntu*|linux|sles*|rhel*|raspbian*|openbsd*)
         # Newer OS'es have OpenSSL >= 1.0.2, pyOpenSSL 0.13 won't build against
         # it, so we use pyOpenSSL >= 16.0.0 and its dep, python-cryptography.
         # Also, when OpenSSL is built without SSLv3 support, we need to build
@@ -190,6 +190,10 @@ case $OS in
             else
                 export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
             fi
+        else
+            # On Solaris 11 we can build the new libraries.
+            EXTRA_LIBRARIES=$EXTRA_LIBRARIES_CFFI
+            PIP_LIBRARIES=$PIP_LIBRARIES_EVERYWHERE
         fi
         BUILD_CFFI="yes"
         ;;
@@ -204,15 +208,13 @@ case $OS in
         export CXX="clang++"
         export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
         export MACOSX_DEPLOYMENT_TARGET=10.8
+        EXTRA_LIBRARIES=$EXTRA_LIBRARIES_CFFI
+        PIP_LIBRARIES=$PIP_LIBRARIES_EVERYWHERE
+        BUILD_CFFI="yes"
         ;;
     freebsd*)
         export CC="clang"
         export CXX="clang++"
-        ;;
-    rhel4)
-        # RHEL4 has OpenSSL 0.9.7, but Python 2 versions starting with
-        # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
-        PYTHON_BUILD_VERSION=2.7.8
         ;;
     windows*)
         # On Windows, python executable is installed at a different path.

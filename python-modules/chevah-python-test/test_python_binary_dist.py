@@ -10,6 +10,7 @@ platform_system = platform.system().lower()
 test_for_readline = False
 with open('../DEFAULT_VALUES') as default_values_file:
     chevah_os = default_values_file.read().split(' ')[2]
+BUILD_CFFI = os.environ.get('BUILD_CFFI', 'no').lower() == 'yes'
 
 
 def get_allowed_deps():
@@ -299,23 +300,8 @@ def main():
         exit_code = 2
 
     # cryptography module and latest pyOpenSSL are only available on
-    # few systems.
-    if chevah_os in [
-        'archlinux',
-        'openbsd58',
-        'osx108',
-        'raspbian7',
-        'rhel5',
-        'rhel6',
-        'rhel7',
-        'sles11',
-        'sles12',
-        'solaris11',
-        'ubuntu1204',
-        'ubuntu1404',
-        'ubuntu1604',
-        'windows',
-            ]:
+    # systems with cffi.
+    if BUILD_CFFI:
         try:
             from cryptography.hazmat.backends.openssl.backend import backend
             import cryptography

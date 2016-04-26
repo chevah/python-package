@@ -178,10 +178,10 @@ case $OS in
             else
                 export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
             fi
-            # cffi modules are not ready yet.
-            PIP_LIBRARIES=""
-            EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         fi
+        # cffi modules are not ready yet on Solaris.
+        PIP_LIBRARIES=""
+        EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
     hpux*)
         # For HP-UX we haven't managed yet to compile libffi and GMP with the

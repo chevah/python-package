@@ -38,6 +38,7 @@ REDISTRIBUTABLE_VERSION="9.00.30729.6161"
 # dependencies.
 PYCPARSER_VERSION=2.14
 
+BUILD_LIBFFI="yes"
 BUILD_CFFI="yes"
 EXTRA_LIBRARIES="\
     python-modules/cffi-1.5.2 \
@@ -143,6 +144,7 @@ case $OS in
             fi
         fi
         # On AIX cffi based modules are not ported yet.
+        BUILD_CFFI="no"
         PIP_LIBRARIES=""
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
@@ -180,6 +182,7 @@ case $OS in
             fi
         fi
         # cffi modules are not ready yet on Solaris.
+        BUILD_CFFI="no"
         PIP_LIBRARIES=""
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
@@ -198,6 +201,7 @@ case $OS in
         export CC="clang"
         export CXX="clang++"
         # cffi modules are not ready yet.
+        BUILD_CFFI="no"
         PIP_LIBRARIES=""
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
@@ -208,8 +212,8 @@ case $OS in
         # On windows extra libraries are installed only using PIP.
         EXTRA_LIBRARIES=""
         PIP_LIBRARIES=$PIP_LIBRARIES_WIN
-        # We don't build cffi as it is available as a wheel in pypi.
-        BUILD_CFFI="no"
+        # We don't build libffi, as cffi it is available as a wheel in pypi.
+        BUILD_LIBFFI="no"
         PYTHON_BUILD_VERSION="$PYTHON_BUILD_VERSION-windows"
         ;;
 esac
@@ -352,7 +356,7 @@ command_build() {
     # Clean the build dir to avoid contamination from previous builds.
     command_clean
 
-    if [ $BUILD_CFFI == "yes" ]; then
+    if [ $BUILD_LIBFFI == "yes" ]; then
         build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
     fi
 

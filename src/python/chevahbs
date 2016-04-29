@@ -5,13 +5,6 @@
 # Import shared code.
 . ./functions.sh
 
-PIP_INSTALLABLES_WIN="\
-    pypiwin32==219 \
-    pycrypto==2.6.1 \
-    cryptography==1.3 \
-    pyOpenSSL==16.0.0 \
-    "
-
 chevahbs_configure() {
     CONFIG_ARGS="--disable-shared"
 
@@ -116,10 +109,6 @@ chevahbs_install() {
     case $OS in
         windows)
             local destination=$INSTALL_FOLDER/lib
-            local redistributables=../../win-tools/redistributables/
-            local redistributable_version=9.00.30729.6161
-            local manifest_wiper=../../win-tools/manifest-wiper.exe
-            local get_pip=../../python-modules/get-pip.py
 
             # On Windows we don't build from source but rather create the
             # distribution from pre-compiled binaries.
@@ -131,56 +120,14 @@ chevahbs_install() {
                 //a $current_win_path\\python-installer.msi \
                 //qn TARGETDIR=$install_win_path\\lib
 
-            echo "Copying redistributables"
-            execute cp $redistributables/$redistributable_version/* $destination
+            # Copy Windows redistributables
+            local redistributables=../../win-tools/redistributables/
+            echo "Copying redistributables for Windows"
+            execute cp $redistributables/$REDISTRIBUTABLE_VERSION/* $destination
 
-            echo "Extracting manifests for python(w).exe and python27.dll"
-            $manifest_wiper --verbose \
-                --extract $destination/python.exe.embedded \
-                $destination/python.exe
-            $manifest_wiper --verbose \
-                --extract $destination/pythonw.exe.embedded \
-                $destination/pythonw.exe
-            $manifest_wiper --verbose \
-                --extract $destination/python27.dll.embedded \
-                $destination/python27.dll
-
-            echo "Patching manifests to use our redistributable version"
-            execute sed -e 's|version="9.0.21022.8"|version="9.00.30729.6161"|' -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' < $destination/python.exe.embedded > $destination/python.exe.manifest
-            execute sed -e 's|version="9.0.21022.8"|version="9.00.30729.6161"|' -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' < $destination/pythonw.exe.embedded > $destination/pythonw.exe.manifest
-            execute sed -e 's|version="9.0.21022.8"|version="9.00.30729.6161"|' -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' < $destination/python27.dll.embedded > $destination/python27.dll.manifest
-            execute rm -f --verbose $destination/*.embedded
-
-            echo "Installing pip + binary modules"
-            execute $destination/python $get_pip $PIP_ARGS
-            execute $destination/python -m pip \
-                install $PIP_ARGS $PIP_INSTALLABLES_WIN
-            # Remove pip.
-            execute $destination/python -m pip uninstall -y pip
-
-            echo "Patching pyWin32 manifests to use our redistributable version"
-            $manifest_wiper --verbose \
-                --extract $destination/Lib/site-packages/win32/pythonservice.exe.embedded \
-                $destination/Lib/site-packages/win32/pythonservice.exe
-            $manifest_wiper --verbose \
-                --extract $destination/Lib/site-packages/win32/perfmondata.dll.embedded \
-                $destination/Lib/site-packages/win32/perfmondata.dll
-            $manifest_wiper --verbose \
-                --extract $destination/Lib/site-packages/pywin32_system32/pythoncomloader27.dll.embedded \
-                $destination/Lib/site-packages/pywin32_system32/pythoncomloader27.dll
-
-            execute sed -e 's|version="9.0.21022.8"|version="9.00.30729.6161"|' -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' < $destination/Lib/site-packages/win32/pythonservice.exe.embedded > $destination/Lib/site-packages/win32/pythonservice.exe.manifest
-            execute sed -e 's|version="9.0.21022.8"|version="9.00.30729.6161"|' -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' < $destination/Lib/site-packages/win32/perfmondata.dll.embedded > $destination/Lib/site-packages/win32/perfmondata.dll.manifest
-            execute rm -f --verbose $desination/Lib/site-packages/win32/*.embedded
-            execute sed -e 's|version="9.0.21022.8"|version="9.00.30729.6161"|' -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' < $destination/Lib/site-packages/pywin32_system32/pythoncomloader27.dll.embedded > $destination/Lib/site-packages/pywin32_system32/pythoncomloader27.dll.manifest
-            execute rm -f --verbose $desination/Lib/site-packages/pywin32_system32/*.embedded
-
-            echo "Copy Python runtime to pyWin32 package"
-            execute cp $destination/*CRT.manifest $destination/Lib/site-packages/win32/
-            execute cp $destination/python27.dll.manifest $destination/Lib/site-packages/win32/
-            execute cp $destination/python27.dll $destination/Lib/site-packages/win32/
-            execute cp $destination/msvc?90.dll $destination/Lib/site-packages/win32/
-            execute cp $destination/Lib/site-packages/pywin32_system32/*.dll $destination/Lib/site-packages/win32/
+            wipe_manifest $destination/python.exe
+            wipe_manifest $destination/pythonw.exe
+            wipe_manifest $destination/python27.dll
 
             # Remove Python MSI installer.
             echo "Removing: $destination/python-installer.msi"
@@ -195,13 +142,6 @@ chevahbs_install() {
             ;;
         *)
             execute $MAKE install DESTDIR=$INSTALL_FOLDER
-            ;;
-    esac
-
-    case $OS in
-        # For now we only install PIP on ArchLinux
-        "archlinux")
-            execute $INSTALL_FOLDER/bin/python ../../python-modules/get-pip.py $PIP_ARGS
             ;;
     esac
 }

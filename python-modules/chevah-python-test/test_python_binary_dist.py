@@ -10,6 +10,7 @@ platform_system = platform.system().lower()
 test_for_readline = False
 with open('../DEFAULT_VALUES') as default_values_file:
     chevah_os = default_values_file.read().split(' ')[2]
+BUILD_CFFI = os.environ.get('BUILD_CFFI', 'no').lower() == 'yes'
 
 
 def get_allowed_deps():
@@ -298,17 +299,25 @@ def main():
         sys.stderr.write('standard "ssl" missing.\n')
         exit_code = 2
 
-    # cryptography module and pyOpenSSL 16.0.0 are only available on ArchLinux
-    if chevah_os == "archlinux":
+    # cryptography module and latest pyOpenSSL are only available on
+    # systems with cffi.
+    if BUILD_CFFI:
         try:
             from cryptography.hazmat.backends.openssl.backend import backend
             import cryptography
+            openssl_version = backend.openssl_version_text()
             print 'cryptography %s - OpenSSL %s' % (
-                cryptography.__version__,
-                backend.openssl_version_text()
-                )
-        except:
-            sys.stderr.write('"cryptography" failure.\n')
+                cryptography.__version__, openssl_version)
+
+            if chevah_os == 'windows':
+                # Check OpenSSL version on windows.
+                expecting = u'OpenSSL 1.0.2g  1 Mar 2016'
+                if openssl_version != expecting:
+                    sys.stderr.write('Expecting %s got %s.\n' % (
+                        expecting, openssl_version))
+                    exit_code = 3
+        except Exception as error:
+            sys.stderr.write('"cryptography" failure. %s\n' % (error,))
             exit_code = 14
 
     try:
@@ -383,21 +392,6 @@ def main():
         except:
             sys.stderr.write('"sqlite3" missing.\n')
             exit_code = 6
-
-        # For now cryptography is only available on Winodws
-        try:
-            from cryptography.hazmat.backends.openssl.backend import backend
-            openssl_version = backend.openssl_version_text()
-        except:
-            sys.stderr.write('"cryptography" failure.\n')
-            exit_code = 3
-        else:
-            # Check OpenSSL version.
-            expecting = u'OpenSSL 1.0.2g  1 Mar 2016'
-            if openssl_version != expecting:
-                sys.stderr.write(
-                    'Expecting %s got %s.\n' % (expecting, openssl_version))
-                exit_code = 3
 
     else:
         # Linux and Unix checks.

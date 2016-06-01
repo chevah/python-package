@@ -205,6 +205,9 @@ case $OS in
         PIP_LIBRARIES=""
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
+    sles10)
+        BUILD_CFFI="no"
+        ;;
     windows*)
         # On Windows, python executable is installed at a different path.
         LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
@@ -271,6 +274,9 @@ install_dependencies() {
     if [ -n "$packages" ]; then
         echo "Checking for packages to be installed..."
         for package in $packages ; do
+            if [ $OS = 'sles10' -a $package = 'libopenssl-devel' ]; then
+                package='openssl-devel'
+            fi
             echo "Checking if $package is installed..."
             $check_command $package
             if [ $? -ne 0 ]; then
@@ -384,6 +390,9 @@ command_build() {
     # libs (ncurses, ncursesw, tinfo, others?), and the result is not portable.
     # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
     case $OS in
+        sles10)
+            true
+            ;;
         ubuntu*|raspbian*|rhel*|sles*|solaris*|archlinux)
             build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
             cp -r $INSTALL_FOLDER/tmp/libedit/{editline/,*.h} \

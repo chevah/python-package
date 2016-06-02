@@ -8,22 +8,6 @@
 # publish_staging
 #
 
-# List of OS packages required for building Python.
-COMMON_PACKAGES="gcc make m4 automake libtool texinfo"
-DEBIAN_PACKAGES="$COMMON_PACKAGES libssl-dev zlib1g-dev libncurses5-dev"
-RHEL_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel ncurses-devel"
-SLES_PACKAGES="$COMMON_PACKAGES libopenssl-devel zlib-devel ncurses-devel"
-
-# List of OS packages requested to be installed by this script.
-INSTALLED_PACKAGES=''
-# For now, we don't install anything on OS X, Solaris, AIX, and
-# unsupported Linux distros. The build requires a C compiler, GNU make, m4,
-# the header files for OpenSSL and zlib, and (optionally) texinfo.
-# To build libedit for the readline module, we need the headers of
-# a curses library, automake and libtool.
-# On platforms with a choice of C compilers, you may choose among the
-# available compilers by setting CC and CXX further in this script.
-
 LIBFFI_VERSION=3.2.1
 GMP_VERSION=6.0.0
 LIBEDIT_VERSION=20150325-3.1
@@ -85,6 +69,25 @@ PYTHON_VERSION=`cut -d' ' -f 2 DEFAULT_VALUES`
 OS=`cut -d' ' -f 3 DEFAULT_VALUES`
 ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 TIMESTAMP=`date +'%Y%m%d'`
+
+# List of OS packages required for building Python.
+COMMON_PACKAGES="gcc make m4 automake libtool texinfo"
+DEBIAN_PACKAGES="$COMMON_PACKAGES libssl-dev zlib1g-dev libncurses5-dev"
+RHEL_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel ncurses-devel"
+SLES_PACKAGES="$COMMON_PACKAGES libopenssl-devel zlib-devel ncurses-devel"
+if [ $OS = 'sles10' ]; then
+    SLES_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel ncurses-devel"
+fi
+
+# List of OS packages requested to be installed by this script.
+INSTALLED_PACKAGES=''
+# For now, we don't install anything on OS X, Solaris, AIX, and
+# unsupported Linux distros. The build requires a C compiler, GNU make, m4,
+# the header files for OpenSSL and zlib, and (optionally) texinfo.
+# To build libedit for the readline module, we need the headers of
+# a curses library, automake and libtool.
+# On platforms with a choice of C compilers, you may choose among the
+# available compilers by setting CC and CXX further in this script.
 
 # In Solaris and AIX we use $ARCH to choose if we build a 32bit or 64bit
 # package. This way we are able to force a 32bit build on a 64bit machine,
@@ -207,6 +210,8 @@ case $OS in
         ;;
     sles10)
         BUILD_CFFI="no"
+        PIP_LIBRARIES=""
+        EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
     windows*)
         # On Windows, python executable is installed at a different path.
@@ -274,9 +279,6 @@ install_dependencies() {
     if [ -n "$packages" ]; then
         echo "Checking for packages to be installed..."
         for package in $packages ; do
-            if [ $OS = 'sles10' -a $package = 'libopenssl-devel' ]; then
-                package='openssl-devel'
-            fi
             echo "Checking if $package is installed..."
             $check_command $package
             if [ $? -ne 0 ]; then

@@ -393,6 +393,8 @@ command_build() {
     # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
     case $OS in
         sles10)
+            # Don't build libedit on SLES 10 as this is an old platform and is
+            # ok if it runs with limited support.
             true
             ;;
         ubuntu*|raspbian*|rhel*|sles*|solaris*|archlinux)

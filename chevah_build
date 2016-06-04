@@ -78,6 +78,9 @@ SLES_PACKAGES="$COMMON_PACKAGES libopenssl-devel zlib-devel ncurses-devel"
 if [ $OS = 'sles10' ]; then
     SLES_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel ncurses-devel"
 fi
+if [ $OS = 'rhel5' ]; then
+    RHEL_PACKAGES="$RHEL_PACKAGES automake15"
+fi
 
 # List of OS packages requested to be installed by this script.
 INSTALLED_PACKAGES=''

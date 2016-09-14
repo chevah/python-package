@@ -206,10 +206,6 @@ case $OS in
     freebsd*)
         export CC="clang"
         export CXX="clang++"
-        # cffi modules are not ready yet.
-        BUILD_CFFI="no"
-        PIP_LIBRARIES=""
-        EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
     sles10)
         BUILD_CFFI="no"
@@ -232,6 +228,9 @@ esac
 # Compiler-dependent flags. At this moment we should know what compiler is used.
 if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
     # Use PIC (Position Independent Code) with GCC on 64-bit arches.
+    export CFLAGS="${CFLAGS} -fPIC"
+elif [ "${OS%freebsd*}" = "" ]; then
+    # Use PIC (Position Independent Code) on FreeBSD 10 and newer too.
     export CFLAGS="${CFLAGS} -fPIC"
 elif [ "${OS%solaris*}" = "" ]; then
     if [ ${ARCH} = "sparc64" ]; then

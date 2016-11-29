@@ -405,6 +405,9 @@ command_build() {
                 $INSTALL_FOLDER/include/
             cp $INSTALL_FOLDER/tmp/libedit/libedit* $INSTALL_FOLDER/lib/
             ;;
+        osx108)
+            export CPPFLAGS="${CPPFLAGS} -I/usr/local/opt/openssl/include"
+            export LDFLAGS="${LDFLAGS} -L/usr/local/opt/openssl/lib"
     esac
 
     build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}

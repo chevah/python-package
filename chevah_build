@@ -156,8 +156,8 @@ case $OS in
         ;;
     solaris*)
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
-        export CC="cc"
-        export CXX="CC"
+        #export CC="cc"
+        #export CXX="CC"
         export MAKE="gmake"
         # Here's where the system-included GCC is to be found.
         if [ "${CC}" = "gcc" ]; then

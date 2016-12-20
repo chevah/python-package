@@ -422,7 +422,21 @@ detect_os() {
         os_version_raw=$(uname -r | cut -d'.' -f2)
         check_os_version Solaris 10 "$os_version_raw" os_version_chevah
 
-        OS="solaris${os_version_chevah}"
+        # Solaris 10 updated the libc version between other minor updates,
+        # so to keep compatibilty with the older libc version,
+        # we have a dedicated solaris10u3 (or older) version check.
+        # For newer Solaris 10 versions, we use solaris10.
+        if [ $os_version_raw == 10 ]; then
+            solaris10_release_year=$(grep 10 /etc/release | \
+                cut -d'/' -f2 | cut -d' ' -f1)
+            if [ $solaris10_release_year -le 6 ]; then
+                OS="solaris10u3"
+            else
+                OS="solaris${os_version_chevah}"
+            fi
+        else
+            OS="solaris${os_version_chevah}"
+        fi
 
     elif [ "${OS}" = "aix" ]; then
 

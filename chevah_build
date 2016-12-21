@@ -157,15 +157,15 @@ case $OS in
     solaris*)
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
         # For Solaris 10 U3 on x86 we use GCC (see below).
-        export CC="cc"
-        export CXX="CC"
+        #export CC="cc"
+        #export CXX="CC"
         export MAKE="gmake"
 
         # The package on Solaris 10 U3 does not compile with cc so we use GCC
-        if [ "$OS" = "solaris10u3" ]; then
-        	export CC='gcc'
-        	export CXX='g++'
-        fi
+        #if [ "$OS" = "solaris10u3" ]; then
+        #	export CC='gcc'
+        #	export CXX='g++'
+        #fi
 
         # Here's where the system-included GCC is to be found.
         if [ "${CC}" = "gcc" ]; then

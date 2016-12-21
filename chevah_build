@@ -156,12 +156,11 @@ case $OS in
         ;;
     solaris*)
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
-        # For Solaris 10 U3 on x86 we use GCC (see below).
-        #export CC="cc"
-        #export CXX="CC"
+        export CC="cc"
+        export CXX="CC"
         export MAKE="gmake"
 
-        # The package on Solaris 10 U3 does not compile with cc so we use GCC
+        # The package on Solaris 10 U3 does not compile with CC, we use GCC.
         #if [ "$OS" = "solaris10u3" ]; then
         #	export CC='gcc'
         #	export CXX='g++'
@@ -202,7 +201,7 @@ case $OS in
             PYTHON_BUILD_VERSION=2.7.8
 
             # These are the default-included GNU make and makeinfo.
-            export MAKE=/usr/sfw/bin/gmake
+            export MAKE=/usr/local/bin/make
             export MAKEINFO=/usr/sfw/bin/makeinfo
             # We favour the BSD-flavoured "install" over the default one.
             # "ar", "nm" and "ld" are included by default in the same path.

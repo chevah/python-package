@@ -160,6 +160,11 @@ case $OS in
         export CC="cc"
         export CXX="CC"
         export MAKE="gmake"
+
+        # The package on Solaris 10 U3 does not compile with cc so we use gcc
+        export CC='gcc'
+        export CXX='g++'
+
         # Here's where the system-included GCC is to be found.
         if [ "${CC}" = "gcc" ]; then
             export PATH="$PATH:/usr/sfw/bin/"
@@ -193,9 +198,7 @@ case $OS in
             # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with
             # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
             PYTHON_BUILD_VERSION=2.7.8
-            # The package on Solaris 10 U3 does not compile with cc so we use gcc
-            export CC='gcc'
-			export CXX='g++'
+
             # These are the default-included GNU make and makeinfo.
             export MAKE=/usr/local/bin/make
             export MAKEINFO=/usr/sfw/bin/makeinfo
@@ -584,7 +587,7 @@ initialize_python_module(){
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
                 extra_args=""
-                if [ "$OS" = "solaris10" ]; then
+                if [ "$OS" = "solaris10" ] || [ "$OS" = "solaris10u3" ]; then
                     extra_args="$extra_args -I/usr/sfw/include"
                     # Needed to build pyOpenSSL and pysqlite in Solaris 10.
                     # Make sure the headers for OpenSSL and sqlite3 are present

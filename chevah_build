@@ -161,10 +161,10 @@ case $OS in
         export MAKE="gmake"
 
         # The package on Solaris 10 U3 does not compile with CC, we use GCC.
-        #if [ "$OS" = "solaris10u3" ]; then
-        #	export CC='gcc'
-        #	export CXX='g++'
-        #fi
+        if [ "$OS" = "solaris10u3" ]; then
+        	export CC='gcc'
+        	export CXX='g++'
+        fi
 
         # Here's where the system-included GCC is to be found.
         if [ "${CC}" = "gcc" ]; then

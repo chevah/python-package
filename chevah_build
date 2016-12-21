@@ -177,31 +177,12 @@ case $OS in
             export LDFLAGS="$LDFLAGS -m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
             export CFLAGS="$CFLAGS -m64"
         fi
-        if [ "$OS" = "solaris10" ]; then
+        if [ "$OS" = "solaris10" ] || [ "$OS" = "solaris10u3" ]; then
             # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with
             # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
             PYTHON_BUILD_VERSION=2.7.8
             # These are the default-included GNU make and makeinfo.
             export MAKE=/usr/sfw/bin/gmake
-            export MAKEINFO=/usr/sfw/bin/makeinfo
-            # We favour the BSD-flavoured "install" over the default one.
-            # "ar", "nm" and "ld" are included by default in the same path.
-            export PATH=/usr/ccs/bin/:$PATH
-            # sqlite3 lib location in all Solaris'es (incl. 10s10 for Sparc).
-            if [ "${ARCH%64}" = "$ARCH" ]; then
-                export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"
-            else
-                export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
-            fi
-        fi
-
-        if [ "$OS" = "solaris10u3" ]; then
-            # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with
-            # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
-            PYTHON_BUILD_VERSION=2.7.8
-
-            # These are the default-included GNU make and makeinfo.
-            export MAKE=/usr/local/bin/make
             export MAKEINFO=/usr/sfw/bin/makeinfo
             # We favour the BSD-flavoured "install" over the default one.
             # "ar", "nm" and "ld" are included by default in the same path.
@@ -263,7 +244,7 @@ elif [ "${OS%solaris*}" = "" ]; then
     if [ ${ARCH} = "sparc64" ]; then
         # Required for compiling GMP on Solaris for SPARC with Sun Studio.
         export CFLAGS="$CFLAGS -xcode=abs64"
-    elif [ ${ARCH} = "x64" ]; then
+    elif [ ${ARCH} = "x64" ] || [ ${ARCH} = "x86" ]; then
         # Required for linking to libedit, which has a simpler configure setup.
         export CFLAGS="$CFLAGS -xcode=pic32"
     fi

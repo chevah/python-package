@@ -46,7 +46,7 @@ disabled_module_list = [
     ]
 
 # Compile the readline module only on platforms whitelisted below.
-if host_platform not in ('linux2'):
+if host_platform not in ('linux2', 'sunos5'):
     disabled_module_list.append('readline')
 
 def add_dir_to_list(dirlist, dir):
@@ -833,11 +833,11 @@ class PyBuildExt(build_ext):
             search_for_ssl_incs_in = [
                                   '/usr/sfw/include/',
                                   '/usr/contrib/ssl/include/'
-                                 ]                
+                                 ]
         else:
             ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
                                      ['/usr/local/ssl/lib',
-                                     ['/usr/contrib/ssl/lib/'
+                                      '/usr/contrib/ssl/lib/'
                                      ] )
 
         if (ssl_incs is not None and

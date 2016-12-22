@@ -46,7 +46,7 @@ disabled_module_list = [
     ]
 
 # Compile the readline module only on platforms whitelisted below.
-if host_platform not in ('linux2', 'sunos5'):
+if host_platform not in ('linux2'):
     disabled_module_list.append('readline')
 
 def add_dir_to_list(dirlist, dir):

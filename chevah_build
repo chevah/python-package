@@ -191,7 +191,9 @@ case $OS in
             # Solaris 10 U3 does not come with sqlite3, so we should copy
             # the headers on the path below.
             if [ "${ARCH%64}" = "$ARCH" ]; then
-                export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"
+                # Testing newer OpenSSL Solaris 10 U3
+                #export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"
+                export LDFLAGS="$LDFLAGS -L/opt/test-ssl/lib -R/opt/test-ssl/lib"
             else
                 export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
             fi

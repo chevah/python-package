@@ -830,10 +830,10 @@ class PyBuildExt(build_ext):
 
             # Remove /usr/local/ssl/include on Solaris as it may find a
             # newer version of OpenSSL there.
-            search_for_ssl_incs_in = [
-                                  '/usr/sfw/include/',
-                                  '/usr/contrib/ssl/include/'
-                                 ]
+            #search_for_ssl_incs_in = [
+                                  #'/usr/sfw/include/',
+                                  #'/usr/contrib/ssl/include/'
+                                  #]
         else:
             ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
                                      ['/usr/local/ssl/lib',

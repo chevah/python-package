@@ -826,7 +826,11 @@ class PyBuildExt(build_ext):
                                          [ '/usr/sfw/lib/64' ] )
             else:
                 ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
-                                         [ '/usr/sfw/lib' ] )
+                                         # Try newer OpenSSL Lib here
+                                         #[ '/usr/sfw/lib' ] )
+                                         [ '/usr/local/ssl/lib',
+                                           '/usr/sfw/lib'
+                                         ] )
 
             # Remove /usr/local/ssl/include on Solaris as it may find a
             # newer version of OpenSSL there.

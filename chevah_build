@@ -188,11 +188,14 @@ case $OS in
             # "ar", "nm" and "ld" are included by default in the same path.
             export PATH=/usr/ccs/bin/:$PATH
             # sqlite3 lib location in all Solaris'es (incl. 10s10 for Sparc).
+            # Solaris 10 U3 does not come with sqlite3, so we should copy
+            # the headers on the path below.
             if [ "${ARCH%64}" = "$ARCH" ]; then
                 export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"
             else
                 export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
             fi
+
         fi
 
         # cffi modules are not ready yet on Solaris.
@@ -570,12 +573,16 @@ initialize_python_module(){
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
                 extra_args=""
                 if [ "$OS" = "solaris10" ] || [ "$OS" = "solaris10u3" ]; then
-                    extra_args="$extra_args -I/usr/sfw/include"
+                    # Testing /opt/test-ssl with OpenSSL 0.9.8 and sqlite3
+                    extra_args="$extra_args -I/opt/test-ssl/include"
+                    #extra_args="$extra_args -I/usr/sfw/include"
                     # Needed to build pyOpenSSL and pysqlite in Solaris 10.
                     # Make sure the headers for OpenSSL and sqlite3 are present
                     # in /usr/sfw/include (only one location allowed, it seems).
                     if [ "${ARCH%64}" = "$ARCH" ]; then
-                        extra_args="$extra_args -L/usr/sfw/lib -L/usr/lib/mps"
+                        # Testing /opt/test-ssl with OpenSSL 0.9.8 and sqlite3
+                        extra_args="$extra_args -L/opt/test-ssl/lib -L/usr/lib/mps"
+                        #extra_args="$extra_args -L/usr/sfw/lib -L/usr/lib/mps"
                     else
                         extra_args="$extra_args -L/usr/sfw/lib/64 -L/usr/lib/mps/64"
                     fi

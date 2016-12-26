@@ -804,7 +804,7 @@ class PyBuildExt(build_ext):
         # Detect SSL support for the socket module (via _ssl)
         search_for_ssl_incs_in = [
                               '/usr/local/ssl/include',
-                              '/usr/sfw/include/',
+                              #'/usr/sfw/include/',
                               '/usr/contrib/ssl/include/'
                              ]
         ssl_incs = find_file('openssl/ssl.h', inc_dirs,
@@ -828,7 +828,8 @@ class PyBuildExt(build_ext):
                 ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
                                          # Try newer OpenSSL Lib here
                                          #[ '/usr/sfw/lib' ] )
-                                         [ '/usr/local/ssl/lib'                                           
+                                         [ '/lib',
+                                           '/usr/local/ssl/lib'
                                          ] )
 
             # Remove /usr/local/ssl/include on Solaris as it may find a

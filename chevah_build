@@ -195,7 +195,7 @@ case $OS in
             if [ "${ARCH%64}" = "$ARCH" ]; then
                 # Testing newer OpenSSL Solaris 10 U3
                 #export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"
-                export LDFLAGS="-L/usr/local/ssl/lib -R/usr/local/ssl/lib -L/usr/local/lib -R/usr/local/lib"
+                export LDFLAGS="-L/lib -R/lib -L/usr/local/lib -R/usr/local/lib"
             else
                 export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
             fi
@@ -592,7 +592,7 @@ initialize_python_module(){
                     # in /usr/sfw/include (only one location allowed, it seems).
                     if [ "${ARCH%64}" = "$ARCH" ]; then
                         # Testing /opt/test-ssl with OpenSSL 0.9.8 and sqlite3
-                        extra_args="$extra_args -L/lib -L/usr/local/ssl/lib -L/usr/local/lib -L/usr/lib/mps"
+                        extra_args="$extra_args -L/lib -L/usr/local/lib -L/usr/lib/mps"
                         #extra_args="$extra_args -L/usr/sfw/lib -L/usr/lib/mps"
                     else
                         extra_args="$extra_args -L/usr/sfw/lib/64 -L/usr/lib/mps/64"

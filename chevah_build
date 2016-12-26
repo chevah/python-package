@@ -193,12 +193,9 @@ case $OS in
             if [ "${ARCH%64}" = "$ARCH" ]; then
                 # Testing newer OpenSSL Solaris 10 U3
                 #export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"
-                export LDFLAGS="$LDFLAGS -L/opt/test-ssl/lib -R/opt/test-ssl/lib"
-                echo 'Using the 32bits Arch LDFLAGS'
-                echo $LDFLAGS
+                export LDFLAGS="-L/opt/test-ssl/lib -R/opt/test-ssl/lib $LDFLAGS "
             else
                 export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
-                echo 'Using the 64bits Arch LDFLAGS!!'
             fi
 
         fi

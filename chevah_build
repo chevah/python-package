@@ -207,7 +207,7 @@ case $OS in
             # Patch the environment to prevent Memory Allocation issues
             # with OpenSSL 0.9.8 and higher.
             # This patch does not come with Solaris, needs to be copied.
-            ksh /usr/local/bin/values.c gcc
+            sudo ksh /usr/local/bin/values.c gcc
 
         fi
 

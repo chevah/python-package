@@ -830,8 +830,8 @@ class PyBuildExt(build_ext):
                                          #[ '/usr/sfw/lib' ] )
                                          [ #'/usr/local/ssl/lib',
                                            #'/lib',
-                                           '/usr/sfw/lib',
-                                           '/usr/local/lib'
+                                           '/usr/sfw/lib'
+                                           #'/usr/local/lib'
                                          ] )
 
             # Remove /usr/local/ssl/include on Solaris as it may find a

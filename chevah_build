@@ -193,7 +193,7 @@ case $OS in
             # Solaris 10 U3 does not come with sqlite3, so we should copy
             # the headers on the path below.
             if [ "${ARCH%64}" = "$ARCH" ]; then
-                # Testing newer OpenSSL Solaris 10 U3
+                # Testing for Solaris 10 U3
                 export LDFLAGS="-L/usr/lib/mps -R/usr/lib/mps -L/usr/local/lib -R/usr/local/lib -L/usr/sfw/lib -R/usr/sfw/lib"
                 #export LDFLAGS="-L/usr/local/ssl/lib -R/usr/local/ssl/lib -L/usr/local/lib -R/usr/local/lib -L/lib -R/lib -L/opt/csw/lib $LDFLAGS"
             else
@@ -586,15 +586,15 @@ initialize_python_module(){
                 if [ "$OS" = "solaris10" ] || [ "$OS" = "solaris10u3" ]; then
                     # Testing /opt/test-ssl with OpenSSL 0.9.8 and sqlite3
                     #extra_args="$extra_args -I/usr/local/ssl/include -I/usr/local/include -I/opt/csw/include/ -I/usr/sfw/include"
-                    extra_args="$extra_args -I/opt/test-ssl/include"
-                    #extra_args="$extra_args -I/usr/sfw/include"
+                    #extra_args="$extra_args -I/opt/test-ssl/include"
+                    extra_args="$extra_args -I/usr/sfw/include"
                     # Needed to build pyOpenSSL and pysqlite in Solaris 10.
                     # Make sure the headers for OpenSSL and sqlite3 are present
                     # in /usr/sfw/include (only one location allowed, it seems).
                     if [ "${ARCH%64}" = "$ARCH" ]; then
                         # Testing /opt/test-ssl with OpenSSL 0.9.8 and sqlite3]
                         #extra_args="$extra_args -L/usr/local/ssl/lib/ -L/usr/local/lib -L/lib -L/usr/lib/mps -L/opt/csw/lib -L/usr/sfw/lib"
-                        extra_args="$extra_args -L/usr/local/lib -L/usr/sfw/lib -L/usr/lib/mps"
+                        extra_args="$extra_args -L/usr/sfw/lib -L/opt/sqlite3/lib/ -L/usr/lib/mps"
                     else
                         extra_args="$extra_args -L/usr/sfw/lib/64 -L/usr/lib/mps/64"
                     fi

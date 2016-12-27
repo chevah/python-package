@@ -195,7 +195,7 @@ case $OS in
             if [ "${ARCH%64}" = "$ARCH" ]; then
                 # Testing newer OpenSSL Solaris 10 U3
                 #export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"
-                export LDFLAGS="-L/usr/local/lib -R/usr/local/lib -L/lib -R/lib -L/opt/csw/lib $LDFLAGS"
+                export LDFLAGS="-L/usr/local/ssl/lib -R/usr/local/ssl/lib -L/usr/local/lib -R/usr/local/lib -L/lib -R/lib -L/opt/csw/lib $LDFLAGS"
             else
                 export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
             fi
@@ -585,7 +585,7 @@ initialize_python_module(){
                 extra_args=""
                 if [ "$OS" = "solaris10" ] || [ "$OS" = "solaris10u3" ]; then
                     # Testing /opt/test-ssl with OpenSSL 0.9.8 and sqlite3
-                    extra_args="$extra_args -I/usr/local/ssl/include -I/usr/local/include -I/usr/sfw/include"
+                    extra_args="$extra_args -I/usr/local/ssl/include -I/usr/local/include -I/opt/csw/include/ -I/usr/sfw/include"
                     #extra_args="$extra_args -I/usr/sfw/include"
                     # Needed to build pyOpenSSL and pysqlite in Solaris 10.
                     # Make sure the headers for OpenSSL and sqlite3 are present

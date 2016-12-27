@@ -803,7 +803,7 @@ class PyBuildExt(build_ext):
                                libraries=math_libs) )
         # Detect SSL support for the socket module (via _ssl)
         search_for_ssl_incs_in = [
-                              '/usr/local/ssl/include',
+                              #'/usr/local/ssl/include',
                               '/usr/sfw/include/',
                               '/usr/contrib/ssl/include/'
                              ]
@@ -828,9 +828,9 @@ class PyBuildExt(build_ext):
                 ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
                                          # Try newer OpenSSL Lib here
                                          #[ '/usr/sfw/lib' ] )
-                                         [ '/usr/local/ssl/lib',
-                                           '/lib',
-                                           '/usr/local/lib',
+                                         [ #'/usr/local/ssl/lib',
+                                           #'/lib',
+                                           #'/usr/local/lib',
                                            '/usr/sfw/lib'
                                          ] )
 

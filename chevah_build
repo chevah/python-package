@@ -193,8 +193,8 @@ case $OS in
             # Solaris 10u3 does not come with sqlite3, so we need to copy
             # the libraries to /usr/lib/mps.
             if [ "${ARCH%64}" = "$ARCH" ]; then
-                export LDFLAGS="-L/usr/lib/mps -R/usr/lib/mps
-                                -L/usr/local/lib -R/usr/local/lib
+                export LDFLAGS="-L/usr/lib/mps -R/usr/lib/mps \
+                                -L/usr/local/lib -R/usr/local/lib \
                                 -L/usr/sfw/lib -R/usr/sfw/lib"
             else
                 export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"

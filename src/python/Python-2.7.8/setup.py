@@ -786,13 +786,11 @@ class PyBuildExt(build_ext):
 
         # crypt module.
         libs = []
-        # Commented to test on Solaris 10 U3
-        #if host_platform == 'sunos5':
+        if host_platform == 'sunos5':
             # http://bugs.python.org/issue1471934 (64bit Solaris 8-10)
-        #    if self.compiler.find_library_file(lib_dirs, 'crypt_i'):
-        #        libs = ['crypt_i']
-        #elif self.compiler.find_library_file(lib_dirs, 'crypt'):
-        if self.compiler.find_library_file(lib_dirs, 'crypt'):
+            if self.compiler.find_library_file(lib_dirs, 'crypt_i'):
+                libs = ['crypt_i']
+        elif self.compiler.find_library_file(lib_dirs, 'crypt'):
             libs = ['crypt']
         exts.append( Extension('crypt', ['cryptmodule.c'], libraries=libs) )
 

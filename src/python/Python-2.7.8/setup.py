@@ -828,8 +828,9 @@ class PyBuildExt(build_ext):
                 ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
                                          # Try newer OpenSSL Lib here
                                          #[ '/usr/sfw/lib' ] )
-                                         [ '/lib',
-                                           '/usr/local/ssl/lib',
+                                         [ '/usr/local/ssl/lib',
+                                           '/lib',
+                                           '/usr/local/lib',
                                            '/usr/sfw/lib'
                                          ] )
 

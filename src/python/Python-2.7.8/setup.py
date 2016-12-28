@@ -46,7 +46,7 @@ disabled_module_list = [
     ]
 
 # Compile the readline module only on platforms whitelisted below.
-if host_platform not in ('linux2'):
+if host_platform not in ('linux2', 'sunos5'):
     disabled_module_list.append('readline')
 
 def add_dir_to_list(dirlist, dir):
@@ -803,8 +803,8 @@ class PyBuildExt(build_ext):
                                libraries=math_libs) )
         # Detect SSL support for the socket module (via _ssl)
         search_for_ssl_incs_in = [
-                              #'/usr/local/ssl/include',
                               '/usr/sfw/include/',
+                              '/usr/local/ssl/include',
                               '/usr/contrib/ssl/include/'
                              ]
         ssl_incs = find_file('openssl/ssl.h', inc_dirs,
@@ -826,20 +826,8 @@ class PyBuildExt(build_ext):
                                          [ '/usr/sfw/lib/64' ] )
             else:
                 ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
-                                         # Try newer OpenSSL Lib here
-                                         #[ '/usr/sfw/lib' ] )
-                                         [ #'/usr/local/ssl/lib',
-                                           #'/lib',
-                                           '/usr/sfw/lib'
-                                           #'/usr/local/lib'
-                                         ] )
+                                         [ '/usr/sfw/lib' ] )
 
-            # Remove /usr/local/ssl/include on Solaris as it may find a
-            # newer version of OpenSSL there.
-            #search_for_ssl_incs_in = [
-                                  #'/usr/sfw/include/',
-                                  #'/usr/contrib/ssl/include/'
-                                  #]
         else:
             ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
                                      ['/usr/local/ssl/lib',

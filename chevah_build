@@ -187,26 +187,20 @@ case $OS in
             # We favour the BSD-flavoured "install" over the default one.
             # "ar", "nm" and "ld" are included by default in the same path.
             export PATH=/usr/ccs/bin/:$PATH
-            # We add the path to the binaries for OpenSSL 0.9.8zh
-            export PATH=/usr/local/ssl/bin/:$PATH
-            # sqlite3 lib location in all Solaris'es (incl. 10s10 for Sparc).
-            # Solaris 10u3 does not come with sqlite3, so we need to copy
-            # the libraries to /usr/lib/mps.
+            # sqlite3 lib location in all Solaris'es (incl. 10s10 for Sparc)
+            # is /usr/lib/mps.
+            # Solaris 10u3 does not come with sqlite3, so we need to install it
+            # and copy the libraries to /usr/lib/mps.
+            # We also put /usr/local/lib before previous LDFLAGS in order to
+            # use the libraries of zlib 1.2.8, which we have to install.
             if [ "${ARCH%64}" = "$ARCH" ]; then
                 export LDFLAGS="-L/usr/lib/mps -R/usr/lib/mps \
                                 -L/usr/local/lib -R/usr/local/lib \
-                                -L/usr/sfw/lib -R/usr/sfw/lib"
+                                $LDFLAGS"
             else
                 export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
             fi
 
-        fi
-
-        if [ "$OS" = "solaris10u3" ]; then
-            # Patch the environment to prevent Memory Allocation issues
-            # with OpenSSL 0.9.8 and higher.
-            # This patch does not come with Solaris, needs to be copied.
-            sudo ksh /usr/local/bin/values.c gcc
         fi
 
         # cffi modules are not ready yet on Solaris.

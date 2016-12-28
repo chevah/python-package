@@ -190,14 +190,13 @@ case $OS in
             # sqlite3 lib location in all Solaris'es (incl. 10s10 for Sparc)
             # is /usr/lib/mps.
             # Solaris 10u3 does not come with sqlite3, so we install it and
-            # copy the libraries there.
-            # We also put /usr/local/lib before previous LDFLAGS in order to
-            # use the libraries of zlib 1.2.8, which we have to install.
+            # copy the libraries there. We also put /usr/local/lib before
+            # previous LDFLAGS in order to use the libraries of zlib 1.2.8,
+            # and gmp 5.1.1 which we have to install.
             if [ "${ARCH%64}" = "$ARCH" ]; then
-                export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"
-                #export LDFLAGS="-L/usr/lib/mps -R/usr/lib/mps \
-                #                -L/usr/local/lib -R/usr/local/lib \
-                #                $LDFLAGS"
+                export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps \
+                                -L/usr/local/lib -R/usr/local/lib \
+                                "
             else
                 export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
             fi

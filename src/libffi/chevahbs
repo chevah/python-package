@@ -34,7 +34,7 @@ chevahbs_install() {
 
         execute cp powerpc-ibm-aix*/.libs/* $temp_folder
         execute cp powerpc-ibm-aix*/include/*.h $temp_folder
-    elif [ "$OS" = "solaris10" ]; then
+    elif [ "$OS" = "solaris10" ] || [ "$OS" = "solaris10u3" ]; then
         # I don't know why it is skip... but doing the actual install will
         # break the build.
         echo 'Skipping installation of libffi on Solaris 10.'

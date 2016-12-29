@@ -159,6 +159,13 @@ case $OS in
         export CC="cc"
         export CXX="CC"
         export MAKE="gmake"
+
+        # The package on Solaris 10 does not compile with CC, we use GCC.
+        if [ "$OS" = "solaris10" ] || [ "$OS" = "solaris10u3" ]; then
+        	export CC='gcc'
+        	export CXX='g++'
+        fi
+
         # Here's where the system-included GCC is to be found.
         if [ "${CC}" = "gcc" ]; then
             export PATH="$PATH:/usr/sfw/bin/"
@@ -170,7 +177,7 @@ case $OS in
             export LDFLAGS="$LDFLAGS -m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
             export CFLAGS="$CFLAGS -m64"
         fi
-        if [ "$OS" = "solaris10" ]; then
+        if [ "$OS" = "solaris10" ] || [ "$OS" = "solaris10u3" ]; then
             # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with
             # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
             PYTHON_BUILD_VERSION=2.7.8
@@ -180,13 +187,21 @@ case $OS in
             # We favour the BSD-flavoured "install" over the default one.
             # "ar", "nm" and "ld" are included by default in the same path.
             export PATH=/usr/ccs/bin/:$PATH
-            # sqlite3 lib location in all Solaris'es (incl. 10s10 for Sparc).
+            # sqlite3 lib location in all Solaris'es (incl. 10s10 for Sparc)
+            # is /usr/lib/mps.
+            # Solaris 10u3 does not come with sqlite3 or gmp, and zlib is
+            # outdated and breaks the build. If we manually install them,
+            # their libraries will be on /usr/local/lib.
             if [ "${ARCH%64}" = "$ARCH" ]; then
-                export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"
+                export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps \
+                                -L/usr/local/lib -R/usr/local/lib"
             else
-                export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
+                export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64 \
+                                -L/usr/local/lib -R/usr/local/lib"
             fi
+
         fi
+
         # cffi modules are not ready yet on Solaris.
         BUILD_CFFI="no"
         PIP_LIBRARIES=""
@@ -561,7 +576,7 @@ initialize_python_module(){
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
                 extra_args=""
-                if [ "$OS" = "solaris10" ]; then
+                if [ "$OS" = "solaris10" ] || [ "$OS" = "solaris10u3" ]; then
                     extra_args="$extra_args -I/usr/sfw/include"
                     # Needed to build pyOpenSSL and pysqlite in Solaris 10.
                     # Make sure the headers for OpenSSL and sqlite3 are present
@@ -577,7 +592,6 @@ initialize_python_module(){
         esac
     execute popd
 }
-
 
 #
 # Test the newly created Python binary dist.

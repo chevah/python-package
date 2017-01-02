@@ -803,6 +803,10 @@ class PyBuildExt(build_ext):
                                libraries=math_libs) )
         # Detect SSL support for the socket module (via _ssl)
         search_for_ssl_incs_in = [
+                              # It is important to have '/usr/sfw/include/'
+                              # first for Solaris 10, otherwise we may load
+                              # the wrong OpenSSL version headers,
+                              # not matching the ssl_libs libraries.
                               '/usr/sfw/include/',
                               '/usr/local/ssl/include',
                               '/usr/contrib/ssl/include/'

@@ -806,7 +806,7 @@ class PyBuildExt(build_ext):
         # Detect SSL support for the socket module (via _ssl)
         search_for_ssl_incs_in = [
                               '/usr/local/ssl/include',
-                              '/usr/local/include/openssl/',
+                              '/usr/local/include/',
                               '/usr/sfw/include/',
                               '/usr/contrib/ssl/include/'
                              ]

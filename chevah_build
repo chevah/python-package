@@ -202,6 +202,7 @@ case $OS in
         export CXX="clang++"
         export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
         export MACOSX_DEPLOYMENT_TARGET=10.8
+        export LDFLAGS="$LDFLAGS -L/usr/local/lib -R/usr/local/lib"
         ;;
     freebsd*)
         export CC="clang"

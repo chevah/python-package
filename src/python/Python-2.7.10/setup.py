@@ -808,6 +808,8 @@ class PyBuildExt(build_ext):
                               '/usr/local/ssl/include',
                               '/usr/sfw/include/',
                               '/usr/contrib/ssl/include/',
+                              # OpenSSL headers for macOS 10.12,
+                              # installed using Homebrew.
                               '/usr/local/opt/openssl/include'
                              ]
         ssl_incs = find_file('openssl/ssl.h', inc_dirs,
@@ -834,6 +836,8 @@ class PyBuildExt(build_ext):
             ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
                                      ['/usr/local/ssl/lib',
                                       '/usr/contrib/ssl/lib/',
+                                      # OpenSSL libraries for macOS 10.12,
+                                      # installed using Homebrew.
                                       '/usr/local/opt/openssl/lib'
                                      ] )
 

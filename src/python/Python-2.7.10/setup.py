@@ -807,7 +807,8 @@ class PyBuildExt(build_ext):
         search_for_ssl_incs_in = [
                               '/usr/local/ssl/include',
                               '/usr/sfw/include/',
-                              '/usr/contrib/ssl/include/'
+                              '/usr/contrib/ssl/include/',
+                              '/usr/local/opt/openssl/include'
                              ]
         ssl_incs = find_file('openssl/ssl.h', inc_dirs,
                              search_for_ssl_incs_in
@@ -832,7 +833,8 @@ class PyBuildExt(build_ext):
         else:
             ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
                                      ['/usr/local/ssl/lib',
-                                      '/usr/contrib/ssl/lib/'
+                                      '/usr/contrib/ssl/lib/',
+                                      '/usr/local/opt/openssl/lib'
                                      ] )
 
         if (ssl_incs is not None and

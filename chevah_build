@@ -203,8 +203,7 @@ case $OS in
         export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
         export MACOSX_DEPLOYMENT_TARGET=10.8
         # The location of the Homebrew OpenSSL libs and include directories.
-        export LDFLAGS="$LDFLAGS -L/usr/local/opt/openssl/lib \
-                                 -R/usr/local/opt/openssl/lib"
+        export LDFLAGS="$LDFLAGS -L/usr/local/opt/openssl/lib"
         export CPPFLAGS="-I/usr/local/opt/openssl/include"
         ;;
     freebsd*)

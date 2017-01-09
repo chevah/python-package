@@ -205,7 +205,8 @@ case $OS in
         export MACOSX_DEPLOYMENT_TARGET=10.8
         ;;
     macos*)
-        # On recent macOS we use the HomeBrew version of OpenSSL.
+        # On recent macOS we use the HomeBrew version of OpenSSL as the
+        # Apple OpenSSL is 0.9.8 old.
         export CC="clang"
         export CXX="clang++"
         export CFLAGS="$CFLAGS -mmacosx-version-min=10.12"
@@ -279,6 +280,16 @@ install_dependencies() {
             packages=$SLES_PACKAGES
             install_command='sudo zypper --non-interactive install -l'
             check_command='rpm --query'
+        ;;
+        macos*)
+            # On macOS we need OpenSSL installed via homebrew, but we don't
+            # need to uninstall it, so here we only check that the expected
+            # OpenSSL version in installed.
+            homebrew_openssl_version=`brew list --versions openssl`
+            if [[ $homebrew_openssl_version != "openssl 1.0.2"* ]]; then
+                echo "Unsupported OpenSSL version: $homebrew_openssl_version"
+                exit 1
+            fi
         ;;
         *)
             packages=''

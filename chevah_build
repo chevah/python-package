@@ -65,6 +65,7 @@ BUILD_FOLDER='build'
 if [ "$?" -ne 0 ]; then
     exit 1
 fi
+
 PYTHON_VERSION=`cut -d' ' -f 2 DEFAULT_VALUES`
 OS=`cut -d' ' -f 3 DEFAULT_VALUES`
 ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
@@ -202,10 +203,18 @@ case $OS in
         export CXX="clang++"
         export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
         export MACOSX_DEPLOYMENT_TARGET=10.8
+        ;;
+    macos*)
+        # On recent macOS we use the HomeBrew version of OpenSSL.
+        export CC="clang"
+        export CXX="clang++"
+        export CFLAGS="$CFLAGS -mmacosx-version-min=10.12"
+        export MACOSX_DEPLOYMENT_TARGET=10.12
         # The location of the Homebrew OpenSSL libs and include directories.
         export LDFLAGS="$LDFLAGS -L/usr/local/opt/openssl/lib"
         export CPPFLAGS="-I/usr/local/opt/openssl/include"
         ;;
+
     freebsd*)
         export CC="clang"
         export CXX="clang++"

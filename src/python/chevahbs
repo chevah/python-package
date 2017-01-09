@@ -66,6 +66,10 @@ chevahbs_configure() {
         osx*)
             CONFIG_ARGS="${CONFIG_ARGS} --without-gcc"
             ;;
+        macos*)
+            # On maOS we compile with XCode.
+            CONFIG_ARGS="${CONFIG_ARGS} --without-gcc"
+            ;;
     esac
 
     case $OS in

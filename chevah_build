@@ -284,12 +284,15 @@ install_dependencies() {
         macos*)
             # On macOS we need OpenSSL installed via homebrew, but we don't
             # need to uninstall it, so here we only check that the expected
-            # OpenSSL version in installed.
+            # OpenSSL version is installed, as hardcoded below.
             homebrew_openssl_version=`brew list --versions openssl`
             if [[ $homebrew_openssl_version != "openssl 1.0.2"* ]]; then
                 echo "Unsupported OpenSSL version: $homebrew_openssl_version"
-                exit 1
+                exit 102
             fi
+            packages=''
+            install_command=''
+            check_command=''
         ;;
         *)
             packages=''

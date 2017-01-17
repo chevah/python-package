@@ -28,7 +28,7 @@ EXTRA_LIBRARIES="\
     python-modules/cffi-1.5.2 \
     python-modules/pycrypto-2.6.1 \
     "
-# Libraries for legecy systems not built around cffi and pip.
+# Libraries for legacy systems not built around cffi and pip.
 EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/pyOpenSSL-0.13 \
     python-modules/pycrypto-2.6.1 \
@@ -205,11 +205,10 @@ case $OS in
         export MACOSX_DEPLOYMENT_TARGET=10.8
         ;;
     macos*)
-        # On macOS 10.12 or newer we need the HomeBrew version of OpenSSL,
-        # as Apple provides an old OpenSSL version: 0.9.8.
+        # On macOS 10.12 or newer we need the Homebrew version of OpenSSL,
+        # as Apple only provides an old OpenSSL version: 0.9.8.
         export CC="clang"
         export CXX="clang++"
-        export CFLAGS="$CFLAGS"
         # The location of the Homebrew OpenSSL libs and include directories.
         export LDFLAGS="$LDFLAGS -L/usr/local/opt/openssl/lib"
         export CPPFLAGS="-I/usr/local/opt/openssl/include"
@@ -282,7 +281,7 @@ install_dependencies() {
         ;;
         macos*)
             # On macOS we need OpenSSL installed via homebrew, but we don't
-            # need to uninstall it, so here we only check that the expected
+            # do it automatically, here we only check that the expected
             # OpenSSL version is installed, as hardcoded below.
             homebrew_openssl_version=`brew list --versions openssl`
             if [[ $homebrew_openssl_version != "openssl 1.0.2"* ]]; then

@@ -63,11 +63,7 @@ chevahbs_configure() {
             export LIBS="-lpthread"
             CONFIG_ARGS="${CONFIG_ARGS} --without-gcc --without-ctypes"
             ;;
-        osx*)
-            CONFIG_ARGS="${CONFIG_ARGS} --without-gcc"
-            ;;
-        macos*)
-            # On maOS we compile with XCode.
+        osx*|macos*)
             CONFIG_ARGS="${CONFIG_ARGS} --without-gcc"
             ;;
     esac

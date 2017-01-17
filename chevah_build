@@ -205,8 +205,8 @@ case $OS in
         export MACOSX_DEPLOYMENT_TARGET=10.8
         ;;
     macos*)
-        # On recent macOS we use the HomeBrew version of OpenSSL as the
-        # Apple OpenSSL is 0.9.8 old.
+        # On macOS 10.12 or newer we need the HomeBrew version of OpenSSL,
+        # as Apple provides an old OpenSSL version: 0.9.8.
         export CC="clang"
         export CXX="clang++"
         export CFLAGS="$CFLAGS"

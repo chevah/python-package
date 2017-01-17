@@ -209,8 +209,7 @@ case $OS in
         # Apple OpenSSL is 0.9.8 old.
         export CC="clang"
         export CXX="clang++"
-        export CFLAGS="$CFLAGS -mmacosx-version-min=10.12"
-        export MACOSX_DEPLOYMENT_TARGET=10.12
+        export CFLAGS="$CFLAGS"
         # The location of the Homebrew OpenSSL libs and include directories.
         export LDFLAGS="$LDFLAGS -L/usr/local/opt/openssl/lib"
         export CPPFLAGS="-I/usr/local/opt/openssl/include"

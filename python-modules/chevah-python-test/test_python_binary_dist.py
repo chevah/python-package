@@ -441,7 +441,7 @@ def main():
             sys.stderr.write('"readline" missing.\n')
             exit_code = 13
 
-        exit_code = test_dependencies() | exit_code
+    exit_code = test_dependencies() | exit_code
 
     sys.exit(exit_code)
 

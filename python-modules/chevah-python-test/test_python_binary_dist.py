@@ -19,8 +19,7 @@ def get_allowed_deps():
     """
     allowed_deps = []
     if platform_system == 'linux':
-        # The minimal list of deps for Linux: glibc, openssl, zlib,
-        # and, for readline support through libedit, a curses library.
+        # The minimal list of deps for Linux: glibc, openssl and zlib.
         allowed_deps = [
             'ld-linux',
             'libc.so',
@@ -28,7 +27,6 @@ def get_allowed_deps():
             'libcrypto.so',
             'libdl.so',
             'libm.so',
-            'libncursesw.so',
             'libnsl.so',
             'libpthread.so',
             'libssl.so',
@@ -45,6 +43,7 @@ def get_allowed_deps():
                 'libgssapi_krb5.so.2',
                 'libk5crypto.so.3',
                 'libkrb5.so.3',
+                'libncursesw.so.5',
                 'libresolv.so.2',
                 ])
             rhel_version = int(chevah_os[4:])
@@ -68,7 +67,11 @@ def get_allowed_deps():
         elif ('sles' in chevah_os):
             test_for_readline = True
             sles_version = int(chevah_os[4:])
-            if sles_version == 12:
+            if sles_version >= 11:
+                allowed_deps.extend([
+                    'libncursesw.so.5',
+                    ])
+            if sles_version >= 12:
                 allowed_deps.extend([
                     'libtinfo.so.5',
                     ])
@@ -84,6 +87,11 @@ def get_allowed_deps():
                 'libgcc_s.so.1',
                 'libncurses.so.5',
                 'libtinfo.so.5',
+                ])
+        else:
+            # Debian 7 x64 aka linux-x64 needs this for some reason.
+            allowed_deps.extend([
+                'libgcc_s.so.1',
                 ])
     elif platform_system == 'aix':
         # This is the standard list of deps for AIX 5.3. Some of the links

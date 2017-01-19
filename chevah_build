@@ -199,6 +199,8 @@ case $OS in
         export MAKE=gmake
         ;;
     osx*)
+        # The extra params needed to fix the minimum target version to 10.8
+        # have the important benefit of getting rid of the libgcc dependency.
         export CC="clang"
         export CXX="clang++"
         export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
@@ -210,7 +212,7 @@ case $OS in
         export CC="clang"
         export CXX="clang++"
         # The location of the Homebrew OpenSSL libs and include directories.
-        export LDFLAGS="$LDFLAGS -L/usr/local/opt/openssl/lib"
+        export LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"
         export CPPFLAGS="-I/usr/local/opt/openssl/include"
         ;;
 

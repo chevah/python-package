@@ -227,18 +227,13 @@ def get_actual_deps(script_helper):
                 # examined files and the needed libs are in the 7th colon, which
                 # also includes a colon name, of which we'll get rid below.
                 dep = line.split()[6]
-                # The "Name" colon header and the names of the examined binaries
-                # are purged here. Some more strings start with './'.
-                strings_to_ignore = [ 'Name', os.getcwd(), './' ]
-                for single_string_to_ignore in strings_to_ignore:
-                    if dep.startswith(single_string_to_ignore):
-                        dep = None
-                        break
+                strings_to_ignore = ( 'Name', os.getcwd(), './', )
+                if dep.startswith(strings_to_ignore):
+                    continue
             else:
                 # Usually, the first field in each line is the needed file name.
                 dep = line.split()[0]
-            if dep:
-                libs_deps.append(dep)
+            libs_deps.append(dep)
     return list(set(libs_deps))
 
 

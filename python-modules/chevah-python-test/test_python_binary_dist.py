@@ -172,8 +172,20 @@ def get_allowed_deps():
             'libssl.0.9.8.dylib',
             'libz.1.dylib',
             ]
+    elif platform_system == 'freebsd':
+        # This is the list of deps for FreeBSD 10.x, sans versions.
+        allowed_deps = [
+            '/lib/libc.so.7',
+            '/lib/libcrypt.so.5',
+            '/lib/libcrypto.so.7',
+            '/lib/libm.so.5',
+            '/lib/libthr.so.3',
+            '/lib/libutil.so.9',
+            '/lib/libz.so.6',
+            '/usr/lib/libssl.so.7',
+            ]
     elif platform_system == 'openbsd':
-        # This is the minimum list of deps for OpenBSD 5.8, sans versions.
+        # This is the list of deps for OpenBSD 5.8 or newer, sans versions.
         allowed_deps = [
             '/usr/lib/libc.so',
             '/usr/lib/libcrypto.so',
@@ -201,24 +213,32 @@ def get_actual_deps(script_helper):
         libs_deps = []
         for line in raw_deps:
             if line.startswith('./'):
-                # In some OS'es (at least AIX and OS X), the output includes
-                # the examined binaries and those lines start with "./". It's
-                # safe to ignore them because they point to paths in the
-                # current hierarchy of directories.
+                # In some OS'es (AIX, FreeBSD, OS X), the output includes
+                # the examined binaries, and those lines start with "./".
+                # It's safe to ignore them because they point to paths in
+                # the current hierarchy of directories.
                 continue
-            if platform_system == 'openbsd':
-                # OpenBSD's ldd output is very particular, the name of the
-                # examined files are in the 6th colon. Which also includes a
-                # colon name, of which we'll get rid in the following check.
-                deps = line.split()[6]
-                # It also outputs the examined binaries with full path, so we
-                # use the fact that there are no libs outside /usr in OpenBSD.
-                if not deps.startswith('/usr'):
-                    continue
+            if platform_system == 'freebsd':
+                # If we ignore lines that start with ./, FreeBSD's ldd output
+                # consistently lists the libs with full path in the 3th colon.
+                dep = line.split()[2]
+            elif platform_system == 'openbsd':
+                # OpenBSD's ldd output is very particular, both the name of the
+                # examined files and the needed libs are in the 7th colon, which
+                # also includes a colon name, of which we'll get rid below.
+                dep = line.split()[6]
+                # The "Name" colon header and the names of the examined binaries
+                # are purged here. Some more strings start with './'.
+                strings_to_ignore = [ 'Name', os.getcwd(), './' ]
+                for single_string_to_ignore in strings_to_ignore:
+                    if dep.startswith(single_string_to_ignore):
+                        dep = None
+                        break
             else:
                 # Usually, the first field in each line is the needed file name.
-                deps = line.split()[0]
-            libs_deps.append(deps)
+                dep = line.split()[0]
+            if dep:
+                libs_deps.append(dep)
     return list(set(libs_deps))
 
 

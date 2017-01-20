@@ -19,8 +19,7 @@ def get_allowed_deps():
     """
     allowed_deps = []
     if platform_system == 'linux':
-        # The minimal list of deps for Linux: glibc, openssl, zlib,
-        # and, for readline support through libedit, a curses library.
+        # The minimal list of deps for Linux: glibc, openssl and zlib.
         allowed_deps = [
             'ld-linux',
             'libc.so',
@@ -28,7 +27,6 @@ def get_allowed_deps():
             'libcrypto.so',
             'libdl.so',
             'libm.so',
-            'libncursesw.so',
             'libnsl.so',
             'libpthread.so',
             'libssl.so',
@@ -45,6 +43,7 @@ def get_allowed_deps():
                 'libgssapi_krb5.so.2',
                 'libk5crypto.so.3',
                 'libkrb5.so.3',
+                'libncursesw.so.5',
                 'libresolv.so.2',
                 ])
             rhel_version = int(chevah_os[4:])
@@ -68,7 +67,11 @@ def get_allowed_deps():
         elif ('sles' in chevah_os):
             test_for_readline = True
             sles_version = int(chevah_os[4:])
-            if sles_version == 12:
+            if sles_version >= 11:
+                allowed_deps.extend([
+                    'libncursesw.so.5',
+                    ])
+            if sles_version >= 12:
                 allowed_deps.extend([
                     'libtinfo.so.5',
                     ])
@@ -84,6 +87,11 @@ def get_allowed_deps():
                 'libgcc_s.so.1',
                 'libncurses.so.5',
                 'libtinfo.so.5',
+                ])
+        else:
+            # Debian 7 x64 (aka linux-x64) needs this for cffi.
+            allowed_deps.extend([
+                'libgcc_s.so.1',
                 ])
     elif platform_system == 'aix':
         # This is the standard list of deps for AIX 5.3. Some of the links
@@ -172,8 +180,20 @@ def get_allowed_deps():
             'libssl.0.9.8.dylib',
             'libz.1.dylib',
             ]
+    elif platform_system == 'freebsd':
+        # This is the list of specific deps for FreeBSD 10.x, with paths.
+        allowed_deps = [
+            '/lib/libc.so.7',
+            '/lib/libcrypt.so.5',
+            '/lib/libcrypto.so.7',
+            '/lib/libm.so.5',
+            '/lib/libthr.so.3',
+            '/lib/libutil.so.9',
+            '/lib/libz.so.6',
+            '/usr/lib/libssl.so.7',
+            ]
     elif platform_system == 'openbsd':
-        # This is the minimum list of deps for OpenBSD 5.8, sans versions.
+        # This is the list of deps for OpenBSD 5.8 or newer, sans versions.
         allowed_deps = [
             '/usr/lib/libc.so',
             '/usr/lib/libcrypto.so',
@@ -201,24 +221,27 @@ def get_actual_deps(script_helper):
         libs_deps = []
         for line in raw_deps:
             if line.startswith('./'):
-                # In some OS'es (at least AIX and OS X), the output includes
-                # the examined binaries and those lines start with "./". It's
-                # safe to ignore them because they point to paths in the
-                # current hierarchy of directories.
+                # In some OS'es (AIX, OS X, the BSDs), the output includes
+                # the examined binaries, and those lines start with "./".
+                # It's safe to ignore them because they point to paths in
+                # the current hierarchy of directories.
                 continue
-            if platform_system == 'openbsd':
-                # OpenBSD's ldd output is very particular, the name of the
-                # examined files are in the 6th colon. Which also includes a
-                # colon name, of which we'll get rid in the following check.
-                deps = line.split()[6]
-                # It also outputs the examined binaries with full path, so we
-                # use the fact that there are no libs outside /usr in OpenBSD.
-                if not deps.startswith('/usr'):
+            if platform_system == 'freebsd':
+                # If we ignore lines that start with ./, FreeBSD's ldd output
+                # consistently lists the libs with full path in the 3th colon.
+                dep = line.split()[2]
+            elif platform_system == 'openbsd':
+                # OpenBSD's ldd output is very particular, both the name of the
+                # examined files and the needed libs are in the 7th colon, which
+                # also includes a colon name, of which we'll get rid below.
+                dep = line.split()[6]
+                strings_to_ignore = ( 'Name', os.getcwd(), './', )
+                if dep.startswith(strings_to_ignore):
                     continue
             else:
                 # Usually, the first field in each line is the needed file name.
-                deps = line.split()[0]
-            libs_deps.append(deps)
+                dep = line.split()[0]
+            libs_deps.append(dep)
     return list(set(libs_deps))
 
 
@@ -441,7 +464,7 @@ def main():
             sys.stderr.write('"readline" missing.\n')
             exit_code = 13
 
-        exit_code = test_dependencies() | exit_code
+    exit_code = test_dependencies() | exit_code
 
     sys.exit(exit_code)
 

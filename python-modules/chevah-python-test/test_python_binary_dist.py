@@ -89,7 +89,7 @@ def get_allowed_deps():
                 'libtinfo.so.5',
                 ])
         else:
-            # Debian 7 x64 aka linux-x64 needs this for some reason.
+            # Debian 7 x64 (aka linux-x64) needs this for cffi.
             allowed_deps.extend([
                 'libgcc_s.so.1',
                 ])
@@ -181,7 +181,7 @@ def get_allowed_deps():
             'libz.1.dylib',
             ]
     elif platform_system == 'freebsd':
-        # This is the list of deps for FreeBSD 10.x, sans versions.
+        # This is the list of specific deps for FreeBSD 10.x, with paths.
         allowed_deps = [
             '/lib/libc.so.7',
             '/lib/libcrypt.so.5',
@@ -221,7 +221,7 @@ def get_actual_deps(script_helper):
         libs_deps = []
         for line in raw_deps:
             if line.startswith('./'):
-                # In some OS'es (AIX, FreeBSD, OS X), the output includes
+                # In some OS'es (AIX, OS X, the BSDs), the output includes
                 # the examined binaries, and those lines start with "./".
                 # It's safe to ignore them because they point to paths in
                 # the current hierarchy of directories.

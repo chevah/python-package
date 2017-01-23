@@ -168,18 +168,30 @@ def get_allowed_deps():
                 'libssl.so.1.0.0',
                 ])
     elif platform_system == 'darwin':
-        # This is the list of deps for OS X 10.8, mostly sans versions.
+        # Common deps for OS X 10.8 and macOS 10.12, with full path.
         allowed_deps = [
-            'ApplicationServices.framework/Versions/A/ApplicationServices',
-            'Carbon.framework/Versions/A/Carbon',
-            'CoreFoundation.framework/Versions/A/CoreFoundation',
-            'CoreServices.framework/Versions/A/CoreServices',
-            'SystemConfiguration.framework/Versions/A/SystemConfiguration',
-            'libSystem.B.dylib',
-            'libcrypto.0.9.8.dylib',
-            'libssl.0.9.8.dylib',
-            'libz.1.dylib',
+            '/System/Library/Frameworks/ApplicationServices.framework/Versions/A/ApplicationServices',
+            '/System/Library/Frameworks/Carbon.framework/Versions/A/Carbon',
+            '/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation',
+            '/System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices',
+            '/System/Library/Frameworks/Security.framework/Versions/A/Security',
+            '/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/SystemConfiguration',
+            '/usr/lib/libSystem.B.dylib',
+            '/usr/lib/libz.1.dylib',
             ]
+        if ('osx' in chevah_os):
+            # Additional deps when using the OS-included OpenSSL.
+            allowed_deps.extend([
+                '/usr/lib/libcrypto.0.9.8.dylib',
+                '/usr/lib/libssl.0.9.8.dylib',
+                ])
+        elif ('macos' in chevah_os):
+            # Additional deps when using Homebrew's OpenSSL.
+            allowed_deps.extend([
+                '/usr/lib/libgcc_s.1.dylib',
+                '/usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib',
+                '/usr/local/opt/openssl/lib/libssl.1.0.0.dylib',
+                ])
     elif platform_system == 'freebsd':
         # This is the list of specific deps for FreeBSD 10.x, with paths.
         allowed_deps = [

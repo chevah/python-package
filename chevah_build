@@ -27,9 +27,8 @@ BUILD_CFFI="yes"
 EXTRA_LIBRARIES="\
     python-modules/cffi-1.5.2 \
     python-modules/pycrypto-2.6.1 \
-    python-modules/python-setproctitle-1.1.8.dev0 \
     "
-# Libraries for legecy systems not built around cffi.
+# Libraries for legacy systems not built around cffi and pip.
 EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/pyOpenSSL-0.13 \
     python-modules/pycrypto-2.6.1 \
@@ -38,8 +37,9 @@ EXTRA_LIBRARIES_NO_CFFI="\
 
 # List of python modules installed using pip
 PIP_LIBRARIES="\
+    setproctitle==1.1.10 \
     cryptography==1.3.1 \
-    pyOpenSSL==16.0.0
+    pyOpenSSL==16.0.0 \
     "
 # Pre-combiled libraries distributed as wheels for Windows.
 PIP_LIBRARIES_WIN="$PIP_LIBRARIES \
@@ -65,6 +65,7 @@ BUILD_FOLDER='build'
 if [ "$?" -ne 0 ]; then
     exit 1
 fi
+
 PYTHON_VERSION=`cut -d' ' -f 2 DEFAULT_VALUES`
 OS=`cut -d' ' -f 3 DEFAULT_VALUES`
 ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
@@ -198,11 +199,23 @@ case $OS in
         export MAKE=gmake
         ;;
     osx*)
+        # The extra params needed to fix the minimum target version to 10.8
+        # have the important benefit of getting rid of the libgcc dependency.
         export CC="clang"
         export CXX="clang++"
         export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
         export MACOSX_DEPLOYMENT_TARGET=10.8
         ;;
+    macos*)
+        # On macOS 10.12 or newer we need the Homebrew version of OpenSSL,
+        # as Apple only provides an old OpenSSL version: 0.9.8.
+        export CC="clang"
+        export CXX="clang++"
+        # The location of the Homebrew OpenSSL libs and include directories.
+        export LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"
+        export CPPFLAGS="-I/usr/local/opt/openssl/include"
+        ;;
+
     freebsd*)
         export CC="clang"
         export CXX="clang++"
@@ -267,6 +280,19 @@ install_dependencies() {
             packages=$SLES_PACKAGES
             install_command='sudo zypper --non-interactive install -l'
             check_command='rpm --query'
+        ;;
+        macos*)
+            # On macOS we need OpenSSL installed via homebrew, but we don't
+            # do it automatically, here we only check that the expected
+            # OpenSSL version is installed, as hardcoded below.
+            homebrew_openssl_version=`brew list --versions openssl`
+            if [[ $homebrew_openssl_version != "openssl 1.0.2"* ]]; then
+                echo "Unsupported OpenSSL version: $homebrew_openssl_version"
+                exit 102
+            fi
+            packages=''
+            install_command=''
+            check_command=''
         ;;
         *)
             packages=''

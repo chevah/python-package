@@ -805,8 +805,13 @@ class PyBuildExt(build_ext):
                                libraries=math_libs) )
         # Detect SSL support for the socket module (via _ssl)
         search_for_ssl_incs_in = [
-                              '/usr/local/ssl/include',
+                              # On macOS we need HomeBrew's OpenSSL headers
+                              # installed and first to be picked.
+                              '/usr/local/opt/openssl/include',
+                              # To find the Solaris 10 included OpenSSL headers.
                               '/usr/sfw/include/',
+                              # The following dirs are from upstream Python.
+                              '/usr/local/ssl/include',
                               '/usr/contrib/ssl/include/'
                              ]
         ssl_incs = find_file('openssl/ssl.h', inc_dirs,
@@ -831,7 +836,12 @@ class PyBuildExt(build_ext):
                                          [ '/usr/sfw/lib' ] )
         else:
             ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
-                                     ['/usr/local/ssl/lib',
+                                     [
+                                      # On macOS we need Homebrew's OpenSSL libs
+                                      # installed and first to be picked.
+                                      '/usr/local/opt/openssl/lib',
+                                      # Following dirs are from upstream Python.
+                                      '/usr/local/ssl/lib',
                                       '/usr/contrib/ssl/lib/'
                                      ] )
 

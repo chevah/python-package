@@ -497,8 +497,15 @@ detect_os() {
         os_version_raw=$(sw_vers -productVersion)
         check_os_version "Mac OS X" 10.8 "$os_version_raw" os_version_chevah
 
-        # For now, no matter the actual OS X version returned, we use '108'.
-        OS="osx108"
+        if [ ${os_version_chevah:0:2} -eq 10 -a \
+            ${os_version_chevah:2:2} -ge 12  ]; then
+            # For newer, macOS versions, we use '1012'.
+            OS="macos1012"
+        else
+            # For older, OS X versions, we use '108'.
+            OS="osx108"
+        fi
+
 
     elif [ "${OS}" = "freebsd" ]; then
         ARCH=$(uname -m)

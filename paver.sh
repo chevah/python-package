@@ -98,7 +98,13 @@ clean_build() {
     fi
     # In some case pip hangs with a build folder in temp and
     # will not continue until it is manually removed.
-    rm -rf /tmp/pip*
+    # On the OSX build server tmp is in $TMPDIR
+    if [ ! -z "${TMPDIR-}" ]; then
+        # check if TMPDIR is set before trying to clean it.
+        rm -rf ${TMPDIR}/pip*
+    else
+        rm -rf /tmp/pip*
+    fi
 }
 
 

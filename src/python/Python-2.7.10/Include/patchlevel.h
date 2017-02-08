@@ -15,6 +15,7 @@
 #define PY_RELEASE_LEVEL_ALPHA	0xA
 #define PY_RELEASE_LEVEL_BETA	0xB
 #define PY_RELEASE_LEVEL_GAMMA	0xC     /* For release candidates */
+#define PY_RELEASE_LEVEL_CHEVAH 0xE    /* For Chevah releases */
 #define PY_RELEASE_LEVEL_FINAL	0xF	/* Serial should be 0 here */
 					/* Higher for patch releases */
 
@@ -23,11 +24,11 @@
 #define PY_MAJOR_VERSION	2
 #define PY_MINOR_VERSION	7
 #define PY_MICRO_VERSION	10
-#define PY_RELEASE_LEVEL	PY_RELEASE_LEVEL_FINAL
-#define PY_RELEASE_SERIAL	0
+#define PY_RELEASE_LEVEL	PY_RELEASE_LEVEL_CHEVAH
+#define PY_RELEASE_SERIAL	170208
 
 /* Version as a string */
-#define PY_VERSION      	"2.7.10"
+#define PY_VERSION      	"2.7.10.chevah.170208"
 /*--end constants--*/
 
 /* Subversion Revision number of this file (not of the repository). Empty

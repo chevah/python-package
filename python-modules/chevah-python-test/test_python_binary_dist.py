@@ -413,6 +413,13 @@ def main():
         sys.stderr.write('"ctypes.utils - find_library" missing.\n')
         exit_code = 9
 
+    try:
+        import multiprocessing
+        multiprocessing.current_process()
+    except:
+        sys.stderr.write('"multiprocessing" missing.\n')
+        exit_code = 11
+
     # Windows specific modules.
     if os.name == 'nt':
         try:

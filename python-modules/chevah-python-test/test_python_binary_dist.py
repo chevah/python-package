@@ -292,20 +292,20 @@ def test_dependencies():
     if not allowed_deps:
         sys.stderr.write('Got no allowed deps. Please check if {0} is a '
             'supported operating system.\n'.format(platform.system()))
-        return 13
+        return 113
 
     actual_deps = get_actual_deps(script_helper)
     if not actual_deps:
         sys.stderr.write('Got no deps for the new binaries. Please check '
             'the "{0}" script in the "build/" dir.\n'.format(script_helper))
-        return 14
+        return 114
 
     unwanted_deps = get_unwanted_deps(allowed_deps, actual_deps)
     if unwanted_deps:
         sys.stderr.write('Got unwanted deps:\n')
         for single_dep_to_print in unwanted_deps:
             sys.stderr.write('\t{0}\n'.format(single_dep_to_print))
-        return 15
+        return 115
 
     return 0
 
@@ -481,7 +481,7 @@ def main():
             readline.get_history_length()
         except:
             sys.stderr.write('"readline" missing.\n')
-            exit_code = 13
+            exit_code = 12
 
     exit_code = test_dependencies() | exit_code
 

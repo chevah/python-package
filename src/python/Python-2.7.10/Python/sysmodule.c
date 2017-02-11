@@ -1329,8 +1329,6 @@ make_version_info(void)
     s = "beta";
 #elif PY_RELEASE_LEVEL == PY_RELEASE_LEVEL_GAMMA
     s = "candidate";
-#elif PY_RELEASE_LEVEL == PY_RELEASE_LEVEL_CHEVAH
-    s = "chevah";
 #elif PY_RELEASE_LEVEL == PY_RELEASE_LEVEL_FINAL
     s = "final";
 #endif

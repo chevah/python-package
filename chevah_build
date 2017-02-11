@@ -15,8 +15,11 @@ PYTHON_BUILD_VERSION=2.7.10
 PYSQLITE_VERSION=2.6.3
 SQLITE_VERSION=3.8.1
 
+# Git revision to inject into Python's sys.version string through chevahbs.
+PYTHON_PACKAGE_VERSION=$(git rev-list -1 HEAD | cut -b 1-8)
 # The ID of the redistributable version used on Windows.
 REDISTRIBUTABLE_VERSION="9.00.30729.6161"
+export PYTHON_PACKAGE_VERSION REDISTRIBUTABLE_VERSION
 
 # pycparser needs to be explicitly installed to work around setuptools auto
 # dependencies.
@@ -119,8 +122,6 @@ export MAKE=make
 
 # Used when building cffi.
 export CHEVAH_BUILD_PATH=$INSTALL_FOLDER
-# Used when building on Windows.
-export REDISTRIBUTABLE_VERSION
 
 case $OS in
     aix*)

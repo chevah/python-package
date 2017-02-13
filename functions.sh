@@ -176,8 +176,8 @@ make_dist(){
     kind=$1
     target_folder=$2
 
-    target_tar=../dist/${kind}/${OS}/${ARCH}/${target_folder}-${TIMESTAMP}.tar
-    target_tar_gz=../dist/${kind}/${OS}/${ARCH}/${target_folder}-${TIMESTAMP}.tar.gz
+    target_tar=../dist/${kind}/${OS}/${ARCH}/${target_folder}-${TIMESTAMP}-${PYTHON_PACKAGE_VERSION}.tar
+    target_tar_gz=${target_tar}.gz
 
     tar_gz_file=${target_folder}.tar.gz
     tar_gz_timestamp_file=${target_folder}-${TIMESTAMP}.tar.gz

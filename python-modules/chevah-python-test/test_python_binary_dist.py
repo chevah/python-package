@@ -413,7 +413,7 @@ def main():
             exit_code = 6
 
     else:
-        # Modules only available on Linux / Unix
+        # Linux / Unix stuff.
         try:
             import crypt
             crypt
@@ -442,6 +442,22 @@ def main():
             sys.stderr.write('"setproctitle" missing.\n')
             exit_code = 7
 
+        # Check for the git revision in Python's sys.version on Linux and Unix.
+        try:
+            git_rev_cmd = ['git', 'rev-parse', '--short', 'HEAD']
+            git_rev = subprocess.check_output(git_rev_cmd).strip()
+        except:
+            sys.stderr.write("Couldn't get the git rev for the current tree.\n")
+            exit_code = 17
+        else:
+            bin_ver = sys.version.split('(')[1][:7]
+            if git_rev != bin_ver:
+                sys.stderr.write ("Python's version doesn't match git rev!" + \
+                                  "\n\tBin ver: {0}".format(bin_ver) + \
+                                  "\n\tGit rev: {0}".format(git_rev) + "\n")
+
+                exit_code = 18
+
     if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
         try:
             import spwd
@@ -458,20 +474,6 @@ def main():
         except:
             sys.stderr.write('"readline" missing.\n')
             exit_code = 12
-
-    # Check for the git revision in Python's sys.version.
-    try:
-        git_rev = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).strip()
-    except:
-        sys.stderr.write('Could not get the git rev for the current tree.\n')
-        exit_code = 17
-    else:
-        bin_ver = sys.version.split('(')[1][:7]
-        if git_rev != bin_ver:
-            print "Python's sys.version doesn't seem to match the current git rev..."
-            print "\tGit rev:" , git_rev
-            print "\tBin ver:" , bin_ver
-            exit_code = 18
 
     exit_code = test_dependencies() | exit_code
 

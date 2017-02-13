@@ -180,7 +180,7 @@ make_dist(){
     target_tar_gz=${target_tar}.gz
 
     tar_gz_file=${target_folder}.tar.gz
-    tar_gz_timestamp_file=${target_folder}-${TIMESTAMP}.tar.gz
+    tar_gz_timestamp_file=${target_folder}-${TIMESTAMP}-${PYTHON_PACKAGE_VERSION}.tar.gz
 
     # Create a clean dist folder.
     execute rm -rf ${DIST_FOLDER}

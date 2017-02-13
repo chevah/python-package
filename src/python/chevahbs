@@ -99,8 +99,10 @@ chevahbs_compile() {
             ;;
         *)
             echo "Patching the git rev id into Python's version string..."
-            sed s/hgid\ =\ \"default\"/hgid\ =\ \"$PYTHON_PACKAGE_VERSION\"/g \
-               -i Modules/getbuildinfo.c
+            cp Modules/getbuildinfo.c Modules/getbuildinfo.c.orig
+            sed -e \
+                s/hgid\ =\ \"default\"/hgid\ =\ \"$PYTHON_PACKAGE_VERSION\"/g \
+                Modules/getbuildinfo.c.orig > Modules/getbuildinfo.c
             execute $MAKE
             ;;
     esac

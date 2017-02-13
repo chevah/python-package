@@ -350,7 +350,7 @@ def main():
                 if openssl_version != expecting:
                     sys.stderr.write('Expecting %s got %s.\n' % (
                         expecting, openssl_version))
-                    exit_code = 3
+                    exit_code = 13
         except Exception as error:
             sys.stderr.write('"cryptography" failure. %s\n' % (error,))
             exit_code = 14
@@ -374,29 +374,6 @@ def main():
         sys.stderr.write('"PyCrypto" missing.\n')
         exit_code = 4
 
-    if os.name != 'nt':
-        # Module only available on Linux / Unix
-        try:
-            import crypt
-            crypt
-        except:
-            sys.stderr.write('"crypt" missing.\n')
-            exit_code = 5
-
-        try:
-            import setproctitle
-            setproctitle
-        except:
-            sys.stderr.write('"setproctitle" missing.\n')
-            exit_code = 7
-
-        try:
-            from Crypto.PublicKey import _fastmath
-            _fastmath
-        except:
-            sys.stderr.write('"Crypto.PublicKey._fastmath" missing. No GMP?\n')
-            exit_code = 10
-
     try:
         from ctypes import CDLL
         import ctypes
@@ -418,7 +395,7 @@ def main():
         multiprocessing.current_process()
     except:
         sys.stderr.write('"multiprocessing" missing.\n')
-        exit_code = 11
+        exit_code = 16
 
     # Windows specific modules.
     if os.name == 'nt':
@@ -427,7 +404,7 @@ def main():
             windll
         except:
             sys.stderr.write('"ctypes - windll" missing.\n')
-            exit_code = 1
+            exit_code = 15
         try:
             import sqlite3
             sqlite3
@@ -436,13 +413,20 @@ def main():
             exit_code = 6
 
     else:
-        # Linux and Unix checks.
+        # Modules only available on Linux / Unix
         try:
             import crypt
             crypt
         except:
             sys.stderr.write('"crypt" missing.\n')
             exit_code = 5
+
+        try:
+            from Crypto.PublicKey import _fastmath
+            _fastmath
+        except:
+            sys.stderr.write('"Crypto.PublicKey._fastmath" missing. No GMP?\n')
+            exit_code = 10
 
         try:
             import pysqlite2
@@ -458,21 +442,13 @@ def main():
             sys.stderr.write('"setproctitle" missing.\n')
             exit_code = 7
 
-        try:
-            from Crypto.PublicKey import _fastmath
-            _fastmath
-        except:
-            sys.stderr.write('Crypto.PublicKey._fastmath missing. No GMP?\n')
-            exit_code = 10
-
-
     if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
         try:
             import spwd
             spwd
         except:
             sys.stderr.write('"spwd" missing.\n')
-            exit_code = 1
+            exit_code = 11
 
     # We compile the readline module using libedit only on selected platforms.
     if test_for_readline:

@@ -459,6 +459,20 @@ def main():
             sys.stderr.write('"readline" missing.\n')
             exit_code = 12
 
+    # Check for the git revision in Python's sys.version.
+    try:
+        git_rev = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).strip()
+    except:
+        sys.stderr.write('Could not get the git rev for the current tree.\n')
+        exit_code = 17
+    else:
+        bin_ver = sys.version.split('(')[1][:7]
+        if git_rev != bin_ver:
+            print "Python's sys.version doesn't seem to match the current git rev..."
+            print "\tGit rev:" , git_rev
+            print "\tBin ver:" , bin_ver
+            exit_code = 18
+
     exit_code = test_dependencies() | exit_code
 
     sys.exit(exit_code)

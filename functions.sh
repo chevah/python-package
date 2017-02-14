@@ -177,11 +177,12 @@ make_dist(){
     target_folder=$2
 
     target_path=../dist/${kind}/${OS}/${ARCH}
-    target_tar=${target_path}/${target_folder}-${TIMESTAMP}-${PYTHON_PACKAGE_VERSION}.tar
+    target_common=python-${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}-${OS}-${ARCH}
+    target_tar=${target_path}/${target_common}.tar
     target_tar_gz=${target_tar}.gz
 
     tar_gz_file=${target_folder}.tar.gz
-    tar_gz_timestamp_file=${target_folder}-${TIMESTAMP}-${PYTHON_PACKAGE_VERSION}.tar.gz
+    tar_gz_target_file=${target_common}.tar.gz
 
     # Create a clean dist folder.
     execute rm -rf ${DIST_FOLDER}
@@ -196,7 +197,7 @@ make_dist(){
 
     # Create symlink.
     execute pushd ${DIST_FOLDER}/${kind}
-        execute ln -sf ${OS}/${ARCH}/${tar_gz_timestamp_file} ${tar_gz_file}
+        execute ln -sf ${OS}/${ARCH}/${tar_gz_target_file} ${tar_gz_file}
     execute popd
 }
 

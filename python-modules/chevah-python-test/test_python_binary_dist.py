@@ -451,10 +451,10 @@ def main():
             exit_code = 17
         else:
             bin_ver = sys.version.split('(')[1].split(',')[0]
-            if git_rev != bin_ver:
-                sys.stderr.write ("Python's version doesn't match git rev!" + \
-                                  "\n\tBin ver: {0}".format(bin_ver) + \
-                                  "\n\tGit rev: {0}".format(git_rev) + "\n")
+            if bin_ver != git_rev:
+                sys.stderr.write("Python's version doesn't match git rev!\n"
+                                 "\tBin ver: {0}".format(bin_ver) + "\n"
+                                 "\tGit rev: {0}".format(git_rev) + "\n")
                 exit_code = 18
 
     if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):

@@ -422,13 +422,6 @@ def main():
             exit_code = 5
 
         try:
-            from Crypto.PublicKey import _fastmath
-            _fastmath
-        except:
-            sys.stderr.write('"Crypto.PublicKey._fastmath" missing. No GMP?\n')
-            exit_code = 10
-
-        try:
             import pysqlite2
             pysqlite2
         except:
@@ -441,6 +434,13 @@ def main():
         except:
             sys.stderr.write('"setproctitle" missing.\n')
             exit_code = 7
+
+        try:
+            from Crypto.PublicKey import _fastmath
+            _fastmath
+        except:
+            sys.stderr.write('Crypto.PublicKey._fastmath missing. No GMP?\n')
+            exit_code = 10
 
         # Check for the git revision in Python's sys.version on Linux and Unix.
         try:

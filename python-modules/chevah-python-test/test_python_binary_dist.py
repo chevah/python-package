@@ -450,7 +450,7 @@ def main():
             sys.stderr.write("Couldn't get the git rev for the current tree.\n")
             exit_code = 17
         else:
-            bin_ver = sys.version.split('(')[1][:7]
+            bin_ver = sys.version.split('(')[1].split(',')[0]
             if git_rev != bin_ver:
                 sys.stderr.write ("Python's version doesn't match git rev!" + \
                                   "\n\tBin ver: {0}".format(bin_ver) + \

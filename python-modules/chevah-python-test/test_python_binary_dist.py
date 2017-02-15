@@ -350,7 +350,7 @@ def main():
                 if openssl_version != expecting:
                     sys.stderr.write('Expecting %s got %s.\n' % (
                         expecting, openssl_version))
-                    exit_code = 3
+                    exit_code = 13
         except Exception as error:
             sys.stderr.write('"cryptography" failure. %s\n' % (error,))
             exit_code = 14
@@ -374,29 +374,6 @@ def main():
         sys.stderr.write('"PyCrypto" missing.\n')
         exit_code = 4
 
-    if os.name != 'nt':
-        # Module only available on Linux / Unix
-        try:
-            import crypt
-            crypt
-        except:
-            sys.stderr.write('"crypt" missing.\n')
-            exit_code = 5
-
-        try:
-            import setproctitle
-            setproctitle
-        except:
-            sys.stderr.write('"setproctitle" missing.\n')
-            exit_code = 7
-
-        try:
-            from Crypto.PublicKey import _fastmath
-            _fastmath
-        except:
-            sys.stderr.write('"Crypto.PublicKey._fastmath" missing. No GMP?\n')
-            exit_code = 10
-
     try:
         from ctypes import CDLL
         import ctypes
@@ -418,7 +395,7 @@ def main():
         multiprocessing.current_process()
     except:
         sys.stderr.write('"multiprocessing" missing.\n')
-        exit_code = 11
+        exit_code = 16
 
     # Windows specific modules.
     if os.name == 'nt':
@@ -427,7 +404,7 @@ def main():
             windll
         except:
             sys.stderr.write('"ctypes - windll" missing.\n')
-            exit_code = 1
+            exit_code = 15
         try:
             import sqlite3
             sqlite3
@@ -436,7 +413,7 @@ def main():
             exit_code = 6
 
     else:
-        # Linux and Unix checks.
+        # Linux / Unix stuff.
         try:
             import crypt
             crypt
@@ -465,6 +442,20 @@ def main():
             sys.stderr.write('Crypto.PublicKey._fastmath missing. No GMP?\n')
             exit_code = 10
 
+        # Check for the git revision in Python's sys.version on Linux and Unix.
+        try:
+            git_rev_cmd = ['git', 'rev-parse', '--short', 'HEAD']
+            git_rev = subprocess.check_output(git_rev_cmd).strip()
+        except:
+            sys.stderr.write("Couldn't get the git rev for the current tree.\n")
+            exit_code = 17
+        else:
+            bin_ver = sys.version.split('(')[1].split(',')[0]
+            if bin_ver != git_rev:
+                sys.stderr.write("Python's version doesn't match git rev!\n"
+                                 "\tBin ver: {0}".format(bin_ver) + "\n"
+                                 "\tGit rev: {0}".format(git_rev) + "\n")
+                exit_code = 18
 
     if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
         try:
@@ -472,7 +463,7 @@ def main():
             spwd
         except:
             sys.stderr.write('"spwd" missing.\n')
-            exit_code = 1
+            exit_code = 11
 
     # We compile the readline module using libedit only on selected platforms.
     if test_for_readline:

@@ -98,6 +98,11 @@ chevahbs_compile() {
             echo "Skip make on Windows."
             ;;
         *)
+            echo "Patching the git rev id into Python's version string..."
+            cp Modules/getbuildinfo.c Modules/getbuildinfo.c.orig
+            sed -e \
+                s/hgid\ =\ \"default\"/hgid\ =\ \"$PYTHON_PACKAGE_VERSION\"/g \
+                Modules/getbuildinfo.c.orig > Modules/getbuildinfo.c
             execute $MAKE
             ;;
     esac

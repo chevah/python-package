@@ -15,8 +15,12 @@ PYTHON_BUILD_VERSION=2.7.10
 PYSQLITE_VERSION=2.6.3
 SQLITE_VERSION=3.8.1
 
+# Git revision to inject into Python's sys.version string through chevahbs.
+PYTHON_PACKAGE_VERSION=$(git rev-parse --short HEAD)
 # The ID of the redistributable version used on Windows.
 REDISTRIBUTABLE_VERSION="9.00.30729.6161"
+
+export PYTHON_BUILD_VERSION PYTHON_PACKAGE_VERSION REDISTRIBUTABLE_VERSION
 
 # pycparser needs to be explicitly installed to work around setuptools auto
 # dependencies.
@@ -69,7 +73,6 @@ fi
 PYTHON_VERSION=`cut -d' ' -f 2 DEFAULT_VALUES`
 OS=`cut -d' ' -f 3 DEFAULT_VALUES`
 ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
-TIMESTAMP=`date +'%Y%m%d'`
 
 # List of OS packages required for building Python.
 COMMON_PACKAGES="gcc make m4 automake libtool texinfo"
@@ -119,8 +122,6 @@ export MAKE=make
 
 # Used when building cffi.
 export CHEVAH_BUILD_PATH=$INSTALL_FOLDER
-# Used when building on Windows.
-export REDISTRIBUTABLE_VERSION
 
 case $OS in
     aix*)
@@ -234,7 +235,6 @@ case $OS in
         PIP_LIBRARIES=$PIP_LIBRARIES_WIN
         # We don't build libffi, as cffi it is available as a wheel in pypi.
         BUILD_LIBFFI="no"
-        PYTHON_BUILD_VERSION="$PYTHON_BUILD_VERSION-windows"
         ;;
 esac
 
@@ -433,7 +433,15 @@ command_build() {
             ;;
     esac
 
-    build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
+    case $OS in
+        windows*)
+            build 'python' "Python-$PYTHON_BUILD_VERSION-windows" ${PYTHON_BUILD_FOLDER}
+            ;;
+        *)
+            build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
+            ;;
+    esac
+
     command_build_sqlite
     command_build_python_extra_libraries
 
@@ -457,6 +465,10 @@ command_build() {
     esac
 
     remove_dependencies
+
+    # Output the python-package version to a dedicated file in the archive.
+    echo "${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" \
+        > ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}/lib/PYTHON_PACKAGE_VERSION
 
     make_dist 'python' ${PYTHON_BUILD_FOLDER}
 }

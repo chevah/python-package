@@ -466,6 +466,10 @@ command_build() {
 
     remove_dependencies
 
+    # Output the python-package version to a dedicated file in the archive.
+    echo "${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" \
+        > ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}/lib/PYTHON_PACKAGE_VERSION
+
     make_dist 'python' ${PYTHON_BUILD_FOLDER}
 }
 

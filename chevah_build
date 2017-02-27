@@ -37,6 +37,7 @@ EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/pyOpenSSL-0.13 \
     python-modules/pycrypto-2.6.1 \
     python-modules/python-setproctitle-1.1.8.dev0 \
+    python-modules/python-scandir-1.5 \
     "
 
 # List of python modules installed using pip

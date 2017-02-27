@@ -399,6 +399,7 @@ def main():
 
     try:
         import scandir
+        scandir.__file__
     except:
         sys.stderr.write('"scandir" missing.\n')
         exit_code = 17

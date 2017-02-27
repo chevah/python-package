@@ -397,6 +397,12 @@ def main():
         sys.stderr.write('"multiprocessing" missing.\n')
         exit_code = 16
 
+    try:
+        import scandir
+    except:
+        sys.stderr.write('"scandir" missing.\n')
+        exit_code = 17
+
     # Windows specific modules.
     if os.name == 'nt':
         try:
@@ -448,14 +454,14 @@ def main():
             git_rev = subprocess.check_output(git_rev_cmd).strip()
         except:
             sys.stderr.write("Couldn't get the git rev for the current tree.\n")
-            exit_code = 17
+            exit_code = 117
         else:
             bin_ver = sys.version.split('(')[1].split(',')[0]
             if bin_ver != git_rev:
                 sys.stderr.write("Python's version doesn't match git rev!\n"
                                  "\tBin ver: {0}".format(bin_ver) + "\n"
                                  "\tGit rev: {0}".format(git_rev) + "\n")
-                exit_code = 18
+                exit_code = 118
 
     if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
         try:

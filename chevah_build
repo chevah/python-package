@@ -44,6 +44,7 @@ PIP_LIBRARIES="\
     setproctitle==1.1.10 \
     cryptography==1.3.1 \
     pyOpenSSL==16.0.0 \
+    scandir==1.5 \
     "
 # Pre-combiled libraries distributed as wheels for Windows.
 PIP_LIBRARIES_WIN="$PIP_LIBRARIES \

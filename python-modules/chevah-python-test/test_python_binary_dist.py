@@ -400,8 +400,15 @@ def main():
     try:
         import _scandir
     except:
-        sys.stderr.write('"_scandir" missing.\n')
-        exit_code = 17
+        if chevah_os == 'windows':
+            try:
+                import scandir
+            except:
+                sys.stderr.write('"scandir" missing.\n')
+                exit_code = 19
+        else:
+            sys.stderr.write('"_scandir" missing.\n')
+            exit_code = 17
     else:
         if not os.getcwd() in _scandir.__file__:
             sys.stderr.write("_scandir module not in current path, "

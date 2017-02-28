@@ -309,6 +309,26 @@ def test_dependencies():
 
     return 0
 
+
+def egg_check(module):
+    """
+    Check that the tested module is in the current path.
+    If not, it may be pulled from ~/.python-eggs and we don't want that.
+
+    Return 0 on success, non zero on error.
+    """
+    if not os.getcwd() in module.__file__:
+        sys.stderr.write(
+            "{0} module not in current path, ".format(module.__name__) +
+            "is zip_safe set to True for it?\n"
+            "\tcurrent path: {0}".format(os.getcwd()) + "\n"
+            "\tmodule file: {0}".format(module.__file__) + "\n"
+            )
+        return 116
+
+    return 0
+
+
 def main():
     """
     Launch tests to check required modules and OS-specific dependencies.
@@ -410,12 +430,7 @@ def main():
             sys.stderr.write('"_scandir" missing.\n')
             exit_code = 17
     else:
-        if not os.getcwd() in _scandir.__file__:
-            sys.stderr.write("_scandir module not in current path, "
-                "is zip_safe set to True?\n"
-                "\tcurrent path: {0}".format(os.getcwd()) + "\n"
-                "\tmodule file: {0}".format(_scandir.__file__) + "\n")
-            exit_code = 18
+        exit_code = egg_check(_scandir)
 
     # Windows specific modules.
     if os.name == 'nt':

@@ -33,6 +33,7 @@ setup(
     long_description=long_description,
     py_modules=['scandir'],
     ext_modules=[Extension('_scandir', ['_scandir.c'])],
+    zip_safe = False,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',

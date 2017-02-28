@@ -398,11 +398,17 @@ def main():
         exit_code = 16
 
     try:
-        import scandir
-        scandir.__file__
+        import _scandir
     except:
-        sys.stderr.write('"scandir" missing.\n')
+        sys.stderr.write('"_scandir" missing.\n')
         exit_code = 17
+    else:
+        if not os.getcwd() in _scandir.__file__:
+            sys.stderr.write("_scandir module not in current path, "
+                "is zip_safe set to True?\n"
+                "\tcurrent path: {0}".format(os.getcwd()) + "\n"
+                "\tmodule file: {0}".format(_scandir.__file__) + "\n")
+            exit_code = 18
 
     # Windows specific modules.
     if os.name == 'nt':

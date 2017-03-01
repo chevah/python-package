@@ -632,6 +632,8 @@ command_test() {
     execute cp python-modules/chevah-python-test/get_binaries_deps.sh build/
     execute pushd build
     execute $LOCAL_PYTHON_BINARY ${test_file}
+    echo '################################################'
+    execute $LOCAL_PYTHON_BINARY ../python-modules/python-scandir-1.5/test/run_tests.py
     execute popd
 }
 

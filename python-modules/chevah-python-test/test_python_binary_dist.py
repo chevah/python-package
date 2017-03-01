@@ -417,20 +417,12 @@ def main():
         sys.stderr.write('"multiprocessing" missing.\n')
         exit_code = 16
 
+    # The pure-Python scandir package is always available.
     try:
-        import _scandir
+        import scandir
     except:
-        if chevah_os == 'windows':
-            try:
-                import scandir
-            except:
-                sys.stderr.write('"scandir" missing.\n')
-                exit_code = 19
-        else:
-            sys.stderr.write('"_scandir" missing.\n')
-            exit_code = 17
-    else:
-        exit_code = egg_check(_scandir)
+        sys.stderr.write('"scandir" missing.\n')
+        exit_code = 19
 
     # Windows specific modules.
     if os.name == 'nt':
@@ -491,6 +483,14 @@ def main():
                                  "\tBin ver: {0}".format(bin_ver) + "\n"
                                  "\tGit rev: {0}".format(git_rev) + "\n")
                 exit_code = 118
+
+        try:
+            import _scandir
+            exit_code = egg_check(_scandir)
+        except:
+            sys.stderr.write('"_scandir" missing.\n')
+            exit_code = 17
+
 
     if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
         try:

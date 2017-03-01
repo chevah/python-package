@@ -422,7 +422,7 @@ def main():
         import scandir
     except:
         sys.stderr.write('"scandir" missing.\n')
-        exit_code = 19
+        exit_code = 17
 
     # Windows specific modules.
     if os.name == 'nt':
@@ -489,7 +489,7 @@ def main():
             exit_code = egg_check(_scandir)
         except:
             sys.stderr.write('"_scandir" missing.\n')
-            exit_code = 17
+            exit_code = 18
 
 
     if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):

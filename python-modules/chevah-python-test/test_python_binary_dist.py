@@ -346,10 +346,10 @@ def main():
         exit_code = 1
 
     try:
-        import _hashlib
         import ssl
-        _hashlib
         print 'stdlib ssl %s' % (ssl.OPENSSL_VERSION,)
+        import _hashlib
+        exit_code = egg_check(_hashlib)
     except:
         sys.stderr.write('standard "ssl" missing.\n')
         exit_code = 2
@@ -464,7 +464,7 @@ def main():
 
         try:
             from Crypto.PublicKey import _fastmath
-            _fastmath
+            exit_code = egg_check(_fastmath)
         except:
             sys.stderr.write('Crypto.PublicKey._fastmath missing. No GMP?\n')
             exit_code = 10

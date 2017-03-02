@@ -631,9 +631,19 @@ command_test() {
     execute cp python-modules/chevah-python-test/${test_file} build/
     execute cp python-modules/chevah-python-test/get_binaries_deps.sh build/
     execute pushd build
+    echo '##### Executing Chevah tests... #####'
     execute $LOCAL_PYTHON_BINARY ${test_file}
-    echo '################################################'
-    execute $LOCAL_PYTHON_BINARY ../python-modules/python-scandir-1.5/test/run_tests.py
+    echo '##### Executing tests for included Python modules... #####'
+    case $OS in
+        windows*|macos*|osx*)
+            execute $LOCAL_PYTHON_BINARY \
+                ../python-modules/python-scandir-1.5/test/run_tests.py
+            ;;
+        *)
+            # Reported at https://github.com/benhoyt/scandir/issues/78.
+            (>&2 echo -e "\tSkipping because of upstream issues.")
+            ;;
+    esac
     execute popd
 }
 

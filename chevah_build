@@ -641,7 +641,7 @@ command_test() {
             ;;
         *)
             # Reported at https://github.com/benhoyt/scandir/issues/78.
-            (>&2 echo -e "\tSkipping because of upstream issues.")
+            (>&2 echo -e "\tSkipping scandir because of upstream issues.")
             ;;
     esac
     execute popd

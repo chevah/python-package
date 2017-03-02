@@ -137,8 +137,8 @@ class TestMixin(object):
             # Reported upstream at https://github.com/benhoyt/scandir/issues/77.
             # self.assertEqual(os_stat.st_mtime, scandir_stat.st_mtime)
             # self.assertEqual(os_stat.st_ctime, scandir_stat.st_ctime)
-            self.assertEqual(round(os_stat.st_mtime, 3), round(scandir_stat.st_mtime, 3))
-            self.assertEqual(round(os_stat.st_ctime, 3), round(scandir_stat.st_ctime, 3))
+            self.assertAlmostEqual(os_stat.st_mtime, scandir_stat.st_mtime, places=3)
+            self.assertAlmostEqual(os_stat.st_ctime, scandir_stat.st_ctime, places=3)
             if entry.is_file():
                 self.assertEqual(os_stat.st_size, scandir_stat.st_size)
 

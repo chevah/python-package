@@ -634,16 +634,9 @@ command_test() {
     echo '##### Executing Chevah tests... #####'
     execute $LOCAL_PYTHON_BINARY ${test_file}
     echo '##### Executing tests for included Python modules... #####'
-    case $OS in
-        windows*|macos*|osx*)
-            execute $LOCAL_PYTHON_BINARY \
-                ../python-modules/python-scandir-1.5/test/run_tests.py
-            ;;
-        *)
-            # Reported at https://github.com/benhoyt/scandir/issues/78.
-            (>&2 echo -e "\tSkipping scandir because of upstream issues.")
-            ;;
-    esac
+    # UTF-8 env needed. Details at https://github.com/benhoyt/scandir/issues/78.
+    LC_ALL=en_US.UTF-8 execute $LOCAL_PYTHON_BINARY \
+        ../python-modules/python-scandir-1.5/test/run_tests.py
     execute popd
 }
 

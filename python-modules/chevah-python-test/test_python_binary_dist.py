@@ -309,6 +309,26 @@ def test_dependencies():
 
     return 0
 
+
+def egg_check(module):
+    """
+    Check that the tested module is in the current path.
+    If not, it may be pulled from ~/.python-eggs and we don't want that.
+
+    Return 0 on success, non zero on error.
+    """
+    if not os.getcwd() in module.__file__:
+        sys.stderr.write(
+            "{0} module not in current path, ".format(module.__name__) +
+                "is zip_safe set to True for it?\n"
+            "\tcurrent path: {0}".format(os.getcwd()) + "\n"
+            "\tmodule file: {0}".format(module.__file__) + "\n"
+            )
+        return 116
+
+    return 0
+
+
 def main():
     """
     Launch tests to check required modules and OS-specific dependencies.
@@ -326,10 +346,10 @@ def main():
         exit_code = 1
 
     try:
-        import _hashlib
         import ssl
-        _hashlib
         print 'stdlib ssl %s' % (ssl.OPENSSL_VERSION,)
+        import _hashlib
+        exit_code = egg_check(_hashlib) | exit_code
     except:
         sys.stderr.write('standard "ssl" missing.\n')
         exit_code = 2
@@ -397,6 +417,13 @@ def main():
         sys.stderr.write('"multiprocessing" missing.\n')
         exit_code = 16
 
+    # The pure-Python scandir package is always available.
+    try:
+        import scandir
+    except:
+        sys.stderr.write('"scandir" missing.\n')
+        exit_code = 17
+
     # Windows specific modules.
     if os.name == 'nt':
         try:
@@ -437,7 +464,7 @@ def main():
 
         try:
             from Crypto.PublicKey import _fastmath
-            _fastmath
+            exit_code = egg_check(_fastmath) | exit_code
         except:
             sys.stderr.write('Crypto.PublicKey._fastmath missing. No GMP?\n')
             exit_code = 10
@@ -448,14 +475,22 @@ def main():
             git_rev = subprocess.check_output(git_rev_cmd).strip()
         except:
             sys.stderr.write("Couldn't get the git rev for the current tree.\n")
-            exit_code = 17
+            exit_code = 117
         else:
             bin_ver = sys.version.split('(')[1].split(',')[0]
             if bin_ver != git_rev:
                 sys.stderr.write("Python's version doesn't match git rev!\n"
                                  "\tBin ver: {0}".format(bin_ver) + "\n"
                                  "\tGit rev: {0}".format(git_rev) + "\n")
-                exit_code = 18
+                exit_code = 118
+
+        try:
+            import _scandir
+            exit_code = egg_check(_scandir) | exit_code
+        except:
+            sys.stderr.write('"_scandir" missing.\n')
+            exit_code = 18
+
 
     if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
         try:

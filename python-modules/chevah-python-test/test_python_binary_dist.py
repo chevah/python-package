@@ -320,7 +320,7 @@ def egg_check(module):
     if not os.getcwd() in module.__file__:
         sys.stderr.write(
             "{0} module not in current path, ".format(module.__name__) +
-            "is zip_safe set to True for it?\n"
+                "is zip_safe set to True for it?\n"
             "\tcurrent path: {0}".format(os.getcwd()) + "\n"
             "\tmodule file: {0}".format(module.__file__) + "\n"
             )
@@ -349,7 +349,7 @@ def main():
         import ssl
         print 'stdlib ssl %s' % (ssl.OPENSSL_VERSION,)
         import _hashlib
-        exit_code = egg_check(_hashlib)
+        exit_code = egg_check(_hashlib) | exit_code
     except:
         sys.stderr.write('standard "ssl" missing.\n')
         exit_code = 2
@@ -464,7 +464,7 @@ def main():
 
         try:
             from Crypto.PublicKey import _fastmath
-            exit_code = egg_check(_fastmath)
+            exit_code = egg_check(_fastmath) | exit_code
         except:
             sys.stderr.write('Crypto.PublicKey._fastmath missing. No GMP?\n')
             exit_code = 10
@@ -486,7 +486,7 @@ def main():
 
         try:
             import _scandir
-            exit_code = egg_check(_scandir)
+            exit_code = egg_check(_scandir) | exit_code
         except:
             sys.stderr.write('"_scandir" missing.\n')
             exit_code = 18

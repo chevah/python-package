@@ -11,22 +11,6 @@ chevahbs_configure() {
     CONFIGURE_ENVIRONMENT=""
 
     case $OS in
-        "hpux"|"aix")
-            # These files are already created in the Python distribution,
-            # but for some strange reason, make tries to recreate them.
-            # We just touch them so that make will see them up to date.
-            touch Include/Python-ast.h Python/Python-ast.c
-            ;;
-    esac
-
-    case $OS in
-        "hpux")
-            LIBS="-lpthread"
-            #BASECFLAGS="+DD64"
-            #LDFLAGS="${LDFLAGS} +DD64 -lxnet"
-            LDFLAGS="${LDFLAGS} -lxnet"
-            CONFIG_ARGS="${CONFIG_ARGS} --disable-ipv6"
-            ;;
         "ubuntu1004")
             # On Ubuntu there are no libXXX.o, but rather linked against the
             # full version number.
@@ -72,6 +56,13 @@ chevahbs_configure() {
                     "-I/usr/sfw/include/openssl -L/usr/sfw/lib/64" \
                     "-R/usr/sfw/lib/64 -lssl -lcrypto" >> Modules/Setup.local
             fi
+            ;;
+        hpux*)
+            LIBS="-lpthread"
+            #BASECFLAGS="+DD64"
+            #LDFLAGS="${LDFLAGS} +DD64 -lxnet"
+            LDFLAGS="${LDFLAGS} -lxnet"
+            CONFIG_ARGS="${CONFIG_ARGS} --disable-ipv6"
             ;;
         osx*|macos*)
             CONFIG_ARGS="${CONFIG_ARGS} --without-gcc"

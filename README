@@ -21,6 +21,9 @@ Rebuild Python from your home
 If a buildbot is already active for the platform, you can use
 `paver test_remote` to rebuild Python distribution on that system,
 
+You will have to wait about 10 minutes after publishing so that the packages
+will reach the public server.
+
 Do a testing build (files go in http://binary.chevah.com/testing/python/)::
 
     paver test_remote NAME_OF_BUILDER
@@ -28,4 +31,4 @@ Do a testing build (files go in http://binary.chevah.com/testing/python/)::
 Do a production build
 (files go in http://binary.chevah.com/production/python/)::
 
-    paver test_remote NAME_OF_BUILDER --properties=force_upload_production=yes
+    paver test_remote NAME_OF_BUILDER --force-upload-production

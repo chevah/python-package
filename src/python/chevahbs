@@ -1,10 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Chevah Build Script for Python.
 #
 # Import shared code.
 . ./functions.sh
-
 
 chevahbs_configure() {
     CONFIG_ARGS="--disable-shared"
@@ -60,24 +59,37 @@ chevahbs_configure() {
             # MAXMEM option with a value greater than 8192.
             CONFIG_ARGS="${CONFIG_ARGS} --with-system-ffi"
             ;;
-        solaris*)
-            # In Solaris the default OpenSSL installation lives in /usr/sfw/.
+        solaris10)
+            # In Solaris 10, the default OpenSSL is installed in /usr/sfw/.
             # Both include options are needed to match both the native Sun
             # Studio compiler and GCC.
             if [ "${ARCH%64}" = "$ARCH" ]; then
                 echo "_ssl _ssl.c -I/usr/sfw/include" \
                     "-I/usr/sfw/include/openssl -L/usr/sfw/lib" \
-                    " -R/usr/sfw/lib -lssl -lcrypto" >> Modules/Setup.local
+                    "-R/usr/sfw/lib -lssl -lcrypto" >> Modules/Setup.local
             else
-                CONFIG_ARGS="${CONFIG_ARGS} CFLAGS=-m64 LDFLAGS=-m64"
                 echo "_ssl _ssl.c -I/usr/sfw/include" \
                     "-I/usr/sfw/include/openssl -L/usr/sfw/lib/64" \
-                    " -R/usr/sfw/lib/64 -lssl -lcrypto" >> Modules/Setup.local
+                    "-R/usr/sfw/lib/64 -lssl -lcrypto" >> Modules/Setup.local
             fi
+            ;;
+        osx*|macos*)
+            CONFIG_ARGS="${CONFIG_ARGS} --without-gcc"
             ;;
     esac
 
-    execute ./configure --prefix="" $CONFIG_ARGS
+    case $OS in
+        windows)
+            echo "Skip configure on Windows."
+            ;;
+        *)
+            execute ./configure --prefix="" $CONFIG_ARGS
+            # These files are already created in the Python distribution,
+            # but for some strange reason, make tries to recreate them.
+            # We just touch them so that make will see them up to date.
+            touch Include/Python-ast.h Python/Python-ast.c
+            ;;
+    esac
 
     case $OS in
         "hpux")
@@ -91,13 +103,62 @@ chevahbs_configure() {
 
 
 chevahbs_compile() {
-    execute $MAKE
+    case $OS in
+        windows)
+            echo "Skip make on Windows."
+            ;;
+        *)
+            echo "Patching the git rev id into Python's version string..."
+            cp Modules/getbuildinfo.c Modules/getbuildinfo.c.orig
+            sed -e \
+                s/hgid\ =\ \"default\"/hgid\ =\ \"$PYTHON_PACKAGE_VERSION\"/g \
+                Modules/getbuildinfo.c.orig > Modules/getbuildinfo.c
+            execute $MAKE
+            ;;
+    esac
 }
 
 
 chevahbs_install() {
     install_folder=$1
-    execute $MAKE install DESTDIR=$INSTALL_FOLDER
+    case $OS in
+        windows)
+            local destination=$INSTALL_FOLDER/lib
+
+            # On Windows we don't build from source but rather create the
+            # distribution from pre-compiled binaries.
+            current_win_path=`pwd -W | sed 's|\/|\\\\|g'`
+            install_win_path=`cd $INSTALL_FOLDER && pwd -W | sed 's|\/|\\\\|g'`
+
+            echo "Extracting MSI to $install_win_path"
+            execute msiexec \
+                //a $current_win_path\\python-installer.msi \
+                //qn TARGETDIR=$install_win_path\\lib
+
+            # Copy Windows redistributables
+            local redistributables=../../win-tools/redistributables/
+            echo "Copying redistributables for Windows"
+            execute cp $redistributables/$REDISTRIBUTABLE_VERSION/* $destination
+
+            wipe_manifest $destination/python.exe
+            wipe_manifest $destination/pythonw.exe
+            wipe_manifest $destination/python27.dll
+
+            # Remove Python MSI installer.
+            echo "Removing: $destination/python-installer.msi"
+            execute rm -f --verbose $destination/python-installer.msi
+
+            # add cp65001 as an utf-8 alias.
+            execute mv \
+                $destination/lib/encodings/aliases.py \
+                $destination/lib/encodings/aliases.old
+            execute \
+                sed "s|# utf_8 codec|# utf_8 codec\n    'cp65001'            : 'utf_8',|" < $destination/lib/encodings/aliases.old > $destination/lib/encodings/aliases.py
+            ;;
+        *)
+            execute $MAKE install DESTDIR=$INSTALL_FOLDER
+            ;;
+    esac
 }
 
 

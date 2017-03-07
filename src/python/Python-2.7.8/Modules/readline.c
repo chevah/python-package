@@ -28,8 +28,8 @@
 
 /* GNU readline definitions */
 #undef HAVE_CONFIG_H /* Else readline/chardefs.h includes strings.h */
-#include <readline/readline.h>
-#include <readline/history.h>
+/* Replaced in the Chevah sources with the NetBSD's Editline (libedit) */
+#include <editline/readline.h>
 
 #ifdef HAVE_RL_COMPLETION_MATCHES
 #define completion_matches(x, y) \

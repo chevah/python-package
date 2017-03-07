@@ -8,73 +8,122 @@
 # publish_staging
 #
 
-# Import shared code.
-. ./functions.sh
-
-# List of OS packages required for building Python.
-UBUNTU_PACKAGES="gcc make libssl-dev zlib1g-dev m4 texinfo"
-RHEL_PACKAGES="gcc make openssl-devel zlib-devel m4 texinfo"
-SLES_PACKAGES="gcc make libopenssl-devel zlib-devel m4 texinfo"
-# List of OS packages requested to be installed by this script.
-INSTALLED_PACKAGES=''
-# For the moment, we don't install anything on OS X, Solaris, AIX and
-# unsupported Linux distros. The build requires a C compiler, GNU make, m4,
-# makeinfo (from texinfo, optional) and the header files for OpenSSL and zlib.
-# On platforms with a choice of C compilers, you may choose among them by
-# setting/unsetting CC and CXX in paver.sh.
-
 LIBFFI_VERSION=3.2.1
 GMP_VERSION=6.0.0
-PYTHON_BUILD_VERSION=2.7.8
+LIBEDIT_VERSION=20150325-3.1
+PYTHON_BUILD_VERSION=2.7.10
 PYSQLITE_VERSION=2.6.3
 SQLITE_VERSION=3.8.1
 
+# Git revision to inject into Python's sys.version string through chevahbs.
+PYTHON_PACKAGE_VERSION=$(git rev-parse --short HEAD)
+# The ID of the redistributable version used on Windows.
+REDISTRIBUTABLE_VERSION="9.00.30729.6161"
+
+export PYTHON_BUILD_VERSION PYTHON_PACKAGE_VERSION REDISTRIBUTABLE_VERSION
+
+# pycparser needs to be explicitly installed to work around setuptools auto
+# dependencies.
+PYCPARSER_VERSION=2.14
+
+BUILD_LIBFFI="yes"
+BUILD_CFFI="yes"
 EXTRA_LIBRARIES="\
-   python-modules/pyOpenSSL-0.13 \
-   python-modules/pycrypto-2.6.1 \
-   python-modules/python-setproctitle-1.1.8.dev0 \
-   "
+    python-modules/cffi-1.5.2 \
+    python-modules/pycrypto-2.6.1 \
+    "
+# Libraries for legacy systems not built around cffi and pip.
+EXTRA_LIBRARIES_NO_CFFI="\
+    python-modules/pyOpenSSL-0.13 \
+    python-modules/pycrypto-2.6.1 \
+    python-modules/python-setproctitle-1.1.8.dev0 \
+    python-modules/python-scandir-1.5 \
+    "
+
+# List of python modules installed using pip
+PIP_LIBRARIES="\
+    setproctitle==1.1.10 \
+    cryptography==1.3.1 \
+    pyOpenSSL==16.0.0 \
+    scandir==1.5 \
+    "
+# Pre-combiled libraries distributed as wheels for Windows.
+PIP_LIBRARIES_WIN="$PIP_LIBRARIES \
+    pypiwin32==219 \
+    pycrypto==2.6.1 \
+    "
+
+# Arguments that are sent when using pip.
+PIP_ARGS="\
+    -i http://pypi.chevah.com/simple \
+    --trusted-host=pypi.chevah.com \
+    "
 
 PROG=$0
 DIST_FOLDER='dist'
 BUILD_FOLDER='build'
+
+# Import shared code.
+. ./functions.sh
 
 # Get default values from main paver script.
 ./paver.sh detect_os
 if [ "$?" -ne 0 ]; then
     exit 1
 fi
+
 PYTHON_VERSION=`cut -d' ' -f 2 DEFAULT_VALUES`
 OS=`cut -d' ' -f 3 DEFAULT_VALUES`
 ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
-TIMESTAMP=`date +'%Y%m%d'`
-rm DEFAULT_VALUES
+
+# List of OS packages required for building Python.
+COMMON_PACKAGES="gcc make m4 automake libtool texinfo"
+DEBIAN_PACKAGES="$COMMON_PACKAGES libssl-dev zlib1g-dev libncurses5-dev"
+RHEL_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel ncurses-devel"
+SLES_PACKAGES="$COMMON_PACKAGES libopenssl-devel zlib-devel ncurses-devel"
+if [ $OS = 'sles10' ]; then
+    SLES_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel ncurses-devel"
+fi
+if [ $OS = 'rhel5' ]; then
+    RHEL_PACKAGES="$RHEL_PACKAGES automake15"
+fi
+
+# List of OS packages requested to be installed by this script.
+INSTALLED_PACKAGES=''
+# For now, we don't install anything on OS X, Solaris, AIX, and
+# unsupported Linux distros. The build requires a C compiler, GNU make, m4,
+# the header files for OpenSSL and zlib, and (optionally) texinfo.
+# To build libedit for the readline module, we need the headers of
+# a curses library, automake and libtool.
+# On platforms with a choice of C compilers, you may choose among the
+# available compilers by setting CC and CXX further in this script.
 
 # In Solaris and AIX we use $ARCH to choose if we build a 32bit or 64bit
 # package. This way we are able to force a 32bit build on a 64bit machine,
 # for example by exporting ARCH in paver.sh as "x86" instead of "x64" or
 # "ppc" instead of "ppc64".
-# We also use $ARCH when building the statically compiled libs: libffi and GMP.
+# We also use $ARCH when building the statically compiled libffi and GMP.
+# and $OS when building for ArchLinux
 export ARCH
+export OS
 # Explicitly choose the C compiler in order to make it possible to switch
 # between native compilers and GCC on platforms such as AIX and Solaris.
-# For that, paver.sh has the relevant lines to edit.
 export CC='gcc'
 # CXX is not really needed, we export it to make sure g++ won't get picked up
-# when not using gcc and thus silence the associated configure warning. However,
-# we'll need to set CPPFLAGS later for linking to statically-compiled libs.
+# when not using gcc, and thus silence the associated configure warning.
+# However, we set $CPPFLAGS later for linking to statically-compiled libs.
 export CXX='g++'
-# Use PIC (Position Independent Code) with GCC on 64-bit arches.
-if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
-    export CFLAGS="${CFLAGS} -fPIC"
-fi
 
 LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
+LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/bin/python
 INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST
 PYTHON_BIN=$INSTALL_FOLDER/bin/python
 PYTHON_BUILD_FOLDER="$PYTHON_VERSION-$OS-$ARCH"
 
 export MAKE=make
+
+# Used when building cffi.
+export CHEVAH_BUILD_PATH=$INSTALL_FOLDER
 
 case $OS in
     aix*)
@@ -85,7 +134,7 @@ case $OS in
         export CXX="xlC_r"
         export MAKE=gmake
         export PATH=/usr/vac/bin:$PATH
-        export CFLAGS="-O2"
+        export CFLAGS="$CFLAGS -O2"
         # IBM's OpenSSL libs are mixed 32/64bit binaries in AIX, so we need to
         # be specific about what kind of build we want, because otherwise we
         # might get 64bit libraries (eg. when building GMP).
@@ -104,11 +153,27 @@ case $OS in
                 export CFLAGS="$CFLAGS -qmaxmem=-1 -q64"
             fi
         fi
-        ;;
-    hpux*)
-        export MAKE=gmake
+        # On AIX cffi based modules are not ported yet.
+        BUILD_CFFI="no"
+        PIP_LIBRARIES=""
+        EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
     solaris*)
+        # By default, we use Sun's Studio compiler. Comment these two for GCC.
+        export CC="cc"
+        export CXX="CC"
+        export MAKE="gmake"
+        # Here's where the system-included GCC is to be found.
+        if [ "${CC}" = "gcc" ]; then
+            export PATH="$PATH:/usr/sfw/bin/"
+        fi
+        # The location for GNU libs in Solaris, including OpenSSL in Solaris 10.
+        if [ "${ARCH%64}" = "$ARCH" ]; then
+            export LDFLAGS="$LDFLAGS -L/usr/sfw/lib -R/usr/sfw/lib"
+        else
+            export LDFLAGS="$LDFLAGS -m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
+            export CFLAGS="$CFLAGS -m64"
+        fi
         if [ "$OS" = "solaris10" ]; then
             # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with
             # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
@@ -119,29 +184,78 @@ case $OS in
             # We favour the BSD-flavoured "install" over the default one.
             # "ar", "nm" and "ld" are included by default in the same path.
             export PATH=/usr/ccs/bin/:$PATH
+            # sqlite3 lib location in all Solaris'es (incl. 10s10 for Sparc).
+            if [ "${ARCH%64}" = "$ARCH" ]; then
+                export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"
+            else
+                export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
+            fi
         fi
-        # By default, we use Sun's Studio compiler. Comment these two for GCC.
-        export CC="cc"
-        export CXX="CC"
-        # GCC is not in the usual PATH, we add the path to it if we want it.
-        if [ "${CC}" = "gcc" ]; then
-            export PATH="$PATH:/usr/sfw/bin/"
-        fi
-        # And this is where the GNU libs are in Solaris 10, including OpenSSL.
-        if [ "${ARCH%64}" = "$ARCH" ]; then
-            export LDFLAGS="-L/usr/sfw/lib -R/usr/sfw/lib"
-        else
-            export LDFLAGS="-m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
-            export CFLAGS="-m64"
-        fi
-    ;;
+        # cffi modules are not ready yet on Solaris.
+        BUILD_CFFI="no"
+        PIP_LIBRARIES=""
+        EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
+        ;;
     hpux*)
         # For HP-UX we haven't managed yet to compile libffi and GMP with the
         # HP compiler, so we are NOT exporting custom values for CC and CXX.
         export MAKE=gmake
-    ;;
+        ;;
+    osx*)
+        # The extra params needed to fix the minimum target version to 10.8
+        # have the important benefit of getting rid of the libgcc dependency.
+        export CC="clang"
+        export CXX="clang++"
+        export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
+        export MACOSX_DEPLOYMENT_TARGET=10.8
+        ;;
+    macos*)
+        # On macOS 10.12 or newer we need the Homebrew version of OpenSSL,
+        # as Apple only provides an old OpenSSL version: 0.9.8.
+        export CC="clang"
+        export CXX="clang++"
+        # The location of the Homebrew OpenSSL libs and include directories.
+        export LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"
+        export CPPFLAGS="-I/usr/local/opt/openssl/include"
+        ;;
+
+    freebsd*)
+        export CC="clang"
+        export CXX="clang++"
+        ;;
+    sles10)
+        BUILD_CFFI="no"
+        PIP_LIBRARIES=""
+        EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
+        ;;
+    windows*)
+        # On Windows, python executable is installed at a different path.
+        LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
+        PYTHON_BIN=$INSTALL_FOLDER/lib/python
+        # On windows extra libraries are installed only using PIP.
+        EXTRA_LIBRARIES=""
+        PIP_LIBRARIES=$PIP_LIBRARIES_WIN
+        # We don't build libffi, as cffi it is available as a wheel in pypi.
+        BUILD_LIBFFI="no"
+        ;;
 esac
 
+# Compiler-dependent flags. At this moment we should know what compiler is used.
+if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
+    # Use PIC (Position Independent Code) with GCC on 64-bit arches.
+    export CFLAGS="${CFLAGS} -fPIC"
+elif [ "${OS%freebsd*}" = "" ]; then
+    # Use PIC (Position Independent Code) on FreeBSD 10 and newer too.
+    export CFLAGS="${CFLAGS} -fPIC"
+elif [ "${OS%solaris*}" = "" ]; then
+    if [ ${ARCH} = "sparc64" ]; then
+        # Required for compiling GMP on Solaris for SPARC with Sun Studio.
+        export CFLAGS="$CFLAGS -xcode=abs64"
+    elif [ ${ARCH} = "x64" ]; then
+        # Required for linking to libedit, which has a simpler configure setup.
+        export CFLAGS="$CFLAGS -xcode=pic32"
+    fi
+fi
 
 #
 # Install OS package required to build Python.
@@ -153,8 +267,9 @@ install_dependencies() {
     check_command='check-command-not-defined'
 
     case $OS in
-        ubuntu*)
-            packages=$UBUNTU_PACKAGES
+        # Debian-derived distros are similar in this regard.
+        ubuntu*|raspbian*)
+            packages=$DEBIAN_PACKAGES
             install_command='sudo apt-get --assume-yes install'
             check_command='dpkg --status'
         ;;
@@ -168,7 +283,20 @@ install_dependencies() {
             install_command='sudo zypper --non-interactive install -l'
             check_command='rpm --query'
         ;;
-        linux|aix*|solaris*|osx*|hpux*)
+        macos*)
+            # On macOS we need OpenSSL installed via homebrew, but we don't
+            # do it automatically, here we only check that the expected
+            # OpenSSL version is installed, as hardcoded below.
+            homebrew_openssl_version=`brew list --versions openssl`
+            if [[ $homebrew_openssl_version != "openssl 1.0.2"* ]]; then
+                echo "Unsupported OpenSSL version: $homebrew_openssl_version"
+                exit 102
+            fi
+            packages=''
+            install_command=''
+            check_command=''
+        ;;
+        *)
             packages=''
             install_command=''
             check_command=''
@@ -199,7 +327,8 @@ install_dependencies() {
 #
 remove_dependencies() {
     local rpm_leaves
-    local zypper_options
+    local zypper_global_opts
+    local zypper_command_opts
     local libzypp_version
 
     if [ -n "$INSTALLED_PACKAGES" ]; then
@@ -209,7 +338,7 @@ remove_dependencies() {
     fi
 
     case $OS in
-        ubuntu*)
+        ubuntu*|raspbian*)
             execute sudo apt-get --assume-yes --purge remove $INSTALLED_PACKAGES
             execute sudo apt-get --assume-yes --purge autoremove
             ;;
@@ -235,15 +364,16 @@ remove_dependencies() {
             fi
             ;;
         sles*)
-            zypper_options="--non-interactive"
+            zypper_global_opts="--non-interactive"
             # zypper version 7.4 got support for automatically removing
             # unneeded packages, but only when removing installed packages.
             libzypp_version=$(rpm --query --queryformat '%{VERSION}' libzypp)
             IFS=. read -a libzypp_version_array <<< "$libzypp_version"
             if [ ${libzypp_version_array[0]} -gt 7 ]; then
-                zypper_options="$zypper_options --clean-deps"
+                zypper_command_opts="--clean-deps"
             fi
-            execute sudo zypper $zypper_options remove $INSTALLED_PACKAGES
+            execute sudo zypper $zypper_global_opts remove \
+                $zypper_command_opts $INSTALLED_PACKAGES
             ;;
     esac
 }
@@ -264,42 +394,83 @@ command_build() {
     # Clean the build dir to avoid contamination from previous builds.
     command_clean
 
-    case $OS in
-        aix*|solaris*|hpux*)
-            build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
-            ;;
-    esac
+    if [ $BUILD_LIBFFI == "yes" ]; then
+        build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
+    fi
 
     case $OS in
-        hpux*)
-            echo 'GMP not supported on HP-UX.'
+        windows*)
+            # For Windows we don't build everything from source yet.
+            echo "Skipping GMP"
             ;;
         *)
-            # Build GMP on all other platforms.
+            # Build GMP statically on all platforms, copy headers and libs in
+            # a temp location, and update $CPPFLAGS and $LDFLAGS accordingly.
+            # For any other statically-compiled lib, such as libedit,
+            # we'll need these shell vars.
             build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
     esac
 
-    build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
+    mkdir -p $INSTALL_FOLDER/{include,lib}
+    export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"
+    export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
+
+    # Statically build the BSD libedit on selected platforms to get readline
+    # support without linking to the GPL-only readline. We don't do this for
+    # generic Linux builds because the result depends on the local ncurses
+    # libs (ncurses, ncursesw, tinfo, others?), and the result is not portable.
+    # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
+    case $OS in
+        sles10)
+            # Don't build libedit on SLES 10 as this is an old platform and is
+            # ok if it runs with limited support.
+            true
+            ;;
+        ubuntu*|raspbian*|rhel*|sles*|solaris*|archlinux)
+            build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
+            cp -r $INSTALL_FOLDER/tmp/libedit/{editline/,*.h} \
+                $INSTALL_FOLDER/include/
+            cp $INSTALL_FOLDER/tmp/libedit/libedit* $INSTALL_FOLDER/lib/
+            ;;
+    esac
+
+    case $OS in
+        windows*)
+            build 'python' "Python-$PYTHON_BUILD_VERSION-windows" ${PYTHON_BUILD_FOLDER}
+            ;;
+        *)
+            build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
+            ;;
+    esac
 
     command_build_sqlite
-
     command_build_python_extra_libraries
 
-    execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
-        # Clean the build folder.
-        execute rm -rf tmp
-        execute mkdir -p lib/config
-        safe_move share lib/config
-        safe_move pysqlite2-doc lib/config
-        # Move all bin to lib/config
-        safe_move bin lib/config
-        execute mkdir bin
-        # Copy back python binary
-        execute cp lib/config/bin/$PYTHON_VERSION bin/python
-    execute popd
+    case $OS in
+        windows*)
+            echo "Skipping cleaning install folder"
+            ;;
+        *)
+            execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
+                # Clean the build folder.
+                execute rm -rf tmp
+                execute mkdir -p lib/config
+                safe_move share lib/config
+                safe_move pysqlite2-doc lib/config
+                # Move all bin to lib/config
+                safe_move bin lib/config
+                execute mkdir bin
+                # Copy back python binary
+                execute cp lib/config/bin/$PYTHON_VERSION bin/python
+            execute popd
+    esac
 
     remove_dependencies
+
+    # Output the python-package version to a dedicated file in the archive.
+    echo "${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" \
+        > ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}/lib/PYTHON_PACKAGE_VERSION
 
     make_dist 'python' ${PYTHON_BUILD_FOLDER}
 }
@@ -309,6 +480,12 @@ command_build() {
 # Build pysqlite with static linked SQLite.
 #
 command_build_sqlite() {
+
+    if [ $OS = 'windows' ]; then
+        echo "Skipping sqlite on Windows"
+        return
+    fi
+
     target_folder=${BUILD_FOLDER}/pysqlite
     amalgamation_folder=${BUILD_FOLDER}/pysqlite/amalgamation
 
@@ -331,19 +508,26 @@ command_build_sqlite() {
 # Compile and install all Python extra libraries.
 #
 command_build_python_extra_libraries() {
-    # Update Python config Makefile to use the python that we have just
-    # created.
-    makefile=$INSTALL_FOLDER/lib/$PYTHON_VERSION/config/Makefile
-    makefile_orig=$INSTALL_FOLDER/lib/$PYTHON_VERSION/config/Makefile.orig
-    execute cp $makefile $makefile_orig
-    sed "s#^prefix=.*#prefix= $INSTALL_FOLDER#" $makefile_orig > $makefile
 
-    # We need GMP or MPIR for fast math in PyCrypto. We use GMP because
-    # its devs do a better job of supporting exotic platforms such as AIX.
-    cp $INSTALL_FOLDER/tmp/gmp/gmp.h $INSTALL_FOLDER/include
-    cp $INSTALL_FOLDER/tmp/gmp/libgmp* $INSTALL_FOLDER/lib
-    export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"
-    export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
+    # Install the latest PIP and setuptools.
+    execute $PYTHON_BIN python-modules/get-pip.py $PIP_ARGS
+
+    # pycparser is installed first as setup_requires is ugly.
+    # https://pip.pypa.io/en/stable/reference/pip_install/#controlling-setup-requires
+    execute $PYTHON_BIN -m pip \
+        install $PIP_ARGS -U pycparser==$PYCPARSER_VERSION
+
+    if [ $OS = 'windows' ]; then
+        echo "Skipping makefile updating on Windows"
+    else
+        # Update Python config Makefile to use the python that we have just
+        # created.
+        makefile=$INSTALL_FOLDER/lib/$PYTHON_VERSION/config/Makefile
+        makefile_orig=$INSTALL_FOLDER/lib/$PYTHON_VERSION/config/Makefile.orig
+
+        execute cp $makefile $makefile_orig
+        sed "s#^prefix=.*#prefix= $INSTALL_FOLDER#" $makefile_orig > $makefile
+    fi
 
     for library in $EXTRA_LIBRARIES ; do
         # Library is in the form pyopenssl/PyOpenssl-2.4.5
@@ -357,7 +541,30 @@ command_build_python_extra_libraries() {
         execute popd
 
     done
-    execute mv $makefile_orig $makefile
+
+    for library in $PIP_LIBRARIES ; do
+        execute $PYTHON_BIN -m pip install $PIP_ARGS $library
+    done
+
+    if [ $OS == "windows" ]; then
+        echo "Patching pyWin32 manifests to use our redistributable version"
+        wipe_manifest $INSTALL_FOLDER/lib/Lib/site-packages/win32/pythonservice.exe
+        wipe_manifest $INSTALL_FOLDER/lib/Lib/site-packages/win32/perfmondata.dll
+        wipe_manifest $INSTALL_FOLDER/lib/Lib/site-packages/pywin32_system32/pythoncomloader27.dll
+
+        echo "Copy Python runtime to pyWin32 package"
+        execute cp $INSTALL_FOLDER/lib/*CRT.manifest \
+            $INSTALL_FOLDER/lib/Lib/site-packages/win32/
+        execute cp $INSTALL_FOLDER/lib/python27.dll.manifest \
+            $INSTALL_FOLDER/lib/Lib/site-packages/win32/
+        execute cp $INSTALL_FOLDER/lib/python27.dll \
+            $INSTALL_FOLDER/lib/Lib/site-packages/win32/
+        execute cp $INSTALL_FOLDER/lib/msvc?90.dll \
+            $INSTALL_FOLDER/lib/Lib/site-packages/win32/
+        execute cp $INSTALL_FOLDER/lib/Lib/site-packages/pywin32_system32/*.dll \
+            $INSTALL_FOLDER/lib/Lib/site-packages/win32/
+    fi
+
 }
 
 
@@ -366,14 +573,21 @@ command_build_python_extra_libraries() {
 #
 initialize_python_module(){
     source_folder=$1
-    larget_folder=$1
+    target_folder=$2
 
     execute rm -rf $target_folder
     execute cp -r $source_folder $target_folder
     execute pushd $target_folder
         if [ -f setup.cfg ] ; then
+            echo "[build_ext]" >> setup.cfg
             echo "include_dirs=$INSTALL_FOLDER/include" >> setup.cfg
             echo "library_dirs=$INSTALL_FOLDER/lib" >> setup.cfg
+
+            # We want to download dependencies from our PyPI and block
+            # the official.
+            echo "[easy_install]" >> setup.cfg
+            echo "find_links=http://pypi.chevah.com/" >> setup.cfg
+            echo "allow_hosts=*pypi.chevah.com*" >> setup.cfg
         fi
 
         case $OS in
@@ -381,20 +595,25 @@ initialize_python_module(){
                 # Copy special link steps in local folder.
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
-            ;;
+                ;;
             solaris*)
                 # Copy special link steps in local folder.
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
-                # This is needed for pyOpenSSL.
-                if [ "${ARCH%64}" = "$ARCH" ]; then
-                    execute $PYTHON_BIN setup.py build_ext -I/usr/sfw/include \
-                        -L/usr/sfw/lib
-                else
-                    execute $PYTHON_BIN setup.py build_ext -I/usr/sfw/include \
-                        -L/usr/sfw/lib/64
+                extra_args=""
+                if [ "$OS" = "solaris10" ]; then
+                    extra_args="$extra_args -I/usr/sfw/include"
+                    # Needed to build pyOpenSSL and pysqlite in Solaris 10.
+                    # Make sure the headers for OpenSSL and sqlite3 are present
+                    # in /usr/sfw/include (only one location allowed, it seems).
+                    if [ "${ARCH%64}" = "$ARCH" ]; then
+                        extra_args="$extra_args -L/usr/sfw/lib -L/usr/lib/mps"
+                    else
+                        extra_args="$extra_args -L/usr/sfw/lib/64 -L/usr/lib/mps/64"
+                    fi
                 fi
-            ;;
+                execute $PYTHON_BIN setup.py build_ext $extra_args
+                ;;
         esac
     execute popd
 }
@@ -406,12 +625,37 @@ initialize_python_module(){
 help_text_test=\
 "Run a quick test for the Python from build."
 command_test() {
+    export BUILD_CFFI
     test_file='test_python_binary_dist.py'
     execute mkdir -p build/
     execute cp python-modules/chevah-python-test/${test_file} build/
     execute cp python-modules/chevah-python-test/get_binaries_deps.sh build/
     execute pushd build
-    execute ./$LOCAL_PYTHON_BINARY_DIST/bin/python ${test_file}
+    echo '##### Executing Chevah tests... #####'
+    execute $LOCAL_PYTHON_BINARY ${test_file}
+    echo '##### Executing tests for included Python modules... #####'
+    echo 'Testing scandir...'
+    # There are a series of issues with the scandir tests in Linux/Unix.
+    # Reported upstream at https://github.com/benhoyt/scandir/issues/78.
+    case $OS in
+        osx*|macos*|windows*)
+            execute $LOCAL_PYTHON_BINARY \
+                ../python-modules/python-scandir-1.5/test/run_tests.py
+            ;;
+        aix*|solaris10|linux*|openbsd*)
+            # In OpenBSD there are even more issues actually.
+            # Details at https://github.com/benhoyt/scandir/issues/79.
+            (>&2 echo -e "\tSkipping because of upstream issues.")
+            ;;
+        *)
+            # Remaining build slaves have the required UTF-8 locale settings
+            # available, but they need to be requested for the tests to pass.
+            export LC_ALL=en_US.UTF-8
+            execute $LOCAL_PYTHON_BINARY \
+                ../python-modules/python-scandir-1.5/test/run_tests.py
+            export LC_ALL=C
+            ;;
+    esac
     execute popd
 }
 

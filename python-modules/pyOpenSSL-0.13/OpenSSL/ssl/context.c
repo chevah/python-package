@@ -562,7 +562,7 @@ ssl_Context_use_certificate(ssl_ContextObj *self, PyObject *args)
     if (cert == NULL) {
         return NULL;
     }
-    
+
     if (!SSL_CTX_use_certificate(self->ctx, cert->x509))
     {
         exception_from_error_queue(ssl_Error);
@@ -1201,7 +1201,7 @@ ssl_Context_init(ssl_ContextObj *self, int i_method) {
 #ifdef OPENSSL_NO_SSL2
             PyErr_SetString(PyExc_ValueError, "SSLv2_METHOD not supported by this version of OpenSSL");
             return NULL;
-#else      
+#else
             method = SSLv2_method();
 #endif
             break;

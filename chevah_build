@@ -399,9 +399,10 @@ command_build() {
     fi
 
     case $OS in
-        windows*)
+        windows*|hpux*)
             # For Windows we don't build everything from source yet.
-            echo "Skipping GMP"
+            # On HP-UX 11.31 some tests fail after compiling with GCC.
+            (>&2 echo "Skipping building GMP on ${OS}!")
             ;;
         *)
             # Build GMP statically on all platforms, copy headers and libs in

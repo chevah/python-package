@@ -37,7 +37,7 @@ chevahbs_install() {
             ;;
         solaris*|hpux*)
             # For some reason the actual install breaks the build on some OS'es.
-            (>&2 echo -e "\tSkipping installation of libffi on ${OS}...")
+            (>&2 echo "Skipping installation of libffi on ${OS}!")
             ;;
         *)
             execute $MAKE install DESTDIR=$INSTALL_FOLDER

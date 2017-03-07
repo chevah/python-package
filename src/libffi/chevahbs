@@ -35,7 +35,7 @@ chevahbs_install() {
             execute cp powerpc-ibm-aix*/.libs/* $temp_folder
             execute cp powerpc-ibm-aix*/include/*.h $temp_folder
             ;;
-        solaris*)
+        solaris*|hpux*)
             # For some reason the actual install breaks the build on some OS'es.
             (>&2 echo -e "\tSkipping installation of libffi on ${OS}...")
             ;;

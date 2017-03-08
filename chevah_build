@@ -197,9 +197,13 @@ case $OS in
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
     hpux*)
-        # For HP-UX we haven't managed yet to compile libffi and GMP with the
-        # HP compiler, so we are NOT exporting custom values for CC and CXX.
-        export MAKE=gmake
+        export CC="/opt/ansic/bin/cc"
+        export CXX="/opt/ansic/bin/aCC"
+        export MAKE="/usr/local/bin/gmake"
+        export NM="/usr/bin/nm"
+        export AR="/usr/bin/ar"
+        export RANLIB="/bin/true"
+        export CFLAGS="$CFLAGS +O2 +DD64"
         ;;
     osx*)
         # The extra params needed to fix the minimum target version to 10.8
@@ -395,7 +399,21 @@ command_build() {
     command_clean
 
     if [ $BUILD_LIBFFI == "yes" ]; then
+        if [ "${OS%hpux*}" = "" ]; then
+            # libffi only compiles with GCC on HP-UX (see upstream for changes).
+            CC_ORIG="$CC"
+            CFLAGS_ORIG="$CFLAGS"
+            LDFLAGS_ORIG="$LDFLAGS"
+            export CC="gcc"
+            export CFLAGS="-O -fPIC "
+            export LDFLAGS="-fPIC"
+        fi
         build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
+        if [ "${OS%hpux*}" = "" ]; then
+            export CC="$CC_ORIG"
+            export CFLAGS="$CFLAGS_ORIG"
+            export LDFLAGS="$LDFLAGS_ORIG"
+        fi
     fi
 
     case $OS in

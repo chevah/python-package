@@ -17,6 +17,7 @@ def get_allowed_deps():
     """
     Return a hardcoded list of allowed deps for the current OS.
     """
+    global test_for_readline
     allowed_deps = []
     if platform_system == 'linux':
         # The minimal list of deps for Linux: glibc, openssl and zlib.
@@ -500,7 +501,10 @@ def main():
             sys.stderr.write('"spwd" missing.\n')
             exit_code = 11
 
+    exit_code = test_dependencies() | exit_code
+
     # We compile the readline module using libedit only on selected platforms.
+    # This requires test_dependencies() above to set test_for_readline.
     if test_for_readline:
         try:
             import readline
@@ -508,8 +512,6 @@ def main():
         except:
             sys.stderr.write('"readline" missing.\n')
             exit_code = 12
-
-    exit_code = test_dependencies() | exit_code
 
     sys.exit(exit_code)
 

@@ -204,6 +204,18 @@ def get_allowed_deps():
             '/lib/libz.so.6',
             '/usr/lib/libssl.so.7',
             ]
+    elif platform_system == 'freebsd':
+        # This is the list of specific deps for FreeBSD 10.x, with paths.
+        allowed_deps = [
+            '/lib/libc.so.7',
+            '/lib/libcrypt.so.5',
+            '/lib/libcrypto.so.7',
+            '/lib/libm.so.5',
+            '/lib/libthr.so.3',
+            '/lib/libutil.so.9',
+            '/lib/libz.so.6',
+            '/usr/lib/libssl.so.7',
+            ]
     elif platform_system == 'openbsd':
         # This is the list of deps for OpenBSD 5.8 or newer, sans versions.
         allowed_deps = [

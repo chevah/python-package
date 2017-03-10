@@ -11,7 +11,7 @@
 LIBFFI_VERSION=3.2.1
 GMP_VERSION=6.0.0
 LIBEDIT_VERSION=20150325-3.1
-PYTHON_BUILD_VERSION=2.7.10
+PYTHON_BUILD_VERSION=2.7.13
 PYSQLITE_VERSION=2.6.3
 SQLITE_VERSION=3.8.1
 
@@ -229,6 +229,7 @@ case $OS in
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
     windows*)
+        PYTHON_BUILD_VERSION=2.7.10
         # On Windows, python executable is installed at a different path.
         LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
         PYTHON_BIN=$INSTALL_FOLDER/lib/python

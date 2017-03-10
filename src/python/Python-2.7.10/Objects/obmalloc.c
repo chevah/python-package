@@ -581,7 +581,12 @@ new_arena(void)
             return NULL;                /* overflow */
 #endif
         nbytes = numarenas * sizeof(*arenas);
+
+#ifdef WITH_DLMALLOC
+        arenaobj = (struct arena_object *)dlrealloc(arenas, nbytes);
+#else
         arenaobj = (struct arena_object *)realloc(arenas, nbytes);
+#endif
         if (arenaobj == NULL)
             return NULL;
         arenas = arenaobj;
@@ -617,9 +622,14 @@ new_arena(void)
                    MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
     err = (address == MAP_FAILED);
 #else
+#ifdef WITH_DLMALLOC
+    address = dlmalloc(ARENA_SIZE);
+    err = (address == 0);
+#else
     address = malloc(ARENA_SIZE);
     err = (address == 0);
-#endif    
+#endif /* WITH_DLMALLOC */
+#endif / *ARENAS_USE_MMAP */
     if (err) {
         /* The allocation failed: return NULL after putting the
          * arenaobj back.
@@ -983,7 +993,11 @@ redirect:
      */
     if (nbytes == 0)
         nbytes = 1;
+#ifdef WITH_DLMALLOC
+    return (void *)dlmalloc(nbytes);
+#else
     return (void *)malloc(nbytes);
+#endif
 }
 
 /* free */
@@ -1101,8 +1115,12 @@ PyObject_Free(void *p)
 #ifdef ARENAS_USE_MMAP
                 munmap((void *)ao->address, ARENA_SIZE);
 #else
+#ifdef WITH_DLMALLOC
+                dlfree((void *)ao->address);
+#else
                 free((void *)ao->address);
-#endif
+#endif /* WITH_DLMALLOC */
+#endif /* ARENAS_USE_MMAP */
                 ao->address = 0;                        /* mark unassociated */
                 --narenas_currently_allocated;
 
@@ -1211,7 +1229,11 @@ PyObject_Free(void *p)
 redirect:
 #endif
     /* We didn't allocate this address. */
+#ifdef WITH_DLMALLOC
+    dlfree(p);
+#else
     free(p);
+#endif
 }
 
 /* realloc.  If p is NULL, this acts like malloc(nbytes).  Else if nbytes==0,
@@ -1290,14 +1312,22 @@ PyObject_Realloc(void *p, size_t nbytes)
      * at p.  Instead we punt:  let C continue to manage this block.
      */
     if (nbytes)
+#ifdef WITH_DLMALLOC
+        return dlrealloc(p, nbytes);
+#else
         return realloc(p, nbytes);
+#endif
     /* C doesn't define the result of realloc(p, 0) (it may or may not
      * return NULL then), but Python's docs promise that nbytes==0 never
      * returns NULL.  We don't pass 0 to realloc(), to avoid that endcase
      * to begin with.  Even then, we can't be sure that realloc() won't
      * return NULL.
      */
+#ifdef WITH_DLMALLOC
+    bp = dlrealloc(p, 1);
+#else
     bp = realloc(p, 1);
+#endif
     return bp ? bp : p;
 }
 

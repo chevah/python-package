@@ -628,6 +628,7 @@ ENSUREPIP
 SRCDIRS
 THREADHEADERS
 UNICODE_OBJS
+DLMALLOC_OBJS
 LIBC
 LIBM
 HAVE_GETHOSTBYNAME
@@ -804,6 +805,8 @@ enable_ipv6
 with_doc_strings
 with_tsc
 with_pymalloc
+with_pymalloc_mmap
+with_dlmalloc
 with_valgrind
 with_wctype_functions
 with_fpectl
@@ -1489,6 +1492,8 @@ Optional Packages:
   --with(out)-doc-strings disable/enable documentation strings
   --with(out)-tsc         enable/disable timestamp counter profile
   --with(out)-pymalloc    disable/enable specialized mallocs
+  --with(out)-pymalloc-map disable/enable mmap if possible in pymalloc
+  --with(out)-dlmalloc    disable/enable customized malloc
   --with-valgrind         Enable Valgrind support
   --with-wctype-functions use wctype.h functions
   --with-fpectl           enable SIGFPE catching
@@ -6685,7 +6690,7 @@ ieeefp.h io.h langinfo.h libintl.h poll.h process.h pthread.h \
 shadow.h signal.h stdint.h stropts.h termios.h thread.h \
 unistd.h utime.h \
 sys/audioio.h sys/bsdtty.h sys/epoll.h sys/event.h sys/file.h sys/loadavg.h \
-sys/lock.h sys/mkdev.h sys/modem.h \
+sys/lock.h sys/mkdev.h sys/mman.h sys/modem.h \
 sys/param.h sys/poll.h sys/select.h sys/socket.h sys/statvfs.h sys/stat.h \
 sys/termio.h sys/time.h \
 sys/times.h sys/types.h sys/un.h sys/utsname.h sys/wait.h pty.h libutil.h \
@@ -10118,6 +10123,54 @@ $as_echo "#define WITH_PYMALLOC 1" >>confdefs.h
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_pymalloc" >&5
 $as_echo "$with_pymalloc" >&6; }
+
+# Check for Python-specific malloc map support
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for --with-pymalloc-map" >&5
+$as_echo_n "checking for --with-pymalloc-map... " >&6; }
+
+# Check whether --with-pymalloc-map was given.
+if test "${with_pymalloc_mmap+set}" = set; then :
+  withval=$with_pymalloc_mmap;
+fi
+
+
+if test -z "$with_pymalloc_mmap"
+then with_pymalloc_mmap="yes"
+fi
+if test "$with_pymalloc_mmap" != "no"
+then
+
+$as_echo "#define WITH_PYMALLOC_MMAP 1" >>confdefs.h
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_pymalloc_mmap" >&5
+$as_echo "$with_pymalloc_mmap" >&6; }
+
+# Check for the custom dlmalloc support
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for --with-dlmalloc" >&5
+$as_echo_n "checking for --with-dlmalloc... " >&6; }
+
+# Check whether --with-dlmalloc was given.
+if test "${with_dlmalloc+set}" = set; then :
+  withval=$with_dlmalloc;
+fi
+
+
+if test -z "$with_dlmalloc"
+then with_dlmalloc="yes"
+fi
+if test "$with_dlmalloc" != "no"
+then
+
+$as_echo "#define WITH_DLMALLOC 1" >>confdefs.h
+
+  DLMALLOC_OBJS="Objects/malloc.o"
+else
+  DLMALLOC_OBJS=""
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_dlmalloc" >&5
+$as_echo "$with_dlmalloc" >&6; }
+
 
 # Check for Valgrind support
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for --with-valgrind" >&5

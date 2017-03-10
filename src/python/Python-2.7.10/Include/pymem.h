@@ -71,11 +71,26 @@ PyAPI_FUNC(void) PyMem_Free(void *);
    pymalloc. To solve these problems, allocate an extra byte. */
 /* Returns NULL to indicate error if a negative size or size larger than
    Py_ssize_t can represent is supplied.  Helps prevents security holes. */
+
+#ifndef WITH_DLMALLOC
+
 #define PyMem_MALLOC(n)		((size_t)(n) > (size_t)PY_SSIZE_T_MAX ? NULL \
 				: malloc((n) ? (n) : 1))
 #define PyMem_REALLOC(p, n)	((size_t)(n) > (size_t)PY_SSIZE_T_MAX  ? NULL \
 				: realloc((p), (n) ? (n) : 1))
 #define PyMem_FREE		free
+
+#else
+
+#include "dlmalloc.h"
+
+#define PyMem_MALLOC(n)        ((size_t)(n) > (size_t)PY_SSIZE_T_MAX ? NULL \
+               : dlmalloc((n) ? (n) : 1))
+#define PyMem_REALLOC(p, n)    ((size_t)(n) > (size_t)PY_SSIZE_T_MAX  ? NULL \
+               : dlrealloc((p), (n) ? (n) : 1))
+#define PyMem_FREE     dlfree
+
+#endif /* WITH_DLMALLOC */
 
 #endif	/* PYMALLOC_DEBUG */
 

@@ -1,5 +1,6 @@
---- a/setup.py
-+++ b/setup.py
+diff -ur setup.py setup.py
+--- setup.py
++++ setup.py
 @@ -33,7 +33,18 @@ host_platform = get_platform()
  COMPILED_WITH_PYDEBUG = ('--with-pydebug' in sysconfig.get_config_var("CONFIG_ARGS"))
  

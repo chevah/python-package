@@ -8,6 +8,8 @@
 chevahbs_patch() {
     echo "Applying the disabled_modules_list patch:"
     patch < disabled_modules_list.patch
+    echo "Applying the readline libedit patch:"
+    patch -p0 < readline_libedit.patch
 }
 
 

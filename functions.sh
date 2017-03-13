@@ -154,7 +154,7 @@ build() {
     echo "Copying source code ${build_folder}..."
     execute cp -r ${source_folder} ${build_folder}
     execute cp src/${project_folder}/chevahbs ${build_folder}/
-    if [ -e src/${project_folder}/*.patch ]; then
+    if [ $(ls src/${project_folder}/*.patch 2>/dev/null | wc -l) -gt 0 ]; then
         echo "The following patches are to be copied:"
         ls -1 src/${project_folder}/*.patch
         execute cp src/${project_folder}/*.patch ${build_folder}/

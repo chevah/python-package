@@ -5,6 +5,12 @@
 # Import shared code.
 . ./functions.sh
 
+chevahbs_patch() {
+    echo "Applying the disabled_modules_list patch:"
+    patch < disabled_modules_list.patch
+}
+
+
 chevahbs_configure() {
     CONFIG_ARGS="--disable-shared"
 

@@ -96,6 +96,11 @@ select_chevahbs_command() {
 # Internal function for calling build script on each source.
 #
 chevahbs_build() {
+    if [ -n "$(type -t chevahbs_patch)" ]; then
+        # Looks like the chevahbs script has patches to apply.
+        echo "Patching..."
+        chevahbs_patch $@
+    fi
     echo "Configuring..."
     chevahbs_configure $@
     echo "Compiling..."
@@ -149,6 +154,11 @@ build() {
     echo "Copying source code ${build_folder}..."
     execute cp -r ${source_folder} ${build_folder}
     execute cp src/${project_folder}/chevahbs ${build_folder}/
+    if [ -e src/${project_folder}/*.patch ]; then
+        echo "The following patches are to be copied:"
+        ls -1 src/${project_folder}/*.patch
+        execute cp src/${project_folder}/*.patch ${build_folder}/
+    fi
     execute cp 'functions.sh' ${build_folder}/
 
     execute pushd ${build_folder}

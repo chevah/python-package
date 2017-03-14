@@ -7,17 +7,16 @@ import subprocess
 
 script_helper = './get_binaries_deps.sh'
 platform_system = platform.system().lower()
-test_for_readline = False
 with open('../DEFAULT_VALUES') as default_values_file:
     chevah_os = default_values_file.read().split(' ')[2]
 BUILD_CFFI = os.environ.get('BUILD_CFFI', 'no').lower() == 'yes'
+BUILD_LIBEDIT = os.environ.get('BUILD_LIBEDIT', 'no').lower() == 'yes'
 
 
 def get_allowed_deps():
     """
     Return a hardcoded list of allowed deps for the current OS.
     """
-    global test_for_readline
     allowed_deps = []
     if platform_system == 'linux':
         # The minimal list of deps for Linux: glibc, openssl and zlib.
@@ -38,7 +37,6 @@ def get_allowed_deps():
             ]
         # Distro-specific deps to add. Now we may specify major versions too.
         if ('rhel' in chevah_os):
-            test_for_readline = True
             allowed_deps.extend([
                 'libcom_err.so.2',
                 'libgssapi_krb5.so.2',
@@ -66,23 +64,19 @@ def get_allowed_deps():
                     'libpcre.so.1',
                     ])
         elif ('sles' in chevah_os):
-            test_for_readline = True
             sles_version = int(chevah_os[4:])
-            if sles_version >= 11:
-                allowed_deps.extend([
-                    'libncursesw.so.5',
-                    ])
+            allowed_deps.extend([
+                'libncursesw.so.5',
+                ])
             if sles_version >= 12:
                 allowed_deps.extend([
                     'libtinfo.so.5',
                     ])
         elif ('ubuntu' in chevah_os):
-            test_for_readline = True
             allowed_deps.extend([
                 'libtinfo.so.5',
                 ])
         elif ('raspbian' in chevah_os):
-            test_for_readline = True
             allowed_deps.extend([
                 'libcofi_rpi.so',
                 'libgcc_s.so.1',
@@ -118,7 +112,6 @@ def get_allowed_deps():
                 'libthread.a',
                 ])
     elif platform_system == 'sunos':
-        test_for_readline = True
         # This is the common list of deps for Solaris 10 & 11 builds.
         allowed_deps = [
             'libc.so.1',
@@ -185,6 +178,7 @@ def get_allowed_deps():
             allowed_deps.extend([
                 '/usr/lib/libcrypto.0.9.8.dylib',
                 '/usr/lib/libssl.0.9.8.dylib',
+                '/usr/lib/libncurses.5.4.dylib',
                 ])
         elif ('macos' in chevah_os):
             # Additional deps when using Homebrew's OpenSSL.
@@ -505,13 +499,15 @@ def main():
 
     # We compile the readline module using libedit only on selected platforms.
     # This requires test_dependencies() above to set test_for_readline.
-    if test_for_readline:
+    if BUILD_LIBEDIT:
         try:
             import readline
             readline.get_history_length()
         except:
             sys.stderr.write('"readline" missing.\n')
             exit_code = 12
+        else:
+            print '"readline" module is present.'
 
     sys.exit(exit_code)
 

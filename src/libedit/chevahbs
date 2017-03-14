@@ -8,18 +8,8 @@
 
 chevahbs_configure() {
     # We want static builds only, so that we don't have to mess with LIBPATH.
-    # Support for Unicode (wide-char/UTF-8) is added with "--enable-widec".
-    CONF_OPTS="--disable-shared --enable-static --enable-widec"
-    execute mkdir m4
-    # On some OS'es we can't/shouldn't auto-reconfigure.
-    case $OS in
-        rhel4|rhel5|sles10|osx*)
-            (>&2 echo "Skipping autoreconf, as it's problematic in ${OS}!")
-            ;;
-        *)
-            execute autoreconf --install --force
-            ;;
-    esac
+    CONF_OPTS="--disable-shared --enable-static"
+    touch *
     execute ./configure --prefix="" $CONF_OPTS
 }
 

@@ -245,7 +245,6 @@ case $OS in
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
     windows*)
-        PYTHON_BUILD_VERSION=2.7.13
         # On Windows, python executable is installed at a different path.
         LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
         PYTHON_BIN=$INSTALL_FOLDER/lib/python
@@ -257,8 +256,8 @@ case $OS in
         BUILD_LIBFFI="no"
         ;;
 esac
-# Export the updated var to python's chevahbs and the test phase.
-export BUILD_LIBEDIT
+# Export the updated vars needed by python's chevahbs and the test phase.
+export BUILD_LIBEDIT BUILD_CFFI
 
 # Compiler-dependent flags. At this moment we should know what compiler is used.
 if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
@@ -636,7 +635,6 @@ initialize_python_module(){
 help_text_test=\
 "Run a quick test for the Python from build."
 command_test() {
-    export BUILD_CFFI
     test_file='test_python_binary_dist.py'
     execute mkdir -p build/
     execute cp python-modules/chevah-python-test/${test_file} build/

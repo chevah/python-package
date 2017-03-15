@@ -205,7 +205,6 @@ def get_allowed_deps():
             '/usr/lib/libc.so',
             '/usr/lib/libcrypto.so',
             '/usr/lib/libm.so',
-            '/usr/lib/libncursesw.so',
             '/usr/lib/libpthread.so',
             '/usr/lib/libssl.so',
             '/usr/lib/libutil.so',

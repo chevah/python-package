@@ -12,6 +12,12 @@ chevahbs_patch() {
         echo "Applying readline_libedit.patch:"
         patch -p0 < readline_libedit.patch
     fi
+    case $OS in
+        solaris10)
+            echo "Applying solaris10_paths.patch:"
+            patch < solaris10_paths.patch
+            ;;
+    esac
 }
 
 

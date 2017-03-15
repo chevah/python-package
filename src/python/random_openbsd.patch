@@ -1,0 +1,12 @@
+diff -ru Python/random.c Python/random.c
+--- Python/random.c
++++ Python/random.c
+@@ -3,7 +3,7 @@
+ #include <windows.h>
+ #else
+ #include <fcntl.h>
+-#if defined(HAVE_GETRANDOM) || defined(HAVE_GETENTROPY)
++#if defined(HAVE_GETRANDOM) || defined(HAVE_GETENTROPY) && !defined(__OpenBSD__)
+ #include <sys/random.h>
+ #endif
+ #endif

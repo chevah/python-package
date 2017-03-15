@@ -12,8 +12,8 @@ LIBFFI_VERSION=3.2.1
 GMP_VERSION=6.1.2
 LIBEDIT_VERSION=20160903-3.1
 PYTHON_BUILD_VERSION=2.7.13
-PYSQLITE_VERSION=2.6.3
 SQLITE_VERSION=3.17.0
+PYSQLITE_VERSION=2.6.3
 
 # Git revision to inject into Python's sys.version string through chevahbs.
 PYTHON_PACKAGE_VERSION=$(git rev-parse --short HEAD)
@@ -193,6 +193,7 @@ case $OS in
                 export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
             fi
         fi
+        # readline with libedit is doable in Solaris, but the result is buggy.
         BUILD_LIBEDIT="no"
         # cffi modules are not ready yet on Solaris.
         BUILD_CFFI="no"

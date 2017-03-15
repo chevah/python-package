@@ -495,10 +495,8 @@ def main():
             sys.stderr.write('"spwd" missing.\n')
             exit_code = 11
 
-    exit_code = test_dependencies() | exit_code
 
     # We compile the readline module using libedit only on selected platforms.
-    # This requires test_dependencies() above to set test_for_readline.
     if BUILD_LIBEDIT:
         try:
             import readline
@@ -508,6 +506,10 @@ def main():
             exit_code = 12
         else:
             print '"readline" module is present.'
+
+
+    exit_code = test_dependencies() | exit_code
+
 
     sys.exit(exit_code)
 

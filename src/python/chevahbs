@@ -81,6 +81,11 @@ chevahbs_configure() {
             ;;
     esac
 
+    # This requires the v4 patch from https://bugs.python.org/issue13501.
+    if [ "$BUILD_LIBEDIT" = "yes" ]; then
+        CONFIG_ARGS="${CONFIG_ARGS} --with-readline=editline"
+    fi
+
     case $OS in
         windows)
             echo "Skip configure on Windows."

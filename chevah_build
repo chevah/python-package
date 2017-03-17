@@ -8,26 +8,32 @@
 # publish_staging
 #
 
-LIBFFI_VERSION=3.2.1
-GMP_VERSION=6.0.0
-LIBEDIT_VERSION=20150325-3.1
-PYTHON_BUILD_VERSION=2.7.10
-PYSQLITE_VERSION=2.6.3
-SQLITE_VERSION=3.8.1
+# Beware that older versions might be used for selected platforms below.
+PYTHON_BUILD_VERSION="2.7.13"
+LIBFFI_VERSION="3.2.1"
+# We statically build the BSD libedit on selected platforms to get the
+# readline module available without linking to the GPL-only readline libs.
+LIBEDIT_VERSION="20160903-3.1"
+# PyCrypto needs GMP or MPIR for fast math. GMP has support for AIX/HP-UX/etc.
+GMP_VERSION="6.1.2"
+SQLITE_VERSION="3.17.0"
+PYSQLITE_VERSION="2.6.3"
 
 # Git revision to inject into Python's sys.version string through chevahbs.
 PYTHON_PACKAGE_VERSION=$(git rev-parse --short HEAD)
 # The ID of the redistributable version used on Windows.
 REDISTRIBUTABLE_VERSION="9.00.30729.6161"
 
-export PYTHON_BUILD_VERSION PYTHON_PACKAGE_VERSION REDISTRIBUTABLE_VERSION
-
 # pycparser needs to be explicitly installed to work around setuptools auto
 # dependencies.
-PYCPARSER_VERSION=2.14
+PYCPARSER_VERSION="2.14"
 
-BUILD_LIBFFI="yes"
-BUILD_CFFI="yes"
+# Export the variables needed by the chevahbs scripts and the test phase.
+export PYTHON_BUILD_VERSION PYTHON_PACKAGE_VERSION REDISTRIBUTABLE_VERSION
+export BUILD_LIBEDIT="yes"
+export BUILD_GMP="yes"
+export BUILD_LIBFFI="yes"
+export BUILD_CFFI="yes"
 EXTRA_LIBRARIES="\
     python-modules/cffi-1.5.2 \
     python-modules/pycrypto-2.6.1 \
@@ -103,7 +109,7 @@ INSTALLED_PACKAGES=''
 # for example by exporting ARCH in paver.sh as "x86" instead of "x64" or
 # "ppc" instead of "ppc64".
 # We also use $ARCH when building the statically compiled libffi and GMP.
-# and $OS when building for ArchLinux
+# $OS is used when patching/configuring/building/testing.
 export ARCH
 export OS
 # Explicitly choose the C compiler in order to make it possible to switch
@@ -153,8 +159,10 @@ case $OS in
                 export CFLAGS="$CFLAGS -qmaxmem=-1 -q64"
             fi
         fi
+        # There are issues with compiling libedit on AIX.
+        export BUILD_LIBEDIT="no"
         # On AIX cffi based modules are not ported yet.
-        BUILD_CFFI="no"
+        export BUILD_CFFI="no"
         PIP_LIBRARIES=""
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
@@ -191,8 +199,10 @@ case $OS in
                 export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
             fi
         fi
+        # readline with libedit is doable in Solaris, but the result is buggy.
+        export BUILD_LIBEDIT="no"
         # cffi modules are not ready yet on Solaris.
-        BUILD_CFFI="no"
+        export BUILD_CFFI="no"
         PIP_LIBRARIES=""
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
@@ -202,7 +212,7 @@ case $OS in
         export MAKE=gmake
         ;;
     osx*)
-        # The extra params needed to fix the minimum target version to 10.8
+        # The extra params needed to set the minimum target version to 10.8
         # have the important benefit of getting rid of the libgcc dependency.
         export CC="clang"
         export CXX="clang++"
@@ -217,14 +227,24 @@ case $OS in
         # The location of the Homebrew OpenSSL libs and include directories.
         export LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"
         export CPPFLAGS="-I/usr/local/opt/openssl/include"
+        export BUILD_LIBEDIT="no"
         ;;
-
     freebsd*)
         export CC="clang"
         export CXX="clang++"
+        export BUILD_LIBEDIT="no"
+        ;;
+    archlinux)
+        export BUILD_LIBEDIT="no"
+        ;;
+    linux*)
+        # We don't compile libedit for generic Linux builds because it links
+        # to local ncurses libs (one of ncurses, ncursesw, tinfo, others?),
+        # and the result is not portable.
+        export BUILD_LIBEDIT="no"
         ;;
     sles10)
-        BUILD_CFFI="no"
+        export BUILD_CFFI="no"
         PIP_LIBRARIES=""
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
@@ -235,8 +255,11 @@ case $OS in
         # On windows extra libraries are installed only using PIP.
         EXTRA_LIBRARIES=""
         PIP_LIBRARIES=$PIP_LIBRARIES_WIN
+        # For Windows we don't build everything from source yet.
+        export BUILD_LIBEDIT="no"
+        export BUILD_GMP="no"
         # We don't build libffi, as cffi it is available as a wheel in pypi.
-        BUILD_LIBFFI="no"
+        export BUILD_LIBFFI="no"
         ;;
 esac
 
@@ -394,46 +417,29 @@ command_build() {
     # Clean the build dir to avoid contamination from previous builds.
     command_clean
 
-    if [ $BUILD_LIBFFI == "yes" ]; then
+    # Build stuff statically on most platforms, copy headers and libs in
+    # the following locations, added to $CPPFLAGS and $LDFLAGS accordingly.
+    mkdir -p $INSTALL_FOLDER/{include,lib}
+    export CPPFLAGS="-I${INSTALL_FOLDER}/include/ ${CPPFLAGS}"
+    export LDFLAGS="-L${INSTALL_FOLDER}/lib/ ${LDFLAGS}"
+
+    if [ "$BUILD_LIBFFI" = "yes" ]; then
         build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
+    else
+        (>&2 echo "Skipping building LIBFFI!")
     fi
 
-    case $OS in
-        windows*)
-            # For Windows we don't build everything from source yet.
-            echo "Skipping GMP"
-            ;;
-        *)
-            # Build GMP statically on all platforms, copy headers and libs in
-            # a temp location, and update $CPPFLAGS and $LDFLAGS accordingly.
-            # For any other statically-compiled lib, such as libedit,
-            # we'll need these shell vars.
-            build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
-            ;;
-    esac
+    if [ "$BUILD_LIBEDIT" = "yes" ]; then
+        build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
+    else
+        (>&2 echo "Skipping building LIBEDIT!")
+    fi
 
-    mkdir -p $INSTALL_FOLDER/{include,lib}
-    export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"
-    export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
-
-    # Statically build the BSD libedit on selected platforms to get readline
-    # support without linking to the GPL-only readline. We don't do this for
-    # generic Linux builds because the result depends on the local ncurses
-    # libs (ncurses, ncursesw, tinfo, others?), and the result is not portable.
-    # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
-    case $OS in
-        sles10)
-            # Don't build libedit on SLES 10 as this is an old platform and is
-            # ok if it runs with limited support.
-            true
-            ;;
-        ubuntu*|raspbian*|rhel*|sles*|solaris*|archlinux)
-            build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
-            cp -r $INSTALL_FOLDER/tmp/libedit/{editline/,*.h} \
-                $INSTALL_FOLDER/include/
-            cp $INSTALL_FOLDER/tmp/libedit/libedit* $INSTALL_FOLDER/lib/
-            ;;
-    esac
+    if [ "$BUILD_GMP" = "yes" ]; then
+        build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
+    else
+        (>&2 echo "Skipping building GMP!")
+    fi
 
     case $OS in
         windows*)
@@ -625,7 +631,6 @@ initialize_python_module(){
 help_text_test=\
 "Run a quick test for the Python from build."
 command_test() {
-    export BUILD_CFFI
     test_file='test_python_binary_dist.py'
     execute mkdir -p build/
     execute cp python-modules/chevah-python-test/${test_file} build/

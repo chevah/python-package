@@ -211,6 +211,7 @@ case $OS in
         export CXX="aCC"
         export MAKE="gmake"
         export CFLAGS="$CFLAGS +O2 +DD64"
+        export BUILD_LIBEDIT="no"
         ;;
     osx*)
         # The extra params needed to set the minimum target version to 10.8

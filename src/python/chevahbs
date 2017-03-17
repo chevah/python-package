@@ -18,8 +18,8 @@ chevahbs_patch() {
             patch < solaris10_paths.patch
             ;;
         openbsd*)
-            echo "Applying random_openbsd.patch:"
-            patch < random_openbsd.patch
+            echo "Applying openbsd_random.patch:"
+            patch < openbsd_random.patch
     esac
 }
 

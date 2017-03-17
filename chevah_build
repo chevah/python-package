@@ -425,21 +425,7 @@ command_build() {
     export LDFLAGS="-L${INSTALL_FOLDER}/lib/ ${LDFLAGS}"
 
     if [ "$BUILD_LIBFFI" = "yes" ]; then
-        if [ "${OS%hpux*}" = "" ]; then
-            # libffi only compiles with GCC on HP-UX (see upstream for changes).
-            CC_ORIG="$CC"
-            CFLAGS_ORIG="$CFLAGS"
-            LDFLAGS_ORIG="$LDFLAGS"
-            export CC="gcc"
-            export CFLAGS="-O -fPIC "
-            export LDFLAGS="-fPIC"
-        fi
         build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
-        if [ "${OS%hpux*}" = "" ]; then
-            export CC="$CC_ORIG"
-            export CFLAGS="$CFLAGS_ORIG"
-            export LDFLAGS="$LDFLAGS_ORIG"
-        fi
     else
         (>&2 echo "Skipping building LIBFFI!")
     fi

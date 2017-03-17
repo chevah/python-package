@@ -210,7 +210,6 @@ case $OS in
         export CC="cc"
         export CXX="aCC"
         export MAKE="gmake"
-        export CFLAGS="$CFLAGS +O2 +DD64"
         export BUILD_LIBEDIT="no"
         ;;
     osx*)

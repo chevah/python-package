@@ -98,15 +98,6 @@ chevahbs_configure() {
             touch Include/Python-ast.h Python/Python-ast.c
             ;;
     esac
-
-    case $OS in
-        "hpux")
-            cp Makefile Makefile.orig
-            # On HPUX -DNDEBUG is causing troubles.
-            sed "s/^OPT=.*-O/OPT= -O/"  Makefile.orig > Makefile
-            ;;
-    esac
-
 }
 
 

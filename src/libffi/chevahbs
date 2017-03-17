@@ -22,38 +22,35 @@ chevahbs_compile() {
 chevahbs_install() {
     install_folder=$1
 
-    case "$OS" in
+    # Installing fails on some OS'es.
+    # Following workarounds should cover all 32/64bit cases.
+    case $OS in
         aix*)
-            # libffi puts its headers in $PREFIX/lib/libffi-$VERSION/include,
-            # instead of $PREFIX/include, so we copy them manually to a
-            # temporary location.
-            # From there we will copy them in time for building Python sources.
-            # For Python's setup.py to pick them up, we'll augment CPPFLAGS with
-            # the include's location and LDFLAGS with the location of the libs.
-            local temp_folder=$INSTALL_FOLDER/tmp/libffi
-            execute mkdir -p $temp_folder
-            execute cp powerpc-ibm-aix*/.libs/* $temp_folder
-            execute cp powerpc-ibm-aix*/include/*.h $temp_folder
+            execute ln -s ../install-sh powerpc-ibm-aix"$(oslevel)"/install-sh
             ;;
-        solaris*|hpux*)
-            # For some reason the actual install breaks the build on some OS'es.
-            (>&2 echo "Skipping installation of libffi on ${OS}!")
-            ;;
-        *)
-            execute $MAKE install DESTDIR=$INSTALL_FOLDER
-            # libffi installs its headers in $PREFIX/lib/libffi-$VERSION/include
-            # instead of $PREFIX/include, so we copy them manually to the
-            # default location.
-            execute mkdir -p $INSTALL_FOLDER/include
-            execute cp $INSTALL_FOLDER/lib/libffi-*/include/* \
-                       $INSTALL_FOLDER/include/
-            # On some systems libffi is installed in /lib64 and then cffi is
-            # searching for it in /lib.
-            # This affects RHEL, SLES and OpenBSD.
-            cp $INSTALL_FOLDER/lib64/* $INSTALL_FOLDER/lib/
-            echo 'cffi done... here to ignore a possible previous error'
+        solaris10)
+            case $ARCH in
+                sparc*)
+                    execute ln -s ../install-sh sparc-sun-solaris2.10/install-sh
+                    ;;
+                *)
+                    execute ln -s ../install-sh i386-pc-solaris2.10/install-sh
+                    ;;
+            esac
             ;;
     esac
+
+    execute $MAKE install DESTDIR=$INSTALL_FOLDER
+
+    # libffi installs its headers in $PREFIX/lib/libffi-$VERSION/include,
+    # instead of $PREFIX/include, so we copy them to the default location.
+    execute mkdir -p $INSTALL_FOLDER/include
+    execute cp $INSTALL_FOLDER/lib*/libffi-*/include/* $INSTALL_FOLDER/include/
+    # On some systems libffi is installed in lib64/ and then cffi is
+    # searching for it in lib/ (this affects RHEL 5-7 and SLES 11-12).
+    if [ -d $INSTALL_FOLDER/lib64 ]; then
+        execute cp $INSTALL_FOLDER/lib64/* $INSTALL_FOLDER/lib/
+    fi
 }
 
 

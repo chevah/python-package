@@ -6,20 +6,27 @@
 . ./functions.sh
 
 chevahbs_patch() {
-    echo "Applying disabled_modules.patch:"
-    patch < disabled_modules.patch
+    # First we apply the generic patches.
+    if [ "$OS" = "windows"  ]; then
+        echo "No sources to patch in Windows."
+    else
+        echo "Applying disabled_modules.patch:"
+        execute patch < disabled_modules.patch
+    fi
+    # Then we apply features-specific patches.
     if [ "$BUILD_LIBEDIT" = "yes" ]; then
         echo "Applying readline_libedit.patch:"
-        patch -p0 < readline_libedit.patch
+        execute patch -p0 < readline_libedit.patch
     fi
+    # And finally we apply the OS-specific patches.
     case $OS in
         solaris10)
             echo "Applying solaris10_paths.patch:"
-            patch < solaris10_paths.patch
+            execute patch < solaris10_paths.patch
             ;;
         openbsd*)
             echo "Applying openbsd_random.patch:"
-            patch < openbsd_random.patch
+            execute patch < openbsd_random.patch
     esac
 }
 

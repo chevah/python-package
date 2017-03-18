@@ -10,25 +10,29 @@ chevahbs_patch() {
     if [ "$OS" = "windows"  ]; then
         echo "No sources to patch in Windows."
     else
+        # Our own patch to avoid compiling certain modules.
         echo "Applying disabled_modules.patch:"
         execute patch < disabled_modules.patch
     fi
     # Then we apply features-specific patches.
     if [ "$BUILD_LIBEDIT" = "yes" ]; then
+        # Adapted from the v4 patch at https://bugs.python.org/issue13501.
         echo "Applying readline_libedit.patch:"
         execute patch -p0 < readline_libedit.patch
     fi
     # And finally we apply the OS-specific patches.
     case $OS in
+        # Adds custom paths and a fix from http://bugs.python.org/issue1471934.
         solaris10)
             echo "Applying solaris10_paths.patch:"
             execute patch < solaris10_paths.patch
             ;;
         hpux*)
-            # From https://bugs.python.org/issue18777
+            # The second patch from https://bugs.python.org/issue18777.
             echo "Applying crypto_threadid.patch:"
             execute patch -p0 < crypto_threadid.patch
             ;;
+            # Minor patch from OpenBSD's CVS repo.
         openbsd*)
             echo "Applying openbsd_random.patch:"
             execute patch < openbsd_random.patch

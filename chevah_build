@@ -117,7 +117,6 @@ export OS
 export CC='gcc'
 # CXX is not really needed, we export it to make sure g++ won't get picked up
 # when not using gcc, and thus silence the associated configure warning.
-# However, we set $CPPFLAGS later for linking to statically-compiled libs.
 export CXX='g++'
 
 LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
@@ -227,7 +226,7 @@ case $OS in
         export CXX="clang++"
         # The location of the Homebrew OpenSSL libs and include directories.
         export LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"
-        export CPPFLAGS="-I/usr/local/opt/openssl/include"
+        export CFLAGS="$CFLAGS -I/usr/local/opt/openssl/include"
         export BUILD_LIBEDIT="no"
         ;;
     freebsd*)
@@ -418,10 +417,9 @@ command_build() {
     # Clean the build dir to avoid contamination from previous builds.
     command_clean
 
-    # Build stuff statically on most platforms, copy headers and libs in
-    # the following locations, added to $CPPFLAGS and $LDFLAGS accordingly.
+    # Build stuff statically on most platforms, install headers and libs in the
+    # following locations and make sure they are picked up when building Python.
     mkdir -p $INSTALL_FOLDER/{include,lib}
-    export CPPFLAGS="-I${INSTALL_FOLDER}/include/ ${CPPFLAGS}"
     export LDFLAGS="-L${INSTALL_FOLDER}/lib/ ${LDFLAGS}"
 
     if [ "$BUILD_LIBFFI" = "yes" ]; then

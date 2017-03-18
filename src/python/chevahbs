@@ -24,6 +24,11 @@ chevahbs_patch() {
             echo "Applying solaris10_paths.patch:"
             execute patch < solaris10_paths.patch
             ;;
+        hpux*)
+            # From https://bugs.python.org/issue18777
+            echo "Applying crypto_threadid.patch:"
+            execute patch -p0 < crypto_threadid.patch
+            ;;
         openbsd*)
             echo "Applying openbsd_random.patch:"
             execute patch < openbsd_random.patch

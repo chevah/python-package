@@ -1,0 +1,53 @@
+diff --git Misc/NEWS Misc/NEWS
+index b779e822..bdd422b4 100644
+--- Misc/NEWS
++++ Misc/NEWS
+@@ -2701,6 +2701,9 @@ Library
+ - Issue #18777: The ssl module now uses the new CRYPTO_THREADID API of
+   OpenSSL 1.0.0+ instead of the deprecated CRYPTO id callback function.
+ 
++- Issue #18777: The ssl module now uses the new CRYPTO_THREADID API of
++  OpenSSL 1.0+ in favor of the deprecated CRYPTO id callback.
++
+ - Issue #18768: Correct doc string of RAND_edg(). Patch by Vajrasky Kok.
+ 
+ - Issue #18178: Fix ctypes on BSD. dlmalloc.c was compiled twice which broke
+diff --git Modules/_ssl.c Modules/_ssl.c
+index a9271007..a324e075 100644
+--- Modules/_ssl.c
++++ Modules/_ssl.c
+@@ -3960,21 +3960,9 @@ static PyMethodDef PySSL_methods[] = {
+ 
+ static PyThread_type_lock *_ssl_locks = NULL;
+ 
+-#if OPENSSL_VERSION_NUMBER >= 0x10000000
+-/* use new CRYPTO_THREADID API. */
+-static void
+-_ssl_threadid_callback(CRYPTO_THREADID *id)
+-{
+-    CRYPTO_THREADID_set_numeric(id,
+-                                (unsigned long)PyThread_get_thread_ident());
+-}
+-#else
+-/* deprecated CRYPTO_set_id_callback() API. */
+-static unsigned long
+-_ssl_thread_id_function (void) {
++static unsigned long _ssl_thread_id_function (void) {
+     return PyThread_get_thread_ident();
+ }
+-#endif
+ 
+ static void _ssl_thread_locking_function
+     (int mode, int n, const char *file, int line) {
+@@ -4028,11 +4016,7 @@ static int _setup_ssl_threads(void) {
+             }
+         }
+         CRYPTO_set_locking_callback(_ssl_thread_locking_function);
+-#if OPENSSL_VERSION_NUMBER >= 0x10000000
+-        CRYPTO_THREADID_set_callback(_ssl_threadid_callback);
+-#else
+         CRYPTO_set_id_callback(_ssl_thread_id_function);
+-#endif
+     }
+     return 1;
+ }

@@ -161,6 +161,22 @@ def get_allowed_deps():
                 'libsqlite3.so.0',
                 'libssl.so.1.0.0',
                 ])
+    elif platform_system == 'hp-ux':
+        # Specific deps for HP-UX 11.31, with full path.
+        allowed_deps = [
+            '/usr/lib/hpux32/libc.so.1',
+            '/usr/lib/hpux32/libcrypto.so',
+            '/usr/lib/hpux32/libcrypto.so.1',
+            '/usr/lib/hpux32/libdl.so.1',
+            '/usr/lib/hpux32/libm.so.1',
+            '/usr/lib/hpux32/libnsl.so.1',
+            '/usr/lib/hpux32/libpthread.so.1',
+            '/usr/lib/hpux32/librt.so.1',
+            '/usr/lib/hpux32/libssl.so',
+            '/usr/lib/hpux32/libssl.so.1',
+            '/usr/lib/hpux32/libxnet.so.1',
+            '/usr/lib/hpux32/libxti.so.1',
+            ]
     elif platform_system == 'darwin':
         # Common deps for OS X 10.8 and macOS 10.12, with full path.
         allowed_deps = [
@@ -228,13 +244,18 @@ def get_actual_deps(script_helper):
     else:
         libs_deps = []
         for line in raw_deps:
-            if line.startswith('./'):
-                # In some OS'es (AIX, OS X, the BSDs), the output includes
+            if line.startswith('./') or not line:
+                # In some OS'es (AIX, HP-UX, OS X, BSDs), the output includes
                 # the examined binaries, and those lines start with "./".
                 # It's safe to ignore them because they point to paths in
                 # the current hierarchy of directories.
+                # In HP-UX, ldd also outputs an empty first line.
                 continue
-            if platform_system == 'freebsd':
+            if platform_system == 'hp-ux':
+                # If we ignore lines that start with ./ and empty lines, HP-UX's
+                # ldd output lists the libs with full path in the 3th colon.
+                dep = line.split()[2]
+            elif platform_system == 'freebsd':
                 # If we ignore lines that start with ./, FreeBSD's ldd output
                 # consistently lists the libs with full path in the 3th colon.
                 dep = line.split()[2]

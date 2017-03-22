@@ -28,6 +28,9 @@ chevahbs_patch() {
             execute patch < solaris10_paths.patch
             ;;
         hpux*)
+            # Our patch to use -fPIC extra argument for linking only with GCC.
+            echo "Applying hpux_fpic.patch:"
+            execute patch < hpux_fpic.patch
             # The second patch from https://bugs.python.org/issue18777.
             echo "Applying crypto_threadid.patch:"
             execute patch -p0 < crypto_threadid.patch
@@ -96,9 +99,11 @@ chevahbs_configure() {
             fi
             ;;
         hpux*)
-            LIBS="-lpthread"
             LDFLAGS="${LDFLAGS} -lxnet"
-            CONFIG_ARGS="${CONFIG_ARGS} --without-gcc --disable-ipv6"
+            CONFIG_ARGS="${CONFIG_ARGS} \
+                --with-system-ffi \
+                --disable-ipv6 \
+                "
             ;;
         osx*|macos*)
             CONFIG_ARGS="${CONFIG_ARGS} --without-gcc"

@@ -9,12 +9,10 @@
 
 
 chevahbs_configure() {
-    if [ "$OS" = "hpux1131" ]; then
-		# Use GCC for libffi. CXX is to avoid picking up on aCC from configure.
-		CC="gcc"
-		CXX="g++"
-		CFLAGS="-O -fPIC"
-		LDFLAGS="-fPIC"
+    if [ "${OS%hpux*}" = "" ]; then
+        # On HP-UX libffi only compiles with GCC.
+        CC="gcc"
+        CXX="g++"
     fi
     # We want only static build so that we don't have to mess with LIBPATH.
     execute ./configure --prefix="" --disable-shared --enable-static

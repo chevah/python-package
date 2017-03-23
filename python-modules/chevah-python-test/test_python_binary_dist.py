@@ -165,14 +165,12 @@ def get_allowed_deps():
         # Specific deps for HP-UX 11.31, with full path.
         allowed_deps = [
             '/usr/lib/hpux32/libc.so.1',
-            '/usr/lib/hpux32/libcrypto.so',
             '/usr/lib/hpux32/libcrypto.so.1',
             '/usr/lib/hpux32/libdl.so.1',
             '/usr/lib/hpux32/libm.so.1',
             '/usr/lib/hpux32/libnsl.so.1',
             '/usr/lib/hpux32/libpthread.so.1',
             '/usr/lib/hpux32/librt.so.1',
-            '/usr/lib/hpux32/libssl.so',
             '/usr/lib/hpux32/libssl.so.1',
             '/usr/lib/hpux32/libxnet.so.1',
             '/usr/lib/hpux32/libxti.so.1',

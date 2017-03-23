@@ -145,6 +145,9 @@ class PCTBuildExt (build_ext):
                     self.__add_compiler_option("-O3")
                     self.__add_compiler_option("-fomit-frame-pointer")
 
+            if self.compiler.compiler_so[0] == 'cc' and sys.platform.startswith('hp-ux'):
+                self.__remove_compiler_option("-fomit-frame-pointer")
+
                 # Don't include debug symbols unless debugging
                 self.__remove_compiler_option("-g")
                 # Don't include profiling information (incompatible with

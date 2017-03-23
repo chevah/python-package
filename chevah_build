@@ -209,7 +209,7 @@ case $OS in
         ;;
     hpux*)
         # Both GCC and HP's compiler are ok, we use the latter with no warnings.
-        # Use no CFLAGS in HP-UX, as each compilation will set their own.
+        # Use no CFLAGS in HP-UX, as each compilation need to set their own.
         export CC="cc -w"
         export CXX="aCC"
         export MAKE="gmake"

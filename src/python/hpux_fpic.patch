@@ -1,7 +1,7 @@
-diff --git setup.py setup.py
+diff -ur setup.py setup.py
 --- setup.py
 +++ setup.py
-@@ -2105,7 +2116,7 @@ class PyBuildExt(build_ext):
+@@ -2116,7 +2116,7 @@
              # finding some -z option for the Sun compiler.
              extra_link_args.append('-mimpure-text')
  

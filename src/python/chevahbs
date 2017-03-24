@@ -49,9 +49,6 @@ chevahbs_configure() {
     CONFIG_ARGS="--disable-shared"
     CONFIGURE_ENVIRONMENT=""
 
-
-    # We used to add the new include path to compilation flags, but it's not
-    # as portable, the HP-UX's linker errors out because of the -I argument.
     if [ "$OS" != "windows"  ]; then
         echo "Copying our header files among Python's ones..."
         execute cp -r "$INSTALL_FOLDER"/include/* ./Include/

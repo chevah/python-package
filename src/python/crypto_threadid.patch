@@ -1,8 +1,7 @@
-diff --git Misc/NEWS Misc/NEWS
-index b779e822..bdd422b4 100644
+diff -ur Misc/NEWS Misc/NEWS
 --- Misc/NEWS
 +++ Misc/NEWS
-@@ -2701,6 +2701,9 @@ Library
+@@ -2701,6 +2701,9 @@
  - Issue #18777: The ssl module now uses the new CRYPTO_THREADID API of
    OpenSSL 1.0.0+ instead of the deprecated CRYPTO id callback function.
  
@@ -12,11 +11,10 @@ index b779e822..bdd422b4 100644
  - Issue #18768: Correct doc string of RAND_edg(). Patch by Vajrasky Kok.
  
  - Issue #18178: Fix ctypes on BSD. dlmalloc.c was compiled twice which broke
-diff --git Modules/_ssl.c Modules/_ssl.c
-index a9271007..a324e075 100644
+diff -ur Modules/_ssl.c Modules/_ssl.c
 --- Modules/_ssl.c
 +++ Modules/_ssl.c
-@@ -3960,21 +3960,9 @@ static PyMethodDef PySSL_methods[] = {
+@@ -3960,21 +3960,9 @@
  
  static PyThread_type_lock *_ssl_locks = NULL;
  
@@ -39,7 +37,7 @@ index a9271007..a324e075 100644
  
  static void _ssl_thread_locking_function
      (int mode, int n, const char *file, int line) {
-@@ -4028,11 +4016,7 @@ static int _setup_ssl_threads(void) {
+@@ -4028,11 +4016,7 @@
              }
          }
          CRYPTO_set_locking_callback(_ssl_thread_locking_function);

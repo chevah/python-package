@@ -208,10 +208,13 @@ case $OS in
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
     hpux*)
-        # Both GCC and HP's compiler are ok, we use the latter with no warnings.
-        # Use no CFLAGS in HP-UX, as each compilation need to set their own.
-        export CC="cc -w"
-        export CXX="aCC"
+        # We use HP's compiler, with no warnings, as it generates lots.
+        # GCC and the bundled /usr/ccs/bin/cc will fail with pycrypto.
+        # No CFLAGS in HP-UX, as some compilations need to set their own.
+        # Also, do not put '-w' in CFLAGS because it confuses HP-UX's ldd
+        # when compiling Python with -DNDEBUG, the recommended default.
+        export CC="/opt/aCC/bin/cc -w"
+        export CXX="/opt/aCC/bin/aCC"
         export MAKE="gmake"
         export BUILD_ZLIB="yes"
         export BUILD_LIBEDIT="no"
@@ -231,7 +234,7 @@ case $OS in
         export CXX="clang++"
         # The location of the Homebrew OpenSSL libs and include directories.
         export LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"
-        export CFLAGS="$CFLAGS -I/usr/local/opt/openssl/include"
+        export CPPFLAGS="$CPPFLAGS -I/usr/local/opt/openssl/include"
         export BUILD_LIBEDIT="no"
         ;;
     freebsd*)
@@ -280,9 +283,6 @@ if [ "${OS%solaris*}" = "" ]; then
 elif [ "${OS%freebsd*}" = "" ]; then
     # Use PIC (Position Independent Code) on FreeBSD 10 and newer with Clang.
     export CFLAGS="${CFLAGS} -fPIC"
-elif [ "${OS%hpux*}" = "" ]; then
-    # In HP-UX we don't set any CFLAGS, each compilation will set their own.
-    unset CFLAGS
 elif [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
     # Use PIC (Position Independent Code) with GCC on 64-bit arches.
     export CFLAGS="${CFLAGS} -fPIC"
@@ -427,6 +427,8 @@ command_build() {
 
     # Build stuff statically on most platforms, install headers and libs in the
     # following locations and make sure they are picked up when building Python.
+    # We used to add the new include path to $CPPFLAGS, but it's not as portable
+    # as copying the includes (HP-UX's linker fails with -I when not using GCC).
     mkdir -p $INSTALL_FOLDER/{include,lib}
     export LDFLAGS="-L${INSTALL_FOLDER}/lib/ ${LDFLAGS}"
 

@@ -249,13 +249,9 @@ def get_actual_deps(script_helper):
                 # the current hierarchy of directories.
                 # In HP-UX, ldd also outputs an empty first line.
                 continue
-            if platform_system == 'hp-ux':
-                # If we ignore lines that start with ./ and empty lines, HP-UX's
-                # ldd output lists the libs with full path in the 3th colon.
-                dep = line.split()[2]
-            elif platform_system == 'freebsd':
-                # If we ignore lines that start with ./, FreeBSD's ldd output
-                # consistently lists the libs with full path in the 3th colon.
+            if platform_system in ['hp-ux', 'freebsd']:
+                # When ignoring lines from the above conditions, ldd's output
+                # lists the libs with full path in the 3th colon on these OS'es.
                 dep = line.split()[2]
             elif platform_system == 'openbsd':
                 # OpenBSD's ldd output is very particular, both the name of the

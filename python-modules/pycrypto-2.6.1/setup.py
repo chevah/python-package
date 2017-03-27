@@ -118,7 +118,7 @@ class PCTBuildExt (build_ext):
             self.__add_compiler_option("-std=c99")
 
             # ... but don't tell that to the aCC compiler on HP-UX
-            if self.compiler.compiler_so[0] == 'cc' and sys.platform.startswith('hp-ux'):
+            if not 'gcc' in self.compiler.compiler_so[0] and sys.platform.startswith('hp-ux'):
                 self.__remove_compiler_option("-std=c99")
 
             # Or on AIX.
@@ -144,6 +144,9 @@ class PCTBuildExt (build_ext):
                 else:
                     self.__add_compiler_option("-O3")
                     self.__add_compiler_option("-fomit-frame-pointer")
+
+            if not 'gcc' in self.compiler.compiler_so[0] and sys.platform.startswith('hp-ux'):
+                self.__remove_compiler_option("-fomit-frame-pointer")
 
                 # Don't include debug symbols unless debugging
                 self.__remove_compiler_option("-g")

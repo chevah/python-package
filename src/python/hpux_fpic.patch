@@ -1,0 +1,12 @@
+diff -ur setup.py setup.py
+--- setup.py
++++ setup.py
+@@ -2116,7 +2116,7 @@
+             # finding some -z option for the Sun compiler.
+             extra_link_args.append('-mimpure-text')
+ 
+-        elif host_platform.startswith('hp-ux'):
++        elif host_platform.startswith('hp-ux') and 'gcc' in sysconfig.get_config_var('CC'):
+             extra_link_args.append('-fPIC')
+ 
+         ext = Extension('_ctypes',

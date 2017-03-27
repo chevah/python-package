@@ -9,6 +9,11 @@
 
 
 chevahbs_configure() {
+    if [ "${OS%hpux*}" = "" ]; then
+        # On HP-UX libffi only compiles with GCC.
+        CC="gcc"
+        CXX="g++"
+    fi
     # We want only static build so that we don't have to mess with LIBPATH.
     execute ./configure --prefix="" --disable-shared --enable-static
 }
@@ -23,7 +28,7 @@ chevahbs_install() {
     install_folder=$1
 
     # Installing fails on some OS'es.
-    # Following workarounds should cover all 32/64bit cases.
+    # Following workarounds should cover all 32/64bit cases for all arches.
     case $OS in
         aix*)
             execute ln -s ../install-sh powerpc-ibm-aix"$(oslevel)"/install-sh
@@ -37,6 +42,9 @@ chevahbs_install() {
                     execute ln -s ../install-sh i386-pc-solaris2.10/install-sh
                     ;;
             esac
+            ;;
+        hpux1131)
+            execute ln -s ../install-sh "$(uname -m)"-hp-hpux11.31/install-sh
             ;;
     esac
 

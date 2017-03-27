@@ -6,29 +6,53 @@
 . ./functions.sh
 
 chevahbs_patch() {
-    echo "Applying disabled_modules.patch:"
-    patch < disabled_modules.patch
-    if [ "$BUILD_LIBEDIT" = "yes" ]; then
-        echo "Applying readline_libedit.patch:"
-        patch -p0 < readline_libedit.patch
+    # First we apply the generic patches.
+    if [ "$OS" = "windows"  ]; then
+        echo "No sources to patch in Windows."
+    else
+        # Our own patch to avoid compiling certain modules.
+        echo "Applying disabled_modules.patch:"
+        execute patch < disabled_modules.patch
     fi
+    # Then we apply features-specific patches.
+    if [ "$BUILD_LIBEDIT" = "yes" ]; then
+        # Adapted from the v4 patch at https://bugs.python.org/issue13501.
+        echo "Applying readline_libedit.patch:"
+        execute patch -p0 < readline_libedit.patch
+    fi
+    # And finally we apply the OS-specific patches.
     case $OS in
+        # Adds custom paths and a fix from http://bugs.python.org/issue1471934.
         solaris10)
             echo "Applying solaris10_paths.patch:"
-            patch < solaris10_paths.patch
+            execute patch < solaris10_paths.patch
             ;;
+        hpux*)
+            # Our patch to use -fPIC extra argument for linking only with GCC.
+            echo "Applying hpux_fpic.patch:"
+            execute patch < hpux_fpic.patch
+            # The second patch from https://bugs.python.org/issue18777.
+            echo "Applying crypto_threadid.patch:"
+            execute patch -p0 < crypto_threadid.patch
+            ;;
+            # Minor patch from OpenBSD's CVS repo.
         openbsd*)
             echo "Applying openbsd_random.patch:"
-            patch < openbsd_random.patch
+            execute patch < openbsd_random.patch
     esac
 }
 
 
 chevahbs_configure() {
-    CONFIG_ARGS="--disable-shared"
+    install_folder="$1"
 
+    CONFIG_ARGS="--disable-shared"
     CONFIGURE_ENVIRONMENT=""
 
+    if [ "$OS" != "windows"  ]; then
+        echo "Copying our header files among Python's ones..."
+        execute cp -r "$INSTALL_FOLDER"/include/* ./Include/
+    fi
     case $OS in
         "ubuntu1004")
             # On Ubuntu there are no libXXX.o, but rather linked against the
@@ -72,9 +96,11 @@ chevahbs_configure() {
             fi
             ;;
         hpux*)
-            export EXTRA_CFLAGS="-D_REENTRANT"
-            export LIBS="-lpthread"
-            CONFIG_ARGS="${CONFIG_ARGS} --without-gcc --without-ctypes"
+            LDFLAGS="${LDFLAGS} -lxnet"
+            CONFIG_ARGS="${CONFIG_ARGS} \
+                --with-system-ffi \
+                --disable-ipv6 \
+                "
             ;;
         osx*|macos*)
             CONFIG_ARGS="${CONFIG_ARGS} --without-gcc"
@@ -98,15 +124,6 @@ chevahbs_configure() {
             touch Include/Python-ast.h Python/Python-ast.c
             ;;
     esac
-
-    case $OS in
-        "hpux")
-            cp Makefile Makefile.orig
-            # On HPUX -DNDEBUG is causing troubles.
-            sed "s/^OPT=.*-O/OPT= -O/"  Makefile.orig > Makefile
-            ;;
-    esac
-
 }
 
 

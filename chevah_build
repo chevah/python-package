@@ -11,6 +11,7 @@
 # Beware that older versions might be used for selected platforms below.
 PYTHON_BUILD_VERSION="2.7.13"
 LIBFFI_VERSION="3.2.1"
+ZLIB_VERSION="1.2.11"
 # We statically build the BSD libedit on selected platforms to get the
 # readline module available without linking to the GPL-only readline libs.
 LIBEDIT_VERSION="20160903-3.1"
@@ -30,6 +31,7 @@ PYCPARSER_VERSION="2.14"
 
 # Export the variables needed by the chevahbs scripts and the test phase.
 export PYTHON_BUILD_VERSION PYTHON_PACKAGE_VERSION REDISTRIBUTABLE_VERSION
+export BUILD_ZLIB="no"
 export BUILD_LIBEDIT="yes"
 export BUILD_GMP="yes"
 export BUILD_LIBFFI="yes"
@@ -117,7 +119,6 @@ export OS
 export CC='gcc'
 # CXX is not really needed, we export it to make sure g++ won't get picked up
 # when not using gcc, and thus silence the associated configure warning.
-# However, we set $CPPFLAGS later for linking to statically-compiled libs.
 export CXX='g++'
 
 LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
@@ -207,9 +208,16 @@ case $OS in
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
     hpux*)
-        # For HP-UX we haven't managed yet to compile libffi and GMP with the
-        # HP compiler, so we are NOT exporting custom values for CC and CXX.
-        export MAKE=gmake
+        # We use HP's compiler, with no warnings, as it generates lots.
+        # GCC and the bundled /usr/ccs/bin/cc will fail with pycrypto.
+        # No CFLAGS in HP-UX, as some compilations need to set their own.
+        # Also, do not put '-w' in CFLAGS because it confuses HP-UX's ldd
+        # when compiling Python with -DNDEBUG, the recommended default.
+        export CC="/opt/aCC/bin/cc -w"
+        export CXX="/opt/aCC/bin/aCC"
+        export MAKE="gmake"
+        export BUILD_ZLIB="yes"
+        export BUILD_LIBEDIT="no"
         ;;
     osx*)
         # The extra params needed to set the minimum target version to 10.8
@@ -226,7 +234,7 @@ case $OS in
         export CXX="clang++"
         # The location of the Homebrew OpenSSL libs and include directories.
         export LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"
-        export CPPFLAGS="-I/usr/local/opt/openssl/include"
+        export CPPFLAGS="$CPPFLAGS -I/usr/local/opt/openssl/include"
         export BUILD_LIBEDIT="no"
         ;;
     freebsd*)
@@ -264,13 +272,7 @@ case $OS in
 esac
 
 # Compiler-dependent flags. At this moment we should know what compiler is used.
-if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
-    # Use PIC (Position Independent Code) with GCC on 64-bit arches.
-    export CFLAGS="${CFLAGS} -fPIC"
-elif [ "${OS%freebsd*}" = "" ]; then
-    # Use PIC (Position Independent Code) on FreeBSD 10 and newer too.
-    export CFLAGS="${CFLAGS} -fPIC"
-elif [ "${OS%solaris*}" = "" ]; then
+if [ "${OS%solaris*}" = "" ]; then
     if [ ${ARCH} = "sparc64" ]; then
         # Required for compiling GMP on Solaris for SPARC with Sun Studio.
         export CFLAGS="$CFLAGS -xcode=abs64"
@@ -278,6 +280,12 @@ elif [ "${OS%solaris*}" = "" ]; then
         # Required for linking to libedit, which has a simpler configure setup.
         export CFLAGS="$CFLAGS -xcode=pic32"
     fi
+elif [ "${OS%freebsd*}" = "" ]; then
+    # Use PIC (Position Independent Code) on FreeBSD 10 and newer with Clang.
+    export CFLAGS="${CFLAGS} -fPIC"
+elif [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
+    # Use PIC (Position Independent Code) with GCC on 64-bit arches.
+    export CFLAGS="${CFLAGS} -fPIC"
 fi
 
 #
@@ -417,16 +425,23 @@ command_build() {
     # Clean the build dir to avoid contamination from previous builds.
     command_clean
 
-    # Build stuff statically on most platforms, copy headers and libs in
-    # the following locations, added to $CPPFLAGS and $LDFLAGS accordingly.
+    # Build stuff statically on most platforms, install headers and libs in the
+    # following locations and make sure they are picked up when building Python.
+    # We used to add the new include path to $CPPFLAGS, but it's not as portable
+    # as copying the includes (HP-UX's linker fails with -I when not using GCC).
     mkdir -p $INSTALL_FOLDER/{include,lib}
-    export CPPFLAGS="-I${INSTALL_FOLDER}/include/ ${CPPFLAGS}"
     export LDFLAGS="-L${INSTALL_FOLDER}/lib/ ${LDFLAGS}"
 
     if [ "$BUILD_LIBFFI" = "yes" ]; then
         build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
     else
         (>&2 echo "Skipping building LIBFFI!")
+    fi
+
+    if [ "$BUILD_ZLIB" = "yes" ]; then
+        build 'zlib' "zlib-$ZLIB_VERSION" ${PYTHON_BUILD_FOLDER}
+    else
+        (>&2 echo "Skipping building ZLIB!")
     fi
 
     if [ "$BUILD_LIBEDIT" = "yes" ]; then
@@ -647,7 +662,7 @@ command_test() {
             execute $LOCAL_PYTHON_BINARY \
                 ../python-modules/python-scandir-1.5/test/run_tests.py
             ;;
-        aix*|solaris10|linux*|openbsd*)
+        aix*|solaris10|hpux*|linux*|openbsd*)
             # In OpenBSD there are even more issues actually.
             # Details at https://github.com/benhoyt/scandir/issues/79.
             (>&2 echo -e "\tSkipping because of upstream issues.")

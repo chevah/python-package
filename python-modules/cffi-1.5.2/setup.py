@@ -1,6 +1,7 @@
 import sys, os
 import subprocess
 import errno
+import _ssl
 
 
 sources = ['c/_cffi_backend.c']

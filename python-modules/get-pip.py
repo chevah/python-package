@@ -25,6 +25,7 @@ import pkgutil
 import shutil
 import sys
 import struct
+import _ssl
 import tempfile
 
 # Useful for very coarse version differentiation.

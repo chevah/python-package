@@ -25,7 +25,7 @@ import pkgutil
 import shutil
 import sys
 import struct
-import _ssl
+import _ssl # Needed in HP-UX, unexpectedly.
 import tempfile
 
 # Useful for very coarse version differentiation.

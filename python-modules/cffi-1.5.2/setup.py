@@ -1,7 +1,7 @@
 import sys, os
 import subprocess
 import errno
-import _ssl
+import _ssl # Needed in HP-UX, unexpectedly.
 
 
 sources = ['c/_cffi_backend.c']

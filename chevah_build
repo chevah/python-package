@@ -218,6 +218,9 @@ case $OS in
         export MAKE="gmake"
         export BUILD_ZLIB="yes"
         export BUILD_LIBEDIT="no"
+        export BUILD_CFFI="no"
+        PIP_LIBRARIES=""
+        EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
     osx*)
         # The extra params needed to set the minimum target version to 10.8

@@ -96,6 +96,11 @@ select_chevahbs_command() {
 # Internal function for calling build script on each source.
 #
 chevahbs_build() {
+    if [ -n "$(type -t chevahbs_patch)" ]; then
+        # Looks like the chevahbs script has patches to apply.
+        echo "Patching..."
+        chevahbs_patch $@
+    fi
     echo "Configuring..."
     chevahbs_configure $@
     echo "Compiling..."
@@ -149,6 +154,11 @@ build() {
     echo "Copying source code ${build_folder}..."
     execute cp -r ${source_folder} ${build_folder}
     execute cp src/${project_folder}/chevahbs ${build_folder}/
+    if [ $(ls src/${project_folder}/*.patch 2>/dev/null | wc -l) -gt 0 ]; then
+        echo "The following patches are to be copied:"
+        ls -1 src/${project_folder}/*.patch
+        execute cp src/${project_folder}/*.patch ${build_folder}/
+    fi
     execute cp 'functions.sh' ${build_folder}/
 
     execute pushd ${build_folder}
@@ -176,11 +186,13 @@ make_dist(){
     kind=$1
     target_folder=$2
 
-    target_tar=../dist/${kind}/${OS}/${ARCH}/${target_folder}-${TIMESTAMP}.tar
-    target_tar_gz=../dist/${kind}/${OS}/${ARCH}/${target_folder}-${TIMESTAMP}.tar.gz
+    target_path=../dist/${kind}/${OS}/${ARCH}
+    target_common=python-${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}-${OS}-${ARCH}
+    target_tar=${target_path}/${target_common}.tar
+    target_tar_gz=${target_tar}.gz
 
     tar_gz_file=${target_folder}.tar.gz
-    tar_gz_timestamp_file=${target_folder}-${TIMESTAMP}.tar.gz
+    tar_gz_source_file=${target_common}.tar.gz
 
     # Create a clean dist folder.
     execute rm -rf ${DIST_FOLDER}
@@ -195,7 +207,7 @@ make_dist(){
 
     # Create symlink.
     execute pushd ${DIST_FOLDER}/${kind}
-        execute ln -sf ${OS}/${ARCH}/${tar_gz_timestamp_file} ${tar_gz_file}
+        execute ln -sf ${OS}/${ARCH}/${tar_gz_source_file} ${tar_gz_file}
     execute popd
 }
 

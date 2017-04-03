@@ -9,6 +9,11 @@
 
 
 chevahbs_configure() {
+    if [ "${OS%hpux*}" = "" ]; then
+        # On HP-UX libffi only compiles with GCC.
+        CC="gcc"
+        CXX="g++"
+    fi
     # We want only static build so that we don't have to mess with LIBPATH.
     execute ./configure --prefix="" --disable-shared --enable-static
 }
@@ -22,39 +27,37 @@ chevahbs_compile() {
 chevahbs_install() {
     install_folder=$1
 
-    if [ x${ARCH##ppc} != x"$ARCH" ]; then
-        # libffi installs its headers in $PREFIX/lib/libffi-$VERSION/include,
-        # instead of $PREFIX/include, so we copy them manually to a temporary
-        # location.
-        # From there we will copy them just in time for building Python sources.
-        # For Python's setup.py to pick them up, we will augment CPPFLAGS with
-        # the include's location and LDFLAGS with the location of the libs.
-        local temp_folder=$INSTALL_FOLDER/tmp/libffi
-        execute mkdir -p $temp_folder
+    # Installing fails on some OS'es.
+    # Following workarounds should cover all 32/64bit cases for all arches.
+    case $OS in
+        aix*)
+            execute ln -s ../install-sh powerpc-ibm-aix"$(oslevel)"/install-sh
+            ;;
+        solaris10)
+            case $ARCH in
+                sparc*)
+                    execute ln -s ../install-sh sparc-sun-solaris2.10/install-sh
+                    ;;
+                *)
+                    execute ln -s ../install-sh i386-pc-solaris2.10/install-sh
+                    ;;
+            esac
+            ;;
+        hpux1131)
+            execute ln -s ../install-sh "$(uname -m)"-hp-hpux11.31/install-sh
+            ;;
+    esac
 
-        execute cp powerpc-ibm-aix*/.libs/* $temp_folder
-        execute cp powerpc-ibm-aix*/include/*.h $temp_folder
-    elif [ "$OS" = "solaris10" ] || [ "$OS" = "solaris10u3" ]; then
-        # I don't know why it is skip... but doing the actual install will
-        # break the build.
-        echo 'Skipping installation of libffi on Solaris 10.'
-    elif [ "$OS" = "solaris11" ]; then
-        # I don't know why it is skip... but doing the actual install will
-        # break the build.
-        echo 'Skipping installation of libffi on Solaris 11.'
-    else
-        execute $MAKE install DESTDIR=$INSTALL_FOLDER
+    execute $MAKE install DESTDIR=$INSTALL_FOLDER
 
-        # libffi installs its headers in $PREFIX/lib/libffi-$VERSION/include,
-        # instead of $PREFIX/include, so we copy them manually to the default
-        # location.
-        execute mkdir -p $INSTALL_FOLDER/include
-        execute cp $INSTALL_FOLDER/lib/libffi-*/include/* $INSTALL_FOLDER/include
-        # On some systems libffi in installed in /lib64 and then cffi is
-        # searching for it in /lib.
-        # THis affect RHEL, SLES and OpenBSD.
-        cp $INSTALL_FOLDER/lib64/* $INSTALL_FOLDER/lib
-        echo 'cffi done... here to ignore a possible previous error'
+    # libffi installs its headers in $PREFIX/lib/libffi-$VERSION/include,
+    # instead of $PREFIX/include, so we copy them to the default location.
+    execute mkdir -p $INSTALL_FOLDER/include
+    execute cp $INSTALL_FOLDER/lib*/libffi-*/include/* $INSTALL_FOLDER/include/
+    # On some systems libffi is installed in lib64/ and then cffi is
+    # searching for it in lib/ (this affects RHEL 5-7 and SLES 11-12).
+    if [ -d $INSTALL_FOLDER/lib64 ]; then
+        execute cp $INSTALL_FOLDER/lib64/* $INSTALL_FOLDER/lib/
     fi
 }
 

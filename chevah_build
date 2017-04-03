@@ -8,38 +8,52 @@
 # publish_staging
 #
 
-LIBFFI_VERSION=3.2.1
-GMP_VERSION=6.0.0
-LIBEDIT_VERSION=20150325-3.1
-PYTHON_BUILD_VERSION=2.7.10
-PYSQLITE_VERSION=2.6.3
-SQLITE_VERSION=3.8.1
+# Beware that older versions might be used for selected platforms below.
+PYTHON_BUILD_VERSION="2.7.13"
+LIBFFI_VERSION="3.2.1"
+ZLIB_VERSION="1.2.11"
+# We statically build the BSD libedit on selected platforms to get the
+# readline module available without linking to the GPL-only readline libs.
+LIBEDIT_VERSION="20160903-3.1"
+# PyCrypto needs GMP or MPIR for fast math. GMP has support for AIX/HP-UX/etc.
+GMP_VERSION="6.1.2"
+SQLITE_VERSION="3.17.0"
+PYSQLITE_VERSION="2.6.3"
 
+# Git revision to inject into Python's sys.version string through chevahbs.
+PYTHON_PACKAGE_VERSION=$(git rev-parse --short HEAD)
 # The ID of the redistributable version used on Windows.
 REDISTRIBUTABLE_VERSION="9.00.30729.6161"
 
 # pycparser needs to be explicitly installed to work around setuptools auto
 # dependencies.
-PYCPARSER_VERSION=2.14
+PYCPARSER_VERSION="2.14"
 
-BUILD_LIBFFI="yes"
-BUILD_CFFI="yes"
+# Export the variables needed by the chevahbs scripts and the test phase.
+export PYTHON_BUILD_VERSION PYTHON_PACKAGE_VERSION REDISTRIBUTABLE_VERSION
+export BUILD_ZLIB="no"
+export BUILD_LIBEDIT="yes"
+export BUILD_GMP="yes"
+export BUILD_LIBFFI="yes"
+export BUILD_CFFI="yes"
 EXTRA_LIBRARIES="\
     python-modules/cffi-1.5.2 \
     python-modules/pycrypto-2.6.1 \
-    python-modules/python-setproctitle-1.1.8.dev0 \
     "
-# Libraries for legecy systems not built around cffi.
+# Libraries for legacy systems not built around cffi and pip.
 EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/pyOpenSSL-0.13 \
     python-modules/pycrypto-2.6.1 \
     python-modules/python-setproctitle-1.1.8.dev0 \
+    python-modules/python-scandir-1.5 \
     "
 
 # List of python modules installed using pip
 PIP_LIBRARIES="\
+    setproctitle==1.1.10 \
     cryptography==1.3.1 \
-    pyOpenSSL==16.0.0
+    pyOpenSSL==16.0.0 \
+    scandir==1.5 \
     "
 # Pre-combiled libraries distributed as wheels for Windows.
 PIP_LIBRARIES_WIN="$PIP_LIBRARIES \
@@ -65,10 +79,10 @@ BUILD_FOLDER='build'
 if [ "$?" -ne 0 ]; then
     exit 1
 fi
+
 PYTHON_VERSION=`cut -d' ' -f 2 DEFAULT_VALUES`
 OS=`cut -d' ' -f 3 DEFAULT_VALUES`
 ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
-TIMESTAMP=`date +'%Y%m%d'`
 
 # List of OS packages required for building Python.
 COMMON_PACKAGES="gcc make m4 automake libtool texinfo"
@@ -97,7 +111,7 @@ INSTALLED_PACKAGES=''
 # for example by exporting ARCH in paver.sh as "x86" instead of "x64" or
 # "ppc" instead of "ppc64".
 # We also use $ARCH when building the statically compiled libffi and GMP.
-# and $OS when building for ArchLinux
+# $OS is used when patching/configuring/building/testing.
 export ARCH
 export OS
 # Explicitly choose the C compiler in order to make it possible to switch
@@ -105,7 +119,6 @@ export OS
 export CC='gcc'
 # CXX is not really needed, we export it to make sure g++ won't get picked up
 # when not using gcc, and thus silence the associated configure warning.
-# However, we set $CPPFLAGS later for linking to statically-compiled libs.
 export CXX='g++'
 
 LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
@@ -118,8 +131,6 @@ export MAKE=make
 
 # Used when building cffi.
 export CHEVAH_BUILD_PATH=$INSTALL_FOLDER
-# Used when building on Windows.
-export REDISTRIBUTABLE_VERSION
 
 case $OS in
     aix*)
@@ -149,8 +160,10 @@ case $OS in
                 export CFLAGS="$CFLAGS -qmaxmem=-1 -q64"
             fi
         fi
+        # There are issues with compiling libedit on AIX.
+        export BUILD_LIBEDIT="no"
         # On AIX cffi based modules are not ported yet.
-        BUILD_CFFI="no"
+        export BUILD_CFFI="no"
         PIP_LIBRARIES=""
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
@@ -201,29 +214,62 @@ case $OS in
             fi
 
         fi
-
+        # readline with libedit is doable in Solaris, but the result is buggy.
+        export BUILD_LIBEDIT="no"
         # cffi modules are not ready yet on Solaris.
-        BUILD_CFFI="no"
+        export BUILD_CFFI="no"
         PIP_LIBRARIES=""
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
     hpux*)
-        # For HP-UX we haven't managed yet to compile libffi and GMP with the
-        # HP compiler, so we are NOT exporting custom values for CC and CXX.
-        export MAKE=gmake
+        # We use HP's compiler, with no warnings, as it generates lots.
+        # GCC and the bundled /usr/ccs/bin/cc will fail with pycrypto.
+        # No CFLAGS in HP-UX, as some compilations need to set their own.
+        # Also, do not put '-w' in CFLAGS because it confuses HP-UX's ldd
+        # when compiling Python with -DNDEBUG, the recommended default.
+        export CC="/opt/aCC/bin/cc -w"
+        export CXX="/opt/aCC/bin/aCC"
+        export MAKE="gmake"
+        export BUILD_ZLIB="yes"
+        export BUILD_LIBEDIT="no"
+        export BUILD_CFFI="no"
+        PIP_LIBRARIES=""
+        EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
     osx*)
+        # The extra params needed to set the minimum target version to 10.8
+        # have the important benefit of getting rid of the libgcc dependency.
         export CC="clang"
         export CXX="clang++"
         export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
         export MACOSX_DEPLOYMENT_TARGET=10.8
         ;;
+    macos*)
+        # On macOS 10.12 or newer we need the Homebrew version of OpenSSL,
+        # as Apple only provides an old OpenSSL version: 0.9.8.
+        export CC="clang"
+        export CXX="clang++"
+        # The location of the Homebrew OpenSSL libs and include directories.
+        export LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"
+        export CPPFLAGS="$CPPFLAGS -I/usr/local/opt/openssl/include"
+        export BUILD_LIBEDIT="no"
+        ;;
     freebsd*)
         export CC="clang"
         export CXX="clang++"
+        export BUILD_LIBEDIT="no"
+        ;;
+    archlinux)
+        export BUILD_LIBEDIT="no"
+        ;;
+    linux*)
+        # We don't compile libedit for generic Linux builds because it links
+        # to local ncurses libs (one of ncurses, ncursesw, tinfo, others?),
+        # and the result is not portable.
+        export BUILD_LIBEDIT="no"
         ;;
     sles10)
-        BUILD_CFFI="no"
+        export BUILD_CFFI="no"
         PIP_LIBRARIES=""
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
@@ -234,20 +280,16 @@ case $OS in
         # On windows extra libraries are installed only using PIP.
         EXTRA_LIBRARIES=""
         PIP_LIBRARIES=$PIP_LIBRARIES_WIN
+        # For Windows we don't build everything from source yet.
+        export BUILD_LIBEDIT="no"
+        export BUILD_GMP="no"
         # We don't build libffi, as cffi it is available as a wheel in pypi.
-        BUILD_LIBFFI="no"
-        PYTHON_BUILD_VERSION="$PYTHON_BUILD_VERSION-windows"
+        export BUILD_LIBFFI="no"
         ;;
 esac
 
 # Compiler-dependent flags. At this moment we should know what compiler is used.
-if [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
-    # Use PIC (Position Independent Code) with GCC on 64-bit arches.
-    export CFLAGS="${CFLAGS} -fPIC"
-elif [ "${OS%freebsd*}" = "" ]; then
-    # Use PIC (Position Independent Code) on FreeBSD 10 and newer too.
-    export CFLAGS="${CFLAGS} -fPIC"
-elif [ "${OS%solaris*}" = "" ]; then
+if [ "${OS%solaris*}" = "" ]; then
     if [ ${ARCH} = "sparc64" ]; then
         # Required for compiling GMP on Solaris for SPARC with Sun Studio.
         export CFLAGS="$CFLAGS -xcode=abs64"
@@ -255,6 +297,12 @@ elif [ "${OS%solaris*}" = "" ]; then
         # Required for linking to libedit, which has a simpler configure setup.
         export CFLAGS="$CFLAGS -xcode=pic32"
     fi
+elif [ "${OS%freebsd*}" = "" ]; then
+    # Use PIC (Position Independent Code) on FreeBSD 10 and newer with Clang.
+    export CFLAGS="${CFLAGS} -fPIC"
+elif [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
+    # Use PIC (Position Independent Code) with GCC on 64-bit arches.
+    export CFLAGS="${CFLAGS} -fPIC"
 fi
 
 #
@@ -282,6 +330,19 @@ install_dependencies() {
             packages=$SLES_PACKAGES
             install_command='sudo zypper --non-interactive install -l'
             check_command='rpm --query'
+        ;;
+        macos*)
+            # On macOS we need OpenSSL installed via homebrew, but we don't
+            # do it automatically, here we only check that the expected
+            # OpenSSL version is installed, as hardcoded below.
+            homebrew_openssl_version=`brew list --versions openssl`
+            if [[ $homebrew_openssl_version != "openssl 1.0.2"* ]]; then
+                echo "Unsupported OpenSSL version: $homebrew_openssl_version"
+                exit 102
+            fi
+            packages=''
+            install_command=''
+            check_command=''
         ;;
         *)
             packages=''
@@ -381,48 +442,46 @@ command_build() {
     # Clean the build dir to avoid contamination from previous builds.
     command_clean
 
-    if [ $BUILD_LIBFFI == "yes" ]; then
+    # Build stuff statically on most platforms, install headers and libs in the
+    # following locations and make sure they are picked up when building Python.
+    # We used to add the new include path to $CPPFLAGS, but it's not as portable
+    # as copying the includes (HP-UX's linker fails with -I when not using GCC).
+    mkdir -p $INSTALL_FOLDER/{include,lib}
+    export LDFLAGS="-L${INSTALL_FOLDER}/lib/ ${LDFLAGS}"
+
+    if [ "$BUILD_LIBFFI" = "yes" ]; then
         build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
+    else
+        (>&2 echo "Skipping building LIBFFI!")
+    fi
+
+    if [ "$BUILD_ZLIB" = "yes" ]; then
+        build 'zlib' "zlib-$ZLIB_VERSION" ${PYTHON_BUILD_FOLDER}
+    else
+        (>&2 echo "Skipping building ZLIB!")
+    fi
+
+    if [ "$BUILD_LIBEDIT" = "yes" ]; then
+        build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
+    else
+        (>&2 echo "Skipping building LIBEDIT!")
+    fi
+
+    if [ "$BUILD_GMP" = "yes" ]; then
+        build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
+    else
+        (>&2 echo "Skipping building GMP!")
     fi
 
     case $OS in
         windows*)
-            # For Windows we don't build everything from source yet.
-            echo "Skipping GMP"
+            build 'python' "Python-$PYTHON_BUILD_VERSION-windows" ${PYTHON_BUILD_FOLDER}
             ;;
         *)
-            # Build GMP statically on all platforms, copy headers and libs in
-            # a temp location, and update $CPPFLAGS and $LDFLAGS accordingly.
-            # For any other statically-compiled lib, such as libedit,
-            # we'll need these shell vars.
-            build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
+            build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
     esac
 
-    mkdir -p $INSTALL_FOLDER/{include,lib}
-    export CPPFLAGS="${CPPFLAGS} -I$INSTALL_FOLDER/include/"
-    export LDFLAGS="${LDFLAGS} -L$INSTALL_FOLDER/lib/"
-
-    # Statically build the BSD libedit on selected platforms to get readline
-    # support without linking to the GPL-only readline. We don't do this for
-    # generic Linux builds because the result depends on the local ncurses
-    # libs (ncurses, ncursesw, tinfo, others?), and the result is not portable.
-    # $CPPFLAGS and $LDFLAGS already point to these 'include' and 'lib' dirs.
-    case $OS in
-        sles10)
-            # Don't build libedit on SLES 10 as this is an old platform and is
-            # ok if it runs with limited support.
-            true
-            ;;
-        ubuntu*|raspbian*|rhel*|sles*|solaris*|archlinux)
-            build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
-            cp -r $INSTALL_FOLDER/tmp/libedit/{editline/,*.h} \
-                $INSTALL_FOLDER/include/
-            cp $INSTALL_FOLDER/tmp/libedit/libedit* $INSTALL_FOLDER/lib/
-            ;;
-    esac
-
-    build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
     command_build_sqlite
     command_build_python_extra_libraries
 
@@ -446,6 +505,10 @@ command_build() {
     esac
 
     remove_dependencies
+
+    # Output the python-package version to a dedicated file in the archive.
+    echo "${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" \
+        > ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}/lib/PYTHON_PACKAGE_VERSION
 
     make_dist 'python' ${PYTHON_BUILD_FOLDER}
 }
@@ -599,13 +662,36 @@ initialize_python_module(){
 help_text_test=\
 "Run a quick test for the Python from build."
 command_test() {
-    export BUILD_CFFI
     test_file='test_python_binary_dist.py'
     execute mkdir -p build/
     execute cp python-modules/chevah-python-test/${test_file} build/
     execute cp python-modules/chevah-python-test/get_binaries_deps.sh build/
     execute pushd build
+    echo '##### Executing Chevah tests... #####'
     execute $LOCAL_PYTHON_BINARY ${test_file}
+    echo '##### Executing tests for included Python modules... #####'
+    echo 'Testing scandir...'
+    # There are a series of issues with the scandir tests in Linux/Unix.
+    # Reported upstream at https://github.com/benhoyt/scandir/issues/78.
+    case $OS in
+        osx*|macos*|windows*)
+            execute $LOCAL_PYTHON_BINARY \
+                ../python-modules/python-scandir-1.5/test/run_tests.py
+            ;;
+        aix*|solaris10|hpux*|linux*|openbsd*)
+            # In OpenBSD there are even more issues actually.
+            # Details at https://github.com/benhoyt/scandir/issues/79.
+            (>&2 echo -e "\tSkipping because of upstream issues.")
+            ;;
+        *)
+            # Remaining build slaves have the required UTF-8 locale settings
+            # available, but they need to be requested for the tests to pass.
+            export LC_ALL=en_US.UTF-8
+            execute $LOCAL_PYTHON_BINARY \
+                ../python-modules/python-scandir-1.5/test/run_tests.py
+            export LC_ALL=C
+            ;;
+    esac
     execute popd
 }
 

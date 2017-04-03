@@ -1,0 +1,54 @@
+diff -ur setup.py setup.py
+--- setup.py
++++ setup.py
+@@ -805,10 +805,13 @@
+ 
+         # crypt module.
+ 
+-        if self.compiler.find_library_file(lib_dirs, 'crypt'):
++        libs = []
++        if host_platform == 'sunos5':
++            # http://bugs.python.org/issue1471934 (64bit Solaris 8-10)
++            if self.compiler.find_library_file(lib_dirs, 'crypt_i'):
++                libs = ['crypt_i']
++        elif self.compiler.find_library_file(lib_dirs, 'crypt'):
+             libs = ['crypt']
+-        else:
+-            libs = []
+         exts.append( Extension('crypt', ['cryptmodule.c'], libraries=libs) )
+ 
+         # CSV files
+@@ -821,6 +824,7 @@
+         # Detect SSL support for the socket module (via _ssl)
+         search_for_ssl_incs_in = [
+                               '/usr/local/ssl/include',
++                              '/usr/sfw/include/',
+                               '/usr/contrib/ssl/include/'
+                              ]
+         ssl_incs = find_file('openssl/ssl.h', inc_dirs,
+@@ -828,10 +832,23 @@
+                              )
+         if ssl_incs is not None:
+             krb5_h = find_file('krb5.h', inc_dirs,
+-                               ['/usr/kerberos/include'])
++                               ['/usr/kerberos/include',
++                                '/usr/include/kerberosv5/'
++                               ])
+             if krb5_h:
+                 ssl_incs += krb5_h
+-        ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
++        # On Solaris 10 the OpenSSL libs live in /usr/sfw/lib.
++        if host_platform == 'sunos5':
++            # Determine if we need to set the path to 64bit OpenSSL libs.
++            arch_env = os.environ.get('ARCH')
++            if '64' in arch_env:
++                ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
++                                         [ '/usr/sfw/lib/64' ] )
++            else:
++                ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
++                                         [ '/usr/sfw/lib' ] )
++        else:
++            ssl_libs = find_library_file(self.compiler, 'ssl',lib_dirs,
+                                      ['/usr/local/ssl/lib',
+                                       '/usr/contrib/ssl/lib/'
+                                      ] )

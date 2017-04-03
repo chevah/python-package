@@ -7,10 +7,10 @@ import subprocess
 
 script_helper = './get_binaries_deps.sh'
 platform_system = platform.system().lower()
-test_for_readline = False
 with open('../DEFAULT_VALUES') as default_values_file:
     chevah_os = default_values_file.read().split(' ')[2]
 BUILD_CFFI = os.environ.get('BUILD_CFFI', 'no').lower() == 'yes'
+BUILD_LIBEDIT = os.environ.get('BUILD_LIBEDIT', 'no').lower() == 'yes'
 
 
 def get_allowed_deps():
@@ -19,8 +19,7 @@ def get_allowed_deps():
     """
     allowed_deps = []
     if platform_system == 'linux':
-        # The minimal list of deps for Linux: glibc, openssl, zlib,
-        # and, for readline support through libedit, a curses library.
+        # The minimal list of deps for Linux: glibc, openssl and zlib.
         allowed_deps = [
             'ld-linux',
             'libc.so',
@@ -28,7 +27,6 @@ def get_allowed_deps():
             'libcrypto.so',
             'libdl.so',
             'libm.so',
-            'libncursesw.so',
             'libnsl.so',
             'libpthread.so',
             'libssl.so',
@@ -39,12 +37,12 @@ def get_allowed_deps():
             ]
         # Distro-specific deps to add. Now we may specify major versions too.
         if ('rhel' in chevah_os):
-            test_for_readline = True
             allowed_deps.extend([
                 'libcom_err.so.2',
                 'libgssapi_krb5.so.2',
                 'libk5crypto.so.3',
                 'libkrb5.so.3',
+                'libncursesw.so.5',
                 'libresolv.so.2',
                 ])
             rhel_version = int(chevah_os[4:])
@@ -66,24 +64,29 @@ def get_allowed_deps():
                     'libpcre.so.1',
                     ])
         elif ('sles' in chevah_os):
-            test_for_readline = True
             sles_version = int(chevah_os[4:])
-            if sles_version == 12:
+            allowed_deps.extend([
+                'libncursesw.so.5',
+                ])
+            if sles_version >= 12:
                 allowed_deps.extend([
                     'libtinfo.so.5',
                     ])
         elif ('ubuntu' in chevah_os):
-            test_for_readline = True
             allowed_deps.extend([
                 'libtinfo.so.5',
                 ])
         elif ('raspbian' in chevah_os):
-            test_for_readline = True
             allowed_deps.extend([
                 'libcofi_rpi.so',
                 'libgcc_s.so.1',
                 'libncurses.so.5',
                 'libtinfo.so.5',
+                ])
+        else:
+            # Debian 7 x64 (aka linux-x64) needs this for cffi.
+            allowed_deps.extend([
+                'libgcc_s.so.1',
                 ])
     elif platform_system == 'aix':
         # This is the standard list of deps for AIX 5.3. Some of the links
@@ -109,7 +112,6 @@ def get_allowed_deps():
                 'libthread.a',
                 ])
     elif platform_system == 'sunos':
-        test_for_readline = True
         # This is the common list of deps for Solaris 10 & 11 builds.
         allowed_deps = [
             'libc.so.1',
@@ -159,25 +161,65 @@ def get_allowed_deps():
                 'libsqlite3.so.0',
                 'libssl.so.1.0.0',
                 ])
-    elif platform_system == 'darwin':
-        # This is the list of deps for OS X 10.8, mostly sans versions.
+    elif platform_system == 'hp-ux':
+        # Specific deps for HP-UX 11.31, with full path.
         allowed_deps = [
-            'ApplicationServices.framework/Versions/A/ApplicationServices',
-            'Carbon.framework/Versions/A/Carbon',
-            'CoreFoundation.framework/Versions/A/CoreFoundation',
-            'CoreServices.framework/Versions/A/CoreServices',
-            'SystemConfiguration.framework/Versions/A/SystemConfiguration',
-            'libSystem.B.dylib',
-            'libcrypto.0.9.8.dylib',
-            'libssl.0.9.8.dylib',
-            'libz.1.dylib',
+            '/usr/lib/hpux32/libc.so.1',
+            '/usr/lib/hpux32/libcrypto.so.1.0.0',
+            '/usr/lib/hpux32/libdl.so.1',
+            '/usr/lib/hpux32/libm.so.1',
+            '/usr/lib/hpux32/libnsl.so.1',
+            '/usr/lib/hpux32/libpthread.so.1',
+            '/usr/lib/hpux32/librt.so.1',
+            '/usr/lib/hpux32/libssl.so.1.0.0',
+            '/usr/lib/hpux32/libxnet.so.1',
+            '/usr/lib/hpux32/libxti.so.1',
+            ]
+    elif platform_system == 'darwin':
+        # Common deps for OS X 10.8 and macOS 10.12, with full path.
+        allowed_deps = [
+            '/System/Library/Frameworks/ApplicationServices.framework/Versions/A/ApplicationServices',
+            '/System/Library/Frameworks/Carbon.framework/Versions/A/Carbon',
+            '/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation',
+            '/System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices',
+            '/System/Library/Frameworks/Security.framework/Versions/A/Security',
+            '/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/SystemConfiguration',
+            '/usr/lib/libSystem.B.dylib',
+            '/usr/lib/libz.1.dylib',
+            ]
+        if ('osx' in chevah_os):
+            # Additional deps when using the OS-included OpenSSL.
+            allowed_deps.extend([
+                '/usr/lib/libcrypto.0.9.8.dylib',
+                '/usr/lib/libssl.0.9.8.dylib',
+                '/usr/lib/libncurses.5.4.dylib',
+                ])
+        elif ('macos' in chevah_os):
+            # Additional deps when using Homebrew's OpenSSL.
+            allowed_deps.extend([
+                '/usr/lib/libgcc_s.1.dylib',
+                '/usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib',
+                '/usr/local/opt/openssl/lib/libssl.1.0.0.dylib',
+                ])
+    elif platform_system == 'freebsd':
+        # This is the list of specific deps for FreeBSD 10.x, with paths.
+        allowed_deps = [
+            '/lib/libc.so.7',
+            '/lib/libcrypt.so.5',
+            '/lib/libcrypto.so.7',
+            '/lib/libm.so.5',
+            '/lib/libthr.so.3',
+            '/lib/libutil.so.9',
+            '/lib/libz.so.6',
+            '/usr/lib/libssl.so.7',
             ]
     elif platform_system == 'openbsd':
-        # This is the minimum list of deps for OpenBSD 5.8, sans versions.
+        # This is the list of deps for OpenBSD 5.8 or newer, sans versions.
         allowed_deps = [
             '/usr/lib/libc.so',
             '/usr/lib/libcrypto.so',
             '/usr/lib/libm.so',
+            '/usr/lib/libncursesw.so.14.0',
             '/usr/lib/libpthread.so',
             '/usr/lib/libssl.so',
             '/usr/lib/libutil.so',
@@ -200,25 +242,29 @@ def get_actual_deps(script_helper):
     else:
         libs_deps = []
         for line in raw_deps:
-            if line.startswith('./'):
-                # In some OS'es (at least AIX and OS X), the output includes
-                # the examined binaries and those lines start with "./". It's
-                # safe to ignore them because they point to paths in the
-                # current hierarchy of directories.
+            if line.startswith('./') or not line:
+                # In some OS'es (AIX, HP-UX, OS X, BSDs), the output includes
+                # the examined binaries, and those lines start with "./".
+                # It's safe to ignore them because they point to paths in
+                # the current hierarchy of directories.
+                # In HP-UX, ldd also outputs an empty first line.
                 continue
-            if platform_system == 'openbsd':
-                # OpenBSD's ldd output is very particular, the name of the
-                # examined files are in the 6th colon. Which also includes a
-                # colon name, of which we'll get rid in the following check.
-                deps = line.split()[6]
-                # It also outputs the examined binaries with full path, so we
-                # use the fact that there are no libs outside /usr in OpenBSD.
-                if not deps.startswith('/usr'):
+            if platform_system in ['hp-ux', 'freebsd']:
+                # When ignoring lines from the above conditions, ldd's output
+                # lists the libs with full path in the 3th colon on these OS'es.
+                dep = line.split()[2]
+            elif platform_system == 'openbsd':
+                # OpenBSD's ldd output is very particular, both the name of the
+                # examined files and the needed libs are in the 7th colon, which
+                # also includes a colon name, of which we'll get rid below.
+                dep = line.split()[6]
+                strings_to_ignore = ( 'Name', os.getcwd(), './', )
+                if dep.startswith(strings_to_ignore):
                     continue
             else:
                 # Usually, the first field in each line is the needed file name.
-                deps = line.split()[0]
-            libs_deps.append(deps)
+                dep = line.split()[0]
+            libs_deps.append(dep)
     return list(set(libs_deps))
 
 
@@ -257,22 +303,42 @@ def test_dependencies():
     if not allowed_deps:
         sys.stderr.write('Got no allowed deps. Please check if {0} is a '
             'supported operating system.\n'.format(platform.system()))
-        return 13
+        return 113
 
     actual_deps = get_actual_deps(script_helper)
     if not actual_deps:
         sys.stderr.write('Got no deps for the new binaries. Please check '
             'the "{0}" script in the "build/" dir.\n'.format(script_helper))
-        return 14
+        return 114
 
     unwanted_deps = get_unwanted_deps(allowed_deps, actual_deps)
     if unwanted_deps:
         sys.stderr.write('Got unwanted deps:\n')
         for single_dep_to_print in unwanted_deps:
             sys.stderr.write('\t{0}\n'.format(single_dep_to_print))
-        return 15
+        return 115
 
     return 0
+
+
+def egg_check(module):
+    """
+    Check that the tested module is in the current path.
+    If not, it may be pulled from ~/.python-eggs and we don't want that.
+
+    Return 0 on success, non zero on error.
+    """
+    if not os.getcwd() in module.__file__:
+        sys.stderr.write(
+            "{0} module not in current path, ".format(module.__name__) +
+                "is zip_safe set to True for it?\n"
+            "\tcurrent path: {0}".format(os.getcwd()) + "\n"
+            "\tmodule file: {0}".format(module.__file__) + "\n"
+            )
+        return 116
+
+    return 0
+
 
 def main():
     """
@@ -291,10 +357,10 @@ def main():
         exit_code = 1
 
     try:
-        import _hashlib
         import ssl
-        _hashlib
         print 'stdlib ssl %s' % (ssl.OPENSSL_VERSION,)
+        import _hashlib
+        exit_code = egg_check(_hashlib) | exit_code
     except:
         sys.stderr.write('standard "ssl" missing.\n')
         exit_code = 2
@@ -315,7 +381,7 @@ def main():
                 if openssl_version != expecting:
                     sys.stderr.write('Expecting %s got %s.\n' % (
                         expecting, openssl_version))
-                    exit_code = 3
+                    exit_code = 13
         except Exception as error:
             sys.stderr.write('"cryptography" failure. %s\n' % (error,))
             exit_code = 14
@@ -339,29 +405,6 @@ def main():
         sys.stderr.write('"PyCrypto" missing.\n')
         exit_code = 4
 
-    if os.name != 'nt':
-        # Module only available on Linux / Unix
-        try:
-            import crypt
-            crypt
-        except:
-            sys.stderr.write('"crypt" missing.\n')
-            exit_code = 5
-
-        try:
-            import setproctitle
-            setproctitle
-        except:
-            sys.stderr.write('"setproctitle" missing.\n')
-            exit_code = 7
-
-        try:
-            from Crypto.PublicKey import _fastmath
-            _fastmath
-        except:
-            sys.stderr.write('"Crypto.PublicKey._fastmath" missing. No GMP?\n')
-            exit_code = 10
-
     try:
         from ctypes import CDLL
         import ctypes
@@ -378,6 +421,20 @@ def main():
         sys.stderr.write('"ctypes.utils - find_library" missing.\n')
         exit_code = 9
 
+    try:
+        import multiprocessing
+        multiprocessing.current_process()
+    except:
+        sys.stderr.write('"multiprocessing" missing.\n')
+        exit_code = 16
+
+    # The pure-Python scandir package is always available.
+    try:
+        import scandir
+    except:
+        sys.stderr.write('"scandir" missing.\n')
+        exit_code = 17
+
     # Windows specific modules.
     if os.name == 'nt':
         try:
@@ -385,7 +442,7 @@ def main():
             windll
         except:
             sys.stderr.write('"ctypes - windll" missing.\n')
-            exit_code = 1
+            exit_code = 15
         try:
             import sqlite3
             sqlite3
@@ -394,7 +451,7 @@ def main():
             exit_code = 6
 
     else:
-        # Linux and Unix checks.
+        # Linux / Unix stuff.
         try:
             import crypt
             crypt
@@ -418,10 +475,32 @@ def main():
 
         try:
             from Crypto.PublicKey import _fastmath
-            _fastmath
+            exit_code = egg_check(_fastmath) | exit_code
         except:
             sys.stderr.write('Crypto.PublicKey._fastmath missing. No GMP?\n')
             exit_code = 10
+
+        # Check for the git revision in Python's sys.version on Linux and Unix.
+        try:
+            git_rev_cmd = ['git', 'rev-parse', '--short', 'HEAD']
+            git_rev = subprocess.check_output(git_rev_cmd).strip()
+        except:
+            sys.stderr.write("Couldn't get the git rev for the current tree.\n")
+            exit_code = 117
+        else:
+            bin_ver = sys.version.split('(')[1].split(',')[0]
+            if bin_ver != git_rev:
+                sys.stderr.write("Python's version doesn't match git rev!\n"
+                                 "\tBin ver: {0}".format(bin_ver) + "\n"
+                                 "\tGit rev: {0}".format(git_rev) + "\n")
+                exit_code = 118
+
+        try:
+            import _scandir
+            exit_code = egg_check(_scandir) | exit_code
+        except:
+            sys.stderr.write('"_scandir" missing.\n')
+            exit_code = 18
 
 
     if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
@@ -430,18 +509,23 @@ def main():
             spwd
         except:
             sys.stderr.write('"spwd" missing.\n')
-            exit_code = 1
+            exit_code = 11
+
 
     # We compile the readline module using libedit only on selected platforms.
-    if test_for_readline:
+    if BUILD_LIBEDIT:
         try:
             import readline
             readline.get_history_length()
         except:
             sys.stderr.write('"readline" missing.\n')
-            exit_code = 13
+            exit_code = 12
+        else:
+            print '"readline" module is present.'
 
-        exit_code = test_dependencies() | exit_code
+
+    exit_code = test_dependencies() | exit_code
+
 
     sys.exit(exit_code)
 

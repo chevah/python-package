@@ -145,7 +145,10 @@ class PCTBuildExt (build_ext):
                     self.__add_compiler_option("-O3")
                     self.__add_compiler_option("-fomit-frame-pointer")
 
+            # Chevah stuff.
             if not 'gcc' in self.compiler.compiler_so[0] and sys.platform.startswith('hp-ux'):
+                self.__remove_compiler_option("-fomit-frame-pointer")
+            if not 'gcc' in self.compiler.compiler_so[0] and sys.platform.startswith('sunos'):
                 self.__remove_compiler_option("-fomit-frame-pointer")
 
                 # Don't include debug symbols unless debugging

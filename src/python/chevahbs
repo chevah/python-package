@@ -23,7 +23,7 @@ chevahbs_patch() {
     # And finally we apply the OS-specific patches.
     case $OS in
         # Adds custom paths and a fix from http://bugs.python.org/issue1471934.
-        solaris10)
+        solaris10*)
             echo "Applying solaris10_paths.patch:"
             execute patch < solaris10_paths.patch
             ;;
@@ -35,10 +35,11 @@ chevahbs_patch() {
             echo "Applying crypto_threadid.patch:"
             execute patch -p0 < crypto_threadid.patch
             ;;
-            # Minor patch from OpenBSD's CVS repo.
         openbsd*)
+            # Minor patch from OpenBSD's CVS repo.
             echo "Applying openbsd_random.patch:"
             execute patch < openbsd_random.patch
+            ;;
     esac
 }
 

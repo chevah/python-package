@@ -11,6 +11,7 @@ with open('../DEFAULT_VALUES') as default_values_file:
     chevah_os = default_values_file.read().split(' ')[2]
 BUILD_CFFI = os.environ.get('BUILD_CFFI', 'no').lower() == 'yes'
 BUILD_LIBEDIT = os.environ.get('BUILD_LIBEDIT', 'no').lower() == 'yes'
+BUILD_ZLIB = os.environ.get('BUILD_ZLIB', 'no').lower() == 'yes'
 
 
 def get_allowed_deps():
@@ -149,6 +150,12 @@ def get_allowed_deps():
                 'libthread.so.1',
                 'libuutil.so.1',
                 ])
+            if BUILD_ZLIB:
+                # Specific deps to add for Solaris 10u3.
+                allowed_deps.extend([
+                    'libresolv.so.2',
+                    'libmd5.so.1',
+                    ])
         elif solaris_version == '11':
             # Specific deps to add for Solaris 11.
             allowed_deps.extend([

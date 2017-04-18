@@ -170,6 +170,8 @@ def get_allowed_deps():
                 '/lib/libresolv.so.2',
                 '/lib/librt.so.1',
                 '/usr/lib/libcrypt_i.so.1',
+                '/usr/lib/mps/libsqlite3.so.0',
+                '/usr/sfw/lib//libgcc_s.so.1',
                 '/usr/sfw/lib//libcrypto.so.0.9.7',
                 '/usr/sfw/lib//libssl.so.0.9.7',
                 ]

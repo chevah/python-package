@@ -172,6 +172,12 @@ case $OS in
         export CC="cc"
         export CXX="CC"
         export MAKE="gmake"
+        if [ "$OS" = "solaris10u3" ]; then
+            # pip doesn't like the included zlib from this old Solaris release.
+            export BUILD_ZLIB="yes"
+            # GMP needs to be told that we aim for a 32bit build.
+            export ABI="32"
+        fi
         # Here's where the system-included GCC is to be found.
         if [ "${CC}" = "gcc" ]; then
             export PATH="$PATH:/usr/sfw/bin/"
@@ -183,7 +189,7 @@ case $OS in
             export LDFLAGS="$LDFLAGS -m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
             export CFLAGS="$CFLAGS -m64"
         fi
-        if [ "$OS" = "solaris10" ]; then
+        if [ "${OS%solaris10*}" = "" ]; then
             # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with
             # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
             PYTHON_BUILD_VERSION=2.7.8
@@ -286,7 +292,7 @@ if [ "${OS%solaris*}" = "" ]; then
 elif [ "${OS%freebsd*}" = "" ]; then
     # Use PIC (Position Independent Code) on FreeBSD 10 and newer with Clang.
     export CFLAGS="${CFLAGS} -fPIC"
-elif [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
+elif [ "$CC" = "gcc" -a ${ARCH%%64} != "$ARCH" ]; then
     # Use PIC (Position Independent Code) with GCC on 64-bit arches.
     export CFLAGS="${CFLAGS} -fPIC"
 fi
@@ -625,11 +631,11 @@ initialize_python_module(){
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
                 extra_args=""
-                if [ "$OS" = "solaris10" ]; then
-                    extra_args="$extra_args -I/usr/sfw/include"
+                if [ "${OS%solaris10*}" = "" ]; then
                     # Needed to build pyOpenSSL and pysqlite in Solaris 10.
                     # Make sure the headers for OpenSSL and sqlite3 are present
                     # in /usr/sfw/include (only one location allowed, it seems).
+                    extra_args="$extra_args -I/usr/sfw/include"
                     if [ "${ARCH%64}" = "$ARCH" ]; then
                         extra_args="$extra_args -L/usr/sfw/lib -L/usr/lib/mps"
                     else
@@ -665,7 +671,7 @@ command_test() {
             execute $LOCAL_PYTHON_BINARY \
                 ../python-modules/python-scandir-1.5/test/run_tests.py
             ;;
-        aix*|solaris10|hpux*|linux*|openbsd*)
+        aix*|solaris10*|hpux*|linux*|openbsd*)
             # In OpenBSD there are even more issues actually.
             # Details at https://github.com/benhoyt/scandir/issues/79.
             (>&2 echo -e "\tSkipping because of upstream issues.")

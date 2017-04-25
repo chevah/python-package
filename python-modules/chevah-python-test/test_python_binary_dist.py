@@ -154,6 +154,7 @@ def get_allowed_deps():
                 else:
                     allowed_deps.extend([
                         '/lib/64/libelf.so.1',
+                        '/usr/lib/amd64/libc.so.1',
                         ])
         else:
             # Full deps for Solaris 10u3 x86 (and possibly other 32bit builds).

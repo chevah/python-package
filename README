@@ -32,3 +32,24 @@ Do a production build
 (files go in http://binary.chevah.com/production/python/)::
 
     paver test_remote NAME_OF_BUILDER --force-upload-production
+
+
+Patching upstream code
+----------------------
+
+To simplify changes management we are keeping the changed we done from upstream
+as separate patch files and apply them at build time.
+
+To keep things as simple as possible, each path should target on a specific
+change.
+With that in mind we can have multiple patches for the same OS.
+
+Here is an example for creating a patch for
+src/python/Python-2.7.13/Lib/site.py::
+
+    cd src/python/Python-2.7.13/
+    cp Lib/site-hpux.py Lib/site-patched.py
+    # Change Lib/site-patched.py as you want then create the diff.
+    diff -ru Lib/site.py Lib/site-hpux.py
+    # Copy the diff result, including the command line into
+    # cd src/python/name-of-the.patch

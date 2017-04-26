@@ -545,8 +545,11 @@ command_build_python_extra_libraries() {
 
     # Install the latest PIP and setuptools.
     # But first path it to get the exact version.
+    # get-pip will alwasy try to get the latest version, so we ask it to not
+    # install things and then we manually pass what we want to install.
     execute patch -p0 < python-modules/get-pip-pin.patch
-    execute $PYTHON_BIN python-modules/get-pip.py $PIP_ARGS
+    execute $PYTHON_BIN python-modules/get-pip.py $PIP_ARGS \
+        --no-setuptools setuptools==$SETUPTOOLS_VERSION
 
     # pycparser is installed first as setup_requires is ugly.
     # https://pip.pypa.io/en/stable/reference/pip_install/#controlling-setup-requires

@@ -11,14 +11,3 @@ diff -ur python-modules/get-pip.py python-modules/get-pip.py
  
      # Check if the user has requested us not to install setuptools
      if "--no-setuptools" in sys.argv or os.environ.get("PIP_NO_SETUPTOOLS"):
-@@ -110,7 +111,9 @@
-         try:
-             import setuptools  # noqa
-         except ImportError:
--            packages += ["setuptools"]
-+            setuptools_version = os.environ.get(
-+                'SETUPTOOLS_VERSION', 'not-defined')
-+            packages += ["setuptools==" + setuptools_version]
- 
-     # Check if the user has requested us not to install wheel
-     if "--no-wheel" in args or os.environ.get("PIP_NO_WHEEL"):

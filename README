@@ -50,6 +50,6 @@ src/python/Python-2.7.13/Lib/site.py::
     cd src/python/Python-2.7.13/
     cp Lib/site-hpux.py Lib/site-patched.py
     # Change Lib/site-patched.py as you want then create the diff.
-    diff -ru Lib/site.py Lib/site-hpux.py
+    diff -ru Lib/site.py Lib/site-patched.py
     # Copy the diff result, including the command line into
     # cd src/python/name-of-the.patch

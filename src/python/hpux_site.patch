@@ -1,7 +1,7 @@
-$ diff -ru Lib/site.py Lib/site-hpux.py
+diff -ru Lib/site.py Lib/site-hpux.py
 --- Lib/site.py
-+++ Lib/site-patched.py
-@@ -58,6 +58,8 @@
++++ Lib/site-hpux.py
+@@ -58,6 +58,13 @@
  
  """
  
@@ -9,8 +9,9 @@ $ diff -ru Lib/site.py Lib/site-hpux.py
 +try:
 +    import _ssl
 +except ImportError:
-+    # We might not yet have the _ssl module.
++    # We might not yet have the SSL module.
 +    pass
++
  import sys
  import os
  import __builtin__

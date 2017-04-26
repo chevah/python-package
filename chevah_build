@@ -717,8 +717,7 @@ command_test_compat() {
     # the local version.
     echo '##### Running chevah.compat tests... #####'
     execute rm -rf compat
-    execute git clone https://github.com/chevah/compat.git \
-        --single-branch --depth=1 -b master
+    execute git clone https://github.com/chevah/compat.git --depth=1 -b master
     execute pushd compat
     # We patch the Python version to match the one that we have just built
     # and copy it in cache so that it will be picked up by the new build.

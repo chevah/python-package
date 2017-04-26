@@ -21,8 +21,8 @@ SQLITE_VERSION="3.17.0"
 PYSQLITE_VERSION="2.6.3"
 # These are used by the patched get-pip.py.
 # PIP_VERSION is already used by get-pip for something else.
-export CHEVAH_PIP_VERSION=7.1.2
-export SETUPTOOLS_VERSION=20.3.1
+export CHEVAH_PIP_VERSION="7.1.2"
+SETUPTOOLS_VERSION="20.3.1"
 
 # Git revision to inject into Python's sys.version string through chevahbs.
 PYTHON_PACKAGE_VERSION=$(git rev-parse --short HEAD)

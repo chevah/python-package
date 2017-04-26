@@ -36,6 +36,7 @@ chevahbs_patch() {
             # Our patch to use -fPIC extra argument for linking only with GCC.
             echo "Applying hpux_fpic.patch:"
             execute patch < hpux_fpic.patch
+            echo "Applying hpux_site.patch:"
             execute patch -p0 < hpux_site.patch
             # The second patch from https://bugs.python.org/issue18777.
             echo "Applying crypto_threadid.patch:"

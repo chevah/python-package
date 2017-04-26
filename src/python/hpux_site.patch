@@ -1,0 +1,16 @@
+$ diff -ru Lib/site.py Lib/site-hpux.py
+--- Lib/site.py
++++ Lib/site-patched.py
+@@ -58,6 +58,8 @@
+ 
+ """
+ 
++# This is here to work around the library path issue on HPUX.
++try:
++    import _ssl
++except ImportError:
++    # We might not yet have the _ssl module.
++    pass
+ import sys
+ import os
+ import __builtin__

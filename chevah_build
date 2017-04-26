@@ -700,6 +700,18 @@ command_test() {
 }
 
 
+#
+# Test the newly created Python binary dist.
+#
+help_text_test_compat=\
+"Run a full test for the chevah/compat master."
+command_test_compat() {
+    # For now it does nothing.
+    # Here since the buildmaster was updated.
+    # Will be overwritten in #4020.
+}
+
+
 help_text_publish_python=\
 "Upload Python binaries for current OS."
 command_publish_python() {

@@ -1,0 +1,24 @@
+diff -ur python-modules/get-pip.py python-modules/get-pip.py
+--- python-modules/get-pip.py
++++ python-modules/get-pip.py
+@@ -97,7 +97,8 @@
+     pip.commands_dict["install"] = CertInstallCommand
+ 
+     # We always want to install pip
+-    packages = ["pip"]
++    pip_version = os.environ.get('CHEVAH_PIP_VERSION', 'not-defined')
++    packages = ["pip==" + pip_version]
+ 
+     # Check if the user has requested us not to install setuptools
+     if "--no-setuptools" in sys.argv or os.environ.get("PIP_NO_SETUPTOOLS"):
+@@ -110,7 +111,9 @@
+         try:
+             import setuptools  # noqa
+         except ImportError:
+-            packages += ["setuptools"]
++            setuptools_version = os.environ.get(
++                'SETUPTOOLS_VERSION', 'not-defined')
++            packages += ["setuptools==" + setuptools_version]
+ 
+     # Check if the user has requested us not to install wheel
+     if "--no-wheel" in args or os.environ.get("PIP_NO_WHEEL"):

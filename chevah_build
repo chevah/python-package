@@ -19,6 +19,10 @@ LIBEDIT_VERSION="20160903-3.1"
 GMP_VERSION="6.1.2"
 SQLITE_VERSION="3.17.0"
 PYSQLITE_VERSION="2.6.3"
+# These are used by the patched get-pip.py.
+# PIP_VERSION is already used by get-pip for something else.
+export CHEVAH_PIP_VERSION=7.1.2
+export SETUPTOOLS_VERSION=20.3.1
 
 # Git revision to inject into Python's sys.version string through chevahbs.
 PYTHON_PACKAGE_VERSION=$(git rev-parse --short HEAD)
@@ -540,6 +544,8 @@ command_build_sqlite() {
 command_build_python_extra_libraries() {
 
     # Install the latest PIP and setuptools.
+    # But first path it to get the exact version.
+    execute patch -p0 < python-modules/get-pip-pin.patch
     execute $PYTHON_BIN python-modules/get-pip.py $PIP_ARGS
 
     # pycparser is installed first as setup_requires is ugly.

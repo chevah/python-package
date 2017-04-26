@@ -699,6 +699,19 @@ command_test() {
             ;;
     esac
 
+
+    execute popd
+}
+
+#
+# Test the newly created Python binary dist.
+#
+help_text_test_compat=\
+"Run a full test for the chevah/compat master."
+command_test_compat() {
+
+    execute pushd build
+
     # To have a better test coverage, we run the tests on compat.
     # Some parts of this is a big hack as we have to force compat to use
     # the local version.
@@ -716,6 +729,8 @@ command_test() {
     # download it.
     execute mkdir cache
     execute cp -r ../$LOCAL_PYTHON_BINARY_DIST cache/
+    # For now, this test is just informative, so even if we fail, we are OK.
+    # Some tests might fail due to causes which are not related to python.
     execute ./paver.sh test_ci
     execute popd
 

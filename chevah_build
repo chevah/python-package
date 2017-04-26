@@ -21,6 +21,8 @@ SQLITE_VERSION="3.17.0"
 PYSQLITE_VERSION="2.6.3"
 # These are used by the patched get-pip.py.
 # PIP_VERSION is already used by get-pip for something else.
+# For now, we can't use version 8 of pip as our PyPi server does not support
+# simplified names.
 export CHEVAH_PIP_VERSION="7.1.2"
 SETUPTOOLS_VERSION="20.3.1"
 

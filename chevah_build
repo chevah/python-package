@@ -672,8 +672,10 @@ command_test() {
     execute cp python-modules/chevah-python-test/${test_file} build/
     execute cp python-modules/chevah-python-test/get_binaries_deps.sh build/
     execute pushd build
+
     echo '##### Executing Chevah tests... #####'
     execute $LOCAL_PYTHON_BINARY ${test_file}
+
     echo '##### Executing tests for included Python modules... #####'
     echo 'Testing scandir...'
     # There are a series of issues with the scandir tests in Linux/Unix.
@@ -697,6 +699,7 @@ command_test() {
             export LC_ALL=C
             ;;
     esac
+
     execute popd
 }
 
@@ -707,10 +710,29 @@ command_test() {
 help_text_test_compat=\
 "Run a full test for the chevah/compat master."
 command_test_compat() {
-    # For now it does nothing.
-    # Here since the buildmaster was updated.
-    # Will be overwritten in #4020.
-    echo "Skipping compat tests"
+
+    execute pushd build
+
+    # To have a better test coverage, we run the tests on compat.
+    # Some parts of this is a big hack as we have to force compat to use
+    # the local version.
+    echo '##### Running chevah.compat tests... #####'
+    execute rm -rf compat
+    execute git clone https://github.com/chevah/compat.git --depth=1 -b master
+    execute pushd compat
+    # We patch the Python version to match the one that we have just built
+    # and copy it in cache so that it will be picked up by the new build.
+    execute echo -e "\nPYTHON_CONFIGURATION=${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" >> paver.conf
+    # Populate the cache with the latest version so that we don't have to
+    # download it.
+    execute mkdir cache
+    execute cp -r ../$LOCAL_PYTHON_BINARY_DIST cache/
+    # For now, this test is just informative, so even if we fail, we are OK.
+    # Some tests might fail due to causes which are not related to python.
+    ./paver.sh test_ci
+    execute popd
+
+    execute popd
 }
 
 

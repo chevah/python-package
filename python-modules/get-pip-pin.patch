@@ -1,7 +1,7 @@
 diff -ur python-modules/get-pip.py python-modules/get-pip.py
 --- python-modules/get-pip.py
 +++ python-modules/get-pip.py
-@@ -97,7 +97,8 @@
+@@ -96,7 +96,8 @@
      pip.commands_dict["install"] = CertInstallCommand
  
      # We always want to install pip

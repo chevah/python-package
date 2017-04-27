@@ -5,15 +5,20 @@
 # Import shared code.
 . ./functions.sh
 
+#
+# Called inside the build folder to prepare the Python source.
+#
 chevahbs_patch() {
     # First we apply the generic patches.
     if [ "$OS" = "windows"  ]; then
         echo "No sources to patch in Windows."
-    else
-        # Our own patch to avoid compiling certain modules.
-        echo "Applying disabled_modules.patch:"
-        execute patch < disabled_modules.patch
+        return
     fi
+
+    # Our own patch to avoid compiling certain modules.
+    echo "Applying disabled_modules.patch:"
+    execute patch < disabled_modules.patch
+
     # Then we apply features-specific patches.
     if [ "$BUILD_LIBEDIT" = "yes" ]; then
         # Adapted from the v4 patch at https://bugs.python.org/issue13501.
@@ -31,6 +36,8 @@ chevahbs_patch() {
             # Our patch to use -fPIC extra argument for linking only with GCC.
             echo "Applying hpux_fpic.patch:"
             execute patch < hpux_fpic.patch
+            echo "Applying hpux_site.patch:"
+            execute patch -p0 < hpux_site.patch
             # The second patch from https://bugs.python.org/issue18777.
             echo "Applying crypto_threadid.patch:"
             execute patch -p0 < crypto_threadid.patch

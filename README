@@ -14,6 +14,8 @@ Here are the steps used by Buildbot:
 * ./chevah_build test
 * upload to binary dist publishing website.
 
+Use `./chevah_build help` to discover the available commands.
+
 
 Rebuild Python from your home
 ---------------------------

@@ -700,9 +700,9 @@ command_test() {
             ;;
     esac
 
-
     execute popd
 }
+
 
 #
 # Test the newly created Python binary dist.
@@ -735,19 +735,6 @@ command_test_compat() {
     execute popd
 
     execute popd
-}
-
-
-#
-# Test the newly created Python binary dist.
-#
-help_text_test_compat=\
-"Run a full test for the chevah/compat master."
-command_test_compat() {
-    # For now it does nothing.
-    # Here since the buildmaster was updated.
-    # Will be overwritten in #4020.
-    echo "Skipping compat tests"
 }
 
 

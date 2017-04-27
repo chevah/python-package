@@ -722,9 +722,7 @@ command_test_compat() {
     execute pushd compat
     # We patch the Python version to match the one that we have just built
     # and copy it in cache so that it will be picked up by the new build.
-    # Make sure we have an empty line at the end.
-    execute echo '' >> paver.conf
-    execute echo "PYTHON_CONFIGURATION=${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" >> paver.conf
+    execute echo -e "\nPYTHON_CONFIGURATION=${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" >> paver.conf
     # Populate the cache with the latest version so that we don't have to
     # download it.
     execute mkdir cache
@@ -735,19 +733,6 @@ command_test_compat() {
     execute popd
 
     execute popd
-}
-
-
-#
-# Test the newly created Python binary dist.
-#
-help_text_test_compat=\
-"Run a full test for the chevah/compat master."
-command_test_compat() {
-    # For now it does nothing.
-    # Here since the buildmaster was updated.
-    # Will be overwritten in #4020.
-    echo "Skipping compat tests"
 }
 
 

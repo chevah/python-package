@@ -9,11 +9,14 @@
 
 
 chevahbs_configure() {
-    if [ "${OS%hpux*}" = "" ]; then
-        # On HP-UX libffi only compiles with GCC.
-        CC="gcc"
-        CXX="g++"
-    fi
+    case $OS in
+        hpux*|solaris10u3)
+            # On some exotic platforms libffi only compiles with GCC.
+            CC="gcc"
+            CXX="g++"
+            unset CFLAGS
+            ;;
+    esac
     # We want only static build so that we don't have to mess with LIBPATH.
     execute ./configure --prefix="" --disable-shared --enable-static
 }
@@ -33,7 +36,7 @@ chevahbs_install() {
         aix*)
             execute ln -s ../install-sh powerpc-ibm-aix"$(oslevel)"/install-sh
             ;;
-        solaris10)
+        solaris10*)
             case $ARCH in
                 sparc*)
                     execute ln -s ../install-sh sparc-sun-solaris2.10/install-sh

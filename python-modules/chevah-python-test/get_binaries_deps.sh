@@ -17,6 +17,9 @@ elif [ "$os" = "SunOS" ]; then
     # We need a trick to avoid "unbound variables" errors with "set -o nounset".
     # https://www.gnu.org/software/bash/manual/bashref.html#Shell-Parameter-Expansion
     export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}/usr/sfw/lib/64:/usr/sfw/lib/"
+    # By default, Solaris' ldd picks up too many libs, including some very
+    # specific libs from /platform on Sparc in Solaris 10.
+    checker="ldd -L"
 elif [ "$os" = "HP-UX" ]; then
     checker="/usr/ccs/bin/ldd"
 fi

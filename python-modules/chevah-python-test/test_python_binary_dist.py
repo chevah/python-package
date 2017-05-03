@@ -8,7 +8,7 @@ import subprocess
 script_helper = './get_binaries_deps.sh'
 platform_system = platform.system().lower()
 with open('../DEFAULT_VALUES') as default_values_file:
-    chevah_os = default_values_file.read().split(' ')[2]
+    [ chevah_os, chevah_arch ] = default_values_file.read().strip('\n').split(' ')[2:4]
 BUILD_CFFI = os.environ.get('BUILD_CFFI', 'no').lower() == 'yes'
 BUILD_LIBEDIT = os.environ.get('BUILD_LIBEDIT', 'no').lower() == 'yes'
 
@@ -112,55 +112,70 @@ def get_allowed_deps():
                 'libthread.a',
                 ])
     elif platform_system == 'sunos':
-        # This is the common list of deps for Solaris 10 & 11 builds.
-        allowed_deps = [
-            'libc.so.1',
-            'libdl.so.1',
-            'libintl.so.1',
-            'libm.so.2',
-            'libmd.so.1',
-            'libmp.so.2',
-            'libnsl.so.1',
-            'libsocket.so.1',
-            'libz.so.1',
-            ]
-        if platform.processor() == 'sparc':
-            allowed_deps.extend([
-                'libc_psr.so.1',
-                'libmd_psr.so.1',
-                ])
-        # On Solaris, platform.release() can be: '5.9'. '5.10', '5.11' etc.
-        solaris_version = platform.release().split('.')[1]
-        if solaris_version == '10':
-            # Specific deps to add for Solaris 10.
-            allowed_deps.extend([
-                'libaio.so.1',
-                'libcrypt_i.so.1',
-                'libcrypto.so.0.9.7',
-                'libcrypto_extra.so.0.9.7',
-                'libcurses.so.1',
-                'libdoor.so.1',
-                'libgen.so.1',
-                'librt.so.1',
-                'libscf.so.1',
-                'libsqlite3.so',
-                'libssl.so.0.9.7',
-                'libssl_extra.so.0.9.7',
-                'libthread.so.1',
-                'libuutil.so.1',
-                ])
-        elif solaris_version == '11':
-            # Specific deps to add for Solaris 11.
-            allowed_deps.extend([
-                'libcrypt.so.1',
-                'libcrypto.so.1.0.0',
-                'libcryptoutil.so.1',
-                'libelf.so.1',
-                'libncurses.so.5',
-                'libsoftcrypto.so.1',
-                'libsqlite3.so.0',
-                'libssl.so.1.0.0',
-                ])
+        if '64' in chevah_arch:
+            # This is the common list of deps for Solaris 10 & 11 64bit builds.
+            allowed_deps = [
+                '/lib/64/libc.so.1',
+                '/lib/64/libdl.so.1',
+                '/lib/64/libintl.so.1',
+                '/lib/64/libm.so.2',
+                '/lib/64/libnsl.so.1',
+                '/lib/64/libsocket.so.1',
+                ]
+            # On Solaris, platform.release() can be: '5.9'. '5.10', '5.11' etc.
+            solaris_version = platform.release().split('.')[1]
+            if solaris_version == '10':
+                # Specific deps to add for Solaris 10.
+                allowed_deps.extend([
+                    '/lib/64/libaio.so.1',
+                    '/lib/64/libgen.so.1',
+                    '/lib/64/libmd.so.1',
+                    '/lib/64/librt.so.1',
+                    '/lib/64/libthread.so.1',
+                    '/usr/lib/64/libcrypt_i.so.1',
+                    '/usr/lib/64/libz.so.1',
+                    '/usr/lib/mps/64/libsqlite3.so',
+                    '/usr/sfw/lib/64/libcrypto.so.0.9.7',
+                    '/usr/sfw/lib/64/libssl.so.0.9.7',
+                    ])
+            elif solaris_version == '11':
+                # Specific deps to add for Solaris 11.
+                allowed_deps.extend([
+                    '/lib/64/libcrypto.so.1.0.0',
+                    '/lib/64/libssl.so.1.0.0',
+                    '/lib/64/libz.so.1',
+                    '/usr/lib/64/libcrypt.so.1',
+                    '/usr/lib/64/libsqlite3.so.0',
+                    ])
+                if 'sparc' in chevah_arch:
+                    allowed_deps.extend([
+                        '/usr/lib/sparcv9/libc.so.1',
+                        ])
+                else:
+                    allowed_deps.extend([
+                        '/lib/64/libelf.so.1',
+                        '/usr/lib/amd64/libc.so.1',
+                        ])
+        else:
+            # Full deps for Solaris 10u3 x86 (and possibly other 32bit builds).
+            allowed_deps = [
+                '/lib/libaio.so.1',
+                '/lib/libc.so.1',
+                '/lib/libdl.so.1',
+                '/lib/libgen.so.1',
+                '/lib/libintl.so.1',
+                '/lib/libm.so.2',
+                '/lib/libmd5.so.1',
+                '/lib/libnsl.so.1',
+                '/lib/libsocket.so.1',
+                '/lib/libresolv.so.2',
+                '/lib/librt.so.1',
+                '/usr/lib/libcrypt_i.so.1',
+                '/usr/lib/mps/libsqlite3.so.0',
+                '/usr/sfw/lib//libgcc_s.so.1',
+                '/usr/sfw/lib//libcrypto.so.0.9.7',
+                '/usr/sfw/lib//libssl.so.0.9.7',
+                ]
     elif platform_system == 'hp-ux':
         # Specific deps for HP-UX 11.31, with full path.
         allowed_deps = [
@@ -249,7 +264,7 @@ def get_actual_deps(script_helper):
                 # the current hierarchy of directories.
                 # In HP-UX, ldd also outputs an empty first line.
                 continue
-            if platform_system in ['hp-ux', 'freebsd']:
+            if platform_system in [ 'sunos', 'hp-ux', 'freebsd' ]:
                 # When ignoring lines from the above conditions, ldd's output
                 # lists the libs with full path in the 3th colon on these OS'es.
                 dep = line.split()[2]
@@ -490,7 +505,7 @@ def main():
         else:
             bin_ver = sys.version.split('(')[1].split(',')[0]
             if bin_ver != git_rev:
-                sys.stderr.write("Python's version doesn't match git rev!\n"
+                sys.stderr.write("Python version doesn't match git revision!\n"
                                  "\tBin ver: {0}".format(bin_ver) + "\n"
                                  "\tGit rev: {0}".format(git_rev) + "\n")
                 exit_code = 118

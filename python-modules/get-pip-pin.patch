@@ -1,0 +1,13 @@
+diff -ur python-modules/get-pip.py python-modules/get-pip.py
+--- python-modules/get-pip.py
++++ python-modules/get-pip.py
+@@ -96,7 +96,8 @@
+     pip.commands_dict["install"] = CertInstallCommand
+ 
+     # We always want to install pip
+-    packages = ["pip"]
++    pip_version = os.environ.get('CHEVAH_PIP_VERSION', 'not-defined')
++    packages = ["pip==" + pip_version]
+ 
+     # Check if the user has requested us not to install setuptools
+     if "--no-setuptools" in sys.argv or os.environ.get("PIP_NO_SETUPTOOLS"):

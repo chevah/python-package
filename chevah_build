@@ -19,6 +19,12 @@ LIBEDIT_VERSION="20160903-3.1"
 GMP_VERSION="6.1.2"
 SQLITE_VERSION="3.17.0"
 PYSQLITE_VERSION="2.6.3"
+# These are used by the patched get-pip.py.
+# PIP_VERSION is already used by get-pip for something else.
+# For now, we can't use version 8 of pip as our PyPi server does not support
+# simplified names.
+CHEVAH_PIP_VERSION="7.1.2"
+SETUPTOOLS_VERSION="20.3.1"
 
 # Git revision to inject into Python's sys.version string through chevahbs.
 PYTHON_PACKAGE_VERSION=$(git rev-parse --short HEAD)
@@ -31,6 +37,7 @@ PYCPARSER_VERSION="2.14"
 
 # Export the variables needed by the chevahbs scripts and the test phase.
 export PYTHON_BUILD_VERSION PYTHON_PACKAGE_VERSION REDISTRIBUTABLE_VERSION
+export CHEVAH_PIP_VERSION
 export BUILD_ZLIB="no"
 export BUILD_LIBEDIT="yes"
 export BUILD_GMP="yes"
@@ -172,6 +179,12 @@ case $OS in
         export CC="cc"
         export CXX="CC"
         export MAKE="gmake"
+        if [ "$OS" = "solaris10u3" ]; then
+            # pip doesn't like the included zlib from this old Solaris release.
+            export BUILD_ZLIB="yes"
+            # GMP needs to be told that we aim for a 32bit build.
+            export ABI="32"
+        fi
         # Here's where the system-included GCC is to be found.
         if [ "${CC}" = "gcc" ]; then
             export PATH="$PATH:/usr/sfw/bin/"
@@ -183,7 +196,7 @@ case $OS in
             export LDFLAGS="$LDFLAGS -m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
             export CFLAGS="$CFLAGS -m64"
         fi
-        if [ "$OS" = "solaris10" ]; then
+        if [ "${OS%solaris10*}" = "" ]; then
             # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with
             # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
             PYTHON_BUILD_VERSION=2.7.8
@@ -286,7 +299,7 @@ if [ "${OS%solaris*}" = "" ]; then
 elif [ "${OS%freebsd*}" = "" ]; then
     # Use PIC (Position Independent Code) on FreeBSD 10 and newer with Clang.
     export CFLAGS="${CFLAGS} -fPIC"
-elif [ "$CC" = 'gcc' -a ${ARCH%%64} != "$ARCH" ]; then
+elif [ "$CC" = "gcc" -a ${ARCH%%64} != "$ARCH" ]; then
     # Use PIC (Position Independent Code) with GCC on 64-bit arches.
     export CFLAGS="${CFLAGS} -fPIC"
 fi
@@ -549,7 +562,12 @@ command_build_sqlite() {
 command_build_python_extra_libraries() {
 
     # Install the latest PIP and setuptools.
-    execute $PYTHON_BIN python-modules/get-pip.py $PIP_ARGS
+    # But first patch it to get the exact version.
+    # get-pip will always try to get the latest version, so we ask it to not
+    # install things and then we manually pass what we want to install.
+    execute patch -p0 < python-modules/get-pip-pin.patch
+    execute $PYTHON_BIN python-modules/get-pip.py $PIP_ARGS \
+        --no-setuptools setuptools==$SETUPTOOLS_VERSION
 
     # pycparser is installed first as setup_requires is ugly.
     # https://pip.pypa.io/en/stable/reference/pip_install/#controlling-setup-requires
@@ -640,11 +658,11 @@ initialize_python_module(){
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
                 extra_args=""
-                if [ "$OS" = "solaris10" ]; then
-                    extra_args="$extra_args -I/usr/sfw/include"
+                if [ "${OS%solaris10*}" = "" ]; then
                     # Needed to build pyOpenSSL and pysqlite in Solaris 10.
                     # Make sure the headers for OpenSSL and sqlite3 are present
                     # in /usr/sfw/include (only one location allowed, it seems).
+                    extra_args="$extra_args -I/usr/sfw/include"
                     if [ "${ARCH%64}" = "$ARCH" ]; then
                         extra_args="$extra_args -L/usr/sfw/lib -L/usr/lib/mps"
                     else
@@ -669,8 +687,10 @@ command_test() {
     execute cp python-modules/chevah-python-test/${test_file} build/
     execute cp python-modules/chevah-python-test/get_binaries_deps.sh build/
     execute pushd build
+
     echo '##### Executing Chevah tests... #####'
     execute $LOCAL_PYTHON_BINARY ${test_file}
+
     echo '##### Executing tests for included Python modules... #####'
     echo 'Testing scandir...'
     # There are a series of issues with the scandir tests in Linux/Unix.
@@ -680,7 +700,7 @@ command_test() {
             execute $LOCAL_PYTHON_BINARY \
                 ../python-modules/python-scandir-1.5/test/run_tests.py
             ;;
-        aix*|solaris10|hpux*|linux*|openbsd*)
+        aix*|solaris10*|hpux*|linux*|openbsd*)
             # In OpenBSD there are even more issues actually.
             # Details at https://github.com/benhoyt/scandir/issues/79.
             (>&2 echo -e "\tSkipping because of upstream issues.")
@@ -694,6 +714,39 @@ command_test() {
             export LC_ALL=C
             ;;
     esac
+
+    execute popd
+}
+
+
+#
+# Test the newly created Python binary dist.
+#
+help_text_test_compat=\
+"Run a full test for the chevah/compat master."
+command_test_compat() {
+
+    execute pushd build
+
+    # To have a better test coverage, we run the tests on compat.
+    # Some parts of this is a big hack as we have to force compat to use
+    # the local version.
+    echo '##### Running chevah.compat tests... #####'
+    execute rm -rf compat
+    execute git clone https://github.com/chevah/compat.git --depth=1 -b master
+    execute pushd compat
+    # We patch the Python version to match the one that we have just built
+    # and copy it in cache so that it will be picked up by the new build.
+    execute echo -e "\nPYTHON_CONFIGURATION=${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" >> paver.conf
+    # Populate the cache with the latest version so that we don't have to
+    # download it.
+    execute mkdir cache
+    execute cp -r ../$LOCAL_PYTHON_BINARY_DIST cache/
+    # For now, this test is just informative, so even if we fail, we are OK.
+    # Some tests might fail due to causes which are not related to python.
+    ./paver.sh test_ci
+    execute popd
+
     execute popd
 }
 

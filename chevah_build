@@ -307,16 +307,14 @@ fi
 # Parallel builds where applicable.
 case "$ARCH" in
     sparc*)
-        # Best for Laslea (~60% faster than -j1).
-        MAKE="$MAKE -j2"
-        if [ "$OS" == "solaris11" ]; then
-            # Best for Jacu (~100% faster than -j1).
-            MAKE="$MAKE -j5"
-        fi
+        CPUS=$(/usr/sbin/psrinfo -p)
+        let JOBS=2*$CPUS
+        MAKE="$MAKE -j${JOBS}"
         ;;
     armv7l*)
-        # Best for Zmeur2 (~55% faster than -j1).
-        MAKE="$MAKE -j4"
+        CPUS=$(nproc)
+        let JOBS=$CPUS
+        MAKE="$MAKE -j${JOBS}"
 esac
 
 #

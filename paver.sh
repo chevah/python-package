@@ -539,6 +539,15 @@ detect_os() {
         check_os_version "OpenBSD" 5.9 "$os_version_raw" os_version_chevah
         OS="openbsd${os_version_chevah}"
 
+    elif [ "${OS}" = "netbsd" ]; then
+        ARCH=$(uname -m)
+
+        os_version_raw=$(uname -r | cut -d'.' -f1)
+        check_os_version "NetBSD" 7 "$os_version_raw" os_version_chevah
+
+        # For now, no matter the actual NetBSD version returned, we use '7'.
+        OS="netbsd7"
+
     else
         echo 'Unsupported operating system:' $OS
         exit 14

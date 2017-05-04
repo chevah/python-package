@@ -228,7 +228,7 @@ case $OS in
         # when compiling Python with -DNDEBUG, the recommended default.
         export CC="/opt/aCC/bin/cc -w"
         export CXX="/opt/aCC/bin/aCC"
-        export MAKE="gmake"
+        export MAKE="make -P"
         export BUILD_ZLIB="yes"
         export BUILD_LIBEDIT="no"
         export BUILD_CFFI="no"
@@ -305,17 +305,23 @@ elif [ "$CC" = "gcc" -a ${ARCH%%64} != "$ARCH" ]; then
 fi
 
 # Parallel builds where applicable.
+get_number_of_cpus
+JOBS=1
 case "$ARCH" in
     sparc*)
-        CPUS=$(/usr/sbin/psrinfo -p)
-        let JOBS=2*$CPUS
-        MAKE="$MAKE -j${JOBS}"
+        # Twice the number of physical CPUs is optimal on SPARC machines.
+        let JOBS=2*CPUS
         ;;
-    armv7l*)
-        CPUS=$(nproc)
-        let JOBS=$CPUS
-        MAKE="$MAKE -j${JOBS}"
+    *)
+        # On other virtual and physical machines this is close to optimum.
+        let JOBS=CPUS
+        ;;
 esac
+if [ "${OS%hpux*}" = "" ]; then
+    export PARALLEL="$CPUS"
+else
+    export MAKE="$MAKE -j${JOBS}"
+fi
 
 #
 # Install OS package required to build Python.

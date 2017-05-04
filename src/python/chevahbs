@@ -104,6 +104,8 @@ chevahbs_configure() {
             fi
             ;;
         hpux*)
+            # Native make fails and gmake only works serially.
+            MAKE="gmake"
             LDFLAGS="${LDFLAGS} -lxnet"
             CONFIG_ARGS="${CONFIG_ARGS} \
                 --with-system-ffi \

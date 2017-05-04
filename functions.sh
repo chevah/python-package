@@ -245,3 +245,27 @@ wipe_manifest() {
     execute rm -f --verbose ${source}.embedded
 
 }
+
+get_number_of_cpus() {
+    case "$OS" in
+        aix*)
+            # This works in an AIX 5.3 WPAR too.
+            CPUS=$(lparstat -i | grep ^"Maximum Physical CPUs" | cut -d\: -f2)
+            ;;
+        solaris*)
+            # Only physical processor count. Tested on SPARC, AMD64 and X86.
+            CPUS=$(/usr/sbin/psrinfo -p)
+            ;;
+        hpux*)
+            # Only physical processor count. Tested on Itanium.
+            CPUS=$(machinfo | grep proc | grep core | awk '{print $1}')
+            ;;
+        osx*|macos*|freebsd*|openbsd*|netbsd*)
+            CPUS=$(sysctl -n hw.ncpu)
+            ;;
+        *)
+            # Only Linux distros should be left.
+            CPUS=$(getconf _NPROCESSORS_ONLN)
+            ;;
+    esac
+}

@@ -241,6 +241,23 @@ def get_allowed_deps():
             '/usr/lib/libz.so',
             '/usr/libexec/ld.so',
             ]
+    elif platform_system == 'netbsd':
+        # This is the list of specific deps for NetBSD 7.x, with paths.
+        allowed_deps = [
+            '/lib/libcrypt.so.1',
+            '/usr/lib/libc.so.12',
+            '/usr/lib/libcrypt.so.1',
+            '/usr/lib/libcrypto.so.8',
+            '/usr/lib/libcurses.so.7',
+            '/usr/lib/libgcc_s.so.1',
+            '/usr/lib/libintl.so.1',
+            '/usr/lib/libm.so.0',
+            '/usr/lib/libpthread.so.1',
+            '/usr/lib/libssl.so.10',
+            '/usr/lib/libterminfo.so.1',
+            '/usr/lib/libutil.so.7',
+            '/usr/lib/libz.so.1',
+            ]
     return allowed_deps
 
 
@@ -264,7 +281,7 @@ def get_actual_deps(script_helper):
                 # the current hierarchy of directories.
                 # In HP-UX, ldd also outputs an empty first line.
                 continue
-            if platform_system in [ 'sunos', 'hp-ux', 'freebsd' ]:
+            if platform_system in [ 'sunos', 'hp-ux', 'freebsd', 'netbsd' ]:
                 # When ignoring lines from the above conditions, ldd's output
                 # lists the libs with full path in the 3th colon on these OS'es.
                 dep = line.split()[2]

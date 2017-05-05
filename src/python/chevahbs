@@ -33,9 +33,13 @@ chevahbs_patch() {
             execute patch < solaris10_paths.patch
             ;;
         hpux*)
+            # Our patch to please the native make, needed for parallel builds.
+            echo "Applying hpux_nativemake.patch:"
+            execute patch < hpux_nativemake.patch
             # Our patch to use -fPIC extra argument for linking only with GCC.
             echo "Applying hpux_fpic.patch:"
             execute patch < hpux_fpic.patch
+            # Our patch to import _ssl for working crypto.
             echo "Applying hpux_site.patch:"
             execute patch -p0 < hpux_site.patch
             # The second patch from https://bugs.python.org/issue18777.
@@ -104,8 +108,6 @@ chevahbs_configure() {
             fi
             ;;
         hpux*)
-            # Native make fails and gmake only works serially.
-            MAKE="gmake"
             LDFLAGS="${LDFLAGS} -lxnet"
             CONFIG_ARGS="${CONFIG_ARGS} \
                 --with-system-ffi \

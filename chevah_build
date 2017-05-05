@@ -228,6 +228,7 @@ case $OS in
         # when compiling Python with -DNDEBUG, the recommended default.
         export CC="/opt/aCC/bin/cc -w"
         export CXX="/opt/aCC/bin/aCC"
+        # Native make is needed for parallel builds.
         export MAKE="make -P"
         export BUILD_ZLIB="yes"
         export BUILD_LIBEDIT="no"

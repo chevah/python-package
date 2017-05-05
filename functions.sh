@@ -249,15 +249,15 @@ wipe_manifest() {
 get_number_of_cpus() {
     case "$OS" in
         aix*)
-            # This works in an AIX 5.3 WPAR too.
+            # This works in an AIX 5.3 vWPAR too.
             CPUS=$(lparstat -i | grep ^"Maximum Physical CPUs" | cut -d\: -f2)
             ;;
         solaris*)
-            # Only physical processor count. Tested on SPARC, AMD64 and X86.
+            # Only count physical processors. Tested on SPARC, AMD64 and X86.
             CPUS=$(/usr/sbin/psrinfo -p)
             ;;
         hpux*)
-            # Only physical processor count. Tested on Itanium.
+            # Only count physical processors. Tested on Itanium.
             CPUS=$(machinfo | grep proc | grep core | awk '{print $1}')
             ;;
         osx*|macos*|freebsd*|openbsd*|netbsd*)
@@ -265,6 +265,7 @@ get_number_of_cpus() {
             ;;
         *)
             # Only Linux distros should be left.
+            # Don't use lscpu/nproc, as they are not present on older distros.
             CPUS=$(getconf _NPROCESSORS_ONLN)
             ;;
     esac

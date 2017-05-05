@@ -318,7 +318,7 @@ case "$ARCH" in
         ;;
 esac
 if [ "${OS%hpux*}" = "" ]; then
-    export PARALLEL="$CPUS"
+    export PARALLEL="$JOBS"
 else
     export MAKE="$MAKE -j${JOBS}"
 fi

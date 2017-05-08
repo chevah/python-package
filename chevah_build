@@ -228,7 +228,8 @@ case $OS in
         # when compiling Python with -DNDEBUG, the recommended default.
         export CC="/opt/aCC/bin/cc -w"
         export CXX="/opt/aCC/bin/aCC"
-        export MAKE="gmake"
+        # Native make is needed for parallel builds.
+        export MAKE="make -P"
         export BUILD_ZLIB="yes"
         export BUILD_LIBEDIT="no"
         export BUILD_CFFI="no"
@@ -302,6 +303,25 @@ elif [ "${OS%freebsd*}" = "" ]; then
 elif [ "$CC" = "gcc" -a ${ARCH%%64} != "$ARCH" ]; then
     # Use PIC (Position Independent Code) with GCC on 64-bit arches.
     export CFLAGS="${CFLAGS} -fPIC"
+fi
+
+# Parallel builds where applicable.
+get_number_of_cpus
+JOBS=1
+case "$ARCH" in
+    sparc*)
+        # Twice the number of physical CPUs is optimal on SPARC machines.
+        let JOBS=2*CPUS
+        ;;
+    *)
+        # On other virtual and physical machines this is close to optimum.
+        let JOBS=CPUS
+        ;;
+esac
+if [ "${OS%hpux*}" = "" ]; then
+    export PARALLEL="$JOBS"
+else
+    export MAKE="$MAKE -j${JOBS}"
 fi
 
 #

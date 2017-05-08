@@ -14,6 +14,7 @@ chevahbs_configure() {
             # On some exotic platforms libffi only compiles with GCC.
             CC="gcc"
             CXX="g++"
+            MAKE="gmake"
             unset CFLAGS
             ;;
     esac

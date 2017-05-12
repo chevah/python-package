@@ -191,31 +191,21 @@ resolve_python_version() {
 
     PYTHON_PLATFORM="$OS-$ARCH"
 
-    # This is a stupid way to iterate, up to 16 times while being OS neutral.
-    # We only support a maximum of 16 different versions.
-    for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
-        candidate=`echo ${version_configuration} | cut -d: -f$i`
-        if [ "$candidate" = "" ]; then
-            break
-        fi
-        candidate_platform=`echo $candidate | cut -d@ -f1`
-        candidate_version=`echo $candidate | cut -d@ -f2`
-
-        if [ "$candidate_platform" == "default" ]; then
-            # Set the default version in case no specific platform is
-            # configured.
+    versions=$(echo "$version_configuration" | grep -c ":")
+    counter=0
+    while [ $counter -le $versions ]; do
+        # Number of delimiters is one less than the number of versions.
+        let counter=counter+1
+        candidate=$(echo "$version_configuration" | cut -d ":" -f $counter)
+        candidate_platform=$(echo "$candidate" | cut -d "@" -f 1)
+        candidate_version=$(echo "$candidate" | cut -d "@" -f 2)
+        if [ "$candidate_platform" = "default" ]; then
+            # On first pass we set the default version.
+            PYTHON_VERSION=$candidate_version
+        elif [ "${PYTHON_PLATFORM%$candidate_platform*}" = "" ]; then
+            # We have a match for a specific platform, so we set that.
             PYTHON_VERSION=$candidate_version
         fi
-
-        case $PYTHON_PLATFORM in
-            $candidate_platform*)
-                # We have a match for a specific platform, so we return
-                # as we don't want to look further.
-                PYTHON_VERSION=$candidate_version
-                return 0
-                ;;
-        esac
-
     done
 }
 

@@ -19,11 +19,8 @@ LIBEDIT_VERSION="20160903-3.1"
 GMP_VERSION="6.1.2"
 SQLITE_VERSION="3.17.0"
 PYSQLITE_VERSION="2.6.3"
-# These are used by the patched get-pip.py.
-# PIP_VERSION is already used by get-pip for something else.
-# For now, we can't use version 8 of pip as our PyPi server does not support
-# simplified names.
-CHEVAH_PIP_VERSION="7.1.2"
+# These are used by get-pip.py.
+PIP_VERSION="9.0.1"
 SETUPTOOLS_VERSION="20.3.1"
 
 # Git revision to inject into Python's sys.version string through chevahbs.
@@ -37,7 +34,6 @@ PYCPARSER_VERSION="2.14"
 
 # Export the variables needed by the chevahbs scripts and the test phase.
 export PYTHON_BUILD_VERSION PYTHON_PACKAGE_VERSION REDISTRIBUTABLE_VERSION
-export CHEVAH_PIP_VERSION
 export BUILD_ZLIB="no"
 export BUILD_LIBEDIT="yes"
 export BUILD_GMP="yes"
@@ -570,9 +566,8 @@ command_build_python_extra_libraries() {
     # But first patch it to get the exact version.
     # get-pip will always try to get the latest version, so we ask it to not
     # install things and then we manually pass what we want to install.
-    execute patch -p0 < python-modules/get-pip-pin.patch
     execute $PYTHON_BIN python-modules/get-pip.py $PIP_ARGS \
-        --no-setuptools setuptools==$SETUPTOOLS_VERSION
+        pip==$PIP_VERSION --no-setuptools setuptools==$SETUPTOOLS_VERSION
 
     # pycparser is installed first as setup_requires is ugly.
     # https://pip.pypa.io/en/stable/reference/pip_install/#controlling-setup-requires

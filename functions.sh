@@ -204,11 +204,6 @@ make_dist(){
         execute tar -cf $target_tar $target_folder
         execute gzip $target_tar
     execute popd
-
-    # Create symlink.
-    execute pushd ${DIST_FOLDER}/${kind}
-        execute ln -sf ${OS}/${ARCH}/${tar_gz_source_file} ${tar_gz_file}
-    execute popd
 }
 
 # Move source to target, making sure mv will not fail if a folder

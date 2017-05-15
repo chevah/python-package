@@ -200,10 +200,10 @@ resolve_python_version() {
         candidate_platform=$(echo "$candidate" | cut -d "@" -f 1)
         candidate_version=$(echo "$candidate" | cut -d "@" -f 2)
         if [ "$candidate_platform" = "default" ]; then
-            # On first pass we set the default version.
+            # On first pass, we set the default version.
             PYTHON_VERSION=$candidate_version
         elif [ "${PYTHON_PLATFORM%$candidate_platform*}" = "" ]; then
-            # We have a match for a specific platform, so we set that.
+            # If matching a specific platform, we overwrite the default version.
             PYTHON_VERSION=$candidate_version
         fi
     done

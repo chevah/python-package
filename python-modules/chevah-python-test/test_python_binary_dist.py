@@ -76,6 +76,10 @@ def get_allowed_deps():
             allowed_deps.extend([
                 'libtinfo.so.5',
                 ])
+            if 'arm64' in chevah_arch:
+                allowed_deps.extend([
+                    'libgcc_s.so.1',
+                    ])
         elif ('raspbian' in chevah_os):
             allowed_deps.extend([
                 'libcofi_rpi.so',

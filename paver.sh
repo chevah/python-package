@@ -563,9 +563,7 @@ detect_os() {
                     grep ^'VERSION_ID=' /etc/os-release | cut -d'"' -f2)
                 check_os_version "Raspbian GNU/Linux" 7 \
                     "$os_version_raw" os_version_chevah
-                # For now, we only generate a Raspbian version 7.x package,
-                # and we should use that in newer Raspbian versions too.
-                OS="raspbian7"
+                OS="raspbian${os_version_chevah}"
             fi
         elif [ $(command -v lsb_release) ]; then
             lsb_release_id=$(lsb_release -is)

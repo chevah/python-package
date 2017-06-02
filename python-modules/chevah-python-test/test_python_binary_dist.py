@@ -81,12 +81,20 @@ def get_allowed_deps():
                     'libgcc_s.so.1',
                     ])
         elif ('raspbian' in chevah_os):
+            raspbian_version = int(chevah_os[8:])
             allowed_deps.extend([
-                'libcofi_rpi.so',
                 'libgcc_s.so.1',
                 'libncurses.so.5',
                 'libtinfo.so.5',
                 ])
+            if raspbian_version == 7:
+                allowed_deps.extend([
+                    '/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so',
+                    ])
+            elif raspbian_version >= 8:
+                allowed_deps.extend([
+                    '/usr/lib/arm-linux-gnueabihf/libarmmem.so',
+                    ])
         else:
             # Debian 7 x64 (aka linux-x64) needs this for cffi.
             allowed_deps.extend([

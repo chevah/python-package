@@ -700,7 +700,7 @@ command_test() {
             execute $LOCAL_PYTHON_BINARY \
                 ../python-modules/python-scandir-1.5/test/run_tests.py
             ;;
-        aix*|solaris10*|hpux*|linux*|openbsd*|netbsd*)
+        aix*|solaris10*|hpux*|linux*|raspbian*|openbsd*|netbsd*)
             # In OpenBSD there are even more issues actually.
             # Details at https://github.com/benhoyt/scandir/issues/79.
             (>&2 echo -e "\tSkipping because of upstream issues.")

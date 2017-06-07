@@ -255,6 +255,11 @@ case $OS in
         export CXX="clang++"
         export BUILD_LIBEDIT="no"
         ;;
+    openbsd*)
+        # cryptography fails to build with LibreSSL, use the packaged OpenSSL.
+        export LDFLAGS="-L/usr/local/eopenssl/lib $LDFLAGS"
+        export CPPFLAGS="$CPPFLAGS -I/usr/local/include/eopenssl"
+        ;;
     archlinux)
         export BUILD_LIBEDIT="no"
         ;;

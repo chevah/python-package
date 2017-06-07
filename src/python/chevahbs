@@ -117,6 +117,9 @@ chevahbs_configure() {
         osx*|macos*)
             CONFIG_ARGS="${CONFIG_ARGS} --without-gcc"
             ;;
+        openbsd*)
+            LDFLAGS="$LDFLAGS -Wl,-z,wxneeded"
+            ;;
     esac
 
     # This requires the v4 patch from https://bugs.python.org/issue13501.

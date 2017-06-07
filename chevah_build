@@ -54,7 +54,7 @@ EXTRA_LIBRARIES_NO_CFFI="\
 # List of python modules installed using pip
 PIP_LIBRARIES="\
     setproctitle==1.1.10 \
-    cryptography==1.3.1 \
+    cryptography==1.9 \
     pyOpenSSL==16.0.0 \
     scandir==1.5 \
     "
@@ -254,11 +254,6 @@ case $OS in
         export CC="clang"
         export CXX="clang++"
         export BUILD_LIBEDIT="no"
-        ;;
-    openbsd*)
-        # cryptography fails to build with LibreSSL, use the packaged OpenSSL.
-        export LDFLAGS="-L/usr/local/eopenssl/lib $LDFLAGS"
-        export CPPFLAGS="$CPPFLAGS -I/usr/local/include/eopenssl"
         ;;
     archlinux)
         export BUILD_LIBEDIT="no"

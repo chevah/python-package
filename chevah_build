@@ -55,7 +55,7 @@ EXTRA_LIBRARIES_NO_CFFI="\
 PIP_LIBRARIES="\
     setproctitle==1.1.10 \
     cryptography==1.9 \
-    pyOpenSSL==16.0.0 \
+    pyOpenSSL==17.0.0 \
     scandir==1.5 \
     "
 # Pre-combiled libraries distributed as wheels for Windows.

@@ -463,6 +463,7 @@ command_build() {
     # as copying the includes (HP-UX's linker fails with -I when not using GCC).
     mkdir -p $INSTALL_FOLDER/{include,lib}
     export LDFLAGS="-L${INSTALL_FOLDER}/lib/ ${LDFLAGS}"
+    export PKG_CONFIG_PATH="${INSTALL_FOLDER}/lib/pkgconfig/:${PKG_CONFIG_PATH}"
 
     if [ "$BUILD_LIBFFI" = "yes" ]; then
         build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}

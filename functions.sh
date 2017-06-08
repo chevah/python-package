@@ -243,6 +243,9 @@ wipe_manifest() {
 
 get_number_of_cpus() {
     case "$OS" in
+        windows*)
+            CPUS="$NUMBER_OF_PROCESSORS"
+            ;;
         aix*)
             # This works in an AIX 5.3 vWPAR too.
             CPUS=$(lparstat -i | grep ^"Maximum Physical CPUs" | cut -d\: -f2)
@@ -260,7 +263,7 @@ get_number_of_cpus() {
             ;;
         *)
             # Only Linux distros should be left.
-            # Don't use lscpu/nproc, as they are not present on older distros.
+            # Don't use lscpu/nproc or other stuff not present on older distros.
             CPUS=$(getconf _NPROCESSORS_ONLN)
             ;;
     esac

@@ -54,8 +54,8 @@ EXTRA_LIBRARIES_NO_CFFI="\
 # List of python modules installed using pip
 PIP_LIBRARIES="\
     setproctitle==1.1.10 \
-    cryptography==1.3.1 \
-    pyOpenSSL==16.0.0 \
+    cryptography==1.9 \
+    pyOpenSSL==17.0.0 \
     scandir==1.5 \
     "
 # Pre-combiled libraries distributed as wheels for Windows.
@@ -94,8 +94,7 @@ RHEL_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel ncurses-devel"
 SLES_PACKAGES="$COMMON_PACKAGES libopenssl-devel zlib-devel ncurses-devel"
 if [ $OS = 'sles10' ]; then
     SLES_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel ncurses-devel"
-fi
-if [ $OS = 'rhel5' ]; then
+elif [ $OS = 'rhel5' ]; then
     RHEL_PACKAGES="$RHEL_PACKAGES automake15"
 fi
 
@@ -263,6 +262,15 @@ case $OS in
         # to local ncurses libs (one of ncurses, ncursesw, tinfo, others?),
         # and the result is not portable.
         export BUILD_LIBEDIT="no"
+        ;;
+    rhel5|sles11)
+        # Up-to-date cryptography not working on these...
+        PIP_LIBRARIES="\
+            setproctitle==1.1.10 \
+            cryptography==1.3.1 \
+            pyOpenSSL==16.0.0 \
+            scandir==1.5 \
+            "
         ;;
     sles10)
         export BUILD_CFFI="no"
@@ -463,6 +471,7 @@ command_build() {
     # as copying the includes (HP-UX's linker fails with -I when not using GCC).
     mkdir -p $INSTALL_FOLDER/{include,lib}
     export LDFLAGS="-L${INSTALL_FOLDER}/lib/ ${LDFLAGS}"
+    export PKG_CONFIG_PATH="${INSTALL_FOLDER}/lib/pkgconfig/:${PKG_CONFIG_PATH}"
 
     if [ "$BUILD_LIBFFI" = "yes" ]; then
         build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
@@ -742,9 +751,8 @@ command_test_compat() {
     # download it.
     execute mkdir cache
     execute cp -r ../$LOCAL_PYTHON_BINARY_DIST cache/
-    # For now, this test is just informative, so even if we fail, we are OK.
     # Some tests might fail due to causes which are not related to python.
-    ./paver.sh test_ci
+    execute ./paver.sh test_ci
     execute popd
 
     execute popd

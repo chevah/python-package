@@ -117,6 +117,11 @@ chevahbs_configure() {
         osx*|macos*)
             CONFIG_ARGS="${CONFIG_ARGS} --without-gcc"
             ;;
+        openbsd*)
+            # In OpenBSD 6.1 and newer we need to mark the Python binary as
+            # "wxneeded" because it breaks the mandatory W^X protection.
+            LDFLAGS="$LDFLAGS -Wl,-z,wxneeded"
+            ;;
     esac
 
     # This requires the v4 patch from https://bugs.python.org/issue13501.

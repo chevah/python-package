@@ -421,7 +421,7 @@ def main():
 
             if chevah_os == 'windows':
                 # Check OpenSSL version on windows.
-                expecting = u'OpenSSL 1.0.2g  1 Mar 2016'
+                expecting = u'OpenSSL 1.1.0f  25 May 2017'
                 if openssl_version != expecting:
                     sys.stderr.write('Expecting %s got %s.\n' % (
                         expecting, openssl_version))

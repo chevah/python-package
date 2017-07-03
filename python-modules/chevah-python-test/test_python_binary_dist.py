@@ -64,7 +64,7 @@ def get_allowed_deps():
                     'libpcre.so.1',
                     ])
         elif ('sles' in chevah_os):
-            sles_version = int(chevah_os[4:])
+            sles_version = int(chevah_os[4:6])
             allowed_deps.extend([
                 'libncursesw.so.5',
                 ])

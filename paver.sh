@@ -552,6 +552,12 @@ detect_os() {
                 check_os_version "SUSE Linux Enterprise Server" 10 \
                     "$os_version_raw" os_version_chevah
                 OS="sles${os_version_chevah}"
+                if [ ${os_version_chevah} -eq 11 ]; then
+                    # Check for SLES 11 with OpenSSL 1.0 (aka Security Module).
+                    if [ -n $(rpm -q openssl1) ]; then
+                        OS="sles11sm"
+                    fi
+                fi
             fi
         elif [ -f /etc/arch-release ]; then
             # ArchLinux is a rolling distro, no version info available.

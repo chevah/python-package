@@ -67,7 +67,7 @@ PYTHON_PLATFORM='unknown-os-and-arch'
 PYTHON_NAME='python2.7'
 BINARY_DIST_URI='https://binary.chevah.com/production'
 PIP_INDEX='http://pypi.chevah.com'
-PAVER_VERSION='1.2.1'
+BASE_REQUIREMENTS=''
 
 # Load repo specific configuration.
 source paver.conf
@@ -218,17 +218,8 @@ write_default_values() {
 # Install base package.
 #
 install_base_deps() {
-    local base_packages
-    base_packages="paver==$PAVER_VERSION"
-    if [ "$BRINK_VERSION" = "skip" ]; then
-        echo "Skipping brink installation."
-    else
-        base_packages="$base_packages chevah-brink==$BRINK_VERSION"
-    fi
-
-    echo "Installing $base_packages."
-
-    pip_install "$base_packages"
+    echo "Installing base requirements: $BASE_REQUIREMENTS."
+    pip_install "$BASE_REQUIREMENTS"
 }
 
 

@@ -92,10 +92,12 @@ COMMON_PACKAGES="gcc make m4 automake libtool texinfo"
 DEBIAN_PACKAGES="$COMMON_PACKAGES libssl-dev zlib1g-dev libncurses5-dev"
 RHEL_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel ncurses-devel"
 SLES_PACKAGES="$COMMON_PACKAGES libopenssl-devel zlib-devel ncurses-devel"
-if [ $OS = 'sles10' ]; then
-    SLES_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel ncurses-devel"
-elif [ $OS = 'rhel5' ]; then
+if [ $OS = 'rhel5' ]; then
     RHEL_PACKAGES="$RHEL_PACKAGES automake15"
+elif [ $OS = 'sles10' ]; then
+    SLES_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel ncurses-devel"
+elif [ $OS = 'sles11sm' ]; then
+    SLES_PACKAGES="$COMMON_PACKAGES libopenssl1-devel zlib-devel ncurses-devel"
 fi
 
 # List of OS packages requested to be installed by this script.

@@ -97,6 +97,7 @@ if [ $OS = 'rhel5' ]; then
 elif [ $OS = 'sles10' ]; then
     SLES_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel ncurses-devel"
 elif [ $OS = 'sles11sm' ]; then
+    # SLES 11 with Security Module detected, we need the OpenSSL 1.0.x headers.
     SLES_PACKAGES="$COMMON_PACKAGES libopenssl1-devel zlib-devel ncurses-devel"
 fi
 

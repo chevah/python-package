@@ -544,8 +544,8 @@ detect_os() {
                     "$os_version_raw" os_version_chevah
                 OS="sles${os_version_chevah}"
                 if [ ${os_version_chevah} -eq 11 ]; then
-                    # Check for SLES 11 with OpenSSL 1.0 (aka Security Module).
-                    if [ -n $(rpm -q openssl1) ]; then
+                    # In 11.x check for OpenSSL 1.0.x (aka Security Module).
+                    if [ -x /usr/bin/openssl1 ]; then
                         OS="sles11sm"
                     fi
                 fi

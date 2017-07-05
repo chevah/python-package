@@ -543,11 +543,9 @@ detect_os() {
                 check_os_version "SUSE Linux Enterprise Server" 10 \
                     "$os_version_raw" os_version_chevah
                 OS="sles${os_version_chevah}"
-                if [ ${os_version_chevah} -eq 11 ]; then
-                    # In 11.x check for OpenSSL 1.0.x (aka Security Module).
-                    if [ -x /usr/bin/openssl1 ]; then
-                        OS="sles11sm"
-                    fi
+                # On 11.x, check for OpenSSL 1.0.x (a.k.a. Security Module).
+                if [ ${os_version_chevah} -eq 11 -a -x /usr/bin/openssl1 ]; then
+                    OS="sles11sm"
                 fi
             fi
         elif [ -f /etc/arch-release ]; then

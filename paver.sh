@@ -67,7 +67,7 @@ PYTHON_PLATFORM='unknown-os-and-arch'
 PYTHON_NAME='python2.7'
 BINARY_DIST_URI='https://binary.chevah.com/production'
 PIP_INDEX='http://pypi.chevah.com'
-PAVER_VERSION='1.2.1'
+BASE_REQUIREMENTS=''
 
 # Load repo specific configuration.
 source paver.conf
@@ -218,17 +218,8 @@ write_default_values() {
 # Install base package.
 #
 install_base_deps() {
-    local base_packages
-    base_packages="paver==$PAVER_VERSION"
-    if [ "$BRINK_VERSION" = "skip" ]; then
-        echo "Skipping brink installation."
-    else
-        base_packages="$base_packages chevah-brink==$BRINK_VERSION"
-    fi
-
-    echo "Installing $base_packages."
-
-    pip_install "$base_packages"
+    echo "Installing base requirements: $BASE_REQUIREMENTS."
+    pip_install "$BASE_REQUIREMENTS"
 }
 
 
@@ -552,6 +543,10 @@ detect_os() {
                 check_os_version "SUSE Linux Enterprise Server" 10 \
                     "$os_version_raw" os_version_chevah
                 OS="sles${os_version_chevah}"
+                # On 11.x, check for OpenSSL 1.0.x (a.k.a. Security Module).
+                if [ ${os_version_chevah} -eq 11 -a -x /usr/bin/openssl1 ]; then
+                    OS="sles11sm"
+                fi
             fi
         elif [ -f /etc/arch-release ]; then
             # ArchLinux is a rolling distro, no version info available.

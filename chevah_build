@@ -180,8 +180,6 @@ case $OS in
         if [ "$OS" = "solaris10u3" ]; then
             # pip doesn't like the included zlib from this old Solaris release.
             export BUILD_ZLIB="yes"
-            # GMP needs to be told that we aim for a 32bit build.
-            export ABI="32"
         fi
         # Here's where the system-included GCC is to be found.
         if [ "${CC}" = "gcc" ]; then
@@ -190,6 +188,8 @@ case $OS in
         # The location for GNU libs in Solaris, including OpenSSL in Solaris 10.
         if [ "${ARCH%64}" = "$ARCH" ]; then
             export LDFLAGS="$LDFLAGS -L/usr/sfw/lib -R/usr/sfw/lib"
+            # GMP needs to be told that we aim for a 32bit build.
+            export ABI="32"
         else
             export LDFLAGS="$LDFLAGS -m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
             export CFLAGS="$CFLAGS -m64"

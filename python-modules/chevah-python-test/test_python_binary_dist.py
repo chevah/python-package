@@ -124,6 +124,8 @@ def get_allowed_deps():
                 'libthread.a',
                 ])
     elif platform_system == 'sunos':
+        # On Solaris, platform.release() can be: '5.9'. '5.10', '5.11' etc.
+        solaris_version = platform.release().split('.')[1]
         if '64' in chevah_arch:
             # This is the common list of deps for Solaris 10 & 11 64bit builds.
             allowed_deps = [
@@ -134,8 +136,6 @@ def get_allowed_deps():
                 '/lib/64/libnsl.so.1',
                 '/lib/64/libsocket.so.1',
                 ]
-            # On Solaris, platform.release() can be: '5.9'. '5.10', '5.11' etc.
-            solaris_version = platform.release().split('.')[1]
             if solaris_version == '10':
                 # Specific deps to add for Solaris 10.
                 allowed_deps.extend([
@@ -169,25 +169,50 @@ def get_allowed_deps():
                         '/usr/lib/amd64/libc.so.1',
                         ])
         else:
-            # Full deps for Solaris 10u3 x86 (and possibly other 32bit builds).
+            # This is the common list of deps for Solaris 10 & 11 32bit builds.
             allowed_deps = [
-                '/lib/libaio.so.1',
                 '/lib/libc.so.1',
                 '/lib/libdl.so.1',
-                '/lib/libgen.so.1',
                 '/lib/libintl.so.1',
                 '/lib/libm.so.2',
-                '/lib/libmd5.so.1',
                 '/lib/libnsl.so.1',
                 '/lib/libsocket.so.1',
-                '/lib/libresolv.so.2',
-                '/lib/librt.so.1',
-                '/usr/lib/libcrypt_i.so.1',
-                '/usr/lib/mps/libsqlite3.so.0',
-                '/usr/sfw/lib//libgcc_s.so.1',
-                '/usr/sfw/lib//libcrypto.so.0.9.7',
-                '/usr/sfw/lib//libssl.so.0.9.7',
                 ]
+            if solaris_version == '10':
+                # Specific deps to add for all Solaris 10 versions.
+                allowed_deps.extend([
+                    '/lib/libaio.so.1',
+                    '/lib/libgen.so.1',
+                    '/lib/librt.so.1',
+                    '/usr/lib/libcrypt_i.so.1',
+                    '/usr/sfw/lib//libcrypto.so.0.9.7',
+                    '/usr/sfw/lib//libssl.so.0.9.7',
+                    ])
+                if 'solaris10u3' in chevah_os:
+                    # Specific deps for Solaris 10u3 up to 10u7.
+                    allowed_deps.extend([
+                        '/lib/libmd5.so.1',
+                        '/lib/libresolv.so.2',
+                        '/usr/lib/mps/libsqlite3.so.0',
+                        '/usr/sfw/lib//libgcc_s.so.1',
+                        ])
+                else:
+                    # Specific deps for Solaris 10u8 and newer.
+                    allowed_deps.extend([
+                        '/lib/libmd.so.1',
+                        '/usr/lib/libz.so.1',
+                        '/usr/lib/mps/libsqlite3.so',
+                        '/lib/libthread.so.1',
+                        ])
+            elif solaris_version == '11':
+                # Specific deps to add for Solaris 11.
+                allowed_deps.extend([
+                    '/lib/libcrypto.so.1.0.0',
+                    '/lib/libssl.so.1.0.0',
+                    '/lib/libz.so.1',
+                    '/usr/lib/libcrypt.so.1',
+                    '/usr/lib/libsqlite3.so.0',
+                    ])
     elif platform_system == 'hp-ux':
         # Specific deps for HP-UX 11.31, with full path.
         allowed_deps = [

@@ -621,13 +621,17 @@ detect_os() {
         exit 14
     fi
 
-    # Fix arch names.
+    # Fix arch names. Force 32bit builds on problematic OS'es.
     if [ "$ARCH" = "i686" -o "$ARCH" = "i386" ]; then
         ARCH='x86'
-    elif [ "$ARCH" = "x86_64" -o "$ARCH" = "amd64" ]; then
+    elif [ "$ARCH" = "amd64" -a "${OS%solaris*}" = "" ]; then
+        # Huge RAM usage on Solaris, so we build 32bit binaries.
+        ARCH='x86'
+    elif [ "$ARCH" = "amd64" -o "$ARCH" = "x86_64" ]; then
         ARCH='x64'
     elif [ "$ARCH" = "sparcv9" ]; then
-        ARCH='sparc64'
+        # Huge RAM usage on Solaris, so we build 32bit binaries.
+        ARCH='sparc'
     elif [ "$ARCH" = "ppc64" ]; then
         # Python has not been fully tested on AIX when compiled as a 64 bit
         # binary, and has math rounding error problems (at least with XL C).

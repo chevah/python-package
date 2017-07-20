@@ -756,7 +756,10 @@ command_test_compat() {
     execute pushd compat
     # We patch the Python version to match the one that we have just built
     # and copy it in cache so that it will be picked up by the new build.
-    execute echo -e "\nPYTHON_CONFIGURATION=${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" >> paver.conf
+    # FIXME:4247:
+    # PYTHON_CONFIGURATION with only one option breaks paver.sh.
+    # For now, have added an extra ':' at the end to make things work.
+    execute echo -e "\nPYTHON_CONFIGURATION=default@${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}:" >> paver.conf
     # Populate the cache with the latest version so that we don't have to
     # download it.
     execute mkdir cache

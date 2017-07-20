@@ -760,6 +760,8 @@ command_test_compat() {
     # PYTHON_CONFIGURATION with only one option breaks paver.sh.
     # For now, have added an extra ':' at the end to make things work.
     execute echo -e "\nPYTHON_CONFIGURATION=default@${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}:" >> paver.conf
+    # Also copy latest paver.sh, as some changes might require it.
+    execute cp ../../paver.sh ./
     # Populate the cache with the latest version so that we don't have to
     # download it.
     execute mkdir cache

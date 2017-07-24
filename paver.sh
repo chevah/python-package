@@ -621,20 +621,27 @@ detect_os() {
         exit 14
     fi
 
-    # Fix arch names.
-    if [ "$ARCH" = "i686" -o "$ARCH" = "i386" ]; then
-        ARCH='x86'
-    elif [ "$ARCH" = "x86_64" -o "$ARCH" = "amd64" ]; then
-        ARCH='x64'
-    elif [ "$ARCH" = "sparcv9" ]; then
-        ARCH='sparc64'
-    elif [ "$ARCH" = "ppc64" ]; then
-        # Python has not been fully tested on AIX when compiled as a 64 bit
-        # binary, and has math rounding error problems (at least with XL C).
-        ARCH='ppc'
-    elif [ "$ARCH" = "aarch64" ]; then
-        ARCH='arm64'
-    fi
+    # Normalize arch names. Force 32bit builds on some OS'es.
+    case "$ARCH" in
+        "i386"|"i686")
+            ARCH="x86"
+            ;;
+        "amd64"|"x86_64")
+            ARCH="x64"
+            ;;
+        "aarch64")
+            ARCH="arm64"
+            ;;
+        "ppc64")
+            # Python has not been fully tested on AIX when compiled as a 64bit
+            # binary, and has math rounding error problems (at least with XL C).
+            ARCH="ppc"
+            ;;
+        "sparcv9")
+            # We build 32bit binaries on SPARC too. Use "sparc64" for 64bit.
+            ARCH="sparc"
+            ;;
+    esac
 }
 
 detect_os

@@ -629,17 +629,17 @@ detect_os() {
         "amd64"|"x86_64")
             ARCH="x64"
             ;;
-        "sparcv9")
-            # We build 32bit binaries on SPARC. Use "sparc64" for 64bit builds.
-            ARCH="sparc"
+        "aarch64")
+            ARCH="arm64"
             ;;
         "ppc64")
-            # Python has not been fully tested on AIX when compiled as a 64 bit
+            # Python has not been fully tested on AIX when compiled as a 64bit
             # binary, and has math rounding error problems (at least with XL C).
             ARCH="ppc"
             ;;
-        "aarch64")
-            ARCH="arm64"
+        "sparcv9")
+            # We build 32bit binaries on SPARC too. Use "sparc64" for 64bit.
+            ARCH="sparc"
             ;;
     esac
 }

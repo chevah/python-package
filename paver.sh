@@ -621,20 +621,16 @@ detect_os() {
         exit 14
     fi
 
-    # Normalize arch names. Force 32bit builds on problematic OS'es.
+    # Normalize arch names. Force 32bit builds on some OS'es.
     case "$ARCH" in
         "i386"|"i686")
             ARCH="x86"
             ;;
         "amd64"|"x86_64")
             ARCH="x64"
-            if [ "${OS%solaris*}" = "" ]; then
-            # We build 32bit binaries on Solaris, to err on the safe side.
-                ARCH="x86"
-            fi
             ;;
         "sparcv9")
-            # The other choice would be "sparc64", but we err on the safe side.
+            # We build 32bit binaries on SPARC. Use "sparc64" for 64bit builds.
             ARCH="sparc"
             ;;
         "ppc64")

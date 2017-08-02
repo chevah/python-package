@@ -636,8 +636,7 @@ detect_os() {
         os_version_raw=$(uname -r | cut -d'.' -f1)
         check_os_version "FreeBSD" 10 "$os_version_raw" os_version_chevah
 
-        # For now, no matter the actual FreeBSD version returned, we use '10'.
-        OS="freebsd10"
+        OS="freebsd${os_version_chevah}"
 
     elif [ "${OS}" = "openbsd" ]; then
         ARCH=$(uname -m)

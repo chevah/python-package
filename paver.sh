@@ -185,18 +185,18 @@ update_path_variables() {
 #
 resolve_python_version() {
     local version_configuration=$PYTHON_CONFIGURATION
+    local version_configuration_array
     local candidate
     local candidate_platform
     local candidate_version
 
     PYTHON_PLATFORM="$OS-$ARCH"
 
-    versions=$(echo "$version_configuration" | grep -c ":")
-    counter=0
-    while [ $counter -le $versions ]; do
-        # Number of delimiters is one less than the number of versions.
-        let counter=counter+1
-        candidate=$(echo "$version_configuration" | cut -d ":" -f $counter)
+    # Using ':' as a delimiter, populate a dedicated array.
+    IFS=: read -a version_configuration_array <<< "$version_configuration"
+    # Iterate through all the elements of the array to find the best candidate.
+    for (( i=0 ; i < ${#version_configuration_array[@]}; i++ )); do
+        candidate="${version_configuration_array[$i]}"
         candidate_platform=$(echo "$candidate" | cut -d "@" -f 1)
         candidate_version=$(echo "$candidate" | cut -d "@" -f 2)
         if [ "$candidate_platform" = "default" ]; then
@@ -297,6 +297,7 @@ test_version_exists() {
 #
 get_python_dist() {
     local remote_base_url=$1
+    local download_mode=$2
     local python_distributable=python-${PYTHON_VERSION}-${OS}-${ARCH}
     local wget_test
 
@@ -309,6 +310,10 @@ get_python_dist() {
         # We have the requested python version.
         get_binary_dist $python_distributable $remote_base_url/${OS}/${ARCH}
     else
+        if [ $download_mode == "strict" ]; then
+            echo "The requested version was not found on the remote server."
+            exit 1
+        fi
         # Fall back to the non-versioned distribution.
         echo "!!!Getting FALLBACK version!!!"
         get_binary_dist $PYTHON_NAME-$OS-$ARCH $remote_base_url
@@ -336,18 +341,36 @@ copy_python() {
 
     # Check that python dist was installed
     if [ ! -s ${PYTHON_BIN} ]; then
-        # Install python-dist since everything else depends on it.
+        # We don't have a Python binary, so we install it since everything
+        # else depends on it.
         echo "Bootstrapping ${LOCAL_PYTHON_BINARY_DIST} environment" \
             "to ${BUILD_FOLDER}..."
         mkdir -p ${BUILD_FOLDER}
 
-        # If we don't have a cached python distributable,
-        # get one together with default build system.
+        if [ -d ${python_distributable} ]; then
+            # We have a cached distributable.
+            # Check if is at the right version.
+            local cache_ver_file
+            cache_ver_file=${python_distributable}/lib/PYTHON_PACKAGE_VERSION
+            cache_version='UNVERSIONED'
+            if [ -f cache_ver_file ]; then
+                cache_version=`cat $cache_ver_file`
+            fi
+            if [ "$PYTHON_VERSION" != "$cache_version" ]; then
+                # We have a different version in the cache.
+                # Just remove it and hope that the next step will download
+                # the right one.
+                rm -rf ${python_distributable}
+            fi
+        fi
+
         if [ ! -d ${python_distributable} ]; then
+            # We don't have a cached python distributable.
             echo "No ${LOCAL_PYTHON_BINARY_DIST} environment." \
                 "Start downloading it..."
-            get_python_dist "$BINARY_DIST_URI/python"
+            get_python_dist "$BINARY_DIST_URI/python" "strict"
         fi
+
         echo "Copying Python distribution files... "
         cp -R ${python_distributable}/* ${BUILD_FOLDER}
 
@@ -356,10 +379,26 @@ copy_python() {
     else
         # We have a Python, but we are not sure if is the right version.
         local version_file=${BUILD_FOLDER}/lib/PYTHON_PACKAGE_VERSION
+
         if [ -f $version_file ]; then
+            # We have a versioned distribution.
             python_installed_version=`cat $version_file`
             if [ "$PYTHON_VERSION" != "$python_installed_version" ]; then
                 # We have a different python installed.
+
+                # Check if we have the to-be-updated version and fail if
+                # it does not exists.
+                set +o errexit
+                test_version_exists "$BINARY_DIST_URI/python"
+                local test_version=$?
+                set -o errexit
+                if [ $test_version -ne 0 ]; then
+                    echo "The build is now at $python_installed_version"
+                    echo "Failed to find the required $PYTHON_VERSION"
+                    echo "Check your configuration or the remote server."
+                    exit 1
+                fi
+
                 # Remove it and try to install it again.
                 echo "Updating Python from" \
                     $python_installed_version to $PYTHON_VERSION
@@ -666,7 +705,7 @@ if [ "$COMMAND" = "get_python" ] ; then
     OS=$2
     ARCH=$3
     resolve_python_version
-    get_python_dist "$BINARY_DIST_URI/python"
+    get_python_dist "$BINARY_DIST_URI/python" "fallback"
     exit 0
 fi
 

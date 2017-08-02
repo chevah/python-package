@@ -265,18 +265,18 @@ def get_allowed_deps():
             ]
         # On FreeBSD this can be: '10.3-RELEASE-p20', '11.0-RELEASE', etc.
         freebsd_version = platform.release().split('.')[0]
-	if freebsd_version == '10':
-	    # Additional deps, specific for FreeBSD 10.
-	    allowed_deps.extend([
-		'/lib/libcrypto.so.7',
-		'/usr/lib/libssl.so.7',
-	    ])
-	else:
-	    # Additional deps, specific for FreeBSD 11 and maybe newer.
-	    allowed_deps.extend([
-		'/lib/libcrypto.so.8',
-		'/usr/lib/libssl.so.8',
-	    ])
+        if freebsd_version == '10':
+            # Additional deps, specific for FreeBSD 10.
+            allowed_deps.extend([
+                '/lib/libcrypto.so.7',
+                '/usr/lib/libssl.so.7',
+            ])
+        else:
+            # Additional deps, specific for FreeBSD 11 and maybe newer.
+            allowed_deps.extend([
+                '/lib/libcrypto.so.8',
+                '/usr/lib/libssl.so.8',
+            ])
     elif platform_system == 'openbsd':
         # This is the list of deps for OpenBSD 5.8 or newer, sans versions.
         allowed_deps = [

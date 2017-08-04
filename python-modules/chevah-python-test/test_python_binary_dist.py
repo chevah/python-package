@@ -254,17 +254,29 @@ def get_allowed_deps():
                 '/usr/local/opt/openssl/lib/libssl.1.0.0.dylib',
                 ])
     elif platform_system == 'freebsd':
-        # This is the list of specific deps for FreeBSD 10.x, with paths.
+        # This is the common list of deps for FreeBSD 10 and newer, with paths.
         allowed_deps = [
             '/lib/libc.so.7',
             '/lib/libcrypt.so.5',
-            '/lib/libcrypto.so.7',
             '/lib/libm.so.5',
             '/lib/libthr.so.3',
             '/lib/libutil.so.9',
             '/lib/libz.so.6',
-            '/usr/lib/libssl.so.7',
             ]
+        # On FreeBSD this can be: '10.3-RELEASE-p20', '11.0-RELEASE', etc.
+        freebsd_version = platform.release().split('.')[0]
+        if freebsd_version == '10':
+            # Additional deps, specific for FreeBSD 10.
+            allowed_deps.extend([
+                '/lib/libcrypto.so.7',
+                '/usr/lib/libssl.so.7',
+            ])
+        else:
+            # Additional deps, specific for FreeBSD 11 and maybe newer.
+            allowed_deps.extend([
+                '/lib/libcrypto.so.8',
+                '/usr/lib/libssl.so.8',
+            ])
     elif platform_system == 'openbsd':
         # This is the list of deps for OpenBSD 5.8 or newer, sans versions.
         allowed_deps = [

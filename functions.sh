@@ -255,8 +255,8 @@ get_number_of_cpus() {
             CPUS=$(/usr/sbin/psrinfo -p)
             ;;
         hpux*)
-            # Only count physical cores. Tested on Itaniums.
-            CPUS=$(machinfo | grep proc | grep core | awk '{print $1}')
+            # This counts logical cores. Tested on Itaniums.
+            CPUS=$(ioscan -kFC processor | wc -l)
             ;;
         osx*|macos*|freebsd*|openbsd*|netbsd*)
             CPUS=$(sysctl -n hw.ncpu)

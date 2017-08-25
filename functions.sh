@@ -247,7 +247,7 @@ get_number_of_cpus() {
             CPUS="$NUMBER_OF_PROCESSORS"
             ;;
         aix*)
-            # This works in an AIX 5.3 vWPAR too.
+            # This works in AIX 5.3/6.1/7.1, including (v)WPARs.
             CPUS=$(lparstat -i | grep ^"Maximum Physical CPUs" | cut -d\: -f2)
             ;;
         solaris*)
@@ -255,7 +255,7 @@ get_number_of_cpus() {
             CPUS=$(/usr/sbin/psrinfo -p)
             ;;
         hpux*)
-            # Only count physical processors. Tested on Itanium.
+            # Only count physical cores. Tested on Itaniums.
             CPUS=$(machinfo | grep proc | grep core | awk '{print $1}')
             ;;
         osx*|macos*|freebsd*|openbsd*|netbsd*)

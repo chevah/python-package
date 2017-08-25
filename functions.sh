@@ -241,6 +241,9 @@ wipe_manifest() {
 
 }
 
+#
+# Get number of CPUs on supported OS'es.
+#
 get_number_of_cpus() {
     case "$OS" in
         windows*)
@@ -259,10 +262,11 @@ get_number_of_cpus() {
             CPUS=$(ioscan -kFC processor | wc -l)
             ;;
         osx*|macos*|freebsd*|openbsd*|netbsd*)
+            # Logical cores count.
             CPUS=$(sysctl -n hw.ncpu)
             ;;
         *)
-            # Only Linux distros should be left.
+            # Only Linux distros should be left. We count logical cores here.
             # Don't use lscpu/nproc or other stuff not present on older distros.
             CPUS=$(getconf _NPROCESSORS_ONLN)
             ;;

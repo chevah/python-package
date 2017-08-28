@@ -334,6 +334,9 @@ case "$ARCH" in
 esac
 if [ "${OS%hpux*}" = "" ]; then
     export PARALLEL="$JOBS"
+    # FIXME:4308:
+    # Parallel builds of GMP with more than 2 threads fail on HP-UX.
+    export PARALLEL=2
 else
     export MAKE="$MAKE -j${JOBS}"
 fi

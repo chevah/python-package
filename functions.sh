@@ -252,24 +252,25 @@ get_number_of_cpus() {
             ;;
         aix*)
             # Physical CPUs on AIX 5.3/6.1/7.1, including (v)WPARs.
+            # CPU threads don't help us on PPC64 with this workload.
             CPUS=$(lparstat -i | grep ^"Active Physical CPUs" | cut -d\: -f2)
             ;;
         solaris*)
-            # Only count physical processors. SPARC has lots of threads lately,
-            # but they don't help much here. Tested on 10/11 on SPARC/AMD64/X86.
+            # Physical CPUs. SPARC has lots of threads lately, but they don't
+            # help much here. Tested on Solaris 10/11 on X86/AMD64/SPARC.
             CPUS=$(/usr/sbin/psrinfo -p)
             ;;
         hpux*)
-            # This counts logical cores. Tested on 11.31 running on Itaniums.
+            # Logical CPUs. Tested on HP-UX 11.31 running on Itaniums.
             CPUS=$(ioscan -kFC processor | wc -l)
             ;;
         osx*|macos*|freebsd*|openbsd*|netbsd*)
-            # Logical cores count.
+            # Logical CPUs.
             CPUS=$(sysctl -n hw.ncpu)
             ;;
         *)
             # Only Linux distros should be left.
-            # We count logical cores here.
+            # Logical CPUS.
             # Don't use lscpu/nproc or other stuff not present on older distros.
             CPUS=$(getconf _NPROCESSORS_ONLN)
             ;;

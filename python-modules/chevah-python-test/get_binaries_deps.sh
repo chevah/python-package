@@ -22,6 +22,11 @@ elif [ "$os" = "SunOS" ]; then
     checker="ldd -L"
 elif [ "$os" = "HP-UX" ]; then
     checker="/usr/ccs/bin/ldd"
+elif [ "$os" = "Linux" ]; then
+    # objdump is more secure and portable than ldd, but more parsing is needed,
+    # as only lines that start with NEEDED are useful for deps checking.
+    # We use this as Alpine's ldd (from musl) goes nuts on some Python modules.
+    checker="objdump -p"
 fi
 
 # This portable invocation of find will get a raw list of linked libs

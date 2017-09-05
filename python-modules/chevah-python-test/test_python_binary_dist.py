@@ -93,6 +93,15 @@ def get_allowed_deps():
                 allowed_deps.extend([
                     '/usr/lib/arm-linux-gnueabihf/libarmmem.so',
                     ])
+        elif ('alpine' in chevah_os):
+            # This is a peculiar distro, so we start the list from scratch.
+            allowed_deps=([
+                'libc.musl-x86_64.so.1',
+                'libcrypto.so.41',
+                'libncursesw.so.6',
+                'libssl.so.43',
+                'libz.so.1',
+                ])
         else:
             # Debian 7 x64 (aka linux-x64) needs this for cffi.
             allowed_deps.extend([

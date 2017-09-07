@@ -32,6 +32,8 @@ def get_allowed_deps():
             'libssl.so',
             'libutil.so',
             'libz.so',
+            'linux-gate.so',
+            'linux-vdso.so',
             ]
         # Distro-specific deps to add. Now we may specify major versions too.
         if ('rhel' in chevah_os):
@@ -95,12 +97,14 @@ def get_allowed_deps():
                     ])
         elif ('alpine' in chevah_os):
             # This is a peculiar distro, so we start the list from scratch.
+            # Full deps with paths, but no minor versions, for Alpine 3.6.
             allowed_deps=([
-                'libc.musl-x86_64.so.1',
-                'libcrypto.so.41',
-                'libncursesw.so.6',
-                'libssl.so.43',
-                'libz.so.1',
+                '/lib/ld-musl-x86_64.so.1',
+                '/lib/libc.musl-x86_64.so.1',
+                '/lib/libcrypto.so.41',
+                '/lib/libssl.so.43',
+                '/lib/libz.so.1',
+                '/usr/lib/libncursesw.so.6',
                 ])
         else:
             # Debian 7 x64 (aka linux-x64) needs this for cffi.
@@ -330,9 +334,6 @@ def get_actual_deps(script_helper):
     else:
         libs_deps = []
         for line in raw_deps:
-            if platform_system == 'linux' and not line.startswith('  NEEDED'):
-                # From objdump's output we want only lines starting with NEEDED.
-                continue
             if line.startswith('./') or not line:
                 # In some OS'es (AIX, HP-UX, OS X, BSDs), the output includes
                 # the examined binaries, and those lines start with "./".
@@ -352,9 +353,6 @@ def get_actual_deps(script_helper):
                 strings_to_ignore = ( 'Name', os.getcwd(), './', )
                 if dep.startswith(strings_to_ignore):
                     continue
-            elif platform_system == 'linux':
-                # objdump's lines starting with NEEDED list deps in 2th colon.
-                dep = line.split()[1]
             else:
                 # Usually, the first field in each line is the needed file name.
                 dep = line.split()[0]

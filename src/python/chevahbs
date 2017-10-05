@@ -198,6 +198,10 @@ chevahbs_install() {
                 sed "s|# utf_8 codec|# utf_8 codec\n    'cp65001'            : 'utf_8',|" < $destination/lib/encodings/aliases.old > $destination/lib/encodings/aliases.py
             ;;
         *)
+            if [ "${OS%alpine*}" = "" ]; then
+                # EMUTRAMP required for full functionality with a grsec kernel.
+                execute paxmark -E python
+            fi
             execute $MAKE install DESTDIR=$INSTALL_FOLDER
             ;;
     esac

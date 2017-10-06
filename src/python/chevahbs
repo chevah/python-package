@@ -199,8 +199,9 @@ chevahbs_install() {
             ;;
         *)
             if [ "${OS%alpine*}" = "" ]; then
-                # EMUTRAMP required for full functionality with a grsec kernel.
-                execute paxmark -E python
+                # EMUTRAMP required for full functionality under a grsec kernel.
+                # Don't use "paxmark", file attributes will be lost when tar'ed.
+                execute paxctl -cE python
             fi
             execute $MAKE install DESTDIR=$INSTALL_FOLDER
             ;;

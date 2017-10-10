@@ -22,6 +22,12 @@ elif [ "$os" = "SunOS" ]; then
     checker="ldd -L"
 elif [ "$os" = "HP-UX" ]; then
     checker="/usr/ccs/bin/ldd"
+elif [ "$os" = "Linux" ]; then
+    if [ -f /etc/alpine-release ]; then
+        # musl's ldd has issues with some Python modules, so we use lddtree,
+        # which is forked from pax-utils and installed by default in Alpine.
+        checker="lddtree -l"
+    fi
 fi
 
 # This portable invocation of find will get a raw list of linked libs

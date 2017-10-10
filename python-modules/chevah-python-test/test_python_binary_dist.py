@@ -95,6 +95,17 @@ def get_allowed_deps():
                 allowed_deps.extend([
                     '/usr/lib/arm-linux-gnueabihf/libarmmem.so',
                     ])
+        elif ('alpine' in chevah_os):
+            # This is a peculiar distro, so we start the list from scratch.
+            # Full deps with paths, but no minor versions, for Alpine 3.6.
+            allowed_deps=([
+                '/lib/ld-musl-x86_64.so.1',
+                '/lib/libc.musl-x86_64.so.1',
+                '/lib/libcrypto.so.41',
+                '/lib/libssl.so.43',
+                '/lib/libz.so.1',
+                '/usr/lib/libncursesw.so.6',
+                ])
         else:
             # Debian 7 x64 (aka linux-x64) needs this for cffi.
             allowed_deps.extend([

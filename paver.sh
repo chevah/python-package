@@ -595,30 +595,28 @@ detect_os() {
             check_os_version "Alpine Linux" 3.6 \
                 "$os_version_raw" os_version_chevah
             OS="alpine${os_version_chevah}"
-        elif [ -f /etc/rpi-issue ]; then
-            # Raspbian is a special case, a Debian unofficial derivative.
-            if egrep -q ^'NAME="Raspbian GNU/Linux' /etc/os-release; then
-                os_version_raw=$(\
-                    grep ^'VERSION_ID=' /etc/os-release | cut -d'"' -f2)
-                check_os_version "Raspbian GNU/Linux" 7 \
-                    "$os_version_raw" os_version_chevah
-                OS="raspbian${os_version_chevah}"
-            fi
         elif [ -f /etc/os-release ]; then
             linux_distro=$(grep ^ID= /etc/os-release | cut -d'=' -f2)
-            os_version_raw=$(grep ^VERSION_ID= /etc/os-release \
-                | cut -d'=' -f2 | cut -d'"' -f2)
-            if [ "$linux_distro" = "ubuntu" ]; then
-                check_os_version "Ubuntu Long-term Support" 14.04 \
-                    "$os_version_raw" os_version_chevah
-                # Only Long-term Support versions are officially endorsed, thus
-                # $os_version_chevah should end in 04, and the first two digits
-                # should represent an even year.
-                if [ ${os_version_chevah%%04} != ${os_version_chevah} -a \
-                    $(( ${os_version_chevah%%04} % 2 )) -eq 0 ]; then
-                    OS="ubuntu${os_version_chevah}"
-                fi
-            fi
+            os_version_raw=$(\
+                grep ^'VERSION_ID=' /etc/os-release | cut -d'"' -f2)
+            case "$linux_distro" in
+                "ubuntu")
+                    check_os_version "Ubuntu Long-term Support" 14.04 \
+                        "$os_version_raw" os_version_chevah
+                    # Only Long-term Support versions are supported,
+                    # thus $os_version_chevah should end in 04,
+                    # and the first two digits should represent an even year.
+                    if [ ${os_version_chevah%%04} != ${os_version_chevah} -a \
+                        $(( ${os_version_chevah%%04} % 2 )) -eq 0 ]; then
+                        OS="ubuntu${os_version_chevah}"
+                    fi
+                    ;;
+                "raspbian")
+                    check_os_version "Raspbian GNU/Linux" 7 \
+                        "$os_version_raw" os_version_chevah
+                    OS="raspbian${os_version_chevah}"
+                    ;;
+            esac
         fi
     elif [ "${OS}" = "darwin" ]; then
         ARCH=$(uname -m)

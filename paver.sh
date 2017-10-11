@@ -593,7 +593,7 @@ detect_os() {
         elif [ -f /etc/os-release ]; then
             linux_distro=$(grep ^ID= /etc/os-release | cut -d'=' -f2)
             os_version_raw=$(\
-                grep ^'VERSION_ID=' /etc/os-release | cut -d'"' -f2)
+                grep ^'VERSION_ID=' /etc/os-release | cut -d'=' -f2)
             case "$linux_distro" in
                 "ubuntu")
                     check_os_version "Ubuntu Long-term Support" 14.04 \

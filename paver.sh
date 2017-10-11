@@ -588,7 +588,8 @@ detect_os() {
                 fi
             fi
         elif [ -f /etc/arch-release ]; then
-            # ArchLinux is a rolling distro, no version info available.
+            # Arch Linux is a rolling distro, no version info available.
+            # Beware that there's no version to get from /etc/os-release either!
             OS="archlinux"
         elif [ -f /etc/os-release ]; then
             linux_distro=$(grep ^ID= /etc/os-release | cut -d'=' -f2)

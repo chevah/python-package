@@ -604,11 +604,12 @@ detect_os() {
                     "$os_version_raw" os_version_chevah
                 OS="raspbian${os_version_chevah}"
             fi
-        elif [ $(command -v lsb_release) ]; then
-            lsb_release_id=$(lsb_release -is)
-            os_version_raw=$(lsb_release -rs)
-            if [ $lsb_release_id = Ubuntu ]; then
-                check_os_version "Ubuntu Long-term Support" 10.04 \
+        elif [ -f /etc/os-release ]; then
+            linux_distro=$(grep ^ID= /etc/os-release | cut -d'=' -f2)
+            os_version_raw=$(grep ^VERSION_ID= /etc/os-release \
+                | cut -d'=' -f2 | cut -d'"' -f2)
+            if [ "$linux_distro" = "ubuntu" ]; then
+                check_os_version "Ubuntu Long-term Support" 14.04 \
                     "$os_version_raw" os_version_chevah
                 # Only Long-term Support versions are officially endorsed, thus
                 # $os_version_chevah should end in 04, and the first two digits

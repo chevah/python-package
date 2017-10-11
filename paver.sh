@@ -609,6 +609,9 @@ detect_os() {
                     if [ ${os_version_chevah%%04} != ${os_version_chevah} -a \
                         $(( ${os_version_chevah%%04} % 2 )) -eq 0 ]; then
                         OS="ubuntu${os_version_chevah}"
+                    else
+                        echo "Unsupported Ubuntu, please use an LTS version."
+                        exit 15
                     fi
                     ;;
                 "raspbian")

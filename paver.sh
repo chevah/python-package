@@ -590,11 +590,6 @@ detect_os() {
         elif [ -f /etc/arch-release ]; then
             # ArchLinux is a rolling distro, no version info available.
             OS="archlinux"
-        elif [ -f /etc/alpine-release ]; then
-            os_version_raw=$(cat /etc/alpine-release)
-            check_os_version "Alpine Linux" 3.6 \
-                "$os_version_raw" os_version_chevah
-            OS="alpine${os_version_chevah}"
         elif [ -f /etc/os-release ]; then
             linux_distro=$(grep ^ID= /etc/os-release | cut -d'=' -f2)
             os_version_raw=$(\
@@ -618,6 +613,11 @@ detect_os() {
                     check_os_version "Raspbian GNU/Linux" 7 \
                         "$os_version_raw" os_version_chevah
                     OS="raspbian${os_version_chevah}"
+                    ;;
+                "alpine")
+                    check_os_version "Alpine Linux" 3.6 \
+                        "$os_version_raw" os_version_chevah
+                    OS="alpine${os_version_chevah}"
                     ;;
             esac
         fi

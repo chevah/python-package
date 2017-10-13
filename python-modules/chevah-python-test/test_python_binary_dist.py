@@ -137,7 +137,7 @@ def get_allowed_deps():
             '/usr/lib/libpthreads.a(shr_xpg5.o)',
             '/usr/lib/libssl.so',
             '/unix',
-             ]
+            ]
         # sys.platform could be 'aix5', 'aix6' etc.
         aix_version = int(sys.platform[-1])
         if aix_version >= 6:

@@ -113,7 +113,7 @@ def get_allowed_deps():
                 ])
     elif platform_system == 'aix':
         # List of deps with full paths for AIX 5.3 with OpenSSL 1.0.2k.
-        # These deps are common to AIX 6.1 and 7.1 as well. 
+        # These deps are common to AIX 6.1 and 7.1 as well.
         allowed_deps = [
             '/lib/libbsd.a(shr.o)',
             '/lib/libc.a(pse.o)',

@@ -142,7 +142,6 @@ def get_allowed_deps():
             allowed_deps = [
                 '/lib/64/libc.so.1',
                 '/lib/64/libdl.so.1',
-                '/lib/64/libintl.so.1',
                 '/lib/64/libm.so.2',
                 '/lib/64/libnsl.so.1',
                 '/lib/64/libsocket.so.1',
@@ -184,7 +183,6 @@ def get_allowed_deps():
             allowed_deps = [
                 '/lib/libc.so.1',
                 '/lib/libdl.so.1',
-                '/lib/libintl.so.1',
                 '/lib/libm.so.2',
                 '/lib/libnsl.so.1',
                 '/lib/libsocket.so.1',
@@ -294,7 +292,7 @@ def get_allowed_deps():
             '/usr/lib/libc.so',
             '/usr/lib/libcrypto.so',
             '/usr/lib/libm.so',
-            '/usr/lib/libncursesw.so.14.0',
+            '/usr/lib/libncursesw.so',
             '/usr/lib/libpthread.so',
             '/usr/lib/libssl.so',
             '/usr/lib/libutil.so',
@@ -310,7 +308,6 @@ def get_allowed_deps():
             '/usr/lib/libcrypto.so.8',
             '/usr/lib/libcurses.so.7',
             '/usr/lib/libgcc_s.so.1',
-            '/usr/lib/libintl.so.1',
             '/usr/lib/libm.so.0',
             '/usr/lib/libpthread.so.1',
             '/usr/lib/libssl.so.10',

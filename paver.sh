@@ -592,12 +592,13 @@ detect_os() {
             # Beware that there's no version to get from /etc/os-release either!
             OS="archlinux"
         elif [ -f /etc/os-release ]; then
-            linux_distro=$(grep ^ID= /etc/os-release | cut -d'=' -f2)
-            os_version_raw=$(\
-                grep ^'VERSION_ID=' /etc/os-release | cut -d'=' -f2)
+            source /etc/os-release
+            linux_distro="$ID"
+            os_version_raw="$VERSION_ID"
+            distro_name="$NAME"
             case "$linux_distro" in
                 "ubuntu")
-                    check_os_version "Ubuntu Long-term Support" 14.04 \
+                    check_os_version "$distro_name" 14.04 \
                         "$os_version_raw" os_version_chevah
                     # Only Long-term Support versions are supported,
                     # thus $os_version_chevah should end in 04,
@@ -611,12 +612,12 @@ detect_os() {
                     fi
                     ;;
                 "raspbian")
-                    check_os_version "Raspbian GNU/Linux" 7 \
+                    check_os_version "$distro_name" 7 \
                         "$os_version_raw" os_version_chevah
                     OS="raspbian${os_version_chevah}"
                     ;;
                 "alpine")
-                    check_os_version "Alpine Linux" 3.6 \
+                    check_os_version "$distro_name" 3.6 \
                         "$os_version_raw" os_version_chevah
                     OS="alpine${os_version_chevah}"
                     ;;

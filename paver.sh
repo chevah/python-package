@@ -478,7 +478,6 @@ check_os_version() {
     # supported for the current OS and the current detected version.
     # The fourth parameter is used to return through eval the relevant numbers
     # for naming the Python package for the current OS, as detailed above.
-    # Beware, this function is full of bash'isms.
     local name_fancy="$1"
     local version_good="$2"
     local version_raw="$3"

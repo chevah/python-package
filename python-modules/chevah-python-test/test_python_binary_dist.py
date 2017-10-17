@@ -112,27 +112,39 @@ def get_allowed_deps():
                 'libgcc_s.so.1',
                 ])
     elif platform_system == 'aix':
-        # This is the standard list of deps for AIX 5.3. Some of the links
-        # for these libs moved in newer versions from '/usr/lib/' to '/lib/'.
+        # List of deps with full paths for AIX 5.3 with OpenSSL 1.0.2k.
+        # These deps are common to AIX 6.1 and 7.1 as well.
         allowed_deps = [
+            '/lib/libbsd.a(shr.o)',
+            '/lib/libc.a(pse.o)',
+            '/lib/libc.a(shr.o)',
+            '/lib/libcrypt.a(shr.o)',
+            '/lib/libcrypto.a(libcrypto.so.1.0.0)',
+            '/lib/libcrypto.so',
+            '/lib/libnsl.a(shr.o)',
+            '/lib/libpthreads.a(shr.o)',
+            '/lib/libpthreads.a(shr_comm.o)',
+            '/lib/libpthreads_compat.a(shr.o)',
+            '/lib/libssl.so',
+            '/lib/libtli.a(shr.o)',
+            '/lib/libz.a(libz.so.1)',
+            '/usr/lib/libc.a(shr.o)',
+            '/usr/lib/libcrypt.a(shr.o)',
+            '/usr/lib/libcrypto.a(libcrypto.so.1.0.0)',
+            '/usr/lib/libcrypto.so',
+            '/usr/lib/libdl.a(shr.o)',
+            '/usr/lib/libpthreads.a(shr_comm.o)',
+            '/usr/lib/libpthreads.a(shr_xpg5.o)',
+            '/usr/lib/libssl.so',
             '/unix',
-            'libbsd.a',
-            'libc.a',
-            'libcrypt.a',
-            'libcrypto.a',
-            'libdl.a',
-            'libnsl.a',
-            'libpthreads.a',
-            'libpthreads_compat.a',
-            'libssl.a',
-            'libtli.a',
-            'libz.a',
             ]
         # sys.platform could be 'aix5', 'aix6' etc.
         aix_version = int(sys.platform[-1])
         if aix_version >= 6:
+            # Specific deps to add for AIX 6.1 and 7.1.
             allowed_deps.extend([
-                'libthread.a',
+                '/lib/libpthreads.a(shr_xpg5.o)',
+                '/lib/libthread.a(shr.o)',
                 ])
     elif platform_system == 'sunos':
         # On Solaris, platform.release() can be: '5.9'. '5.10', '5.11' etc.
@@ -142,7 +154,6 @@ def get_allowed_deps():
             allowed_deps = [
                 '/lib/64/libc.so.1',
                 '/lib/64/libdl.so.1',
-                '/lib/64/libintl.so.1',
                 '/lib/64/libm.so.2',
                 '/lib/64/libnsl.so.1',
                 '/lib/64/libsocket.so.1',
@@ -184,7 +195,6 @@ def get_allowed_deps():
             allowed_deps = [
                 '/lib/libc.so.1',
                 '/lib/libdl.so.1',
-                '/lib/libintl.so.1',
                 '/lib/libm.so.2',
                 '/lib/libnsl.so.1',
                 '/lib/libsocket.so.1',
@@ -294,7 +304,7 @@ def get_allowed_deps():
             '/usr/lib/libc.so',
             '/usr/lib/libcrypto.so',
             '/usr/lib/libm.so',
-            '/usr/lib/libncursesw.so.14.0',
+            '/usr/lib/libncursesw.so',
             '/usr/lib/libpthread.so',
             '/usr/lib/libssl.so',
             '/usr/lib/libutil.so',
@@ -310,7 +320,6 @@ def get_allowed_deps():
             '/usr/lib/libcrypto.so.8',
             '/usr/lib/libcurses.so.7',
             '/usr/lib/libgcc_s.so.1',
-            '/usr/lib/libintl.so.1',
             '/usr/lib/libm.so.0',
             '/usr/lib/libpthread.so.1',
             '/usr/lib/libssl.so.10',

@@ -991,7 +991,7 @@ diff -ru pyconfig.h.in pyconfig.h.in
 diff -ru setup.py setup.py
 --- setup.py	2017-03-16 19:04:35.989975569 +0200
 +++ setup.py	2017-03-16 19:05:22.690158008 +0200
-@@ -42,7 +42,6 @@
+@@ -43,7 +43,6 @@
      'bz2',
      'dbm',
      'gdbm',
@@ -999,7 +999,7 @@ diff -ru setup.py setup.py
      'sunaudiodev',
      ]
  
-@@ -734,9 +733,17 @@
+@@ -735,9 +734,17 @@
              missing.extend(['imageop'])
  
          # readline
@@ -1018,7 +1018,7 @@ diff -ru setup.py setup.py
          # Determine if readline is already linked against curses or tinfo.
          if do_readline and find_executable('ldd'):
              fp = os.popen("ldd %s" % do_readline)
-@@ -787,7 +794,7 @@
+@@ -788,7 +795,7 @@
              else:
                  readline_extra_link_args = ()
  

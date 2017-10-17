@@ -478,6 +478,7 @@ check_os_version() {
     # supported for the current OS and the current detected version.
     # The fourth parameter is used to return through eval the relevant numbers
     # for naming the Python package for the current OS, as detailed above.
+    # Beware, this function is full of bash'isms.
     local name_fancy="$1"
     local version_good="$2"
     local version_raw="$3"
@@ -486,6 +487,12 @@ check_os_version() {
     local flag_supported='good_enough'
     local version_raw_array
     local version_good_array
+
+    if [[ $version_raw =~ [^[:digit:]\.] ]]; then
+        echo "Unparsed OS version should only have numbers and periods, but:"
+        echo "    \$version_raw=$version_raw"
+        exit 12
+    fi
 
     # Using '.' as a delimiter, populate the version_raw_* arrays.
     IFS=. read -a version_raw_array <<< "$version_raw"
@@ -595,10 +602,10 @@ detect_os() {
             source /etc/os-release
             linux_distro="$ID"
             os_version_raw="$VERSION_ID"
-            distro_name="$NAME"
+            distro_fancy_name="$NAME"
             case "$linux_distro" in
                 "ubuntu")
-                    check_os_version "$distro_name" 14.04 \
+                    check_os_version "$distro_fancy_name" 14.04 \
                         "$os_version_raw" os_version_chevah
                     # Only Long-term Support versions are supported,
                     # thus $os_version_chevah should end in 04,
@@ -612,12 +619,12 @@ detect_os() {
                     fi
                     ;;
                 "raspbian")
-                    check_os_version "$distro_name" 7 \
+                    check_os_version "$distro_fancy_name" 7 \
                         "$os_version_raw" os_version_chevah
                     OS="raspbian${os_version_chevah}"
                     ;;
                 "alpine")
-                    check_os_version "$distro_name" 3.6 \
+                    check_os_version "$distro_fancy_name" 3.6 \
                         "$os_version_raw" os_version_chevah
                     OS="alpine${os_version_chevah}"
                     ;;

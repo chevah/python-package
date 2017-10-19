@@ -144,8 +144,12 @@ chevahbs_compile() {
         *)
             echo "Patching the git rev id into Python's version string..."
             cp Modules/getbuildinfo.c Modules/getbuildinfo.c.orig
+            VCS_ID="gitid"
+            if [ $PYTHON_BUILD_VERSION == "2.7.8" ] ; then
+                VCS_ID="hgid"
+            fi
             sed -e \
-                s/gitid\ =\ \"default\"/gitid\ =\ \"$PYTHON_PACKAGE_VERSION\"/g \
+                s/$VCS_ID\ =\ \"default\"/$VCS_ID\ =\ \"$PYTHON_PACKAGE_VERSION\"/g \
                 Modules/getbuildinfo.c.orig > Modules/getbuildinfo.c
             execute $MAKE
             ;;

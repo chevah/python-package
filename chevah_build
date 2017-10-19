@@ -605,7 +605,8 @@ command_build_python_extra_libraries() {
         makefile_orig=$INSTALL_FOLDER/lib/$PYTHON_VERSION/config/Makefile.orig
 
         execute cp $makefile $makefile_orig
-        sed "s#^prefix=.*#prefix= $INSTALL_FOLDER#" $makefile_orig > $makefile
+        execute sed "s#^prefix=.*#prefix= $INSTALL_FOLDER#" $makefile_orig \
+            > $makefile
     fi
 
     for library in $EXTRA_LIBRARIES ; do

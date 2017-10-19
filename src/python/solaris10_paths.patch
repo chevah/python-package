@@ -1,7 +1,7 @@
 diff -ur setup.py setup.py
 --- setup.py
 +++ setup.py
-@@ -805,10 +805,13 @@
+@@ -784,10 +784,13 @@
  
          # crypt module.
  
@@ -18,7 +18,7 @@ diff -ur setup.py setup.py
          exts.append( Extension('crypt', ['cryptmodule.c'], libraries=libs) )
  
          # CSV files
-@@ -821,6 +824,7 @@
+@@ -800,6 +803,7 @@
          # Detect SSL support for the socket module (via _ssl)
          search_for_ssl_incs_in = [
                                '/usr/local/ssl/include',
@@ -26,7 +26,7 @@ diff -ur setup.py setup.py
                                '/usr/contrib/ssl/include/'
                               ]
          ssl_incs = find_file('openssl/ssl.h', inc_dirs,
-@@ -828,10 +832,23 @@
+@@ -807,10 +811,23 @@
                               )
          if ssl_incs is not None:
              krb5_h = find_file('krb5.h', inc_dirs,

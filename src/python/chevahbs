@@ -33,9 +33,6 @@ chevahbs_patch() {
             execute patch < solaris10_paths.patch
             ;;
         hpux*)
-            # Our patch to please the native make, needed for parallel builds.
-            echo "Applying hpux_nativemake.patch:"
-            execute patch < hpux_nativemake.patch
             # Our patch to use -fPIC extra argument for linking only with GCC.
             echo "Applying hpux_fpic.patch:"
             execute patch < hpux_fpic.patch
@@ -45,11 +42,6 @@ chevahbs_patch() {
             # The second patch from https://bugs.python.org/issue18777.
             echo "Applying crypto_threadid.patch:"
             execute patch -p0 < crypto_threadid.patch
-            ;;
-        openbsd*)
-            # Minor patch from OpenBSD's CVS repo.
-            echo "Applying openbsd_random.patch:"
-            execute patch < openbsd_random.patch
             ;;
     esac
 }
@@ -153,7 +145,7 @@ chevahbs_compile() {
             echo "Patching the git rev id into Python's version string..."
             cp Modules/getbuildinfo.c Modules/getbuildinfo.c.orig
             sed -e \
-                s/hgid\ =\ \"default\"/hgid\ =\ \"$PYTHON_PACKAGE_VERSION\"/g \
+                s/gitid\ =\ \"default\"/gitid\ =\ \"$PYTHON_PACKAGE_VERSION\"/g \
                 Modules/getbuildinfo.c.orig > Modules/getbuildinfo.c
             execute $MAKE
             ;;

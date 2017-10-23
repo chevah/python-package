@@ -1,1 +1,4 @@
 python-modules/get-pip.py -diff
+python-modules/pysqlite-*/** -diff
+src/sqlite/SQLite-*/** -diff
+src/python/Python-*/** -diff

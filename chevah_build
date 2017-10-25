@@ -562,14 +562,14 @@ command_build_sqlite() {
     fi
 
     target_folder=${BUILD_FOLDER}/pysqlite
-    amalgamation_folder=${BUILD_FOLDER}/pysqlite/amalgamation
 
     initialize_python_module \
         "python-modules/pysqlite-$PYSQLITE_VERSION" $target_folder
 
-    # Prepare SQLite source.
-    execute rm -rf $amalgamation_folder
-    execute cp -r "src/sqlite/SQLite-$SQLITE_VERSION/" $amalgamation_folder
+    # Bring SQLite headers and source handy.
+    execute cp src/sqlite/SQLite-${SQLITE_VERSION}/*.h \
+        ${INSTALL_FOLDER}/include/
+    execute cp src/sqlite/SQLite-${SQLITE_VERSION}/sqlite3.c ${target_folder}/
 
     # Build and install.
     execute pushd $target_folder

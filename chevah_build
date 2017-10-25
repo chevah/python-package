@@ -682,14 +682,12 @@ initialize_python_module(){
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
                 extra_args=""
                 if [ "${OS%solaris10*}" = "" ]; then
-                    # Needed to build pyOpenSSL and pysqlite in Solaris 10.
-                    # Make sure the headers for OpenSSL and sqlite3 are present
-                    # in /usr/sfw/include (only one location allowed, it seems).
+                    # Needed to build pyOpenSSL in Solaris 10.
                     extra_args="$extra_args -I/usr/sfw/include"
                     if [ "${ARCH%64}" = "$ARCH" ]; then
-                        extra_args="$extra_args -L/usr/sfw/lib -L/usr/lib/mps"
+                        extra_args="$extra_args -L/usr/sfw/lib"
                     else
-                        extra_args="$extra_args -L/usr/sfw/lib/64 -L/usr/lib/mps/64"
+                        extra_args="$extra_args -L/usr/sfw/lib/64"
                     fi
                 fi
                 execute $PYTHON_BIN setup.py build_ext $extra_args

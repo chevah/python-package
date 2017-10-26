@@ -1,7 +1,7 @@
 diff -ur Misc/NEWS Misc/NEWS
 --- Misc/NEWS
 +++ Misc/NEWS
-@@ -2701,6 +2701,9 @@
+@@ -2988,6 +2988,9 @@
  - Issue #18777: The ssl module now uses the new CRYPTO_THREADID API of
    OpenSSL 1.0.0+ instead of the deprecated CRYPTO id callback function.
  
@@ -14,7 +14,7 @@ diff -ur Misc/NEWS Misc/NEWS
 diff -ur Modules/_ssl.c Modules/_ssl.c
 --- Modules/_ssl.c
 +++ Modules/_ssl.c
-@@ -3960,21 +3960,9 @@
+@@ -3954,21 +3954,9 @@
  
  static PyThread_type_lock *_ssl_locks = NULL;
  
@@ -37,7 +37,7 @@ diff -ur Modules/_ssl.c Modules/_ssl.c
  
  static void _ssl_thread_locking_function
      (int mode, int n, const char *file, int line) {
-@@ -4028,11 +4016,7 @@
+@@ -4022,11 +4010,7 @@
              }
          }
          CRYPTO_set_locking_callback(_ssl_thread_locking_function);

@@ -9,7 +9,7 @@
 #
 
 # Beware that older versions might be used for selected platforms below.
-PYTHON_BUILD_VERSION="2.7.13"
+PYTHON_BUILD_VERSION="2.7.14"
 LIBFFI_VERSION="3.2.1"
 ZLIB_VERSION="1.2.11"
 # We statically build the BSD libedit on selected platforms to get the
@@ -17,8 +17,8 @@ ZLIB_VERSION="1.2.11"
 LIBEDIT_VERSION="20160903-3.1"
 # PyCrypto needs GMP or MPIR for fast math. GMP has support for AIX/HP-UX/etc.
 GMP_VERSION="6.1.2"
-SQLITE_VERSION="3.17.0"
-PYSQLITE_VERSION="2.6.3"
+SQLITE_VERSION="3.20.1"
+PYSQLITE_VERSION="2.8.3"
 # These are used by get-pip.py.
 PIP_VERSION="9.0.1"
 SETUPTOOLS_VERSION="20.3.1"
@@ -562,14 +562,14 @@ command_build_sqlite() {
     fi
 
     target_folder=${BUILD_FOLDER}/pysqlite
-    amalgamation_folder=${BUILD_FOLDER}/pysqlite/amalgamation
 
     initialize_python_module \
         "python-modules/pysqlite-$PYSQLITE_VERSION" $target_folder
 
-    # Prepare SQLite source.
-    execute rm -rf $amalgamation_folder
-    execute cp -r "src/sqlite/SQLite-$SQLITE_VERSION/" $amalgamation_folder
+    # Bring SQLite headers and source handy.
+    execute cp src/sqlite/SQLite-${SQLITE_VERSION}/*.h \
+        ${INSTALL_FOLDER}/include/
+    execute cp src/sqlite/SQLite-${SQLITE_VERSION}/sqlite3.c ${target_folder}/
 
     # Build and install.
     execute pushd $target_folder
@@ -605,7 +605,8 @@ command_build_python_extra_libraries() {
         makefile_orig=$INSTALL_FOLDER/lib/$PYTHON_VERSION/config/Makefile.orig
 
         execute cp $makefile $makefile_orig
-        sed "s#^prefix=.*#prefix= $INSTALL_FOLDER#" $makefile_orig > $makefile
+        execute sed "s#^prefix=.*#prefix= $INSTALL_FOLDER#" $makefile_orig \
+            > $makefile
     fi
 
     for library in $EXTRA_LIBRARIES ; do
@@ -681,14 +682,12 @@ initialize_python_module(){
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
                 extra_args=""
                 if [ "${OS%solaris10*}" = "" ]; then
-                    # Needed to build pyOpenSSL and pysqlite in Solaris 10.
-                    # Make sure the headers for OpenSSL and sqlite3 are present
-                    # in /usr/sfw/include (only one location allowed, it seems).
+                    # Needed to build pyOpenSSL in Solaris 10.
                     extra_args="$extra_args -I/usr/sfw/include"
                     if [ "${ARCH%64}" = "$ARCH" ]; then
-                        extra_args="$extra_args -L/usr/sfw/lib -L/usr/lib/mps"
+                        extra_args="$extra_args -L/usr/sfw/lib"
                     else
-                        extra_args="$extra_args -L/usr/sfw/lib/64 -L/usr/lib/mps/64"
+                        extra_args="$extra_args -L/usr/sfw/lib/64"
                     fi
                 fi
                 execute $PYTHON_BIN setup.py build_ext $extra_args

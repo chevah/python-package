@@ -124,6 +124,7 @@ def get_allowed_deps():
             '/lib/libnsl.a(shr.o)',
             '/lib/libpthreads.a(shr.o)',
             '/lib/libpthreads.a(shr_comm.o)',
+            '/lib/libpthreads.a(shr_xpg5.o)',
             '/lib/libpthreads_compat.a(shr.o)',
             '/lib/libssl.so',
             '/lib/libtli.a(shr.o)',
@@ -143,7 +144,6 @@ def get_allowed_deps():
         if aix_version >= 6:
             # Specific deps to add for AIX 6.1 and 7.1.
             allowed_deps.extend([
-                '/lib/libpthreads.a(shr_xpg5.o)',
                 '/lib/libthread.a(shr.o)',
                 ])
     elif platform_system == 'sunos':

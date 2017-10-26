@@ -1,7 +1,7 @@
-diff -ru configure configure
---- configure	2017-03-16 18:24:38.344626755 +0200
-+++ configure	2017-03-16 19:05:00.074069656 +0200
-@@ -829,6 +828,7 @@
+diff -ur configure configure
+--- configure	2017-10-18 15:00:59.141662453 +0300
++++ configure	2017-10-18 18:08:35.291143158 +0300
+@@ -827,6 +827,7 @@
  with_libc
  enable_big_digits
  enable_unicode
@@ -9,7 +9,7 @@ diff -ru configure configure
  with_computed_gotos
  with_ensurepip
  '
-@@ -1530,6 +1519,8 @@
+@@ -1517,6 +1518,8 @@
    --with-fpectl           enable SIGFPE catching
    --with-libm=STRING      math library
    --with-libc=STRING      C library
@@ -18,7 +18,7 @@ diff -ru configure configure
    --with(out)-computed-gotos
                            Use computed gotos in evaluation loop (enabled by
                            default on supported compilers)
-@@ -13892,24 +13883,48 @@
+@@ -13879,24 +13882,48 @@
  
  fi
  
@@ -80,7 +80,7 @@ diff -ru configure configure
  /* end confdefs.h.  */
  
  /* Override any GCC internal prototype to avoid an error.
-@@ -13932,31 +13947,35 @@
+@@ -13919,31 +13946,35 @@
  fi
  rm -f core conftest.err conftest.$ac_objext \
      conftest$ac_exeext conftest.$ac_ext
@@ -131,7 +131,7 @@ diff -ru configure configure
  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
  /* end confdefs.h.  */
  
-@@ -13976,73 +13995,65 @@
+@@ -13963,73 +13994,65 @@
  }
  _ACEOF
  if ac_fn_c_try_link "$LINENO"; then :
@@ -236,7 +236,7 @@ diff -ru configure configure
  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
  /* end confdefs.h.  */
  
-@@ -14062,31 +14073,33 @@
+@@ -14049,31 +14072,33 @@
  }
  _ACEOF
  if ac_fn_c_try_link "$LINENO"; then :
@@ -280,7 +280,7 @@ diff -ru configure configure
  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
  /* end confdefs.h.  */
  
-@@ -14106,31 +14119,33 @@
+@@ -14093,31 +14118,33 @@
  }
  _ACEOF
  if ac_fn_c_try_link "$LINENO"; then :
@@ -324,7 +324,7 @@ diff -ru configure configure
  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
  /* end confdefs.h.  */
  
-@@ -14150,31 +14165,33 @@
+@@ -14137,31 +14164,33 @@
  }
  _ACEOF
  if ac_fn_c_try_link "$LINENO"; then :
@@ -368,7 +368,7 @@ diff -ru configure configure
  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
  /* end confdefs.h.  */
  
-@@ -14194,49 +14211,84 @@
+@@ -14181,49 +14210,84 @@
  }
  _ACEOF
  if ac_fn_c_try_link "$LINENO"; then :
@@ -476,10 +476,10 @@ diff -ru configure configure
  
  fi
  
-diff -ru configure.ac configure.ac
---- configure.ac	2017-03-14 20:44:06.090446058 +0200
-+++ configure.ac	2017-03-16 19:05:00.074069656 +0200
-@@ -4234,92 +4234,127 @@
+diff -ur configure.ac configure.ac
+--- configure.ac	2017-10-18 15:00:59.153662459 +0300
++++ configure.ac	2017-10-18 18:08:35.291143158 +0300
+@@ -4230,92 +4230,127 @@
    [Define this if you have flockfile(), getc_unlocked(), and funlockfile()])
  fi
  
@@ -686,9 +686,9 @@ diff -ru configure.ac configure.ac
  fi
  
  # End of readline checks: restore LIBS
-diff -ru Modules/readline.c Modules/readline.c
---- Modules/readline.c	2017-03-16 17:17:28.356924498 +0200
-+++ Modules/readline.c	2017-03-16 19:05:00.074069656 +0200
+diff -ur Modules/readline.c Modules/readline.c
+--- Modules/readline.c	2017-10-18 15:00:59.049662404 +0300
++++ Modules/readline.c	2017-10-18 18:13:56.623715358 +0300
 @@ -26,45 +26,47 @@
  #  define RESTORE_LOCALE(sl)
  #endif
@@ -893,31 +893,35 @@ diff -ru Modules/readline.c Modules/readline.c
  
      RESTORE_LOCALE(saved_locale)
  }
-@@ -1160,15 +1144,12 @@
+@@ -1160,18 +1144,13 @@
      n = strlen(p);
      if (n > 0) {
          const char *line;
 -        int length = _py_get_history_length();
--        if (length > 0)
+-        if (length > 0) {
+-            HIST_ENTRY *hist_ent;
 -#ifdef __APPLE__
 -            if (using_libedit_emulation) {
 -                /* handle older 0-based or newer 1-based indexing */
--                line = history_get(length + libedit_history_start - 1)->line;
+-                hist_ent = history_get(length + libedit_history_start - 1);
 -            } else
 -#endif /* __APPLE__ */
--            line = history_get(length)->line;
+-                hist_ent = history_get(length);
+-            line = hist_ent ? hist_ent->line : "";
+-        } else
 +        if (history_length > 0)
 +#ifdef SUPPORT_EDITLINE
 +            line = history_get(history_length + libedit_history_start - 1)->line;
 +#else
 +            line = history_get(history_length)->line;
 +#endif
-         else
++        else
              line = "";
          if (strcmp(p, line))
-@@ -1192,19 +1173,22 @@
+             add_history(p);
+@@ -1194,19 +1173,22 @@
  /* Initialize the module */
- 
+
  PyDoc_STRVAR(doc_module,
 +#ifndef WITH_EDITLINE
  "Importing this module enables command line editing using GNU readline.");
@@ -931,29 +935,29 @@ diff -ru Modules/readline.c Modules/readline.c
  "Importing this module enables command line editing using libedit readline.");
 -#endif /* __APPLE__ */
 +#endif
- 
+
  PyMODINIT_FUNC
  initreadline(void)
  {
      PyObject *m;
- 
+
 -#ifdef __APPLE__
 +#ifdef DETECT_EDITLINE_
      if (strncmp(rl_library_version, libedit_version_tag, strlen(libedit_version_tag)) == 0) {
          using_libedit_emulation = 1;
      }
-@@ -1214,7 +1198,7 @@
+@@ -1216,7 +1198,7 @@
                     (PyObject *)NULL, PYTHON_API_VERSION);
      else
- 
+
 -#endif /* __APPLE__ */
 +#endif /* __DETECT_EDITLINE__ */
- 
+
      m = Py_InitModule4("readline", readline_methods, doc_module,
                         (PyObject *)NULL, PYTHON_API_VERSION);
-diff -ru pyconfig.h.in pyconfig.h.in
---- pyconfig.h.in	2017-03-16 17:36:24.000000000 +0200
-+++ pyconfig.h.in	2017-03-16 19:05:00.074069656 +0200
+diff -ur pyconfig.h.in pyconfig.h.in
+--- pyconfig.h.in	2017-10-18 15:00:59.153662459 +0300
++++ pyconfig.h.in	2017-10-18 18:08:35.291143158 +0300
 @@ -433,7 +433,7 @@
  /* Define to 1 if you have the <libintl.h> header file. */
  #undef HAVE_LIBINTL_H
@@ -978,7 +982,7 @@ diff -ru pyconfig.h.in pyconfig.h.in
  #undef HAVE_RL_CATCH_SIGNAL
  
  /* Define if you have readline 2.2 */
-@@ -1117,6 +1120,9 @@
+@@ -1120,6 +1123,9 @@
     Dyld is necessary to support frameworks. */
  #undef WITH_DYLD
  
@@ -988,9 +992,9 @@ diff -ru pyconfig.h.in pyconfig.h.in
  /* Define to 1 if libintl is needed for locale functions. */
  #undef WITH_LIBINTL
  
-diff -ru setup.py setup.py
---- setup.py	2017-03-16 19:04:35.989975569 +0200
-+++ setup.py	2017-03-16 19:05:22.690158008 +0200
+diff -ur setup.py setup.py
+--- setup.py	2017-10-18 18:15:41.152406690 +0300
++++ setup.py	2017-10-18 18:08:35.291143158 +0300
 @@ -43,7 +43,6 @@
      'bz2',
      'dbm',

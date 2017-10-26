@@ -1,7 +1,7 @@
 diff -ur setup.py setup.py
 --- setup.py
 +++ setup.py
-@@ -2116,7 +2116,7 @@
+@@ -2120,7 +2120,7 @@
              # finding some -z option for the Sun compiler.
              extra_link_args.append('-mimpure-text')
  

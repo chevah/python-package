@@ -595,6 +595,10 @@ def main():
                                  "\tBin ver: {0}".format(bin_ver) + "\n"
                                  "\tGit rev: {0}".format(git_rev) + "\n")
                 exit_code = 118
+            if len(bin_ver) != 8:
+                sys.stderr.write("Bad length for binary version, expected 8!\n"
+                                 "\tBin ver: {0}".format(bin_ver) + "\n")
+                exit_code = 119
 
         try:
             import _scandir

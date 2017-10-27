@@ -24,7 +24,7 @@ PIP_VERSION="9.0.1"
 SETUPTOOLS_VERSION="20.3.1"
 
 # Git revision to inject into Python's sys.version string through chevahbs.
-PYTHON_PACKAGE_VERSION=$(git rev-parse --short=4 HEAD)
+PYTHON_PACKAGE_VERSION=$(git rev-parse --short=8 HEAD)
 # The ID of the redistributable version used on Windows.
 REDISTRIBUTABLE_VERSION="9.00.30729.6161"
 

@@ -613,8 +613,7 @@ detect_os() {
                         $(( ${os_version_chevah%%04} % 2 )) -eq 0 ]; then
                         OS="ubuntu${os_version_chevah}"
                     else
-                        echo "Unsupported Ubuntu, please use an LTS version."
-                        exit 15
+                        echo "Unsupported Ubuntu, using generic Linux binaries!"
                     fi
                     ;;
                 "raspbian")

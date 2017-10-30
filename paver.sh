@@ -600,10 +600,10 @@ detect_os() {
         elif [ -f /etc/os-release ]; then
             source /etc/os-release
             linux_distro="$ID"
-            os_version_raw="$VERSION_ID"
             distro_fancy_name="$NAME"
             case "$linux_distro" in
                 "ubuntu")
+                    os_version_raw="$VERSION_ID"
                     check_os_version "$distro_fancy_name" 14.04 \
                         "$os_version_raw" os_version_chevah
                     # Only Long-term Support versions are supported,
@@ -613,16 +613,17 @@ detect_os() {
                         $(( ${os_version_chevah%%04} % 2 )) -eq 0 ]; then
                         OS="ubuntu${os_version_chevah}"
                     else
-                        echo "Unsupported Ubuntu, please use an LTS version."
-                        exit 15
+                        echo "Unsupported Ubuntu, using generic Linux binaries!"
                     fi
                     ;;
                 "raspbian")
+                    os_version_raw="$VERSION_ID"
                     check_os_version "$distro_fancy_name" 7 \
                         "$os_version_raw" os_version_chevah
                     OS="raspbian${os_version_chevah}"
                     ;;
                 "alpine")
+                    os_version_raw="$VERSION_ID"
                     check_os_version "$distro_fancy_name" 3.6 \
                         "$os_version_raw" os_version_chevah
                     OS="alpine${os_version_chevah}"

@@ -14,7 +14,7 @@ LIBFFI_VERSION="3.2.1"
 ZLIB_VERSION="1.2.11"
 # We statically build the BSD libedit on selected platforms to get the
 # readline module available without linking to the GPL-only readline libs.
-LIBEDIT_VERSION="20160903-3.1"
+LIBEDIT_VERSION="20170329-3.1"
 # PyCrypto needs GMP or MPIR for fast math. GMP has support for AIX/HP-UX/etc.
 GMP_VERSION="6.1.2"
 SQLITE_VERSION="3.20.1"

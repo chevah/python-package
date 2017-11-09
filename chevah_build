@@ -14,7 +14,7 @@ LIBFFI_VERSION="3.2.1"
 ZLIB_VERSION="1.2.11"
 # We statically build the BSD libedit on selected platforms to get the
 # readline module available without linking to the GPL-only readline libs.
-LIBEDIT_VERSION="20160903-3.1"
+LIBEDIT_VERSION="20170329-3.1"
 # PyCrypto needs GMP or MPIR for fast math. GMP has support for AIX/HP-UX/etc.
 GMP_VERSION="6.1.2"
 SQLITE_VERSION="3.20.1"
@@ -165,7 +165,7 @@ case $OS in
                 export CFLAGS="$CFLAGS -qmaxmem=-1 -q64"
             fi
         fi
-        # There are issues with compiling libedit on AIX.
+        # libedit requirers __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
         # On AIX cffi based modules are not ported yet.
         export BUILD_CFFI="no"
@@ -198,6 +198,8 @@ case $OS in
             # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with
             # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
             PYTHON_BUILD_VERSION=2.7.8
+            # Latest libedit sources do not build on Solaris 10 anymore.
+            export BUILD_LIBEDIT="no"
             # These are the default-included GNU make and makeinfo.
             export MAKE=/usr/sfw/bin/gmake
             export MAKEINFO=/usr/sfw/bin/makeinfo
@@ -211,8 +213,6 @@ case $OS in
                 export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
             fi
         fi
-        # readline with libedit is doable in Solaris, but the result is buggy.
-        export BUILD_LIBEDIT="no"
         # cffi modules are not ready yet on Solaris.
         export BUILD_CFFI="no"
         PIP_LIBRARIES=""
@@ -229,6 +229,7 @@ case $OS in
         # Native make is needed for parallel builds.
         export MAKE="make -P"
         export BUILD_ZLIB="yes"
+        # libedit requirers __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
         export BUILD_CFFI="no"
         PIP_LIBRARIES=""
@@ -257,20 +258,17 @@ case $OS in
         # The location of the Homebrew OpenSSL libs and include directories.
         export LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"
         export CPPFLAGS="$CPPFLAGS -I/usr/local/opt/openssl/include"
-        export BUILD_LIBEDIT="no"
+        # setup.py skips building readline by default, as it sets this to
+        # "10.4", and then tries to avoid the broken readline in OS X 10.4.
+        export MACOSX_DEPLOYMENT_TARGET=10.12
         ;;
     freebsd*)
         export CC="clang"
         export CXX="clang++"
-        export BUILD_LIBEDIT="no"
-        ;;
-    archlinux)
-        export BUILD_LIBEDIT="no"
         ;;
     linux*)
         # We don't compile libedit for generic Linux builds because it links
-        # to local ncurses libs (one of ncurses, ncursesw, tinfo, others?),
-        # and the result is not portable.
+        # to local ncurses libs and the result is not very portable.
         export BUILD_LIBEDIT="no"
         ;;
     rhel5|sles11)

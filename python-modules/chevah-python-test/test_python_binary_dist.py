@@ -95,6 +95,10 @@ def get_allowed_deps():
                 allowed_deps.extend([
                     '/usr/lib/arm-linux-gnueabihf/libarmmem.so',
                     ])
+        elif ('archlinux' in chevah_os):
+            allowed_deps.extend([
+                'libtinfo.so.6',
+                ])
         elif ('alpine' in chevah_os):
             # This is a peculiar distro, so we start the list from scratch.
             # Full deps with paths, but no minor versions, for Alpine 3.6.
@@ -179,6 +183,7 @@ def get_allowed_deps():
                     '/lib/64/libssl.so.1.0.0',
                     '/lib/64/libz.so.1',
                     '/usr/lib/64/libcrypt.so.1',
+                    '/usr/lib/64/libncurses.so.5',
                     '/usr/lib/64/libsqlite3.so.0',
                     ])
                 if 'sparc' in chevah_arch:
@@ -232,6 +237,7 @@ def get_allowed_deps():
                     '/lib/libssl.so.1.0.0',
                     '/lib/libz.so.1',
                     '/usr/lib/libcrypt.so.1',
+                    '/usr/lib/libncurses.so.5',
                     '/usr/lib/libsqlite3.so.0',
                     ])
     elif platform_system == 'hp-ux':
@@ -268,9 +274,10 @@ def get_allowed_deps():
                 '/usr/lib/libncurses.5.4.dylib',
                 ])
         elif ('macos' in chevah_os):
-            # Additional deps when using Homebrew's OpenSSL.
+            # Additional deps for MacOS 10.12 when using Homebrew's OpenSSL.
             allowed_deps.extend([
-                '/usr/lib/libgcc_s.1.dylib',
+                '/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics',
+                '/usr/lib/libncurses.5.4.dylib',
                 '/usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib',
                 '/usr/local/opt/openssl/lib/libssl.1.0.0.dylib',
                 ])
@@ -280,6 +287,7 @@ def get_allowed_deps():
             '/lib/libc.so.7',
             '/lib/libcrypt.so.5',
             '/lib/libm.so.5',
+            '/lib/libncurses.so.8',
             '/lib/libthr.so.3',
             '/lib/libutil.so.9',
             '/lib/libz.so.6',

@@ -570,9 +570,9 @@ def main():
 
         try:
             import pysqlite2
-            pysqlite2
+            from pysqlite2 import dbapi2 as sqlite_driver
         except:
-            sys.stderr.write('"pysqlite2" missing.\n')
+            sys.stderr.write('"pysqlite2" missing or broken.\n')
             exit_code = 6
 
         try:

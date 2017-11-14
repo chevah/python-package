@@ -180,6 +180,12 @@ case $OS in
         if [ "$OS" = "solaris10u3" ]; then
             # pip doesn't like the included zlib from this old Solaris release.
             export BUILD_ZLIB="yes"
+            # sqlite libs are to be found in an unusual place.
+            if [ "${ARCH%64}" = "$ARCH" ]; then
+                export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"
+            else
+                export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
+            fi
         fi
         # Here's where the system-included GCC is to be found.
         if [ "${CC}" = "gcc" ]; then
@@ -206,12 +212,6 @@ case $OS in
             # We favour the BSD-flavoured "install" over the default one.
             # "ar", "nm" and "ld" are included by default in the same path.
             export PATH=/usr/ccs/bin/:$PATH
-            # sqlite3 lib location in all 10uX versions, including early ones.
-            if [ "${ARCH%64}" = "$ARCH" ]; then
-                export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"
-            else
-                export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
-            fi
         fi
         # cffi modules are not ready yet on Solaris.
         export BUILD_CFFI="no"
@@ -680,7 +680,7 @@ initialize_python_module(){
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
                 extra_args=""
                 if [ "${OS%solaris10*}" = "" ]; then
-                    # Needed to build pyOpenSSL in Solaris 10.
+                    # To link pyOpenSSL to included OpenSSL 0.9.7 libs.
                     extra_args="$extra_args -I/usr/sfw/include"
                     if [ "${ARCH%64}" = "$ARCH" ]; then
                         extra_args="$extra_args -L/usr/sfw/lib"

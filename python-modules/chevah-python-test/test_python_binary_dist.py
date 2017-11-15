@@ -554,10 +554,11 @@ def main():
             sys.stderr.write('"ctypes - windll" missing.\n')
             exit_code = 15
         try:
-            import sqlite3
-            sqlite3
+            from sqlite3 import dbapi2 as sqlite
+            print 'sqlite3 %s - sqlite %s' % (
+                    sqlite.version, sqlite.sqlite_version)
         except:
-            sys.stderr.write('"sqlite3" missing.\n')
+            sys.stderr.write('"sqlite3" missing or broken.\n')
             exit_code = 6
 
     else:
@@ -570,8 +571,9 @@ def main():
             exit_code = 5
 
         try:
-            import pysqlite2
-            from pysqlite2 import dbapi2 as sqlite_driver
+            from pysqlite2 import dbapi2 as sqlite
+            print 'pysqlite2 %s - sqlite %s' % (
+                    sqlite.version, sqlite.sqlite_version)
         except:
             sys.stderr.write('"pysqlite2" missing or broken.\n')
             exit_code = 6

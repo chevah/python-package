@@ -180,12 +180,8 @@ case $OS in
         if [ "$OS" = "solaris10u3" ]; then
             # pip doesn't like the included zlib from this old Solaris release.
             export BUILD_ZLIB="yes"
-            # sqlite libs are to be found in an unusual place.
-            if [ "${ARCH%64}" = "$ARCH" ]; then
-                export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"
-            else
-                export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
-            fi
+            # SQLite libs dir on 10u3 x86.
+            export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"
         fi
         # Here's where the system-included GCC is to be found.
         if [ "${CC}" = "gcc" ]; then

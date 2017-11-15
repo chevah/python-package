@@ -171,8 +171,9 @@ def get_allowed_deps():
                     '/lib/64/librt.so.1',
                     '/lib/64/libthread.so.1',
                     '/usr/lib/64/libcrypt_i.so.1',
+                    '/usr/lib/64/libsqlite3.so.0',
                     '/usr/lib/64/libz.so.1',
-                    '/usr/lib/mps/64/libsqlite3.so',
+                    '/usr/lib/amd64/libc.so.1',
                     '/usr/sfw/lib/64/libcrypto.so.0.9.7',
                     '/usr/sfw/lib/64/libssl.so.0.9.7',
                     ])
@@ -226,9 +227,9 @@ def get_allowed_deps():
                     # Specific deps for Solaris 10u8 and newer.
                     allowed_deps.extend([
                         '/lib/libmd.so.1',
-                        '/usr/lib/libz.so.1',
-                        '/usr/lib/mps/libsqlite3.so',
                         '/lib/libthread.so.1',
+                        '/usr/lib/libsqlite3.so.0',
+                        '/usr/lib/libz.so.1',
                         ])
             elif solaris_version == '11':
                 # Specific deps to add for Solaris 11.
@@ -553,10 +554,11 @@ def main():
             sys.stderr.write('"ctypes - windll" missing.\n')
             exit_code = 15
         try:
-            import sqlite3
-            sqlite3
+            from sqlite3 import dbapi2 as sqlite
+            print 'sqlite3 %s - sqlite %s' % (
+                    sqlite.version, sqlite.sqlite_version)
         except:
-            sys.stderr.write('"sqlite3" missing.\n')
+            sys.stderr.write('"sqlite3" missing or broken.\n')
             exit_code = 6
 
     else:
@@ -569,10 +571,11 @@ def main():
             exit_code = 5
 
         try:
-            import pysqlite2
-            pysqlite2
+            from pysqlite2 import dbapi2 as sqlite
+            print 'pysqlite2 %s - sqlite %s' % (
+                    sqlite.version, sqlite.sqlite_version)
         except:
-            sys.stderr.write('"pysqlite2" missing.\n')
+            sys.stderr.write('"pysqlite2" missing or broken.\n')
             exit_code = 6
 
         try:

@@ -593,10 +593,6 @@ detect_os() {
                     OS="sles11sm"
                 fi
             fi
-        elif [ -f /etc/arch-release ]; then
-            # Arch Linux is a rolling distro, no version info available.
-            # Beware that there's no version to get from /etc/os-release either!
-            OS="archlinux"
         elif [ -f /etc/os-release ]; then
             source /etc/os-release
             linux_distro="$ID"
@@ -627,6 +623,10 @@ detect_os() {
                     check_os_version "$distro_fancy_name" 3.6 \
                         "$os_version_raw" os_version_chevah
                     OS="alpine${os_version_chevah}"
+                    ;;
+                "arch")
+                    # Arch Linux is a rolling distro, no version info available.
+                    OS="archlinux"
                     ;;
             esac
         fi

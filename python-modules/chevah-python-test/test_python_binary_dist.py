@@ -133,14 +133,6 @@ def get_allowed_deps():
                 '/usr/lib/arm-linux-gnueabihf/libcrypto.so.1.0.0',
                 '/usr/lib/arm-linux-gnueabihf/libssl.so.1.0.0',
                 ]
-            if raspbian_version == 7:
-                allowed_deps.extend([
-                    '/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so',
-                    ])
-            elif raspbian_version >= 8:
-                allowed_deps.extend([
-                    '/usr/lib/arm-linux-gnueabihf/libarmmem.so',
-                    ])
         elif ('archlinux' in chevah_os):
             # Full deps with paths for Arch Linux, as of Jan 2018.
             allowed_deps=[
@@ -421,6 +413,9 @@ def get_actual_deps(script_helper):
                             'ld-linux.so',
                             'ld-linux-x86-64.so',
                             'ld-linux-aarch64.so',
+                            'ld-linux-armhf.so',
+                            'arm-linux-gnueabihf/libcofi_rpi.so',
+                            'arm-linux-gnueabihf/libarmmem.so',
                             )
 
     try:

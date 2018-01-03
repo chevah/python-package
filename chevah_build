@@ -165,7 +165,7 @@ case $OS in
                 export CFLAGS="$CFLAGS -qmaxmem=-1 -q64"
             fi
         fi
-        # libedit requirers __STDC_ISO_10646__.
+        # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
         # On AIX cffi based modules are not ported yet.
         export BUILD_CFFI="no"
@@ -225,7 +225,7 @@ case $OS in
         # Native make is needed for parallel builds.
         export MAKE="make -P"
         export BUILD_ZLIB="yes"
-        # libedit requirers __STDC_ISO_10646__.
+        # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
         export BUILD_CFFI="no"
         PIP_LIBRARIES=""
@@ -328,9 +328,6 @@ case "$ARCH" in
 esac
 if [ "${OS%hpux*}" = "" ]; then
     export PARALLEL="$JOBS"
-    # FIXME:4308:
-    # Parallel builds of GMP with more than 2 threads fail on HP-UX.
-    export PARALLEL=2
 else
     export MAKE="$MAKE -j${JOBS}"
 fi

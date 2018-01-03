@@ -19,74 +19,120 @@ def get_allowed_deps():
     """
     allowed_deps = []
     if platform_system == 'linux':
-        # The minimal list of deps for Linux: glibc, openssl and zlib.
-        allowed_deps = [
-            'ld-linux',
-            'libc.so',
-            'libcrypt.so',
-            'libcrypto.so',
-            'libdl.so',
-            'libm.so',
-            'libnsl.so',
-            'libpthread.so',
-            'libssl.so',
-            'libutil.so',
-            'libz.so',
-            'linux-gate.so',
-            'linux-vdso.so',
-            ]
-        # Distro-specific deps to add. Now we may specify major versions too.
         if ('rhel' in chevah_os):
-            allowed_deps.extend([
-                'libcom_err.so.2',
-                'libgssapi_krb5.so.2',
-                'libk5crypto.so.3',
-                'libkrb5.so.3',
-                'libncursesw.so.5',
-                'libresolv.so.2',
-                ])
+            # Common deps for RHEL 6 and 7 with full paths (x86_64 only).
+            allowed_deps = [
+                '/lib64/libcom_err.so.2',
+                '/lib64/libcrypt.so.1',
+                '/lib64/libc.so.6',
+                '/lib64/libdl.so.2',
+                '/lib64/libfreebl3.so',
+                '/lib64/libgssapi_krb5.so.2',
+                '/lib64/libk5crypto.so.3',
+                '/lib64/libkeyutils.so.1',
+                '/lib64/libkrb5.so.3',
+                '/lib64/libkrb5support.so.0',
+                '/lib64/libm.so.6',
+                '/lib64/libncursesw.so.5',
+                '/lib64/libnsl.so.1',
+                '/lib64/libpthread.so.0',
+                '/lib64/libresolv.so.2',
+                '/lib64/libselinux.so.1',
+                '/lib64/libtinfo.so.5',
+                '/lib64/libutil.so.1',
+                '/lib64/libz.so.1',
+                ]
             rhel_version = int(chevah_os[4:])
-            if rhel_version >= 5:
+            if rhel_version == 6:
                 allowed_deps.extend([
-                    'libkeyutils.so.1',
-                    'libkrb5support.so.0',
-                    'libselinux.so.1',
-                    'libsepol.so.1',
+                    '/usr/lib64/libcrypto.so.10',
+                    '/usr/lib64/libssl.so.10',
                     ])
-            if rhel_version >= 6:
+            if rhel_version == 7:
                 allowed_deps.extend([
-                    'libfreebl3.so',
-                    'libtinfo.so.5',
-                    ])
-            if rhel_version >= 7:
-                allowed_deps.extend([
-                    'liblzma.so.5',
-                    'libpcre.so.1',
+                    '/lib64/libcrypto.so.10',
+                    '/lib64/libpcre.so.1',
+                    '/lib64/libssl.so.10',
                     ])
         elif ('sles' in chevah_os):
-            sles_version = int(chevah_os[4:6])
-            allowed_deps.extend([
-                'libncursesw.so.5',
-                ])
-            if sles_version >= 12:
+            sles_version = chevah_os[4:]
+            # Common deps for SLES 11, 11SM and 12 w/ full paths (x86_64 only).
+            allowed_deps=[
+                '/lib64/libcrypt.so.1',
+                '/lib64/libc.so.6',
+                '/lib64/libdl.so.2',
+                '/lib64/libm.so.6',
+                '/lib64/libncursesw.so.5',
+                '/lib64/libnsl.so.1',
+                '/lib64/libpthread.so.0',
+                '/lib64/libutil.so.1',
+                '/lib64/libz.so.1',
+                ]
+            if sles_version == "11":
                 allowed_deps.extend([
-                    'libtinfo.so.5',
+                    '/usr/lib64/libcrypto.so.0.9.8',
+                    '/usr/lib64/libssl.so.0.9.8',
+                ])
+            if sles_version == "11sm":
+                allowed_deps.extend([
+                    '/usr/lib64/libcrypto.so.1.0.0',
+                    '/usr/lib64/libssl.so.1.0.0',
+                ])
+            if sles_version == "12":
+                allowed_deps.extend([
+                    '/lib64/libcrypto.so.1.0.0',
+                    '/lib64/libssl.so.1.0.0',
+                    '/lib64/libtinfo.so.5',
                     ])
         elif ('ubuntu' in chevah_os):
-            allowed_deps.extend([
-                'libtinfo.so.5',
-                ])
+            # Deps for Ubuntu 14.04 and 16.04 with full paths (x86_64 only).
+            allowed_deps=[
+                '/lib/x86_64-linux-gnu/libcrypto.so.1.0.0',
+                '/lib/x86_64-linux-gnu/libcrypt.so.1',
+                '/lib/x86_64-linux-gnu/libc.so.6',
+                '/lib/x86_64-linux-gnu/libdl.so.2',
+                '/lib/x86_64-linux-gnu/libm.so.6',
+                '/lib/x86_64-linux-gnu/libnsl.so.1',
+                '/lib/x86_64-linux-gnu/libpthread.so.0',
+                '/lib/x86_64-linux-gnu/libssl.so.1.0.0',
+                '/lib/x86_64-linux-gnu/libtinfo.so.5',
+                '/lib/x86_64-linux-gnu/libutil.so.1',
+                '/lib/x86_64-linux-gnu/libz.so.1',
+                ]
             if 'arm64' in chevah_arch:
-                allowed_deps.extend([
-                    'libgcc_s.so.1',
-                    ])
+                # Deps with full paths for Ubuntu 16.04 on a Pine64 board.
+                allowed_deps=[
+                    '/lib/aarch64-linux-gnu/libc.so.6',
+                    '/lib/aarch64-linux-gnu/libcrypt.so.1',
+                    '/lib/aarch64-linux-gnu/libcrypto.so.1.0.0',
+                    '/lib/aarch64-linux-gnu/libdl.so.2',
+                    '/lib/aarch64-linux-gnu/libgcc_s.so.1',
+                    '/lib/aarch64-linux-gnu/libm.so.6',
+                    '/lib/aarch64-linux-gnu/libnsl.so.1',
+                    '/lib/aarch64-linux-gnu/libpthread.so.0',
+                    '/lib/aarch64-linux-gnu/libssl.so.1.0.0',
+                    '/lib/aarch64-linux-gnu/libtinfo.so.5',
+                    '/lib/aarch64-linux-gnu/libutil.so.1',
+                    '/lib/aarch64-linux-gnu/libz.so.1',
+                    ]
         elif ('raspbian' in chevah_os):
             raspbian_version = int(chevah_os[8:])
-            allowed_deps.extend([
-                'libgcc_s.so.1',
-                'libncurses.so.5',
-                'libtinfo.so.5',
-                ])
+            # Common deps with full paths for Raspbian 7 and 8.
+            allowed_deps=[
+                '/lib/arm-linux-gnueabihf/libcrypt.so.1',
+                '/lib/arm-linux-gnueabihf/libc.so.6',
+                '/lib/arm-linux-gnueabihf/libdl.so.2',
+                '/lib/arm-linux-gnueabihf/libgcc_s.so.1',
+                '/lib/arm-linux-gnueabihf/libm.so.6',
+                '/lib/arm-linux-gnueabihf/libncurses.so.5',
+                '/lib/arm-linux-gnueabihf/libnsl.so.1',
+                '/lib/arm-linux-gnueabihf/libpthread.so.0',
+                '/lib/arm-linux-gnueabihf/libtinfo.so.5',
+                '/lib/arm-linux-gnueabihf/libutil.so.1',
+                '/lib/arm-linux-gnueabihf/libz.so.1',
+                '/usr/lib/arm-linux-gnueabihf/libcrypto.so.1.0.0',
+                '/usr/lib/arm-linux-gnueabihf/libssl.so.1.0.0',
+                ]
             if raspbian_version == 7:
                 allowed_deps.extend([
                     '/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so',
@@ -96,24 +142,47 @@ def get_allowed_deps():
                     '/usr/lib/arm-linux-gnueabihf/libarmmem.so',
                     ])
         elif ('archlinux' in chevah_os):
-            allowed_deps.extend([
-                'libtinfo.so.6',
-                ])
+            # Full deps with paths for Arch Linux, as of Jan 2018.
+            allowed_deps=[
+                '/usr/lib/libcrypto.so.1.1',
+                '/usr/lib/libcrypt.so.1',
+                '/usr/lib/libc.so.6',
+                '/usr/lib/libdl.so.2',
+                '/usr/lib/libm.so.6',
+                '/usr/lib/libnsl.so.1',
+                '/usr/lib/libpthread.so.0',
+                '/usr/lib/libssl.so.1.1',
+                '/usr/lib/libtinfo.so.6',
+                '/usr/lib/libutil.so.1',
+                '/usr/lib/libz.so.1',
+                ]
         elif ('alpine' in chevah_os):
-            # This is a peculiar distro, so we start the list from scratch.
             # Full deps with paths, but no minor versions, for Alpine 3.6.
-            allowed_deps=([
+            allowed_deps=[
                 '/lib/ld-musl-x86_64.so.1',
                 '/lib/libc.musl-x86_64.so.1',
                 '/lib/libcrypto.so.41',
                 '/lib/libssl.so.43',
                 '/lib/libz.so.1',
                 '/usr/lib/libncursesw.so.6',
-                ])
+                ]
         else:
-            # Debian 7 x64 (aka linux-x64) needs this for cffi.
-            allowed_deps.extend([
-                'libgcc_s.so.1',
+            # Deps for generic Linux (currently Debian 7), sans paths.
+            allowed_deps=[
+                'libc.so.6',
+                'libcrypt.so.1',
+                'libcrypto.so.1.0.0',
+                'libdl.so.2',
+                'libm.so.6',
+                'libnsl.so.1',
+                'libpthread.so.0',
+                'libssl.so.1.0.0',
+                'libutil.so.1',
+                'libz.so.1',
+                ]
+            if 'x64' in chevah_arch:
+                allowed_deps.extend([
+                    'libgcc_s.so.1',
                 ])
     elif platform_system == 'aix':
         # List of deps with full paths for AIX 5.3 with OpenSSL 1.0.2k.
@@ -345,6 +414,15 @@ def get_actual_deps(script_helper):
     script_helper is a shell script that uses ldd (or equivalents) to examine
     dependencies for all binaries in the current sub-directory.
     """
+    openbsd_ignored_strings = ( 'Name', os.getcwd(), './', )
+    linux_ignored_strings = (
+                            'linux-gate.so',
+                            'linux-vdso.so',
+                            'ld-linux.so',
+                            'ld-linux-x86-64.so',
+                            'ld-linux-aarch64.so',
+                            )
+
     try:
         raw_deps = subprocess.check_output(script_helper).splitlines()
     except:
@@ -353,27 +431,36 @@ def get_actual_deps(script_helper):
         libs_deps = []
         for line in raw_deps:
             if line.startswith('./') or not line:
-                # In some OS'es (AIX, HP-UX, OS X, BSDs), the output includes
+                # In some OS'es (AIX, HP-UX, OS X, etc.), the output includes
                 # the examined binaries, and those lines start with "./".
                 # It's safe to ignore them because they point to paths in
                 # the current hierarchy of directories.
                 # In HP-UX, ldd also outputs an empty first line.
                 continue
-            if platform_system in [ 'sunos', 'hp-ux', 'freebsd', 'netbsd' ]:
+            if platform_system in [ 'aix', 'darwin' ]:
                 # When ignoring lines from the above conditions, ldd's output
-                # lists the libs with full path in the 3th colon on these OS'es.
-                dep = line.split()[2]
+                # lists the libs with full path in the 1st colon on these OS'es.
+                dep = line.split()[0]
             elif platform_system == 'openbsd':
                 # OpenBSD's ldd output is very particular, both the name of the
                 # examined files and the needed libs are in the 7th colon, which
-                # also includes a colon name, of which we'll get rid below.
+                # also includes a colon header, of which we'll get rid below.
                 dep = line.split()[6]
-                strings_to_ignore = ( 'Name', os.getcwd(), './', )
-                if dep.startswith(strings_to_ignore):
+                if dep.startswith(openbsd_ignored_strings):
                     continue
+            elif platform_system == 'linux':
+                # On Alpine we don't use regular ldd, the output is different.
+                if ('alpine' in chevah_os):
+                    dep = line.split()[0]
+                else:
+                    # On Linux with glibc we ignore ld-linux* and virtual deps,
+                    # to only get deps of regular libs with full paths from ldd.
+                    if any(string in line for string in linux_ignored_strings):
+                        continue
+                    dep = line.split()[2]
             else:
-                # Usually, the first field in each line is the needed file name.
-                dep = line.split()[0]
+                # For other OS'es, the third field in each line is what we need.
+                dep = line.split()[2]
             libs_deps.append(dep)
     return list(set(libs_deps))
 

@@ -406,7 +406,11 @@ def get_actual_deps(script_helper):
     script_helper is a shell script that uses ldd (or equivalents) to examine
     dependencies for all binaries in the current sub-directory.
     """
+    # OpenBSD's ldd output is special, both the name of the examined files and
+    # the needed libs are in the 7th colon, which also includes a colon header.
     openbsd_ignored_strings = ( 'Name', os.getcwd(), './', )
+    # On Linux with glibc we ignore ld-linux*, virtual deps and other special
+    # libs, in order to only get deps of regular libs with full paths from ldd.
     linux_ignored_strings = (
                             'linux-gate.so',
                             'linux-vdso.so',
@@ -437,9 +441,6 @@ def get_actual_deps(script_helper):
                 # lists the libs with full path in the 1st colon on these OS'es.
                 dep = line.split()[0]
             elif platform_system == 'openbsd':
-                # OpenBSD's ldd output is very particular, both the name of the
-                # examined files and the needed libs are in the 7th colon, which
-                # also includes a colon header, of which we'll get rid below.
                 dep = line.split()[6]
                 if dep.startswith(openbsd_ignored_strings):
                     continue
@@ -448,8 +449,6 @@ def get_actual_deps(script_helper):
                 if ('alpine' in chevah_os):
                     dep = line.split()[0]
                 else:
-                    # On Linux with glibc we ignore ld-linux* and virtual deps,
-                    # to only get deps of regular libs with full paths from ldd.
                     if any(string in line for string in linux_ignored_strings):
                         continue
                     dep = line.split()[2]

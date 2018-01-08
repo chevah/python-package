@@ -1,5 +1,5 @@
-build/
-dist/
-DEFAULT_VALUES
-build-*/
-cache
+/build/
+/dist/
+/DEFAULT_VALUES
+/build-*
+/cache

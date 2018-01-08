@@ -24,6 +24,10 @@ chevahbs_configure() {
         raspbian*)
             CONF_OPTS="$CONF_OPTS --build=armcortexa8neon-unknown-linux-gnueabihf --with-pic"
         ;;
+        hpux*)
+            # GMP parallel builds fail on HP-UX when using more than 2 threads.
+            export PARALLEL=2
+        ;;
     esac
     execute ./configure --prefix="" $CONF_OPTS
 }

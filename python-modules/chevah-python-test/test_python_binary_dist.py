@@ -134,17 +134,17 @@ def get_allowed_deps():
                 '/usr/lib/arm-linux-gnueabihf/libssl.so.1.0.0',
                 ]
         elif ('archlinux' in chevah_os):
-            # Full deps with paths for Arch Linux, as of Jan 2018.
+            # Full deps with paths for Arch Linux, as of March 2018.
             allowed_deps=[
                 '/usr/lib/libcrypto.so.1.1',
                 '/usr/lib/libcrypt.so.1',
                 '/usr/lib/libc.so.6',
                 '/usr/lib/libdl.so.2',
                 '/usr/lib/libm.so.6',
+                '/usr/lib/libncursesw.so.6',
                 '/usr/lib/libnsl.so.1',
                 '/usr/lib/libpthread.so.0',
                 '/usr/lib/libssl.so.1.1',
-                '/usr/lib/libtinfo.so.6',
                 '/usr/lib/libutil.so.1',
                 '/usr/lib/libz.so.1',
                 ]

@@ -570,7 +570,7 @@ detect_os() {
             if egrep -q 'Red\ Hat|CentOS|Scientific' /etc/redhat-release; then
                 os_version_raw=$(\
                     cat /etc/redhat-release | sed s/.*release// | cut -d' ' -f2)
-                check_os_version "Red Hat Enterprise Linux" 4 \
+                check_os_version "Red Hat Enterprise Linux" 5 \
                     "$os_version_raw" os_version_chevah
                 # RHEL 7.4 and newer have OpenSSL 1.0.2, while 7.3 and older
                 # have version 1.0.1. Thus for the older RHEL 7 versions we use

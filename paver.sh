@@ -396,7 +396,7 @@ copy_python() {
                 # Remove it and try to install it again.
                 echo "Updating Python from" \
                     $python_installed_version to $PYTHON_VERSION
-                rm -rf ${BUILD_FOLDER}
+                rm -rf ${BUILD_FOLDER}/*
                 rm -rf ${python_distributable}
                 copy_python
             fi
@@ -410,7 +410,7 @@ copy_python() {
                 echo "Updating Python from UNVERSIONED to $PYTHON_VERSION"
                 # We have a different python installed.
                 # Remove it and try to install it again.
-                rm -rf ${BUILD_FOLDER}
+                rm -rf ${BUILD_FOLDER}/*
                 rm -rf ${python_distributable}
                 copy_python
             else

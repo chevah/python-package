@@ -332,30 +332,26 @@ else
     export MAKE="$MAKE -j${JOBS}"
 fi
 
-#
-# Install OS package required to build Python.
-#
-install_dependencies() {
 
-    packages='packages-not-defined'
-    install_command='install-command-not-defined'
-    check_command='check-command-not-defined'
+#
+# Check for OS packages required to build Python.
+#
+check_dependencies() {
+
+    missing_packages=""
 
     case $OS in
         # Debian-derived distros are similar in this regard.
         ubuntu*|raspbian*)
             packages=$DEBIAN_PACKAGES
-            install_command='sudo apt-get --assume-yes install'
             check_command='dpkg --status'
         ;;
         rhel*)
             packages=$RHEL_PACKAGES
-            install_command='sudo yum -y install'
             check_command='rpm --query'
         ;;
         sles*)
             packages=$SLES_PACKAGES
-            install_command='sudo zypper --non-interactive install -l'
             check_command='rpm --query'
         ;;
         macos*)
@@ -368,89 +364,31 @@ install_dependencies() {
                 exit 102
             fi
             packages=''
-            install_command=''
-            check_command=''
         ;;
         *)
             packages=''
-            install_command=''
-            check_command=''
         ;;
     esac
 
-    # We install one package after another since some package managers
-    # (I am looking at you yum) will exit with 0 exit code if at least
-    # one package was successfully installed.
     if [ -n "$packages" ]; then
         echo "Checking for packages to be installed..."
         for package in $packages ; do
             echo "Checking if $package is installed..."
             $check_command $package
             if [ $? -ne 0 ]; then
-                echo "Installing $package using ${install_command}..."
-                execute $install_command $package \
-                    && INSTALLED_PACKAGES="$INSTALLED_PACKAGES $package"
+                echo "Missing required dependency: $package"
+                missing_packages="$missing_packages $package"
             fi
         done
     fi
-}
 
-
-#
-# This function should do its best to remove the packages previously
-# installed by `install_dependencies` and leave the system clean.
-#
-remove_dependencies() {
-    local rpm_leaves
-    local zypper_global_opts
-    local zypper_command_opts
-    local libzypp_version
-
-    if [ -n "$INSTALLED_PACKAGES" ]; then
-        echo "Uninstalling the following packages: $INSTALLED_PACKAGES"
+    if [ -n "$missing_packages" ]; then
+        echo "Exiting... Following packages are missing: $missing_packages."
+        exit 101
     else
-        return
+        echo "All required packages installed: $packages"
     fi
 
-    case $OS in
-        ubuntu*|raspbian*)
-            execute sudo apt-get --assume-yes --purge remove $INSTALLED_PACKAGES
-            execute sudo apt-get --assume-yes --purge autoremove
-            ;;
-        rhel*)
-            execute sudo yum -y remove $INSTALLED_PACKAGES
-            # RHEL7's yum learned how to auto-remove installed dependencies.
-            if [ ${OS##rhel} -ge 7 ]; then
-                execute sudo yum -y autoremove
-            else
-                # This partially works in RHEL 4 to 6 for automatically
-                # removing packages installed as dependencies (aka "leaves").
-                rhel_yum_autoremove() {
-                    rpm_leaves=$(package-cleanup --leaves --quiet 2>/dev/null \
-                        | egrep -v ^'Excluding|Finished')
-                    if [ -z "$rpm_leaves" ]; then
-                        (exit 0)
-                    else
-                        execute sudo yum -y remove $rpm_leaves
-                        rhel_autoremove
-                    fi
-                }
-                rhel_yum_autoremove
-            fi
-            ;;
-        sles*)
-            zypper_global_opts="--non-interactive"
-            # zypper version 7.4 got support for automatically removing
-            # unneeded packages, but only when removing installed packages.
-            libzypp_version=$(rpm --query --queryformat '%{VERSION}' libzypp)
-            IFS=. read -a libzypp_version_array <<< "$libzypp_version"
-            if [ ${libzypp_version_array[0]} -gt 7 ]; then
-                zypper_command_opts="--clean-deps"
-            fi
-            execute sudo zypper $zypper_global_opts remove \
-                $zypper_command_opts $INSTALLED_PACKAGES
-            ;;
-    esac
 }
 
 
@@ -464,7 +402,7 @@ command_clean() {
 
 help_text_build="Create the Python binaries for current OS."
 command_build() {
-    install_dependencies
+    check_dependencies
 
     # Clean the build dir to avoid contamination from previous builds.
     command_clean

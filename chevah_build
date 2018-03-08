@@ -383,9 +383,10 @@ check_dependencies() {
     fi
 
     if [ -n "$missing_packages" ]; then
-        echo "Exiting... Following packages are missing: $missing_packages."
+        echo "EXIT! Following packages are missing: $missing_packages."
         exit 101
-    else
+    fi
+    if [ -n "$packages" ]; then
         echo "All required packages installed: $packages"
     fi
 
@@ -469,8 +470,6 @@ command_build() {
                 execute cp lib/config/bin/$PYTHON_VERSION bin/python
             execute popd
     esac
-
-    remove_dependencies
 
     # Output the python-package version to a dedicated file in the archive.
     echo "${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" \

@@ -103,7 +103,6 @@ chevahbs_configure() {
             LDFLAGS="${LDFLAGS} -lxnet"
             CONFIG_ARGS="${CONFIG_ARGS} \
                 --with-system-ffi \
-                --disable-ipv6 \
                 "
             ;;
         osx*|macos*)

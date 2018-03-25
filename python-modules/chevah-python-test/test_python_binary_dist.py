@@ -42,13 +42,13 @@ def get_allowed_deps():
                 '/lib64/libutil.so.1',
                 '/lib64/libz.so.1',
                 ]
-            rhel_version = int(chevah_os[4:])
-            if rhel_version == 6:
+            rhel_version = chevah_os[4:]
+            if rhel_version.startswith("6"):
                 allowed_deps.extend([
                     '/usr/lib64/libcrypto.so.10',
                     '/usr/lib64/libssl.so.10',
                     ])
-            if rhel_version == 7:
+            if rhel_version.startswith("7"):
                 allowed_deps.extend([
                     '/lib64/libcrypto.so.10',
                     '/lib64/libpcre.so.1',
@@ -116,7 +116,6 @@ def get_allowed_deps():
                     '/lib/aarch64-linux-gnu/libz.so.1',
                     ]
         elif ('raspbian' in chevah_os):
-            raspbian_version = int(chevah_os[8:])
             # Common deps with full paths for Raspbian 7 and 8.
             allowed_deps=[
                 '/lib/arm-linux-gnueabihf/libcrypt.so.1',

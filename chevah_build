@@ -485,7 +485,7 @@ command_build() {
 command_build_sqlite() {
 
     if [ $OS = 'windows' ]; then
-        echo "Preparing updated SQLite DLL on Windows..."
+        echo "Updating SQLite DLL on Windows..."
         execute cp src/sqlite/sqlite3-${SQLITE_VERSION}.dll \
             ${INSTALL_FOLDER}/lib/DLLs/sqlite3.dll
         return

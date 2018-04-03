@@ -17,7 +17,7 @@ ZLIB_VERSION="1.2.11"
 LIBEDIT_VERSION="20170329-3.1"
 # PyCrypto needs GMP or MPIR for fast math. GMP has support for AIX/HP-UX/etc.
 GMP_VERSION="6.1.2"
-SQLITE_VERSION="3.20.1"
+SQLITE_VERSION="3.23.0"
 PYSQLITE_VERSION="2.8.3"
 # These are used by get-pip.py.
 PIP_VERSION="9.0.1"
@@ -485,7 +485,9 @@ command_build() {
 command_build_sqlite() {
 
     if [ $OS = 'windows' ]; then
-        echo "Skipping sqlite on Windows"
+        echo "Updating SQLite DLL on Windows..."
+        execute cp src/sqlite/sqlite3-${SQLITE_VERSION}.dll \
+            ${INSTALL_FOLDER}/lib/DLLs/sqlite3.dll
         return
     fi
 

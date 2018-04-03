@@ -552,6 +552,14 @@ command_build_python_extra_libraries() {
 
     done
 
+    # cryptography 2.2.2 in $PIP_LIBRARIES only builds right on OpenBSD if
+    # clang is called explicitly. However, we don't set this from the start
+    # because it breaks readline module. To be rechecked with newer versions.
+    if [ "${OS%openbsd*}" = "" ]; then
+        export CC=clang
+        export CXX=clang++
+    fi
+
     for library in $PIP_LIBRARIES ; do
         execute $PYTHON_BIN -m pip install $PIP_ARGS $library
     done

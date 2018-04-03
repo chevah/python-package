@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-#
-# SQLite code is build by the pysqlite module.
-#
-echo "You should not build this but use pysqlite lib."
-exit 1

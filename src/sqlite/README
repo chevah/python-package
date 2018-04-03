@@ -1,0 +1,12 @@
+
+This sub-directory holds SQLite, as downloaded from upstream and unpacked.
+
+For example, for version 3.23.0:
+
+ * sources from https://sqlite.org/2018/sqlite-autoconf-3230000.tar.gz
+ * 32bit DLL from https://sqlite.org/2018/sqlite-dll-win32-x86-3230000.zip
+
+SQLite code is built by the pysqlite module, thus there's no "chevahbs" script.
+
+The 32bit binary file is used to update the SQLite DLL bundled with upstream
+Python installer on Windows.

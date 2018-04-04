@@ -40,7 +40,7 @@ export BUILD_GMP="yes"
 export BUILD_LIBFFI="yes"
 export BUILD_CFFI="yes"
 EXTRA_LIBRARIES="\
-    python-modules/cffi-1.5.2 \
+    python-modules/cffi-1.11.5 \
     python-modules/pycrypto-2.6.1 \
     "
 # Libraries for legacy systems not built around cffi and pip.
@@ -258,6 +258,17 @@ case $OS in
         # "10.4", and then tries to avoid the broken readline in OS X 10.4.
         export MACOSX_DEPLOYMENT_TARGET=10.12
         ;;
+
+    openbsd*)
+        export CC=clang
+        export CXX=clang++
+        PIP_LIBRARIES="\
+            setproctitle==1.1.10 \
+            cryptography==2.2.2chevah2 \
+            pyOpenSSL==17.0.0 \
+            scandir==1.5 \
+            "
+        ;;
     freebsd*)
         export CC="clang"
         export CXX="clang++"
@@ -305,7 +316,7 @@ if [ "${OS%solaris*}" = "" ]; then
         # Required for linking to libedit, which has a simpler configure setup.
         export CFLAGS="$CFLAGS -xcode=pic32"
     fi
-elif [ "${OS%freebsd*}" = "" ]; then
+elif [ "${OS%freebsd*}" = "" -o "${OS%openbsd*}" = "" ]; then
     # Use PIC (Position Independent Code) on FreeBSD 10 and newer with Clang.
     export CFLAGS="${CFLAGS} -fPIC"
 elif [ "$CC" = "gcc" -a ${ARCH%%64} != "$ARCH" ]; then
@@ -551,14 +562,6 @@ command_build_python_extra_libraries() {
         execute popd
 
     done
-
-    # cryptography 2.2.2 in $PIP_LIBRARIES only builds right on OpenBSD if
-    # clang is called explicitly. However, we don't set this from the start
-    # because it breaks readline module. To be rechecked with newer versions.
-    if [ "${OS%openbsd*}" = "" ]; then
-        export CC=clang
-        export CXX=clang++
-    fi
 
     for library in $PIP_LIBRARIES ; do
         execute $PYTHON_BIN -m pip install $PIP_ARGS $library

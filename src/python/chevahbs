@@ -43,6 +43,12 @@ chevahbs_patch() {
             echo "Applying crypto_threadid.patch:"
             execute patch -p0 < crypto_threadid.patch
             ;;
+        openbsd63)
+            # Support for LibreSSL 2.7 in Python 2.7.14.
+            if [ "$PYTHON_BUILD_VERSION" = "2.7.14" ]; then
+                execute patch -p1 < libressl27-support.patch
+            fi
+            ;;
     esac
 }
 

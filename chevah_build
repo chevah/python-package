@@ -210,6 +210,8 @@ case $OS in
             export PATH=/usr/ccs/bin/:$PATH
         fi
         # cffi modules are not ready yet on Solaris.
+        # Solaris 10 has OpenSSL 0.9.7, but cryptography requires 1.0.1.
+        # 11.x has OpenSSL 1.0.1, but EC crypto is enabled only in 11.3 SRU 19.
         export BUILD_CFFI="no"
         PIP_LIBRARIES=""
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
@@ -262,6 +264,7 @@ case $OS in
     openbsd*)
         export CC=clang
         export CXX=clang++
+        # Fix from upstream, newer cryptography versions should work as-is.
         PIP_LIBRARIES="\
             setproctitle==1.1.10 \
             cryptography==2.2.2chevah2 \

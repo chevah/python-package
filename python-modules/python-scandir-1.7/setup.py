@@ -33,7 +33,6 @@ setup(
     long_description=long_description,
     py_modules=['scandir'],
     ext_modules=[Extension('_scandir', ['_scandir.c'])],
-    zip_safe = False,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
@@ -47,7 +46,6 @@ setup(
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',

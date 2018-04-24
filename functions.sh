@@ -262,7 +262,7 @@ get_number_of_cpus() {
             ;;
         hpux*)
             # Logical CPUs. Tested on HP-UX 11.31 running on Itaniums.
-            CPUS=$(ioscan -kFC processor | wc -l)
+            CPUS=$(/usr/sbin/ioscan -kFC processor | wc -l)
             ;;
         osx*|macos*|freebsd*|openbsd*|netbsd*)
             # Logical CPUs.

@@ -229,9 +229,14 @@ case $OS in
         export BUILD_ZLIB="yes"
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
-        export BUILD_CFFI="no"
-        PIP_LIBRARIES=""
-        EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
+        # cryptography 1.9+ needs patching for HP's cc, building it fails with
+        # "error #2118: a void function may not return a value" for _openssl.c.
+        PIP_LIBRARIES="\
+            setproctitle==1.1.10 \
+            cryptography==1.8.2 \
+            pyOpenSSL==17.0.0 \
+            scandir==1.7 \
+            "
         ;;
     osx*)
         # The extra params needed to set the minimum target version to 10.8

@@ -204,13 +204,44 @@ case $OS in
             # We favour the BSD-flavoured "install" over the default one.
             # "ar", "nm" and "ld" are included by default in the same path.
             export PATH=/usr/ccs/bin/:$PATH
+            # Solaris 10 has OpenSSL 0.9.7, which is unusable with cryptography.
+            export BUILD_CFFI="no"
+            PIP_LIBRARIES=""
+            EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
+        else
+            if [ ${ARCH} = "sparc" ]; then
+                # There's a problem with building readline in 11.2 for SPARC.
+                export BUILD_LIBEDIT="no"
+            fi
+            # Theoretically, cryptography 2.2.2 should work in Solaris 11.x, as
+            # it has newer OpenSSL, but EC crypto is enabled only in 11.3 SRU19.
+            if [ -f /usr/include/openssl/ecdh.h ]; then
+                # No "-Wconversion -Wno-error=sign-conversion" for Studio's cc.
+                PIP_LIBRARIES="\
+                    setproctitle==1.1.10 \
+                    cryptography==2.2.2chevah \
+                    pyOpenSSL==17.0.0 \
+                    scandir==1.7 \
+                    "
+            elif [ -f /usr/include/openssl/cmac.h ]; then
+                # 1.8.2 works with the crippled OpenSSL 1.0.1 in Solaris 11.2.
+                PIP_LIBRARIES="\
+                    setproctitle==1.1.10 \
+                    cryptography==1.8.2 \
+                    pyOpenSSL==17.0.0 \
+                    scandir==1.7 \
+                    "
+            else
+                # 1.6 still supported OpenSSL 1.0.0, the default in 11.0/11.1.
+                # Watch out for errors related to "-Wconversion".
+                PIP_LIBRARIES="\
+                    setproctitle==1.1.10 \
+                    cryptography==1.6 \
+                    pyOpenSSL==17.0.0 \
+                    scandir==1.7 \
+                    "
+            fi
         fi
-        # cffi modules are not ready yet on Solaris.
-        # Solaris 10 has OpenSSL 0.9.7, but cryptography requires 1.0.1.
-        # 11.x has OpenSSL 1.0.1, but EC crypto is enabled only in 11.3 SRU 19.
-        export BUILD_CFFI="no"
-        PIP_LIBRARIES=""
-        EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
     hpux*)
         # We use HP's compiler, with no warnings, as it generates lots.
@@ -666,12 +697,12 @@ command_test() {
     echo 'Testing scandir...'
     # There are a series of issues with the scandir tests in Linux/Unix.
     # Reported upstream at https://github.com/benhoyt/scandir/issues/78.
-    case $OS in
+    case "$OS-$ARCH" in
         osx*|macos*|windows*)
             execute $LOCAL_PYTHON_BINARY \
                 ../python-modules/python-scandir-1.7/test/run_tests.py
             ;;
-        aix*|hpux*|openbsd*)
+        aix*|hpux*|openbsd*|solaris10-sparc)
             # In OpenBSD there are even more issues actually.
             # Details at https://github.com/benhoyt/scandir/issues/79.
             (>&2 echo -e "\tSkipping because of upstream issues.")

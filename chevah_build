@@ -167,10 +167,6 @@ case $OS in
         fi
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
-        # On AIX cffi based modules are not ported yet.
-        export BUILD_CFFI="no"
-        PIP_LIBRARIES=""
-        EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
     solaris*)
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
@@ -572,6 +568,11 @@ command_build_python_extra_libraries() {
     done
 
     for library in $PIP_LIBRARIES ; do
+        if [ "${OS%aix*}" = "" ]; then
+            # Copy ld_so_aix & co., to be found by all modules.
+            mkdir Modules
+            cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules/
+        fi
         execute $PYTHON_BIN -m pip install $PIP_ARGS $library
     done
 

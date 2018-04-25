@@ -229,7 +229,7 @@ case $OS in
         # "error #2118: a void function may not return a value" for _openssl.c.
         PIP_LIBRARIES="\
             setproctitle==1.1.10 \
-            cryptography==1.8.2 \
+            cryptography==2.2.2chevah3 \
             pyOpenSSL==17.0.0 \
             scandir==1.7 \
             "

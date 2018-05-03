@@ -599,11 +599,6 @@ command_build_python_extra_libraries() {
     done
 
     for library in $PIP_LIBRARIES ; do
-        if [ "${OS%aix*}" = "" ]; then
-            # Copy ld_so_aix & co., to be found by all modules.
-            mkdir Modules
-            cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules/
-        fi
         execute $PYTHON_BIN -m pip install $PIP_ARGS $library
     done
 

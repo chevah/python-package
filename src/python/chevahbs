@@ -27,6 +27,11 @@ chevahbs_patch() {
     fi
     # And finally we apply the OS-specific patches.
     case $OS in
+        # BLDSHARED fixes from https://bugs.python.org/issue18235.
+        aix*)
+            echo "Applying aix_bldshared.patch:"
+            execute patch -p0 < aix_bldshared.patch
+            ;;
         # Adds custom paths and a fix from http://bugs.python.org/issue1471934.
         solaris10*)
             echo "Applying solaris10_paths.patch:"

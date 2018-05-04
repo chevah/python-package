@@ -27,6 +27,11 @@ chevahbs_patch() {
     fi
     # And finally we apply the OS-specific patches.
     case $OS in
+        # BLDSHARED fixes from https://bugs.python.org/issue18235.
+        aix*)
+            echo "Applying aix_bldshared.patch:"
+            execute patch -p0 < aix_bldshared.patch
+            ;;
         # Adds custom paths and a fix from http://bugs.python.org/issue1471934.
         solaris10*)
             echo "Applying solaris10_paths.patch:"
@@ -42,6 +47,12 @@ chevahbs_patch() {
             # The second patch from https://bugs.python.org/issue18777.
             echo "Applying crypto_threadid.patch:"
             execute patch -p0 < crypto_threadid.patch
+            ;;
+        openbsd63)
+            # Support for LibreSSL 2.7 in Python 2.7.14.
+            if [ "$PYTHON_BUILD_VERSION" = "2.7.14" ]; then
+                execute patch -p1 < libressl27-support.patch
+            fi
             ;;
     esac
 }

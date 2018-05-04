@@ -372,8 +372,8 @@ def get_allowed_deps():
         allowed_deps = [
             '/usr/lib/libc.so',
             '/usr/lib/libcrypto.so',
+            '/usr/lib/libcurses.so',
             '/usr/lib/libm.so',
-            '/usr/lib/libncursesw.so',
             '/usr/lib/libpthread.so',
             '/usr/lib/libssl.so',
             '/usr/lib/libutil.so',
@@ -565,9 +565,9 @@ def main():
             print 'cryptography %s - OpenSSL %s' % (
                 cryptography.__version__, openssl_version)
 
-            if chevah_os == 'windows':
-                # Check OpenSSL version on windows.
-                expecting = u'OpenSSL 1.1.0f  25 May 2017'
+            if chevah_os in [ "windows", "macos1012" ]:
+                # Check OpenSSL version from upstream wheels.
+                expecting = u'OpenSSL 1.1.0h  27 Mar 2018'
                 if openssl_version != expecting:
                     sys.stderr.write('Expecting %s got %s.\n' % (
                         expecting, openssl_version))

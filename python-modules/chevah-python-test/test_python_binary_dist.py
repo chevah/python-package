@@ -85,20 +85,29 @@ def get_allowed_deps():
                     '/lib64/libtinfo.so.5',
                     ])
         elif ('ubuntu' in chevah_os):
-            # Deps for Ubuntu 14.04 and 16.04 with full paths (x86_64 only).
+            ubuntu_version = chevah_os[6:]
+            # Common deps for Ubuntu 14.04/16.04/18.04 with full paths (x86_64).
             allowed_deps=[
-                '/lib/x86_64-linux-gnu/libcrypto.so.1.0.0',
-                '/lib/x86_64-linux-gnu/libcrypt.so.1',
                 '/lib/x86_64-linux-gnu/libc.so.6',
+                '/lib/x86_64-linux-gnu/libcrypt.so.1',
                 '/lib/x86_64-linux-gnu/libdl.so.2',
                 '/lib/x86_64-linux-gnu/libm.so.6',
                 '/lib/x86_64-linux-gnu/libnsl.so.1',
                 '/lib/x86_64-linux-gnu/libpthread.so.0',
-                '/lib/x86_64-linux-gnu/libssl.so.1.0.0',
                 '/lib/x86_64-linux-gnu/libtinfo.so.5',
                 '/lib/x86_64-linux-gnu/libutil.so.1',
                 '/lib/x86_64-linux-gnu/libz.so.1',
                 ]
+            if ubuntu_version in [ "1404", "1604" ]:
+                allowed_deps.extend([
+                    '/lib/x86_64-linux-gnu/libcrypto.so.1.0.0',
+                    '/lib/x86_64-linux-gnu/libssl.so.1.0.0',
+                ])
+            else:
+                allowed_deps.extend([
+                    '/usr/lib/x86_64-linux-gnu/libcrypto.so.1.1',
+                    '/usr/lib/x86_64-linux-gnu/libssl.so.1.1',
+                ])
             if 'arm64' in chevah_arch:
                 # Deps with full paths for Ubuntu 16.04 on a Pine64 board.
                 allowed_deps=[

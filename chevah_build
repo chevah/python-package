@@ -55,8 +55,10 @@ EXTRA_LIBRARIES="\
     "
 
 # Libraries for legacy systems not built around cffi and pip.
+# pyOpenSSL 0.13.1 was last upstream version before the port to
+# the cffi-based OpenSSL bindings provided by the cryptography module.
 EXTRA_LIBRARIES_NO_CFFI="\
-    python-modules/pyOpenSSL-0.13 \
+    python-modules/pyOpenSSL-0.13.1 \
     python-modules/pycrypto-${PYCRYPTO_VERSION} \
     python-modules/python-setproctitle-1.1.8.dev0 \
     python-modules/python-scandir-${SCANDIR_VERSION} \

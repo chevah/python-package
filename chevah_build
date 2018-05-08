@@ -509,8 +509,10 @@ command_build() {
             ;;
     esac
 
+    aix_ld_hack init
     command_build_sqlite
     command_build_python_extra_libraries
+    aix_ld_hack cleanup
 
     case $OS in
         windows*)
@@ -661,11 +663,6 @@ initialize_python_module(){
         fi
 
         case $OS in
-            aix*)
-                # Copy special link steps in local folder.
-                mkdir -p Modules
-                cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
-                ;;
             solaris*)
                 # Copy special link steps in local folder.
                 mkdir -p Modules

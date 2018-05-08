@@ -194,6 +194,7 @@ def get_allowed_deps():
             '/lib/libcrypt.a(shr.o)',
             '/lib/libcrypto.a(libcrypto.so.1.0.0)',
             '/lib/libcrypto.so',
+            '/lib/libdl.a(shr.o)',
             '/lib/libnsl.a(shr.o)',
             '/lib/libpthreads.a(shr.o)',
             '/lib/libpthreads.a(shr_comm.o)',

@@ -290,6 +290,10 @@ aix_ld_hack() {
     custom_python_dir="/lib/$PYTHON_VERSION"
     case $* in
         init)
+            if [ -e "$custom_python_dir" ]; then
+                (>&2 echo "$custom_python_dir already exists, not proceeding!")
+                exit 99
+            fi
             execute sudo mkdir -p "$custom_python_dir"/config
             execute sudo cp "$INSTALL_FOLDER"/lib/"$PYTHON_VERSION"/config/* \
                 "$custom_python_dir"/config/

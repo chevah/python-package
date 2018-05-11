@@ -57,6 +57,8 @@ EXTRA_LIBRARIES="\
 # Libraries for legacy systems not built around cffi and pip.
 # pyOpenSSL 0.13.1 was last upstream version before the port to
 # the cffi-based OpenSSL bindings provided by the cryptography module.
+# pyOpenSSL 0.13.1, that fixes CVE-2013-4314, requires SSL_set_SSL_CTX.
+# OpenSSL 0.9.7 libs, as bundled in Solaris 10, lack the SSL_set_SSL_CTX symbol.
 EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/pyOpenSSL-0.13.1 \
     python-modules/pycrypto-${PYCRYPTO_VERSION} \

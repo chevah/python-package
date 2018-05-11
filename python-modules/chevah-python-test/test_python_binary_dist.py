@@ -243,9 +243,21 @@ def get_allowed_deps():
                     '/usr/lib/64/libsqlite3.so.0',
                     '/usr/lib/64/libz.so.1',
                     '/usr/lib/amd64/libc.so.1',
-                    '/usr/sfw/lib/64/libcrypto.so.0.9.7',
-                    '/usr/sfw/lib/64/libssl.so.0.9.7',
                     ])
+                # OpenSSL specific deps per version.
+                import ssl
+                if ssl.OPENSSL_VERSION_INFO[0:3] == (0, 9, 7):
+                    # Deps for the default OpenSSL 0.9.7d version in Solaris 10.
+                    allowed_deps.extend([
+                        '/usr/sfw/lib/64/libcrypto.so.0.9.7',
+                        '/usr/sfw/lib/64/libssl.so.0.9.7',
+                        ])
+                elif ssl.OPENSSL_VERSION_INFO[0:2] == (1, 0):
+                    # Deps for OpenSSL 1.0.2n from patches 151912/151913.
+                    allowed_deps.extend([
+                        '/usr/lib/64/libcrypto.so.1.0.0',
+                        '/usr/lib/64/libssl.so.1.0.0',
+                        ])
             elif solaris_version == '11':
                 # Specific deps to add for Solaris 11.
                 allowed_deps.extend([
@@ -281,8 +293,6 @@ def get_allowed_deps():
                     '/lib/libgen.so.1',
                     '/lib/librt.so.1',
                     '/usr/lib/libcrypt_i.so.1',
-                    '/usr/sfw/lib//libcrypto.so.0.9.7',
-                    '/usr/sfw/lib//libssl.so.0.9.7',
                     ])
                 if 'solaris10u3' in chevah_os:
                     # Specific deps for Solaris 10u3 up to 10u7.
@@ -299,6 +309,20 @@ def get_allowed_deps():
                         '/lib/libthread.so.1',
                         '/usr/lib/libsqlite3.so.0',
                         '/usr/lib/libz.so.1',
+                        ])
+                # OpenSSL specific deps per version.
+                import ssl
+                if ssl.OPENSSL_VERSION_INFO[0:3] == (0, 9, 7):
+                    # Deps for the default OpenSSL 0.9.7d version in Solaris 10.
+                    allowed_deps.extend([
+                        '/usr/sfw/lib/libcrypto.so.0.9.7',
+                        '/usr/sfw/lib/libssl.so.0.9.7',
+                        ])
+                elif ssl.OPENSSL_VERSION_INFO[0:2] == (1, 0):
+                    # Deps for OpenSSL 1.0.2n from patches 151912-11/151913-11.
+                    allowed_deps.extend([
+                        '/usr/lib/libcrypto.so.1.0.0',
+                        '/usr/lib/libssl.so.1.0.0',
                         ])
             elif solaris_version == '11':
                 # Specific deps to add for Solaris 11.

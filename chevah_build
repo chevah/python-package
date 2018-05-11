@@ -195,48 +195,49 @@ case $OS in
         export CC="cc"
         export CXX="CC"
         export MAKE="gmake"
-        if [ "$OS" = "solaris10u3" ]; then
-            # pip doesn't like the included zlib from this old Solaris release.
-            export BUILD_ZLIB="yes"
-            # SQLite libs dir on 10u3 x86.
-            export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"
-        fi
         # Here's where the system-included GCC is to be found.
         if [ "${CC}" = "gcc" ]; then
             export PATH="$PATH:/usr/sfw/bin/"
         fi
-        # The location for GNU libs in Solaris, including OpenSSL in Solaris 10.
+        # Arch-specific bits and paths.
         if [ "${ARCH%64}" = "$ARCH" ]; then
-            export LDFLAGS="$LDFLAGS -L/usr/sfw/lib -R/usr/sfw/lib"
             # GMP needs to be told that we aim for a 32bit build.
             export ABI="32"
         else
-            export LDFLAGS="$LDFLAGS -m64 -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
             export CFLAGS="$CFLAGS -m64"
+            export LDFLAGS="$LDFLAGS -m64 -L/usr/lib/64 -R/usr/lib/64"
         fi
         if [ "${OS%solaris10*}" = "" ]; then
-            # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with
-            # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
-            PYTHON_BUILD_VERSION=2.7.8
-            # Latest libedit sources do not build on Solaris 10 anymore.
-            export BUILD_LIBEDIT="no"
+            # This code path requires OpenSSL 1.0.x patches from Oracle.
+            # Check out the "solaris10u3" code path to link to OpenSSL 0.9.7.
             # These are the default-included GNU make and makeinfo.
             export MAKE=/usr/sfw/bin/gmake
             export MAKEINFO=/usr/sfw/bin/makeinfo
             # We favour the BSD-flavoured "install" over the default one.
             # "ar", "nm" and "ld" are included by default in the same path.
             export PATH=/usr/ccs/bin/:$PATH
-            # Solaris 10 has OpenSSL 0.9.7, which is unusable with cryptography.
+            # Latest libedit sources do not build on Solaris 10 any more.
+            export BUILD_LIBEDIT="no"
+            # NPN functions missing from Oracle's OpenSSL patches, as of version
+            # 1.0.2n from January 2018 (patches 151912-11/151913-11). Thus, the
+            # new _ssl module in 2.7.9 won't build, error being "_ssl.so: symbol
+            # SSL_get0_next_proto_negotiated: referenced symbol not found".
+            PYTHON_BUILD_VERSION=2.7.8
+            # Elliptic-curve crypto missing too, no cryptography 1.9 or newer.
+            # NPN functions needed in cryptography 0.4 and newer. 1.8.2 builds,
+            # but at runtime: "cryptography/hazmat/bindings/_openssl.so: symbol
+            # SSL_CTX_set_next_proto_select_cb: referenced symbol not found".
+            # cryptography 0.3 doesn't build on Solaris 10, so we are stuck. 
             export BUILD_CFFI="no"
             PIP_LIBRARIES=""
             EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         else
             if [ ${ARCH} = "sparc" ]; then
-                # There's a problem with building readline in 11.2 for SPARC.
+                # There's a problem with linking readline in 11.2 for SPARC.
                 export BUILD_LIBEDIT="no"
             fi
             # Theoretically, cryptography 2.2.2 should work in Solaris 11.x, as
-            # it has newer OpenSSL, but EC crypto is enabled only in 11.3 SRU19.
+            # it has OpenSSL 1.0.1, but EC crypto is enabled only in 11.3 SRU19.
             if [ -f /usr/include/openssl/ecdh.h ]; then
                 # No "-Wconversion -Wno-error=sign-conversion" for Studio's cc.
                 PIP_LIBRARIES="\
@@ -246,11 +247,13 @@ case $OS in
                     scandir==${SCANDIR_VERSION} \
                     "
             elif [ -f /usr/include/openssl/cmac.h ]; then
-                # 1.8.2 works with the crippled OpenSSL 1.0.1 in Solaris 11.2.
+                # 1.8.2 was last version to build without Elliptic-curve crypto,
+                # as this is missing from OpenSSL 1.0.1 libs in Solaris 11.2.
+                # pyOpenSSL 17.0.0, last version to support cryptography 1.8.2.
                 PIP_LIBRARIES="\
                     setproctitle==${SETPROCTITLE_VERSION} \
                     cryptography==1.8.2 \
-                    pyOpenSSL==${PYOPENSSL_VERSION} \
+                    pyOpenSSL==17.0.0 \
                     scandir==${SCANDIR_VERSION} \
                     "
             else
@@ -263,6 +266,29 @@ case $OS in
                     scandir==${SCANDIR_VERSION} \
                     "
             fi
+        fi
+        if [ "$OS" = "solaris10u3" ]; then
+            # This code path also covers linking to OpenSSL 0.9.7 on all Solaris
+            # 10 versions, including releases u7 and newer, with updated libc.
+            # Paths for OpenSSL 0.9.7 and SQLite libs on Solaris 10.
+            # The latter were moved and are found easily on newer releases.
+            if [ "${ARCH%64}" = "$ARCH" ]; then
+                export LDFLAGS="$LDFLAGS -L/usr/sfw/lib -R/usr/sfw/lib"
+                export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"
+            else
+                export LDFLAGS="$LDFLAGS -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
+                export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
+            fi
+            # pip doesn't like the included zlib on ancient Solaris 10
+            # releases, such as Solaris 10u3.
+            export BUILD_ZLIB="yes"
+            # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with
+            # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
+            PYTHON_BUILD_VERSION=2.7.8
+            # OpenSSL 0.9.7 is unusable with cryptography & current pyOpenSSL.
+            export BUILD_CFFI="no"
+            PIP_LIBRARIES=""
+            EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         fi
         ;;
     hpux*)
@@ -674,7 +700,7 @@ initialize_python_module(){
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
                 extra_args=""
-                if [ "${OS%solaris10*}" = "" ]; then
+                if [ "${OS%solaris10u3}" = "" ]; then
                     # To link pyOpenSSL to included OpenSSL 0.9.7 libs.
                     extra_args="$extra_args -I/usr/sfw/include"
                     if [ "${ARCH%64}" = "$ARCH" ]; then

@@ -246,19 +246,25 @@ def get_allowed_deps():
                     '/usr/lib/amd64/libc.so.1',
                     ])
                 # OpenSSL specific deps per version.
-                import ssl
-                if ssl.OPENSSL_VERSION_INFO[0:3] == (0, 9, 7):
-                    # Deps for the default OpenSSL 0.9.7d version in Solaris 10.
-                    allowed_deps.extend([
-                        '/usr/sfw/lib/64/libcrypto.so.0.9.7',
-                        '/usr/sfw/lib/64/libssl.so.0.9.7',
-                        ])
-                elif ssl.OPENSSL_VERSION_INFO[0:2] == (1, 0):
-                    # Deps for OpenSSL 1.0.2n from patches 151912/151913.
-                    allowed_deps.extend([
-                        '/usr/lib/64/libcrypto.so.1.0.0',
-                        '/usr/lib/64/libssl.so.1.0.0',
-                        ])
+                try:
+                    from ssl import OPENSSL_VERSION_INFO as ssl_version_tuple
+                    if ssl_version_tuple[0:3] == (0, 9, 7):
+                        # Deps for the default OpenSSL 0.9.7d in Solaris 10.
+                        allowed_deps.extend([
+                            '/usr/sfw/lib/64/libcrypto.so.0.9.7',
+                            '/usr/sfw/lib/64/libssl.so.0.9.7',
+                            ])
+                    elif ssl_version_tuple[0:2] == (1, 0):
+                        # Deps for OpenSSL 1.0.2n from patches 151912/151913.
+                        allowed_deps.extend([
+                            '/usr/lib/64/libcrypto.so.1.0.0',
+                            '/usr/lib/64/libssl.so.1.0.0',
+                            ])
+                    else:
+                        sys.stderr.write('Unexpected OpenSSL version: %s.\n' % (
+                            str(ssl_version_tuple)))
+                except:
+                    sys.stderr.write('SSL module missing.\n')
             elif solaris_version == '11':
                 # Specific deps to add for Solaris 11.
                 allowed_deps.extend([
@@ -312,19 +318,25 @@ def get_allowed_deps():
                         '/usr/lib/libz.so.1',
                         ])
                 # OpenSSL specific deps per version.
-                import ssl
-                if ssl.OPENSSL_VERSION_INFO[0:3] == (0, 9, 7):
-                    # Deps for the default OpenSSL 0.9.7d version in Solaris 10.
-                    allowed_deps.extend([
-                        '/usr/sfw/lib/libcrypto.so.0.9.7',
-                        '/usr/sfw/lib/libssl.so.0.9.7',
-                        ])
-                elif ssl.OPENSSL_VERSION_INFO[0:2] == (1, 0):
-                    # Deps for OpenSSL 1.0.2n from patches 151912-11/151913-11.
-                    allowed_deps.extend([
-                        '/usr/lib/libcrypto.so.1.0.0',
-                        '/usr/lib/libssl.so.1.0.0',
-                        ])
+                try:
+                    from ssl import OPENSSL_VERSION_INFO as ssl_version_tuple
+                    if ssl_version_tuple[0:3] == (0, 9, 7):
+                        # Deps for the default OpenSSL 0.9.7d in Solaris 10.
+                        allowed_deps.extend([
+                            '/usr/sfw/lib/libcrypto.so.0.9.7',
+                            '/usr/sfw/lib/libssl.so.0.9.7',
+                            ])
+                    elif ssl_version_tuple[0:2] == (1, 0):
+                        # Deps for OpenSSL 1.0.2n from patches 151912/151913.
+                        allowed_deps.extend([
+                            '/usr/lib/libcrypto.so.1.0.0',
+                            '/usr/lib/libssl.so.1.0.0',
+                            ])
+                    else:
+                        sys.stderr.write('Unexpected OpenSSL version: %s.\n' % (
+                            str(ssl_version_tuple)))
+                except:
+                    sys.stderr.write('SSL module missing.\n')
             elif solaris_version == '11':
                 # Specific deps to add for Solaris 11.
                 allowed_deps.extend([
@@ -581,8 +593,8 @@ def main():
         exit_code = 1
 
     try:
-        import ssl
-        print 'stdlib ssl %s' % (ssl.OPENSSL_VERSION,)
+        from ssl import OPENSSL_VERSION as ssl_version
+        print 'stdlib ssl %s' % (ssl_version,)
         import _hashlib
         exit_code = egg_check(_hashlib) | exit_code
     except:

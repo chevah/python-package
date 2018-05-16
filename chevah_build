@@ -58,7 +58,6 @@ EXTRA_LIBRARIES="\
 # pyOpenSSL 0.13.1 was last upstream version before the port to
 # the cffi-based OpenSSL bindings provided by the cryptography module.
 # pyOpenSSL 0.13.1, that fixes CVE-2013-4314, requires SSL_set_SSL_CTX.
-# OpenSSL 0.9.7 libs, as bundled in Solaris 10, lack the SSL_set_SSL_CTX symbol.
 EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/pyOpenSSL-0.13.1 \
     python-modules/pycrypto-${PYCRYPTO_VERSION} \
@@ -288,6 +287,9 @@ case $OS in
             # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
             PYTHON_BUILD_VERSION=2.7.8
             # OpenSSL 0.9.7 is unusable with cryptography & current pyOpenSSL.
+            # Beware that OpenSSL 0.9.7 libs, as bundled in Solaris 10, lack
+            # the SSL_set_SSL_CTX symbol.
+            # pyOpenSSL 0.13 was last version to build without SSL_set_SSL_CTX.
             export BUILD_CFFI="no"
             PIP_LIBRARIES=""
             EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
@@ -761,11 +763,12 @@ use_latest_python_package() {
 
     # We patch the Python version to match the one that we have just built
     # and copy it in cache so that it will be picked up by the new build.
-    execute echo -e "\nPYTHON_CONFIGURATION=default@${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" >> $config_file
+    execute echo -e \
+        "\nPYTHON_CONFIGURATION=default@${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" \
+        >> $config_file
     # Also copy latest paver.sh, as some changes might require it.
     execute cp ../../$config_file ./
-    # Populate the cache with the latest version so that we don't have to
-    # download it.
+    # Populate cache with latest version so that we don't have to download it.
     execute mkdir cache
     execute cp -r ../$LOCAL_PYTHON_BINARY_DIST cache/
 
@@ -792,7 +795,7 @@ command_test_compat() {
     execute ./paver.sh test_ci
     execute popd
 
-    # We also run chevah-keycert tests as they use pyOpenSSL and pycryto.
+    # We also run chevah-keycert tests as they use pyOpenSSL and pycrypto.
     echo '##### Running chevah.keycert tests... #####'
     execute rm -rf chevah-keycert
     execute git clone https://github.com/chevah/chevah-keycert.git --depth=1 -b master

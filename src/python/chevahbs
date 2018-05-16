@@ -37,7 +37,7 @@ chevahbs_patch() {
             echo "Applying solaris10_openssl097.patch:"
             execute patch < solaris10_openssl097.patch
             ;;
-        # A fix for building crypt from http://bugs.python.org/issue1471934.
+        # Fix 64bit crypt builds as per http://bugs.python.org/issue1471934.
         solaris10*)
             echo "Applying solaris10_libcrypt.patch:"
             execute patch < solaris10_libcrypt.patch

@@ -326,7 +326,7 @@ def get_allowed_deps():
                             '/usr/sfw/lib/libcrypto.so.0.9.7',
                             '/usr/sfw/lib/libssl.so.0.9.7',
                             ])
-                    elif ssl_version_tuple[0:2] == (1, 0):
+                    elif OPENSSL_VERSION_INFO[0:2] == (1, 0):
                         # Deps for OpenSSL 1.0.2n from patches 151912/151913.
                         allowed_deps.extend([
                             '/usr/lib/libcrypto.so.1.0.0',
@@ -334,7 +334,7 @@ def get_allowed_deps():
                             ])
                     else:
                         sys.stderr.write('Unexpected OpenSSL version: %s.\n' % (
-                            str(ssl_version_tuple)))
+                            str(OPENSSL_VERSION_INFO)))
                 except:
                     sys.stderr.write('SSL module missing.\n')
             elif solaris_version == '11':
@@ -593,8 +593,8 @@ def main():
         exit_code = 1
 
     try:
-        from ssl import OPENSSL_VERSION as ssl_version
-        print 'stdlib ssl %s' % (ssl_version,)
+        from ssl import OPENSSL_VERSION
+        print 'stdlib ssl %s' % (OPENSSL_VERSION,)
         import _hashlib
         exit_code = egg_check(_hashlib) | exit_code
     except:

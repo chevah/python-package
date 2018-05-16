@@ -85,20 +85,29 @@ def get_allowed_deps():
                     '/lib64/libtinfo.so.5',
                     ])
         elif ('ubuntu' in chevah_os):
-            # Deps for Ubuntu 14.04 and 16.04 with full paths (x86_64 only).
+            ubuntu_version = chevah_os[6:]
+            # Common deps for Ubuntu 14.04/16.04/18.04 with full paths (x86_64).
             allowed_deps=[
-                '/lib/x86_64-linux-gnu/libcrypto.so.1.0.0',
-                '/lib/x86_64-linux-gnu/libcrypt.so.1',
                 '/lib/x86_64-linux-gnu/libc.so.6',
+                '/lib/x86_64-linux-gnu/libcrypt.so.1',
                 '/lib/x86_64-linux-gnu/libdl.so.2',
                 '/lib/x86_64-linux-gnu/libm.so.6',
                 '/lib/x86_64-linux-gnu/libnsl.so.1',
                 '/lib/x86_64-linux-gnu/libpthread.so.0',
-                '/lib/x86_64-linux-gnu/libssl.so.1.0.0',
                 '/lib/x86_64-linux-gnu/libtinfo.so.5',
                 '/lib/x86_64-linux-gnu/libutil.so.1',
                 '/lib/x86_64-linux-gnu/libz.so.1',
                 ]
+            if ubuntu_version in [ "1404", "1604" ]:
+                allowed_deps.extend([
+                    '/lib/x86_64-linux-gnu/libcrypto.so.1.0.0',
+                    '/lib/x86_64-linux-gnu/libssl.so.1.0.0',
+                ])
+            else:
+                allowed_deps.extend([
+                    '/usr/lib/x86_64-linux-gnu/libcrypto.so.1.1',
+                    '/usr/lib/x86_64-linux-gnu/libssl.so.1.1',
+                ])
             if 'arm64' in chevah_arch:
                 # Deps with full paths for Ubuntu 16.04 on a Pine64 board.
                 allowed_deps=[
@@ -185,6 +194,7 @@ def get_allowed_deps():
             '/lib/libcrypt.a(shr.o)',
             '/lib/libcrypto.a(libcrypto.so.1.0.0)',
             '/lib/libcrypto.so',
+            '/lib/libdl.a(shr.o)',
             '/lib/libnsl.a(shr.o)',
             '/lib/libpthreads.a(shr.o)',
             '/lib/libpthreads.a(shr_comm.o)',
@@ -234,9 +244,27 @@ def get_allowed_deps():
                     '/usr/lib/64/libsqlite3.so.0',
                     '/usr/lib/64/libz.so.1',
                     '/usr/lib/amd64/libc.so.1',
-                    '/usr/sfw/lib/64/libcrypto.so.0.9.7',
-                    '/usr/sfw/lib/64/libssl.so.0.9.7',
                     ])
+                # OpenSSL specific deps per version.
+                try:
+                    from ssl import OPENSSL_VERSION_INFO
+                    if OPENSSL_VERSION_INFO[0:3] == (0, 9, 7):
+                        # Deps for the default OpenSSL 0.9.7d in Solaris 10.
+                        allowed_deps.extend([
+                            '/usr/sfw/lib/64/libcrypto.so.0.9.7',
+                            '/usr/sfw/lib/64/libssl.so.0.9.7',
+                            ])
+                    elif OPENSSL_VERSION_INFO[0:2] == (1, 0):
+                        # Deps for OpenSSL 1.0.2n from patches 151912/151913.
+                        allowed_deps.extend([
+                            '/usr/lib/64/libcrypto.so.1.0.0',
+                            '/usr/lib/64/libssl.so.1.0.0',
+                            ])
+                    else:
+                        sys.stderr.write('Unexpected OpenSSL version: %s.\n' % (
+                            str(OPENSSL_VERSION_INFO)))
+                except:
+                    sys.stderr.write('SSL module missing.\n')
             elif solaris_version == '11':
                 # Specific deps to add for Solaris 11.
                 allowed_deps.extend([
@@ -272,8 +300,6 @@ def get_allowed_deps():
                     '/lib/libgen.so.1',
                     '/lib/librt.so.1',
                     '/usr/lib/libcrypt_i.so.1',
-                    '/usr/sfw/lib//libcrypto.so.0.9.7',
-                    '/usr/sfw/lib//libssl.so.0.9.7',
                     ])
                 if 'solaris10u3' in chevah_os:
                     # Specific deps for Solaris 10u3 up to 10u7.
@@ -291,6 +317,26 @@ def get_allowed_deps():
                         '/usr/lib/libsqlite3.so.0',
                         '/usr/lib/libz.so.1',
                         ])
+                # OpenSSL specific deps per version.
+                try:
+                    from ssl import OPENSSL_VERSION_INFO
+                    if OPENSSL_VERSION_INFO[0:3] == (0, 9, 7):
+                        # Deps for the default OpenSSL 0.9.7d in Solaris 10.
+                        allowed_deps.extend([
+                            '/usr/sfw/lib/libcrypto.so.0.9.7',
+                            '/usr/sfw/lib/libssl.so.0.9.7',
+                            ])
+                    elif OPENSSL_VERSION_INFO[0:2] == (1, 0):
+                        # Deps for OpenSSL 1.0.2n from patches 151912/151913.
+                        allowed_deps.extend([
+                            '/usr/lib/libcrypto.so.1.0.0',
+                            '/usr/lib/libssl.so.1.0.0',
+                            ])
+                    else:
+                        sys.stderr.write('Unexpected OpenSSL version: %s.\n' % (
+                            str(OPENSSL_VERSION_INFO)))
+                except:
+                    sys.stderr.write('SSL module missing.\n')
             elif solaris_version == '11':
                 # Specific deps to add for Solaris 11.
                 allowed_deps.extend([
@@ -547,8 +593,8 @@ def main():
         exit_code = 1
 
     try:
-        import ssl
-        print 'stdlib ssl %s' % (ssl.OPENSSL_VERSION,)
+        from ssl import OPENSSL_VERSION
+        print 'stdlib ssl %s' % (OPENSSL_VERSION,)
         import _hashlib
         exit_code = egg_check(_hashlib) | exit_code
     except:

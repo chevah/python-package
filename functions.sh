@@ -276,3 +276,26 @@ get_number_of_cpus() {
             ;;
     esac
 }
+
+#
+# Hack for not finding ld_so_aix & co. in AIX, even with the changes lifted
+# from upstream issue tracker. More at https://bugs.python.org/issue18235.
+#
+aix_ld_hack() {
+
+    if [ "${OS%aix*}" != "" ]; then
+        return
+    fi
+
+    custom_python_dir="/lib/$PYTHON_VERSION"
+    case $* in
+        init)
+            execute sudo mkdir -p "$custom_python_dir"/config
+            execute sudo cp "$INSTALL_FOLDER"/lib/"$PYTHON_VERSION"/config/* \
+                "$custom_python_dir"/config/
+            ;;
+        cleanup)
+            execute sudo rm -rf "$custom_python_dir"
+            ;;
+    esac
+}

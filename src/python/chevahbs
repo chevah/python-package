@@ -32,10 +32,15 @@ chevahbs_patch() {
             echo "Applying aix_bldshared.patch:"
             execute patch -p0 < aix_bldshared.patch
             ;;
-        # Adds custom paths and a fix from http://bugs.python.org/issue1471934.
+        # Adds custom paths to find OpenSSL 0.9.7 in /usr/sfw/.
+        solaris10u3)
+            echo "Applying solaris10_openssl097.patch:"
+            execute patch < solaris10_openssl097.patch
+            ;;
+        # Fix 64bit crypt builds as per http://bugs.python.org/issue1471934.
         solaris10*)
-            echo "Applying solaris10_paths.patch:"
-            execute patch < solaris10_paths.patch
+            echo "Applying solaris10_libcrypt.patch:"
+            execute patch < solaris10_libcrypt.patch
             ;;
         hpux*)
             # Our patch to use -fPIC extra argument for linking only with GCC.
@@ -96,7 +101,7 @@ chevahbs_configure() {
                 --without-computed-gotos \
                 "
             ;;
-        solaris10)
+        solaris10u3)
             # In Solaris 10, the default OpenSSL is installed in /usr/sfw/.
             # Both include options are needed to match both the native Sun
             # Studio compiler and GCC.

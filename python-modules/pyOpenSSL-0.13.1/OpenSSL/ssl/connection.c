@@ -271,7 +271,6 @@ Switch this connection to a new session context\n\
 ";
 static PyObject *
 ssl_Connection_set_context(ssl_ConnectionObj *self, PyObject *args) {
-#ifdef TLSEXT_MAXLEN_host_name
     ssl_ContextObj *ctx;
     ssl_ContextObj *old;
 
@@ -300,10 +299,6 @@ ssl_Connection_set_context(ssl_ConnectionObj *self, PyObject *args) {
 
     Py_INCREF(Py_None);
     return Py_None;
-#else
-    PyErr_SetString(PyExc_ValueError, "SSL_set_SSL_CTX not supported by this version of OpenSSL");
-    return NULL;
-#endif
 }
 
 static char ssl_Connection_get_servername_doc[] = "\n\
@@ -315,7 +310,6 @@ message, or None if there wasn't one.\n\
 ";
 static PyObject *
 ssl_Connection_get_servername(ssl_ConnectionObj *self, PyObject *args) {
-#ifdef TLSEXT_MAXLEN_host_name
     int type = TLSEXT_NAMETYPE_host_name;
     const char *name;
 
@@ -331,10 +325,6 @@ ssl_Connection_get_servername(ssl_ConnectionObj *self, PyObject *args) {
     } else {
         return PyBytes_FromString(name);
     }
-#else
-    PyErr_SetString(PyExc_ValueError, "SSL_get_servername not supported by this version of OpenSSL");
-    return NULL;
-#endif
 }
 
 
@@ -346,7 +336,6 @@ Set the value of the servername extension to send in the client hello.\n\
 ";
 static PyObject *
 ssl_Connection_set_tlsext_host_name(ssl_ConnectionObj *self, PyObject *args) {
-#ifdef TLSEXT_MAXLEN_host_name
     char *buf;
 
     if (!PyArg_ParseTuple(args, BYTESTRING_FMT ":set_tlsext_host_name", &buf)) {
@@ -358,10 +347,6 @@ ssl_Connection_set_tlsext_host_name(ssl_ConnectionObj *self, PyObject *args) {
 
     Py_INCREF(Py_None);
     return Py_None;
-#else
-    PyErr_SetString(PyExc_ValueError, "SSL_set_tlsext_host_name not supported by this version of OpenSSL");
-    return NULL;
-#endif
 }
 
 

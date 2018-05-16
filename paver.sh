@@ -537,6 +537,8 @@ detect_os() {
 
         # Solaris 10u8 (from 10/09) updated the libc version, so for older
         # releases we build on 10u3, and use that up to 10u7 (from 5/09).
+        # The "solaris10u3" code path also preserves the way to link to the
+        # OpenSSL 0.9.7 libs bundled in /usr/sfw/ with all Solaris 10 releases.
         if [ "${OS}" = "solaris10" ]; then
             # We extract the update number from the first line.
             update=$(head -1 /etc/release | cut -d'_' -f2 | sed 's/[^0-9]*//g')

@@ -1,0 +1,28 @@
+diff -ur setup.py setup.py
+--- setup.py
++++ setup.py
+@@ -784,10 +784,13 @@
+ 
+         # crypt module.
+ 
+-        if self.compiler.find_library_file(lib_dirs, 'crypt'):
++        libs = []
++        if host_platform == 'sunos5':
++            # http://bugs.python.org/issue1471934 (64bit Solaris 8-10)
++            if self.compiler.find_library_file(lib_dirs, 'crypt_i'):
++                libs = ['crypt_i']
++        elif self.compiler.find_library_file(lib_dirs, 'crypt'):
+             libs = ['crypt']
+-        else:
+-            libs = []
+         exts.append( Extension('crypt', ['cryptmodule.c'], libraries=libs) )
+ 
+         # CSV files
+@@ -800,6 +803,7 @@
+         # Detect SSL support for the socket module (via _ssl)
+         search_for_ssl_incs_in = [
+                               '/usr/local/ssl/include',
++                              '/usr/sfw/include/',
+                               '/usr/contrib/ssl/include/'
+                              ]
+         ssl_incs = find_file('openssl/ssl.h', inc_dirs,

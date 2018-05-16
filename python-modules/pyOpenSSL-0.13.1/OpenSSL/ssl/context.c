@@ -166,7 +166,7 @@ global_verify_callback(int ok, X509_STORE_CTX *x509_ctx)
     crypto_X509Obj *cert;
     int errnum, errdepth, c_ret;
 
-    /* Get Connection object to check thread state */
+    // Get Connection object to check thread state
     ssl = (SSL *)X509_STORE_CTX_get_app_data(x509_ctx);
     conn = (ssl_ConnectionObj *)SSL_get_app_data(ssl);
 
@@ -562,7 +562,7 @@ ssl_Context_use_certificate(ssl_ContextObj *self, PyObject *args)
     if (cert == NULL) {
         return NULL;
     }
-
+    
     if (!SSL_CTX_use_certificate(self->ctx, cert->x509))
     {
         exception_from_error_queue(ssl_Error);
@@ -1117,7 +1117,6 @@ Specify a callback function to be called when clients specify a server name.\n\
 ";
 static PyObject *
 ssl_Context_set_tlsext_servername_callback(ssl_ContextObj *self, PyObject *args) {
-#ifdef TLSEXT_MAXLEN_host_name
     PyObject *callback;
     PyObject *old;
 
@@ -1135,10 +1134,6 @@ ssl_Context_set_tlsext_servername_callback(ssl_ContextObj *self, PyObject *args)
 
     Py_INCREF(Py_None);
     return Py_None;
-#else
-    PyErr_SetString(PyExc_ValueError, "SSL_CTX_set_tlsext_servername_callback not supported by this version of OpenSSL");
-    return NULL;
-#endif
 }
 
 
@@ -1201,7 +1196,7 @@ ssl_Context_init(ssl_ContextObj *self, int i_method) {
 #ifdef OPENSSL_NO_SSL2
             PyErr_SetString(PyExc_ValueError, "SSLv2_METHOD not supported by this version of OpenSSL");
             return NULL;
-#else
+#else      
             method = SSLv2_method();
 #endif
             break;

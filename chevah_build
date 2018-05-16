@@ -756,6 +756,20 @@ command_test() {
     execute popd
 }
 
+use_latest_python_package() {
+    config_file=$1
+
+    # We patch the Python version to match the one that we have just built
+    # and copy it in cache so that it will be picked up by the new build.
+    execute echo -e "\nPYTHON_CONFIGURATION=default@${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" >> $config_file
+    # Also copy latest paver.sh, as some changes might require it.
+    execute cp ../../$config_file ./
+    # Populate the cache with the latest version so that we don't have to
+    # download it.
+    execute mkdir cache
+    execute cp -r ../$LOCAL_PYTHON_BINARY_DIST cache/
+
+}
 
 #
 # Test the newly created Python binary dist.
@@ -773,17 +787,20 @@ command_test_compat() {
     execute rm -rf compat
     execute git clone https://github.com/chevah/compat.git --depth=1 -b master
     execute pushd compat
-    # We patch the Python version to match the one that we have just built
-    # and copy it in cache so that it will be picked up by the new build.
-    execute echo -e "\nPYTHON_CONFIGURATION=default@${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" >> paver.conf
-    # Also copy latest paver.sh, as some changes might require it.
-    execute cp ../../paver.sh ./
-    # Populate the cache with the latest version so that we don't have to
-    # download it.
-    execute mkdir cache
-    execute cp -r ../$LOCAL_PYTHON_BINARY_DIST cache/
+    use_latest_python_package paver.conf
     # Some tests might fail due to causes which are not related to python.
     execute ./paver.sh test_ci
+    execute popd
+
+    # We also run chevah-keycert tests as they use pyOpenSSL and pycryto.
+    echo '##### Running chevah.keycert tests... #####'
+    execute rm -rf chevah-keycert
+    execute git clone https://github.com/chevah/chevah-keycert.git --depth=1 -b master
+    execute pushd chevah-keycert
+    use_latest_python_package paver.conf
+    # Some tests might fail due to causes which are not related to python.
+    execute ./brink.sh deps
+    execute ./brink.sh test
     execute popd
 
     execute popd

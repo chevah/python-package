@@ -803,7 +803,7 @@ command_test_compat() {
     use_latest_python_package paver.conf
     # Some tests might fail due to causes which are not related to python.
     execute ./brink.sh deps
-    execute ./brink.sh test
+    ./brink.sh test
     execute popd
 
     execute popd

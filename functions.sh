@@ -126,6 +126,9 @@ execute() {
     #Make sure $@ is called in quotes as otherwise it will not work.
     "$@"
     exit_code=$?
+    if [ $DEBUG -ne 0 ]; then
+        echo "Exit code was: $exit_code"
+    fi
     if [ $exit_code -ne 0 ]; then
         echo "PWD :" `pwd`
         echo "Fail:" $@

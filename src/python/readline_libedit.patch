@@ -1,6 +1,6 @@
 diff -ur configure configure
---- configure	2017-10-18 15:00:59.141662453 +0300
-+++ configure	2017-10-18 18:08:35.291143158 +0300
+--- configure
++++ configure
 @@ -827,6 +827,7 @@
  with_libc
  enable_big_digits
@@ -477,8 +477,8 @@ diff -ur configure configure
  fi
  
 diff -ur configure.ac configure.ac
---- configure.ac	2017-10-18 15:00:59.153662459 +0300
-+++ configure.ac	2017-10-18 18:08:35.291143158 +0300
+--- configure.ac
++++ configure.ac
 @@ -4230,92 +4230,127 @@
    [Define this if you have flockfile(), getc_unlocked(), and funlockfile()])
  fi
@@ -687,8 +687,8 @@ diff -ur configure.ac configure.ac
  
  # End of readline checks: restore LIBS
 diff -ur Modules/readline.c Modules/readline.c
---- Modules/readline.c	2017-10-18 15:00:59.049662404 +0300
-+++ Modules/readline.c	2017-10-18 18:13:56.623715358 +0300
+--- Modules/readline.c
++++ Modules/readline.c
 @@ -26,45 +26,47 @@
  #  define RESTORE_LOCALE(sl)
  #endif
@@ -956,8 +956,8 @@ diff -ur Modules/readline.c Modules/readline.c
      m = Py_InitModule4("readline", readline_methods, doc_module,
                         (PyObject *)NULL, PYTHON_API_VERSION);
 diff -ur pyconfig.h.in pyconfig.h.in
---- pyconfig.h.in	2017-10-18 15:00:59.153662459 +0300
-+++ pyconfig.h.in	2017-10-18 18:08:35.291143158 +0300
+--- pyconfig.h.in
++++ pyconfig.h.in
 @@ -433,7 +433,7 @@
  /* Define to 1 if you have the <libintl.h> header file. */
  #undef HAVE_LIBINTL_H
@@ -993,19 +993,19 @@ diff -ur pyconfig.h.in pyconfig.h.in
  #undef WITH_LIBINTL
  
 diff -ur setup.py setup.py
---- setup.py	2017-10-18 18:15:41.152406690 +0300
-+++ setup.py	2017-10-18 18:08:35.291143158 +0300
-@@ -43,7 +43,6 @@
-     'bz2',
+--- setup.py
++++ setup.py
+@@ -44,7 +44,6 @@
      'dbm',
      'gdbm',
+     'nis',
 -    'readline',
      'sunaudiodev',
      ]
- 
-@@ -735,9 +734,17 @@
+
+@@ -736,9 +735,17 @@
              missing.extend(['imageop'])
- 
+
          # readline
 -        do_readline = self.compiler.find_library_file(lib_dirs, 'readline')
          readline_termcap_library = ""
@@ -1022,10 +1022,10 @@ diff -ur setup.py setup.py
          # Determine if readline is already linked against curses or tinfo.
          if do_readline and find_executable('ldd'):
              fp = os.popen("ldd %s" % do_readline)
-@@ -788,7 +795,7 @@
+@@ -789,7 +796,7 @@
              else:
                  readline_extra_link_args = ()
- 
+
 -            readline_libs = ['readline']
 +            readline_libs = [readline_lib]
              if readline_termcap_library:

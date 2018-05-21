@@ -1,6 +1,6 @@
-diff -ur Lib/site.py Lib/site-hpux.py
+diff -ur Lib/site.py Lib/site.py
 --- Lib/site.py
-+++ Lib/site-hpux.py
++++ Lib/site.py
 @@ -58,6 +58,13 @@
  
  """

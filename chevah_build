@@ -9,7 +9,7 @@
 #
 
 # Beware that older versions might be used for selected platforms below.
-PYTHON_BUILD_VERSION="2.7.14"
+PYTHON_BUILD_VERSION="2.7.15"
 LIBFFI_VERSION="3.2.1"
 ZLIB_VERSION="1.2.11"
 # We statically build the BSD libedit on selected platforms to get the
@@ -209,8 +209,8 @@ case $OS in
             export LDFLAGS="$LDFLAGS -m64 -L/usr/lib/64 -R/usr/lib/64"
         fi
         if [ "${OS%solaris10*}" = "" ]; then
-            # This code path requires OpenSSL 1.0.x patches from Oracle.
-            # Check out the "solaris10u3" code path to link to OpenSSL 0.9.7.
+            # "solaris10" code path requires OpenSSL 1.0.x patches from Oracle.
+            # Check "solaris10u3" divergent code path to link to OpenSSL 0.9.7.
             # These are the default-included GNU make and makeinfo.
             export MAKE=/usr/sfw/bin/gmake
             export MAKEINFO=/usr/sfw/bin/makeinfo
@@ -228,7 +228,7 @@ case $OS in
             # NPN functions needed in cryptography 0.4 and newer. 1.8.2 builds,
             # but at runtime: "cryptography/hazmat/bindings/_openssl.so: symbol
             # SSL_CTX_set_next_proto_select_cb: referenced symbol not found".
-            # cryptography 0.3 doesn't build on Solaris 10, so we are stuck. 
+            # cryptography 0.3 doesn't build on Solaris 10, so we are stuck.
             export BUILD_CFFI="no"
             PIP_LIBRARIES=""
             EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
@@ -696,7 +696,7 @@ initialize_python_module(){
         fi
 
         case $OS in
-            solaris*)
+            solaris10u3*)
                 # Copy special link steps in local folder.
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
@@ -758,21 +758,6 @@ command_test() {
     execute popd
 }
 
-use_latest_python_package() {
-    config_file=$1
-
-    # We patch the Python version to match the one that we have just built
-    # and copy it in cache so that it will be picked up by the new build.
-    execute echo -e \
-        "\nPYTHON_CONFIGURATION=default@${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" \
-        >> $config_file
-    # Also copy latest paver.sh, as some changes might require it.
-    execute cp ../../$config_file ./
-    # Populate cache with latest version so that we don't have to download it.
-    execute mkdir cache
-    execute cp -r ../$LOCAL_PYTHON_BINARY_DIST cache/
-
-}
 
 #
 # Test the newly created Python binary dist.
@@ -780,6 +765,14 @@ use_latest_python_package() {
 help_text_test_compat=\
 "Run a full test for the chevah/compat master."
 command_test_compat() {
+
+    # compat is not suported on these platforms, so no need to test.
+    case "$OS-$ARCH" in
+        freebsd11*|solaris11-sparc)
+            (>&2 echo -e "\tCompat tests not supported on this platform.")
+            return
+            ;;
+    esac
 
     execute pushd build
 
@@ -790,20 +783,17 @@ command_test_compat() {
     execute rm -rf compat
     execute git clone https://github.com/chevah/compat.git --depth=1 -b master
     execute pushd compat
-    use_latest_python_package paver.conf
+    # We patch the Python version to match the one that we have just built
+    # and copy it in cache so that it will be picked up by the new build.
+    execute echo -e "\nPYTHON_CONFIGURATION=default@${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" >> paver.conf
+    # Also copy latest paver.sh, as some changes might require it.
+    execute cp ../../paver.sh ./
+    # Populate the cache with the latest version so that we don't have to
+    # download it.
+    execute mkdir cache
+    execute cp -r ../$LOCAL_PYTHON_BINARY_DIST cache/
     # Some tests might fail due to causes which are not related to python.
     execute ./paver.sh test_ci
-    execute popd
-
-    # We also run chevah-keycert tests as they use pyOpenSSL and pycrypto.
-    echo '##### Running chevah.keycert tests... #####'
-    execute rm -rf chevah-keycert
-    execute git clone https://github.com/chevah/chevah-keycert.git --depth=1 -b master
-    execute pushd chevah-keycert
-    use_latest_python_package paver.conf
-    # Some tests might fail due to causes which are not related to python.
-    execute ./brink.sh deps
-    execute ./brink.sh test
     execute popd
 
     execute popd

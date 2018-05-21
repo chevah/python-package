@@ -209,8 +209,8 @@ case $OS in
             export LDFLAGS="$LDFLAGS -m64 -L/usr/lib/64 -R/usr/lib/64"
         fi
         if [ "${OS%solaris10*}" = "" ]; then
-            # This code path requires OpenSSL 1.0.x patches from Oracle.
-            # Check out the "solaris10u3" code path to link to OpenSSL 0.9.7.
+            # "solaris10" code path requires OpenSSL 1.0.x patches from Oracle.
+            # Check "solaris10u3" divergent code path to link to OpenSSL 0.9.7.
             # These are the default-included GNU make and makeinfo.
             export MAKE=/usr/sfw/bin/gmake
             export MAKEINFO=/usr/sfw/bin/makeinfo
@@ -228,7 +228,7 @@ case $OS in
             # NPN functions needed in cryptography 0.4 and newer. 1.8.2 builds,
             # but at runtime: "cryptography/hazmat/bindings/_openssl.so: symbol
             # SSL_CTX_set_next_proto_select_cb: referenced symbol not found".
-            # cryptography 0.3 doesn't build on Solaris 10, so we are stuck. 
+            # cryptography 0.3 doesn't build on Solaris 10, so we are stuck.
             export BUILD_CFFI="no"
             PIP_LIBRARIES=""
             EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
@@ -696,7 +696,7 @@ initialize_python_module(){
         fi
 
         case $OS in
-            solaris*)
+            solaris10u3*)
                 # Copy special link steps in local folder.
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules

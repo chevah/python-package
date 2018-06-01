@@ -673,10 +673,12 @@ def main():
 
     try:
         import gmpy2
-        print 'gmpy2 %s - %s' % (gmpy2.version(), gmpy2.mp_version())
-        from gmpy2 import mpz,to_binary,from_binary
-        x=mpz(123456789123456789)
-        if not x==from_binary(to_binary(x)):
+        print 'gmpy2 %s with:' % (gmpy2.version())
+        print '\tMP (Multiple-precision library) - %s' % (gmpy2.mp_version())
+        print '\tMPFR (Floating-point library) - %s' % (gmpy2.mpfr_version())
+        print '\tMPC (Complex library) - %s' % (gmpy2.mpc_version())
+        x=gmpy2.mpz(123456789123456789)
+        if not x==gmpy2.from_binary(gmpy2.to_binary(x)):
             sys.stderr.write('"gmpy2" present, but broken!\n')
             exit_code = 20
     except:

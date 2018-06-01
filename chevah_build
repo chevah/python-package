@@ -610,6 +610,7 @@ command_build_sqlite() {
 
 #
 # Build gmpy2 without MPFR and MPC library support.
+# Beware that beginning with v2.1.0, MPFR and MPC will be required.
 #
 command_build_gmpy2() {
 

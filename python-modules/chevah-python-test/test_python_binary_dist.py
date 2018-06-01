@@ -674,6 +674,11 @@ def main():
     try:
         import gmpy2
         print 'gmpy2 %s - %s' % (gmpy2.version(), gmpy2.mp_version())
+        from gmpy2 import mpz,to_binary,from_binary
+        x=mpz(123456789123456789)
+        if not x==from_binary(to_binary(x)):
+            sys.stderr.write('"gmpy2" present, but broken!\n')
+            exit_code = 20
     except:
         sys.stderr.write('"gmpy2" missing. No GMP?\n')
         exit_code = 19

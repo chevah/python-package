@@ -671,6 +671,13 @@ def main():
         sys.stderr.write('"scandir" missing.\n')
         exit_code = 17
 
+    try:
+        import gmpy2
+        print 'gmpy2 %s - %s' % (gmpy2.version(), gmpy2.mp_version())
+    except:
+        sys.stderr.write('"gmpy2" missing. No GMP?\n')
+        exit_code = 19
+
     # Windows specific modules.
     if os.name == 'nt':
         try:

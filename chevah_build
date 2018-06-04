@@ -298,13 +298,16 @@ case $OS in
         fi
         ;;
     hpux*)
-        # We use HP's compiler, with no warnings, as it generates lots.
         # GCC and the bundled /usr/ccs/bin/cc will fail with pycrypto.
-        # No CFLAGS in HP-UX, as some compilations need to set their own.
-        # Also, do not put '-w' in CFLAGS because it confuses HP-UX's ldd
-        # when compiling Python with -DNDEBUG, the recommended default.
-        export CC="/opt/aCC/bin/cc -w"
+        # We prefer "aCC -Ae" over "cc" because it does parallel builds better.
+        export CC="/opt/aCC/bin/aCC -Ae"
         export CXX="/opt/aCC/bin/aCC"
+        # As little warnings as possible, HP's compilers generate lots.
+        # Force 32bit binaries (the OS default) and Position-Independent Code.
+        export CFLAGS="-w +DD32 +Z"
+        # Included ld is limited, chokes on compiler flags such as -w or +DD64.
+        export LDSHARED="/opt/aCC/bin/aCC -b"
+        export LDFLAGS="+DD32"
         # Native make is needed for parallel builds.
         export MAKE="make -P"
         export BUILD_ZLIB="yes"

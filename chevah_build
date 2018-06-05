@@ -729,14 +729,12 @@ initialize_python_module(){
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
                 extra_args=""
-                if [ "${OS%solaris10u3}" = "" ]; then
-                    # To link pyOpenSSL to included OpenSSL 0.9.7 libs.
-                    extra_args="$extra_args -I/usr/sfw/include"
-                    if [ "${ARCH%64}" = "$ARCH" ]; then
-                        extra_args="$extra_args -L/usr/sfw/lib"
-                    else
-                        extra_args="$extra_args -L/usr/sfw/lib/64"
-                    fi
+                 # To link pyOpenSSL to included OpenSSL 0.9.7 libs.
+                extra_args="$extra_args -I/usr/sfw/include"
+                if [ "${ARCH%64}" = "$ARCH" ]; then
+                    extra_args="$extra_args -L/usr/sfw/lib"
+                else
+                    extra_args="$extra_args -L/usr/sfw/lib/64"
                 fi
                 execute $PYTHON_BIN setup.py build_ext $extra_args
                 ;;

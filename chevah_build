@@ -31,6 +31,7 @@ CRYPTOGRAPHY_VERSION="2.2.2"
 SETPROCTITLE_VERSION="1.1.10"
 SCANDIR_VERSION="1.7"
 GMPY2_VERSION="2.0.8"
+GMPY_VERSION="1.17"
 PYPIWIN32_VERSION="219"
 
 # pycparser needs to be explicitly installed to work around setuptools auto
@@ -320,6 +321,7 @@ case $OS in
             cryptography==2.2.2chevah3 \
             pyOpenSSL==${PYOPENSSL_VERSION} \
             scandir==${SCANDIR_VERSION} \
+            gmpy==${GMPY_VERSION} \
             "
         ;;
     osx*)
@@ -614,10 +616,12 @@ command_build_sqlite() {
 #
 # Build gmpy2 without MPFR and MPC library support.
 # Beware that beginning with v2.1.0, MPFR and MPC will be required.
+# On Windows we use the upstream wheel.
+# On HP-UX gmpy2 is problematic, so we use gmpy, no special build phase needed.
 #
 command_build_gmpy2() {
 
-    if [ $OS = 'windows' ]; then
+    if [ $OS = 'windows' -o $OS = 'hpux1131' ]; then
         return
     fi
 

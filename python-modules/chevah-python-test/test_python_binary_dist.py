@@ -682,8 +682,17 @@ def main():
             sys.stderr.write('"gmpy2" present, but broken!\n')
             exit_code = 20
     except:
-        sys.stderr.write('"gmpy2" missing. No GMP?\n')
-        exit_code = 19
+        try:
+            import gmpy
+            print 'gmpy %s with:' % (gmpy.version())
+            print '\tGMP library - %s' % (gmpy.gmp_version())
+            x=gmpy.mpz(123456789123456789)
+            if not x==gmpy.mpz(gmpy.binary(x), 256):
+                sys.stderr.write('"gmpy" present, but broken!\n')
+                exit_code = 20
+        except:
+            sys.stderr.write('"gmpy2" and "gmpy" missing.\n')
+            exit_code = 19
 
     # Windows specific modules.
     if os.name == 'nt':

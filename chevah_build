@@ -361,6 +361,8 @@ case $OS in
     freebsd*)
         export CC="clang"
         export CXX="clang++"
+        # CFFI build doesn't find libffi.
+        export LDFLAGS="$LDFLAGS -L/usr/local/lib"
         ;;
     linux*)
         # We don't compile libedit for generic Linux builds because it links

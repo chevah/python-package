@@ -47,7 +47,7 @@ export PYTHON_BUILD_VERSION PYTHON_PACKAGE_VERSION REDISTRIBUTABLE_VERSION
 export BUILD_ZLIB="no"
 export BUILD_LIBEDIT="yes"
 export BUILD_GMP="yes"
-export BUILD_LIBFFI="yes"
+export BUILD_LIBFFI="no"
 export BUILD_CFFI="yes"
 EXTRA_LIBRARIES="\
     python-modules/cffi-${CFFI_VERSION} \
@@ -188,6 +188,7 @@ case $OS in
                 export CFLAGS="$CFLAGS -qmaxmem=-1 -q64"
             fi
         fi
+        export BUILD_LIBFFI="yes"
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
         ;;
@@ -305,6 +306,7 @@ case $OS in
         export CXX="/opt/aCC/bin/aCC"
         # Native make is needed for parallel builds.
         export MAKE="make -P"
+        export BUILD_LIBFFI="yes"
         export BUILD_ZLIB="yes"
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
@@ -384,8 +386,6 @@ case $OS in
         # For Windows we don't build everything from source yet.
         export BUILD_LIBEDIT="no"
         export BUILD_GMP="no"
-        # We don't build libffi, as cffi it is available as a wheel in pypi.
-        export BUILD_LIBFFI="no"
         ;;
 esac
 

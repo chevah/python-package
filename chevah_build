@@ -350,6 +350,7 @@ case $OS in
     openbsd*)
         export CC="clang"
         export CXX="clang++"
+        export BUILD_LIBFFI="yes"
         # Fix from upstream, newer cryptography versions should work as-is.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
@@ -361,8 +362,7 @@ case $OS in
     freebsd*)
         export CC="clang"
         export CXX="clang++"
-        # CFFI build doesn't find libffi.
-        export LDFLAGS="$LDFLAGS -L/usr/local/lib"
+        export BUILD_LIBFFI="yes"
         ;;
     linux*)
         # We don't compile libedit for generic Linux builds because it links

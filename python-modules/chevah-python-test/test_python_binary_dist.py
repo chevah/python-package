@@ -144,6 +144,7 @@ def get_allowed_deps():
                 '/lib/arm-linux-gnueabihf/libutil.so.1',
                 '/lib/arm-linux-gnueabihf/libz.so.1',
                 '/usr/lib/arm-linux-gnueabihf/libcrypto.so.1.0.0',
+                '/usr/lib/arm-linux-gnueabihf/libffi.so.5',
                 '/usr/lib/arm-linux-gnueabihf/libssl.so.1.0.0',
                 ]
         elif ('archlinux' in chevah_os):
@@ -407,7 +408,6 @@ def get_allowed_deps():
             '/lib/libthr.so.3',
             '/lib/libutil.so.9',
             '/lib/libz.so.6',
-            '/usr/local/lib/libffi.so.6',
             ]
         # On FreeBSD this can be: '10.3-RELEASE-p20', '11.0-RELEASE', etc.
         freebsd_version = platform.release().split('.')[0]
@@ -435,7 +435,6 @@ def get_allowed_deps():
             '/usr/lib/libutil.so',
             '/usr/lib/libz.so',
             '/usr/libexec/ld.so',
-            '/usr/local/lib/libffi.so.1.2',
             ]
     elif platform_system == 'netbsd':
         # This is the list of specific deps for NetBSD 7.x, with paths.

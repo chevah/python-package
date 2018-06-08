@@ -47,7 +47,7 @@ export PYTHON_BUILD_VERSION PYTHON_PACKAGE_VERSION REDISTRIBUTABLE_VERSION
 export BUILD_ZLIB="no"
 export BUILD_LIBEDIT="yes"
 export BUILD_GMP="yes"
-export BUILD_LIBFFI="yes"
+export BUILD_LIBFFI="no"
 export BUILD_CFFI="yes"
 EXTRA_LIBRARIES="\
     python-modules/cffi-${CFFI_VERSION} \
@@ -110,25 +110,34 @@ PYTHON_VERSION=`cut -d' ' -f 2 DEFAULT_VALUES`
 OS=`cut -d' ' -f 3 DEFAULT_VALUES`
 ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 
-# List of OS packages required for building Python.
-COMMON_PACKAGES="gcc make m4 automake libtool texinfo"
-DEBIAN_PACKAGES="$COMMON_PACKAGES libssl-dev zlib1g-dev libncurses5-dev"
-RHEL_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel ncurses-devel"
-SLES_PACKAGES="$COMMON_PACKAGES libopenssl-devel zlib-devel ncurses-devel"
-if [ $OS = 'rhel5' ]; then
-    RHEL_PACKAGES="$RHEL_PACKAGES automake15"
-elif [ $OS = 'sles10' ]; then
-    SLES_PACKAGES="$COMMON_PACKAGES openssl-devel zlib-devel ncurses-devel"
-elif [ $OS = 'sles11sm' ]; then
-    # SLES 11 with Security Module detected, we need the OpenSSL 1.0.x headers.
-    SLES_PACKAGES="$COMMON_PACKAGES libopenssl1-devel zlib-devel ncurses-devel"
-fi
+# List of OS packages required for building Python/pyOpenSSL/cryptography etc.
+COMMON_PKGS="gcc make m4 automake libtool texinfo"
+COMMON_SLES_PKGS="$COMMON_PKGS zlib-devel libffi-devel ncurses-devel"
+DEBIAN_PKGS="$COMMON_PKGS libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
+RHEL_PKGS="$COMMON_PKGS openssl-devel zlib-devel libffi-devel ncurses-devel"
+case "$OS" in
+    rhel5)
+        RHEL_PKGS="$RHEL_PKGS automake15"
+        ;;
+    sles10)
+        SLES_PKGS="$COMMON_SLES_PKGS openssl-devel"
+        ;;
+    sles11sm)
+        # SLES 11 with Security Module detected, OpenSSL 1.0.x headers needed.
+        SLES_PKGS="$COMMON_SLES_PKGS libopenssl1-devel"
+        ;;
+    sles12)
+        SLES_PKGS="$COMMON_SLES_PKGS libopenssl-devel"
+        ;;
+esac
 
-# List of OS packages requested to be installed by this script.
-INSTALLED_PACKAGES=''
-# For now, we don't install anything on OS X, Solaris, AIX, and
-# unsupported Linux distros. The build requires a C compiler, GNU make, m4,
-# the header files for OpenSSL and zlib, and (optionally) texinfo.
+# Lately we don't install anything automatically, we just check for the
+# presence of required packages on everything but macOS, Solaris, AIX, HP-UX
+# and unsupported Linux distros.
+# This build of Python / pyOpenSSL / cryptography / etc.  requires:
+# a C compiler, make, m4, libs and headers for OpenSSL, zlib, and libffi,
+# git (for patching Python's version), patch (for applying our own patches)
+# and optionally texinfo (link texinfo to `true` if missing on your platform).
 # To build libedit for the readline module, we need the headers of
 # a curses library, automake and libtool.
 # On platforms with a choice of C compilers, you may choose among the
@@ -145,8 +154,8 @@ export OS
 # Explicitly choose the C compiler in order to make it possible to switch
 # between native compilers and GCC on platforms such as AIX and Solaris.
 export CC='gcc'
-# CXX is not really needed, we export it to make sure g++ won't get picked up
-# when not using gcc, and thus silence the associated configure warning.
+# CXX is not really needed, we export it so that g++ won't get picked up when
+# not using gcc, and thus silence the associated configure warning on stderr.
 export CXX='g++'
 
 LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
@@ -188,6 +197,7 @@ case $OS in
                 export CFLAGS="$CFLAGS -qmaxmem=-1 -q64"
             fi
         fi
+        export BUILD_LIBFFI="yes"
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
         ;;
@@ -305,6 +315,7 @@ case $OS in
         export CXX="/opt/aCC/bin/aCC"
         # Native make is needed for parallel builds.
         export MAKE="make -P"
+        export BUILD_LIBFFI="yes"
         export BUILD_ZLIB="yes"
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
@@ -342,12 +353,13 @@ case $OS in
         export CPPFLAGS="$CPPFLAGS -I/usr/local/opt/openssl/include"
         # setup.py skips building readline by default, as it sets this to
         # "10.4", and then tries to avoid the broken readline in OS X 10.4.
-        export MACOSX_DEPLOYMENT_TARGET=10.12
+        export MACOSX_DEPLOYMENT_TARGET=10.11
         ;;
 
     openbsd*)
         export CC="clang"
         export CXX="clang++"
+        export BUILD_LIBFFI="yes"
         # Fix from upstream, newer cryptography versions should work as-is.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
@@ -359,6 +371,7 @@ case $OS in
     freebsd*)
         export CC="clang"
         export CXX="clang++"
+        export BUILD_LIBFFI="yes"
         ;;
     linux*)
         # We don't compile libedit for generic Linux builds because it links
@@ -384,8 +397,6 @@ case $OS in
         # For Windows we don't build everything from source yet.
         export BUILD_LIBEDIT="no"
         export BUILD_GMP="no"
-        # We don't build libffi, as cffi it is available as a wheel in pypi.
-        export BUILD_LIBFFI="no"
         ;;
 esac
 
@@ -436,15 +447,15 @@ check_dependencies() {
     case $OS in
         # Debian-derived distros are similar in this regard.
         ubuntu*|raspbian*)
-            packages=$DEBIAN_PACKAGES
+            packages=$DEBIAN_PKGS
             check_command='dpkg --status'
         ;;
         rhel*)
-            packages=$RHEL_PACKAGES
+            packages=$RHEL_PKGS
             check_command='rpm --query'
         ;;
         sles*)
-            packages=$SLES_PACKAGES
+            packages=$SLES_PKGS
             check_command='rpm --query'
         ;;
         macos*)

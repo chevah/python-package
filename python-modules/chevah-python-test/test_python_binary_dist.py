@@ -46,11 +46,13 @@ def get_allowed_deps():
             if rhel_version.startswith("6"):
                 allowed_deps.extend([
                     '/usr/lib64/libcrypto.so.10',
+                    '/usr/lib64/libffi.so.5',
                     '/usr/lib64/libssl.so.10',
                     ])
             if rhel_version.startswith("7"):
                 allowed_deps.extend([
                     '/lib64/libcrypto.so.10',
+                    '/lib64/libffi.so.6',
                     '/lib64/libpcre.so.1',
                     '/lib64/libssl.so.10',
                     ])
@@ -67,6 +69,7 @@ def get_allowed_deps():
                 '/lib64/libpthread.so.0',
                 '/lib64/libutil.so.1',
                 '/lib64/libz.so.1',
+                '/usr/lib64/libffi.so.6',
                 ]
             if sles_version == "11":
                 allowed_deps.extend([
@@ -97,6 +100,7 @@ def get_allowed_deps():
                 '/lib/x86_64-linux-gnu/libtinfo.so.5',
                 '/lib/x86_64-linux-gnu/libutil.so.1',
                 '/lib/x86_64-linux-gnu/libz.so.1',
+                '/usr/lib/x86_64-linux-gnu/libffi.so.6',
                 ]
             if ubuntu_version in [ "1404", "1604" ]:
                 allowed_deps.extend([
@@ -123,6 +127,7 @@ def get_allowed_deps():
                     '/lib/aarch64-linux-gnu/libtinfo.so.5',
                     '/lib/aarch64-linux-gnu/libutil.so.1',
                     '/lib/aarch64-linux-gnu/libz.so.1',
+                    '/usr/lib/aarch64-linux-gnu/libffi.so.6',
                     ]
         elif ('raspbian' in chevah_os):
             # Common deps with full paths for Raspbian 7 and 8.
@@ -139,6 +144,7 @@ def get_allowed_deps():
                 '/lib/arm-linux-gnueabihf/libutil.so.1',
                 '/lib/arm-linux-gnueabihf/libz.so.1',
                 '/usr/lib/arm-linux-gnueabihf/libcrypto.so.1.0.0',
+                '/usr/lib/arm-linux-gnueabihf/libffi.so.5',
                 '/usr/lib/arm-linux-gnueabihf/libssl.so.1.0.0',
                 ]
         elif ('archlinux' in chevah_os):
@@ -148,6 +154,7 @@ def get_allowed_deps():
                 '/usr/lib/libcrypt.so.1',
                 '/usr/lib/libc.so.6',
                 '/usr/lib/libdl.so.2',
+                '/usr/lib/libffi.so.6',
                 '/usr/lib/libm.so.6',
                 '/usr/lib/libncursesw.so.6',
                 '/usr/lib/libnsl.so.1',
@@ -164,6 +171,7 @@ def get_allowed_deps():
                 '/lib/libcrypto.so.41',
                 '/lib/libssl.so.43',
                 '/lib/libz.so.1',
+                '/usr/lib/libffi.so.6',
                 '/usr/lib/libncursesw.so.6',
                 ]
         else:
@@ -173,17 +181,15 @@ def get_allowed_deps():
                 'libcrypt.so.1',
                 'libcrypto.so.1.0.0',
                 'libdl.so.2',
+                'libffi.so.5',
                 'libm.so.6',
                 'libnsl.so.1',
                 'libpthread.so.0',
                 'libssl.so.1.0.0',
                 'libutil.so.1',
                 'libz.so.1',
+                'libgcc_s.so.1',
                 ]
-            if 'x64' in chevah_arch:
-                allowed_deps.extend([
-                    'libgcc_s.so.1',
-                ])
     elif platform_system == 'aix':
         # List of deps with full paths for AIX 5.3 with OpenSSL 1.0.2k.
         # These deps are common to AIX 6.1 and 7.1 as well.
@@ -277,11 +283,13 @@ def get_allowed_deps():
                     ])
                 if 'sparc' in chevah_arch:
                     allowed_deps.extend([
+                        '/usr/lib/sparcv9/libffi.so.5',
                         '/usr/lib/sparcv9/libc.so.1',
                         ])
                 else:
                     allowed_deps.extend([
                         '/lib/64/libelf.so.1',
+                        '/usr/lib/64/libffi.so.5',
                         '/usr/lib/amd64/libc.so.1',
                         ])
         else:
@@ -344,6 +352,7 @@ def get_allowed_deps():
                     '/lib/libssl.so.1.0.0',
                     '/lib/libz.so.1',
                     '/usr/lib/libcrypt.so.1',
+                    '/usr/lib/libffi.so.5',
                     '/usr/lib/libncurses.so.5',
                     '/usr/lib/libsqlite3.so.0',
                     ])
@@ -370,6 +379,7 @@ def get_allowed_deps():
             '/System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices',
             '/System/Library/Frameworks/Security.framework/Versions/A/Security',
             '/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/SystemConfiguration',
+            '/usr/lib/libffi.dylib',
             '/usr/lib/libSystem.B.dylib',
             '/usr/lib/libz.1.dylib',
             ]

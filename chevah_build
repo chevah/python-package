@@ -30,6 +30,8 @@ PYOPENSSL_VERSION="17.5.0"
 CRYPTOGRAPHY_VERSION="2.2.2"
 SETPROCTITLE_VERSION="1.1.10"
 SCANDIR_VERSION="1.7"
+GMPY2_VERSION="2.0.8"
+GMPY_VERSION="1.17"
 PYPIWIN32_VERSION="219"
 
 # pycparser needs to be explicitly installed to work around setuptools auto
@@ -76,6 +78,7 @@ PIP_LIBRARIES="\
 PIP_LIBRARIES_WIN="$PIP_LIBRARIES \
     pypiwin32==${PYPIWIN32_VERSION} \
     pycrypto==${PYCRYPTO_VERSION} \
+    gmpy2==${GMPY2_VERSION} \
     "
 
 # cryptography 1.3.4 was last upstream version to support OpenSSL 0.9.8.
@@ -306,13 +309,16 @@ case $OS in
         fi
         ;;
     hpux*)
-        # We use HP's compiler, with no warnings, as it generates lots.
         # GCC and the bundled /usr/ccs/bin/cc will fail with pycrypto.
-        # No CFLAGS in HP-UX, as some compilations need to set their own.
-        # Also, do not put '-w' in CFLAGS because it confuses HP-UX's ldd
-        # when compiling Python with -DNDEBUG, the recommended default.
-        export CC="/opt/aCC/bin/cc -w"
+        # We prefer "aCC -Ae" over "cc" because it does parallel builds better.
+        export CC="/opt/aCC/bin/aCC -Ae"
         export CXX="/opt/aCC/bin/aCC"
+        # As little warnings as possible, HP's compilers generate lots.
+        # Force 32bit binaries (the OS default) and Position-Independent Code.
+        export CFLAGS="-w +DD32 +Z"
+        # Included ld is limited, chokes on compiler flags such as -w or +DD64.
+        export LDSHARED="/opt/aCC/bin/aCC -b"
+        export LDFLAGS="+DD32"
         # Native make is needed for parallel builds.
         export MAKE="make -P"
         export BUILD_LIBFFI="yes"
@@ -326,6 +332,7 @@ case $OS in
             cryptography==2.2.2chevah3 \
             pyOpenSSL==${PYOPENSSL_VERSION} \
             scandir==${SCANDIR_VERSION} \
+            gmpy==${GMPY_VERSION} \
             "
         ;;
     osx*)
@@ -555,6 +562,7 @@ command_build() {
 
     aix_ld_hack init
     command_build_sqlite
+    command_build_gmpy2
     command_build_python_extra_libraries
     aix_ld_hack cleanup
 
@@ -575,6 +583,7 @@ command_build() {
                 # Copy back python binary
                 execute cp lib/config/bin/$PYTHON_VERSION bin/python
             execute popd
+            ;;
     esac
 
     # Output the python-package version to a dedicated file in the archive.
@@ -613,6 +622,29 @@ command_build_sqlite() {
         execute $PYTHON_BIN setup.py install
     execute popd
 
+}
+
+#
+# Build gmpy2 without MPFR and MPC library support.
+# Beware that beginning with v2.1.0, MPFR and MPC will be required.
+# On Windows we use the upstream wheel.
+# On HP-UX gmpy2 is problematic, so we use gmpy, no special build phase needed.
+#
+command_build_gmpy2() {
+
+    if [ $OS = 'windows' -o $OS = 'hpux1131' ]; then
+        return
+    fi
+
+    target_folder=${BUILD_FOLDER}/gmpy2
+
+    initialize_python_module \
+        "python-modules/gmpy2-$GMPY2_VERSION" $target_folder
+
+    # Build and install.
+    execute pushd $target_folder
+        execute $PYTHON_BIN setup.py install --nompfr
+    execute popd
 }
 
 #
@@ -712,14 +744,12 @@ initialize_python_module(){
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
                 extra_args=""
-                if [ "${OS%solaris10u3}" = "" ]; then
-                    # To link pyOpenSSL to included OpenSSL 0.9.7 libs.
-                    extra_args="$extra_args -I/usr/sfw/include"
-                    if [ "${ARCH%64}" = "$ARCH" ]; then
-                        extra_args="$extra_args -L/usr/sfw/lib"
-                    else
-                        extra_args="$extra_args -L/usr/sfw/lib/64"
-                    fi
+                 # To link pyOpenSSL to included OpenSSL 0.9.7 libs.
+                extra_args="$extra_args -I/usr/sfw/include"
+                if [ "${ARCH%64}" = "$ARCH" ]; then
+                    extra_args="$extra_args -L/usr/sfw/lib"
+                else
+                    extra_args="$extra_args -L/usr/sfw/lib/64"
                 fi
                 execute $PYTHON_BIN setup.py build_ext $extra_args
                 ;;

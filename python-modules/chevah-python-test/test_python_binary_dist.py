@@ -681,6 +681,29 @@ def main():
         sys.stderr.write('"scandir" missing.\n')
         exit_code = 17
 
+    try:
+        import gmpy2
+        print 'gmpy2 %s with:' % (gmpy2.version())
+        print '\tMP (Multiple-precision library) - %s' % (gmpy2.mp_version())
+        print '\tMPFR (Floating-point library) - %s' % (gmpy2.mpfr_version())
+        print '\tMPC (Complex library) - %s' % (gmpy2.mpc_version())
+        x=gmpy2.mpz(123456789123456789)
+        if not x==gmpy2.from_binary(gmpy2.to_binary(x)):
+            sys.stderr.write('"gmpy2" present, but broken!\n')
+            exit_code = 20
+    except:
+        try:
+            import gmpy
+            print 'gmpy %s with:' % (gmpy.version())
+            print '\tGMP library - %s' % (gmpy.gmp_version())
+            x=gmpy.mpz(123456789123456789)
+            if not x==gmpy.mpz(gmpy.binary(x), 256):
+                sys.stderr.write('"gmpy" present, but broken!\n')
+                exit_code = 20
+        except:
+            sys.stderr.write('"gmpy2" and "gmpy" missing.\n')
+            exit_code = 19
+
     # Windows specific modules.
     if os.name == 'nt':
         try:

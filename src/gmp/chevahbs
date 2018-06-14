@@ -23,7 +23,11 @@ chevahbs_configure() {
     case $OS in
         raspbian*)
             CONF_OPTS="$CONF_OPTS --build=armcortexa8neon-unknown-linux-gnueabihf --with-pic"
-        ;;
+            ;;
+        hpux*)
+            # Parallel builds frequently fail for GMP, so we use gmake here.
+            MAKE="gmake"
+            ;;
     esac
     execute ./configure --prefix="" $CONF_OPTS
 }

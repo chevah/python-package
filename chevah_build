@@ -310,16 +310,14 @@ case $OS in
         ;;
     hpux*)
         # GCC and the bundled /usr/ccs/bin/cc will fail with pycrypto.
-        # We prefer "aCC -Ae" over "cc" because it does parallel builds better.
-        export CC="/opt/aCC/bin/aCC -Ae"
-        export CXX="/opt/aCC/bin/aCC"
+        # "aCC -Ae" does parallel builds better, but beware of race conditions.
+        # Don't use CFLAGS with native ld, it chokes on some parameters.
+        # An alternative is LDSHARED="/opt/aCC/bin/aCC -b" with CC="aCC -Ae".
         # As little warnings as possible, HP's compilers generate lots.
         # Force 32bit binaries (the OS default) and Position-Independent Code.
-        export CFLAGS="-w +DD32 +Z"
-        # Included ld is limited, chokes on compiler flags such as -w or +DD64.
-        export LDSHARED="/opt/aCC/bin/aCC -b"
-        export LDFLAGS="+DD32"
-        # Native make is needed for parallel builds.
+        export CC="/opt/aCC/bin/cc -w +DD32 +z"
+        export CXX="/opt/aCC/bin/aCC"
+        # Native make needed for parallel builds, use gmake where this breaks.
         export MAKE="make -P"
         export BUILD_LIBFFI="yes"
         export BUILD_ZLIB="yes"

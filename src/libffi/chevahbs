@@ -16,8 +16,6 @@ chevahbs_configure() {
             CXX="g++"
             MAKE="gmake"
             unset CFLAGS
-            unset LDFLAGS
-            unset LDSHARED
             ;;
     esac
     # We want only static build so that we don't have to mess with LIBPATH.

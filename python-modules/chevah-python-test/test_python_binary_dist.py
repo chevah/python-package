@@ -646,9 +646,19 @@ def main():
 
     try:
         import Crypto
-        print 'PyCrypto %s' % (Crypto.__version__,)
+        pycrypto_version = Crypto.__version__
+        if pycrypto_version.startswith('2'):
+            print 'PyCrypto %s' % (pycrypto_version)
+            try:
+                from Crypto.PublicKey import _fastmath
+                exit_code = egg_check(_fastmath) | exit_code
+            except:
+                sys.stderr.write('Crypto.PublicKey._fastmath missing. No GMP?\n')
+                exit_code = 10
+        else:
+            print 'PyCryptodome %s' % (pycrypto_version)
     except:
-        sys.stderr.write('"PyCrypto" missing.\n')
+        sys.stderr.write('"PyCrypto"/"PyCryptodome" missing.\n')
         exit_code = 4
 
     try:
@@ -743,13 +753,6 @@ def main():
         except:
             sys.stderr.write('"setproctitle" missing.\n')
             exit_code = 7
-
-        try:
-            from Crypto.PublicKey import _fastmath
-            exit_code = egg_check(_fastmath) | exit_code
-        except:
-            sys.stderr.write('Crypto.PublicKey._fastmath missing. No GMP?\n')
-            exit_code = 10
 
         # Check for the git revision in Python's sys.version on Linux and Unix.
         try:

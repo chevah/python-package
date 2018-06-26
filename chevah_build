@@ -26,6 +26,7 @@ SETUPTOOLS_VERSION="39.0.1"
 # Python modules versions to be used everywhere possible.
 CFFI_VERSION="1.11.5"
 PYCRYPTO_VERSION="2.6.1"
+PYCRYPTODOME_VERSION="3.6.3"
 PYOPENSSL_VERSION="17.5.0"
 CRYPTOGRAPHY_VERSION="2.2.2"
 SETPROCTITLE_VERSION="1.1.10"
@@ -53,7 +54,7 @@ export BUILD_LIBFFI="no"
 export BUILD_CFFI="yes"
 EXTRA_LIBRARIES="\
     python-modules/cffi-${CFFI_VERSION} \
-    python-modules/pycrypto-${PYCRYPTO_VERSION} \
+    python-modules/pycryptodome-${PYCRYPTODOME_VERSION} \
     "
 
 # Libraries for legacy systems not built around cffi and pip.
@@ -77,7 +78,7 @@ PIP_LIBRARIES="\
 # Pre-compiled libraries distributed as wheels for Windows.
 PIP_LIBRARIES_WIN="$PIP_LIBRARIES \
     pypiwin32==${PYPIWIN32_VERSION} \
-    pycrypto==${PYCRYPTO_VERSION} \
+    pycryptodome==${PYCRYPTODOME_VERSION} \
     gmpy2==${GMPY2_VERSION} \
     "
 

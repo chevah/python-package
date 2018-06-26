@@ -413,6 +413,8 @@ if [ "${OS%solaris*}" = "" ]; then
     elif [ ${ARCH} = "x64" ]; then
         # Required for linking to libedit, which has a simpler configure setup.
         export CFLAGS="$CFLAGS -xcode=pic32"
+        # Required for pycrypto from master.
+        export CFLAGS="$CFLAGS -xarch=aes"
     fi
 elif [ "${OS%freebsd*}" = "" -o "${OS%openbsd*}" = "" ]; then
     # Use PIC (Position Independent Code) on FreeBSD and OpenBSD with Clang.

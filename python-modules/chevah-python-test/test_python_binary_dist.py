@@ -465,7 +465,7 @@ def get_actual_deps(script_helper):
     # the needed libs are in the 7th colon, which also includes a colon header.
     openbsd_ignored_strings = ( 'Name', os.getcwd(), './', )
     # On Linux with glibc we ignore ld-linux*, virtual deps and other special
-    # libs, in order to only get deps of regular libs with full paths from ldd.
+    # libs and messages, to only get deps of regular libs with full paths.
     linux_ignored_strings = (
                             'linux-gate.so',
                             'linux-vdso.so',
@@ -475,6 +475,7 @@ def get_actual_deps(script_helper):
                             'ld-linux-armhf.so',
                             'arm-linux-gnueabihf/libcofi_rpi.so',
                             'arm-linux-gnueabihf/libarmmem.so',
+                            'statically linked',
                             )
 
     try:

@@ -411,8 +411,6 @@ if [ "${OS%solaris*}" = "" ]; then
         # Required for compiling GMP on Solaris for SPARC with Sun Studio.
         export CFLAGS="$CFLAGS -xcode=abs64"
     elif [ ${ARCH} = "x64" ]; then
-        # Required for linking to libedit, which has a simpler configure setup.
-        export CFLAGS="$CFLAGS -xcode=pic32"
         # Required for pycrypto from master.
         export CFLAGS="$CFLAGS -xarch=aes"
     fi

@@ -341,13 +341,8 @@ case $OS in
         export CXX="clang++"
         export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
         export MACOSX_DEPLOYMENT_TARGET=10.8
-        # OS X 10.8 not supported by cryptography 1.9, so we use 1.8.2.
-        PIP_LIBRARIES="\
-            setproctitle==${SETPROCTITLE_VERSION} \
-            cryptography==1.8.2 \
-            pyOpenSSL==${PYOPENSSL_VERSION} \
-            scandir==${SCANDIR_VERSION} \
-            "
+        # OS X 10.8 not supported by cryptography 1.9, so you'll normally use
+        # 1.8.2, but cryptography 2.2.2 has a working wheel for MacOS 10.6+.
         ;;
     macos*)
         # On macOS 10.12 or newer we need the Homebrew version of OpenSSL,

@@ -63,7 +63,7 @@ EXTRA_LIBRARIES="\
 # pyOpenSSL 0.13.1, that fixes CVE-2013-4314, requires SSL_set_SSL_CTX.
 EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/pyOpenSSL-0.13.1 \
-    python-modules/pycrypto-${PYCRYPTO_VERSION} \
+    python-modules/pycryptodome-${PYCRYPTODOME_VERSION} \
     python-modules/python-setproctitle-1.1.8.dev0 \
     python-modules/python-scandir-${SCANDIR_VERSION} \
     "

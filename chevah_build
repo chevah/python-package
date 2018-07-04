@@ -119,6 +119,7 @@ COMMON_SLES_PKGS="$COMMON_PKGS zlib-devel libffi-devel ncurses-devel"
 DEBIAN_PKGS="$COMMON_PKGS libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
 RHEL_PKGS="$COMMON_PKGS openssl-devel zlib-devel libffi-devel ncurses-devel"
 ALPINE_PKGS="$COMMON_PKGS libc-dev libressl-dev zlib-dev libffi-dev ncurses-dev"
+ARCH_PKGS="$COMMON_PKGS libffi ncurses"
 case "$OS" in
     rhel5)
         RHEL_PKGS="$RHEL_PKGS automake15"
@@ -468,6 +469,10 @@ check_dependencies() {
         alpine*)
             packages=$ALPINE_PKGS
             check_command='apk info'
+        ;;
+        archlinux)
+            packages=$ARCH_PKGS
+            check_command='pacman -Qi'
         ;;
         macos*)
             # On macOS we need OpenSSL installed via homebrew, but we don't

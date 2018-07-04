@@ -137,11 +137,11 @@ case "$OS" in
 esac
 
 # Lately we don't install anything automatically, we just check for the
-# presence of required packages on everything but macOS, Solaris, AIX, HP-UX
-# and unsupported Linux distros.
+# presence of required packages on everything but AIX, HP-UX, macOS, OS X,
+# Solaris, Windows and generic Linux builds.
 # This build of Python / pyOpenSSL / cryptography / etc.  requires:
-# a C compiler, make, m4, libs and headers for OpenSSL, zlib, and libffi,
-# git (for patching Python's version), patch (for applying our own patches)
+# a C compiler, make, m4, libs and headers for OpenSSL / zlib / libffi,
+# git (for patching Python's version), patch (for applying our own patches),
 # and optionally texinfo (link texinfo to `true` if missing on your platform).
 # To build libedit for the readline module, we need the headers of
 # a curses library, automake and libtool.
@@ -151,7 +151,7 @@ esac
 # In Solaris and AIX we use $ARCH to choose if we build a 32bit or 64bit
 # package. This way we are able to force a 32bit build on a 64bit machine,
 # for example by exporting ARCH in paver.sh as "x86" instead of "x64" or
-# "ppc" instead of "ppc64".
+# "ppc" instead of "ppc64". Except on HP-UX, where we always do 32bit builds.
 # We also use $ARCH when building the statically compiled libffi and GMP.
 # $OS is used when patching/configuring/building/testing.
 export ARCH

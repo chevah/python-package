@@ -118,6 +118,7 @@ COMMON_PKGS="gcc make m4 automake libtool texinfo"
 COMMON_SLES_PKGS="$COMMON_PKGS zlib-devel libffi-devel ncurses-devel"
 DEBIAN_PKGS="$COMMON_PKGS libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
 RHEL_PKGS="$COMMON_PKGS openssl-devel zlib-devel libffi-devel ncurses-devel"
+ALPINE_PKGS="$COMMON_PKGS libc-dev libressl-dev zlib-dev libffi-dev ncurses-dev"
 case "$OS" in
     rhel5)
         RHEL_PKGS="$RHEL_PKGS automake15"
@@ -462,6 +463,10 @@ check_dependencies() {
         sles*)
             packages=$SLES_PKGS
             check_command='rpm --query'
+        ;;
+        alpine*)
+            packages=$ALPINE_PKGS
+            check_command='apk info'
         ;;
         macos*)
             # On macOS we need OpenSSL installed via homebrew, but we don't

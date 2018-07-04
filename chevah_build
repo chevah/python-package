@@ -448,7 +448,8 @@ fi
 #
 check_dependencies() {
 
-    missing_packages=""
+    packages=''
+    missing_packages=''
 
     case $OS in
         # Debian-derived distros are similar in this regard.
@@ -477,10 +478,6 @@ check_dependencies() {
                 echo "Unsupported OpenSSL version: $homebrew_openssl_version"
                 exit 102
             fi
-            packages=''
-        ;;
-        *)
-            packages=''
         ;;
     esac
 

@@ -475,14 +475,14 @@ check_dependencies() {
             check_command='pacman -Qi'
             ;;
         macos*)
-            # On macOS we need OpenSSL installed via homebrew, but we don't
-            # do it automatically, here we only check that the expected
-            # OpenSSL version is installed, as hardcoded below.
+            # On macOS we need OpenSSL installed via Homebrew, and here we
+            # check that the expected version is installed, as hardcoded below.
             homebrew_openssl_version=`brew list --versions openssl`
             if [[ $homebrew_openssl_version != "openssl 1.0.2"* ]]; then
                 echo "Unsupported OpenSSL version: $homebrew_openssl_version"
                 exit 102
             fi
+            # But we also check for the required commands, as for below OS'es.
             packages="$CC make m4 libtool git patch"
             check_command="command -v"
             ;;
@@ -504,9 +504,9 @@ check_dependencies() {
     esac
 
     if [ -n "$packages" ]; then
-        echo "Checking for packages to be installed..."
+        echo "Checking for required packages or commands..."
         for package in $packages ; do
-            echo "Checking if $package is installed..."
+            echo "Checking if $package is available..."
             $check_command $package
             if [ $? -ne 0 ]; then
                 echo "Missing required dependency: $package"
@@ -516,11 +516,11 @@ check_dependencies() {
     fi
 
     if [ -n "$missing_packages" ]; then
-        echo "EXIT! Following packages are missing: $missing_packages."
+        echo "Sorry, following dependencies were not found: $missing_packages."
         exit 101
     fi
     if [ -n "$packages" ]; then
-        echo "All required packages installed: $packages"
+        echo "All required dependencies are present: $packages"
     fi
 
 }
@@ -537,7 +537,6 @@ command_clean() {
 help_text_build="Create the Python binaries for current OS."
 command_build() {
     check_dependencies
-    exit 0
 
     # Clean the build dir to avoid contamination from previous builds.
     command_clean

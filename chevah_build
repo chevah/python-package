@@ -483,6 +483,8 @@ check_dependencies() {
                 echo "Unsupported OpenSSL version: $homebrew_openssl_version"
                 exit 102
             fi
+            packages="$CC make m4 libtool git patch"
+            check_command="command -v"
             ;;
         # On remaining OS'es we just check for some of the needed commands.
         windows)
@@ -535,6 +537,7 @@ command_clean() {
 help_text_build="Create the Python binaries for current OS."
 command_build() {
     check_dependencies
+    exit 0
 
     # Clean the build dir to avoid contamination from previous builds.
     command_clean

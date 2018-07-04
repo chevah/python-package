@@ -131,7 +131,7 @@ case "$OS" in
         # SLES 11 with Security Module detected, OpenSSL 1.0.x headers needed.
         SLES_PKGS="$COMMON_SLES_PKGS libopenssl1-devel"
         ;;
-    sles12)
+    sles11|sles12)
         SLES_PKGS="$COMMON_SLES_PKGS libopenssl-devel"
         ;;
 esac

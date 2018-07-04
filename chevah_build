@@ -484,6 +484,21 @@ check_dependencies() {
                 exit 102
             fi
         ;;
+        # On remaining OS'es we just check for some of the needed commands.
+        windows)
+            # The windows build is special.
+            packages="make git patch"
+            check_command="command -v"
+        ;;
+        hpux*)
+            # Included CFLAGS get in the way on HP-UX.
+            packages="/opt/aCC/bin/cc make m4 git patch"
+            check_command="command -v"
+        ;;
+        *)
+            packages="$CC make m4 git patch"
+            check_command="command -v"
+        ;;
     esac
 
     if [ -n "$packages" ]; then

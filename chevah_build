@@ -766,12 +766,9 @@ command_test() {
 
     echo '##### Executing tests for included Python modules... #####'
 
-    echo $EXTRA_LIBRARIES $PIP_LIBRARIES_WIN | grep -q pycryptodome
-    if [ $? -eq 0 ]; then
-        # This test requires quite some RAM, so beware of heavy swapping.
-        echo 'Testing PyCryptodome...'
-        execute $LOCAL_PYTHON_BINARY -m Crypto.SelfTest
-    fi
+    # This test requires quite some RAM, so beware of heavy swapping.
+    echo 'Testing PyCryptodome...'
+    execute $LOCAL_PYTHON_BINARY -m Crypto.SelfTest
 
     echo 'Testing scandir...'
     # There are a series of issues with the scandir tests in Linux/Unix.

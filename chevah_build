@@ -75,9 +75,10 @@ PIP_LIBRARIES="\
     scandir==${SCANDIR_VERSION} \
     "
 # Pre-compiled libraries distributed as wheels for Windows.
+# While building PyCryptodome from master, use latest stable wheel on Windows.
 PIP_LIBRARIES_WIN="$PIP_LIBRARIES \
     pypiwin32==${PYPIWIN32_VERSION} \
-    pycryptodome==${PYCRYPTODOME_VERSION} \
+    pycryptodome==3.6.3
     gmpy2==${GMPY2_VERSION} \
     "
 

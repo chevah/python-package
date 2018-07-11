@@ -114,10 +114,12 @@ OS=`cut -d' ' -f 3 DEFAULT_VALUES`
 ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 
 # List of OS packages required for building Python/pyOpenSSL/cryptography etc.
-COMMON_PKGS="gcc make m4 automake libtool texinfo"
+COMMON_PKGS="gcc make m4 automake libtool texinfo git patch"
 COMMON_SLES_PKGS="$COMMON_PKGS zlib-devel libffi-devel ncurses-devel"
 DEBIAN_PKGS="$COMMON_PKGS libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
 RHEL_PKGS="$COMMON_PKGS openssl-devel zlib-devel libffi-devel ncurses-devel"
+ALPINE_PKGS="$COMMON_PKGS libc-dev libressl-dev zlib-dev libffi-dev ncurses-dev"
+ARCH_PKGS="$COMMON_PKGS libffi ncurses"
 case "$OS" in
     rhel5)
         RHEL_PKGS="$RHEL_PKGS automake15"
@@ -129,17 +131,17 @@ case "$OS" in
         # SLES 11 with Security Module detected, OpenSSL 1.0.x headers needed.
         SLES_PKGS="$COMMON_SLES_PKGS libopenssl1-devel"
         ;;
-    sles12)
+    sles11|sles12)
         SLES_PKGS="$COMMON_SLES_PKGS libopenssl-devel"
         ;;
 esac
 
 # Lately we don't install anything automatically, we just check for the
-# presence of required packages on everything but macOS, Solaris, AIX, HP-UX
-# and unsupported Linux distros.
+# presence of required packages on everything but AIX, HP-UX, macOS, OS X,
+# Solaris, Windows and generic Linux builds.
 # This build of Python / pyOpenSSL / cryptography / etc.  requires:
-# a C compiler, make, m4, libs and headers for OpenSSL, zlib, and libffi,
-# git (for patching Python's version), patch (for applying our own patches)
+# a C compiler, make, m4, libs and headers for OpenSSL / zlib / libffi,
+# git (for patching Python's version), patch (for applying our own patches),
 # and optionally texinfo (link texinfo to `true` if missing on your platform).
 # To build libedit for the readline module, we need the headers of
 # a curses library, automake and libtool.
@@ -149,7 +151,7 @@ esac
 # In Solaris and AIX we use $ARCH to choose if we build a 32bit or 64bit
 # package. This way we are able to force a 32bit build on a 64bit machine,
 # for example by exporting ARCH in paver.sh as "x86" instead of "x64" or
-# "ppc" instead of "ppc64".
+# "ppc" instead of "ppc64". Except on HP-UX, where we always do 32bit builds.
 # We also use $ARCH when building the statically compiled libffi and GMP.
 # $OS is used when patching/configuring/building/testing.
 export ARCH
@@ -447,42 +449,64 @@ fi
 #
 check_dependencies() {
 
-    missing_packages=""
+    packages=''
+    missing_packages=''
 
     case $OS in
         # Debian-derived distros are similar in this regard.
         ubuntu*|raspbian*)
             packages=$DEBIAN_PKGS
             check_command='dpkg --status'
-        ;;
+            ;;
         rhel*)
             packages=$RHEL_PKGS
             check_command='rpm --query'
-        ;;
+            ;;
         sles*)
             packages=$SLES_PKGS
             check_command='rpm --query'
-        ;;
+            ;;
+        alpine*)
+            packages=$ALPINE_PKGS
+            check_command='apk info'
+            ;;
+        archlinux)
+            packages=$ARCH_PKGS
+            check_command='pacman -Qi'
+            ;;
         macos*)
-            # On macOS we need OpenSSL installed via homebrew, but we don't
-            # do it automatically, here we only check that the expected
-            # OpenSSL version is installed, as hardcoded below.
+            # On macOS we need OpenSSL installed via Homebrew, and here we
+            # check that the expected version is installed, as hardcoded below.
             homebrew_openssl_version=`brew list --versions openssl`
             if [[ $homebrew_openssl_version != "openssl 1.0.2"* ]]; then
                 echo "Unsupported OpenSSL version: $homebrew_openssl_version"
                 exit 102
             fi
-            packages=''
-        ;;
+            # But we also check for the required commands, as for below OS'es.
+            packages="$CC make m4 libtool git patch"
+            check_command="command -v"
+            ;;
+        # On remaining OS'es we just check for some of the needed commands.
+        windows)
+            # The windows build is special.
+            packages="make git patch"
+            check_command="command -v"
+            ;;
+        hpux*)
+            # Included CFLAGS get in the way on HP-UX.
+            packages="/opt/aCC/bin/cc make m4 git patch"
+            check_command="command -v"
+            ;;
         *)
-            packages=''
-        ;;
+            packages="$CC make m4 git patch"
+            check_command="command -v"
+            ;;
     esac
 
     if [ -n "$packages" ]; then
-        echo "Checking for packages to be installed..."
+        echo "Checking for required packages or commands..."
         for package in $packages ; do
-            echo "Checking if $package is installed..."
+            echo "Checking if $package is available..."
             $check_command $package
             if [ $? -ne 0 ]; then
                 echo "Missing required dependency: $package"
@@ -492,11 +516,11 @@ check_dependencies() {
     fi
 
     if [ -n "$missing_packages" ]; then
-        echo "EXIT! Following packages are missing: $missing_packages."
+        echo "Sorry, following dependencies were not found: $missing_packages."
         exit 101
     fi
     if [ -n "$packages" ]; then
-        echo "All required packages installed: $packages"
+        echo "All required dependencies are present: $packages"
     fi
 
 }

@@ -25,7 +25,7 @@ SETUPTOOLS_VERSION="39.0.1"
 
 # Python modules versions to be used everywhere possible.
 CFFI_VERSION="1.11.5"
-PYCRYPTODOME_VERSION="3.6.4.alpha"
+PYCRYPTODOME_VERSION="3.6.4"
 PYOPENSSL_VERSION="17.5.0"
 CRYPTOGRAPHY_VERSION="2.2.2"
 SETPROCTITLE_VERSION="1.1.10"
@@ -78,7 +78,7 @@ PIP_LIBRARIES="\
 # While building PyCryptodome from master, use latest stable wheel on Windows.
 PIP_LIBRARIES_WIN="$PIP_LIBRARIES \
     pypiwin32==${PYPIWIN32_VERSION} \
-    pycryptodome==3.6.3
+    pycryptodome==${PYCRYTODOME_VERSION} \
     gmpy2==${GMPY2_VERSION} \
     "
 

@@ -324,6 +324,7 @@ case $OS in
         # Native make needed for parallel builds, use gmake where this breaks.
         export MAKE="make -P"
         export BUILD_LIBFFI="yes"
+        LIBFFI_VERSION="3.3-rc0"
         export BUILD_ZLIB="yes"
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"

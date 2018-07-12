@@ -75,7 +75,6 @@ PIP_LIBRARIES="\
     scandir==${SCANDIR_VERSION} \
     "
 # Pre-compiled libraries distributed as wheels for Windows.
-# While building PyCryptodome from master, use latest stable wheel on Windows.
 PIP_LIBRARIES_WIN="$PIP_LIBRARIES \
     pypiwin32==${PYPIWIN32_VERSION} \
     gmpy2==${GMPY2_VERSION} \
@@ -386,8 +385,16 @@ case $OS in
         export BUILD_LIBEDIT="no"
         ;;
     rhel5|sles11)
-        # OS'es with OpenSSL 0.9.8 libs, older cryptography needed here.
-        PIP_LIBRARIES=$PIP_LIBRARIES_OPENSSL_098
+        # OS'es with OpenSSL 0.9.8 libs, older cryptography would be needed,
+        # but upstream provides a Linux wheel that works, at least on SLES 11.
+        # Otherwise, just set PIP_LIBRARIES to PIP_LIBRARIES_OPENSSL_098.
+        PIP_LIBRARIES="\
+            setproctitle==${SETPROCTITLE_VERSION} \
+            pycryptodome==${PYCRYPTODOME_VERSION} \
+            cryptography==2.2.2upstream \
+            pyOpenSSL==${PYOPENSSL_VERSION} \
+            scandir==${SCANDIR_VERSION} \
+            "
         ;;
     sles10)
         export BUILD_CFFI="no"

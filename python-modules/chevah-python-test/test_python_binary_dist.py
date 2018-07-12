@@ -648,18 +648,9 @@ def main():
     try:
         import Crypto
         pycrypto_version = Crypto.__version__
-        if pycrypto_version.startswith('2'):
-            print 'PyCrypto %s' % (pycrypto_version)
-            try:
-                from Crypto.PublicKey import _fastmath
-                exit_code = egg_check(_fastmath) | exit_code
-            except:
-                sys.stderr.write('Crypto.PublicKey._fastmath missing. No GMP?\n')
-                exit_code = 10
-        else:
-            print 'PyCryptodome %s' % (pycrypto_version)
+        print 'PyCryptodome %s' % (pycrypto_version)
     except:
-        sys.stderr.write('"PyCrypto"/"PyCryptodome" missing.\n')
+        sys.stderr.write('"PyCryptodome" missing.\n')
         exit_code = 4
 
     try:

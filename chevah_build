@@ -78,7 +78,7 @@ PIP_LIBRARIES="\
 # While building PyCryptodome from master, use latest stable wheel on Windows.
 PIP_LIBRARIES_WIN="$PIP_LIBRARIES \
     pypiwin32==${PYPIWIN32_VERSION} \
-    pycryptodome==${PYCRYTODOME_VERSION} \
+    pycryptodome==${PYCRYPTODOME_VERSION} \
     gmpy2==${GMPY2_VERSION} \
     "
 

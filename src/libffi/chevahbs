@@ -54,7 +54,7 @@ chevahbs_install() {
 
     execute $MAKE install DESTDIR=$INSTALL_FOLDER
 
-    if [ ! -d $INSTALL_FOLDER/include ]; then
+    if [ -z "$(ls -A $INSTALL_FOLDER/include)" ]; then
         # 3.2.1 installs its headers in $PREFIX/lib/libffi-$VERSION/include,
         # instead of $PREFIX/include, so we copy them to the default location.
         execute mkdir -p $INSTALL_FOLDER/include

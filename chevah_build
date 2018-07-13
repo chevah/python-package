@@ -350,7 +350,7 @@ case $OS in
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
             pycryptodome==${PYCRYPTODOME_VERSION} \
-            cryptography==2.2.2upstream \
+            cryptography==${CRYPTOGRAPHY_VERSION}upstream \
             pyOpenSSL==${PYOPENSSL_VERSION} \
             scandir==${SCANDIR_VERSION} \
             "
@@ -395,21 +395,21 @@ case $OS in
         # Use PyCryptodome's wheel, as there are issues not solved upstream yet.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
-            pycryptodome==3.6.4upstream \
+            pycryptodome==${PYCRYPTODOME_VERSION}upstream \
             cryptography==${CRYPTOGRAPHY_VERSION} \
             pyOpenSSL==${PYOPENSSL_VERSION} \
             scandir==${SCANDIR_VERSION} \
             "
         ;;
     rhel5|sles11)
-        # Use PyCryptodome's wheel, as there are issues not solved upstream yet.
         # OS'es with OpenSSL 0.9.8 libs, older cryptography would be needed,
         # but upstream provides a Linux wheel that works, at least on SLES 11.
         # Otherwise, just set PIP_LIBRARIES to PIP_LIBRARIES_OPENSSL_098.
+        # Use PyCryptodome's wheel, as there are issues not solved upstream yet.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
-            pycryptodome==3.6.4upstream \
-            cryptography==2.2.2upstream \
+            pycryptodome==${PYCRYPTODOME_VERSION}upstream \
+            cryptography==${CRYPTOGRAPHY_VERSION}upstream \
             pyOpenSSL==${PYOPENSSL_VERSION} \
             scandir==${SCANDIR_VERSION} \
             "

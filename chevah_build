@@ -824,17 +824,7 @@ command_test() {
 
     # This test requires quite some RAM, so beware of heavy swapping.
     echo 'Testing PyCryptodome...'
-    case "$OS-$ARCH" in
-        hpux*)
-            # FIXME:5017:
-            # CFFI crashes on HP-UX.
-            (>&2 echo -e "\tSkipping because of cffi-related crash.")
-            ;;
-
-        *)
-            execute $LOCAL_PYTHON_BINARY -m Crypto.SelfTest
-            ;;
-    esac
+    execute $LOCAL_PYTHON_BINARY -m Crypto.SelfTest
 
     echo 'Testing scandir...'
     # There are a series of issues with the scandir tests in Linux/Unix.

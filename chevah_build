@@ -326,6 +326,7 @@ case $OS in
         export MAKE="make -P"
         export BUILD_LIBFFI="yes"
         LIBFFI_VERSION="3.3-rc0"
+        EXTRA_LIBRARIES="python-modules/cffi-1.12.68933f0ea99a"
         export BUILD_ZLIB="yes"
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"

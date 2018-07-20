@@ -323,17 +323,13 @@ case $OS in
         export MAKE="make -P"
         export BUILD_LIBFFI="yes"
         export BUILD_ZLIB="yes"
+        # CFFI/cryptography build on HP-UX, but libffi breaks for CFFI. More at
+        # https://bitbucket.org/cffi/cffi/issues/368/segmentation-fault-in-hp-ux
+        export BUILD_CFFI="no"
+        PIP_LIBRARIES=""
+        EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
-        # cryptography 1.9+ needs patching for HP's cc, building it fails with
-        # "error #2118: a void function may not return a value" for _openssl.c.
-        PIP_LIBRARIES="\
-            setproctitle==${SETPROCTITLE_VERSION} \
-            cryptography==2.2.2chevah3 \
-            pyOpenSSL==${PYOPENSSL_VERSION} \
-            scandir==${SCANDIR_VERSION} \
-            gmpy==${GMPY_VERSION} \
-            "
         ;;
     osx*)
         # The extra params needed to set the minimum target version to 10.8
@@ -584,7 +580,7 @@ command_build() {
 
     aix_ld_hack init
     command_build_sqlite
-    command_build_gmpy2
+    command_build_gmpy
     command_build_python_extra_libraries
     aix_ld_hack cleanup
 
@@ -650,11 +646,24 @@ command_build_sqlite() {
 # Build gmpy2 without MPFR and MPC library support.
 # Beware that beginning with v2.1.0, MPFR and MPC will be required.
 # On Windows we use the upstream wheel.
-# On HP-UX gmpy2 is problematic, so we use gmpy, no special build phase needed.
+# On HP-UX gmpy2 is problematic, so we build gmpy.
 #
-command_build_gmpy2() {
+command_build_gmpy() {
 
-    if [ $OS = 'windows' -o $OS = 'hpux1131' ]; then
+    if [ $OS = 'windows' ]; then
+        return
+    fi
+
+    if [ $OS = 'hpux1131' ]; then
+        target_folder=${BUILD_FOLDER}/gmpy
+
+        initialize_python_module \
+            "python-modules/gmpy-$GMPY_VERSION" $target_folder
+
+        # Build and install.
+        execute pushd $target_folder
+            execute $PYTHON_BIN setup.py install
+        execute popd
         return
     fi
 

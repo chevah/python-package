@@ -340,6 +340,7 @@ case $OS in
         export MACOSX_DEPLOYMENT_TARGET=10.8
         # OS X 10.8 not supported by cryptography 1.9, so you'll normally use
         # 1.8.2, but cryptography 2.2.2 has a working wheel for MacOS 10.6+.
+        # It currently bundles OpenSSL 1.1.0h with cryptography 2.2.2.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
             cryptography==${CRYPTOGRAPHY_VERSION}upstream \
@@ -385,6 +386,7 @@ case $OS in
     rhel5|sles11)
         # OS'es with OpenSSL 0.9.8 libs, older cryptography would be needed,
         # but upstream provides a Linux wheel that works, at least on SLES 11.
+        # It currently bundles OpenSSL 1.1.0h with cryptography 2.2.2.
         # Otherwise, just set PIP_LIBRARIES to PIP_LIBRARIES_OPENSSL_098.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \

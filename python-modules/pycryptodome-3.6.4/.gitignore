@@ -1,0 +1,14 @@
+# setup.py can generate these directories:
+/dist/
+/build/
+/Doc/apidoc/
+/Doc/_build
+
+# Ignore these files:
+*.py[co]
+.DS_Store
+MANIFEST
+
+# Backup files
+*~
+*.bak

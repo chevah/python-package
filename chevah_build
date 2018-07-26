@@ -25,7 +25,7 @@ SETUPTOOLS_VERSION="39.0.1"
 
 # Python modules versions to be used everywhere possible.
 CFFI_VERSION="1.11.5"
-PYCRYPTO_VERSION="2.6.1"
+PYCRYPTODOME_VERSION="3.6.4"
 PYOPENSSL_VERSION="17.5.0"
 CRYPTOGRAPHY_VERSION="2.2.2"
 SETPROCTITLE_VERSION="1.1.10"
@@ -53,7 +53,6 @@ export BUILD_LIBFFI="no"
 export BUILD_CFFI="yes"
 EXTRA_LIBRARIES="\
     python-modules/cffi-${CFFI_VERSION} \
-    python-modules/pycrypto-${PYCRYPTO_VERSION} \
     "
 
 # Libraries for legacy systems not built around cffi and pip.
@@ -62,7 +61,7 @@ EXTRA_LIBRARIES="\
 # pyOpenSSL 0.13.1, that fixes CVE-2013-4314, requires SSL_set_SSL_CTX.
 EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/pyOpenSSL-0.13.1 \
-    python-modules/pycrypto-${PYCRYPTO_VERSION} \
+    python-modules/pycryptodome-${PYCRYPTODOME_VERSION} \
     python-modules/python-setproctitle-1.1.8.dev0 \
     python-modules/python-scandir-${SCANDIR_VERSION} \
     "
@@ -70,6 +69,7 @@ EXTRA_LIBRARIES_NO_CFFI="\
 # List of python modules installed using pip
 PIP_LIBRARIES="\
     setproctitle==${SETPROCTITLE_VERSION} \
+    pycryptodome==${PYCRYPTODOME_VERSION} \
     cryptography==${CRYPTOGRAPHY_VERSION} \
     pyOpenSSL==${PYOPENSSL_VERSION} \
     scandir==${SCANDIR_VERSION} \
@@ -77,7 +77,6 @@ PIP_LIBRARIES="\
 # Pre-compiled libraries distributed as wheels for Windows.
 PIP_LIBRARIES_WIN="$PIP_LIBRARIES \
     pypiwin32==${PYPIWIN32_VERSION} \
-    pycrypto==${PYCRYPTO_VERSION} \
     gmpy2==${GMPY2_VERSION} \
     "
 
@@ -85,6 +84,7 @@ PIP_LIBRARIES_WIN="$PIP_LIBRARIES \
 # pyOpenSSL 16.0.0 was last upstream version to support OpenSSL 0.9.8.
 PIP_LIBRARIES_OPENSSL_098="\
     setproctitle==${SETPROCTITLE_VERSION} \
+    pycryptodome==${PYCRYPTODOME_VERSION} \
     cryptography==1.3.4 \
     pyOpenSSL==16.0.0 \
     scandir==${SCANDIR_VERSION} \
@@ -258,6 +258,7 @@ case $OS in
                 # No "-Wconversion -Wno-error=sign-conversion" for Studio's cc.
                 PIP_LIBRARIES="\
                     setproctitle==${SETPROCTITLE_VERSION} \
+                    pycryptodome==${PYCRYPTODOME_VERSION} \
                     cryptography==2.2.2chevah \
                     pyOpenSSL==${PYOPENSSL_VERSION} \
                     scandir==${SCANDIR_VERSION} \
@@ -268,6 +269,7 @@ case $OS in
                 # pyOpenSSL 17.0.0, last version to support cryptography 1.8.2.
                 PIP_LIBRARIES="\
                     setproctitle==${SETPROCTITLE_VERSION} \
+                    pycryptodome==${PYCRYPTODOME_VERSION} \
                     cryptography==1.8.2 \
                     pyOpenSSL==17.0.0 \
                     scandir==${SCANDIR_VERSION} \
@@ -277,6 +279,7 @@ case $OS in
                 # Watch out for errors related to "-Wconversion".
                 PIP_LIBRARIES="\
                     setproctitle==${SETPROCTITLE_VERSION} \
+                    pycryptodome==${PYCRYPTODOME_VERSION} \
                     cryptography==1.6 \
                     pyOpenSSL==${PYOPENSSL_VERSION} \
                     scandir==${SCANDIR_VERSION} \
@@ -321,6 +324,8 @@ case $OS in
         export CXX="/opt/aCC/bin/aCC"
         # Native make needed for parallel builds, use gmake where this breaks.
         export MAKE="make -P"
+        # Even though we don't use CFFI, libffi is needed to build _ctypes,
+        # which is then needed by gmpy 1.x
         export BUILD_LIBFFI="yes"
         export BUILD_ZLIB="yes"
         # CFFI/cryptography build on HP-UX, but libffi breaks for CFFI. More at
@@ -343,6 +348,7 @@ case $OS in
         # It currently bundles OpenSSL 1.1.0h with cryptography 2.2.2.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
+            pycryptodome==${PYCRYPTODOME_VERSION} \
             cryptography==${CRYPTOGRAPHY_VERSION}upstream \
             pyOpenSSL==${PYOPENSSL_VERSION} \
             scandir==${SCANDIR_VERSION} \
@@ -368,6 +374,7 @@ case $OS in
         # Fix from upstream, newer cryptography versions should work as-is.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
+            pycryptodome==${PYCRYPTODOME_VERSION} \
             cryptography==2.2.2chevah2 \
             pyOpenSSL==${PYOPENSSL_VERSION} \
             scandir==${SCANDIR_VERSION} \
@@ -383,13 +390,25 @@ case $OS in
         # to local ncurses libs and the result is not very portable.
         export BUILD_LIBEDIT="no"
         ;;
+    rhel6|sles11sm)
+        # Use PyCryptodome's wheel, as there are issues not solved upstream yet.
+        PIP_LIBRARIES="\
+            setproctitle==${SETPROCTITLE_VERSION} \
+            pycryptodome==${PYCRYPTODOME_VERSION}upstream \
+            cryptography==${CRYPTOGRAPHY_VERSION} \
+            pyOpenSSL==${PYOPENSSL_VERSION} \
+            scandir==${SCANDIR_VERSION} \
+            "
+        ;;
     rhel5|sles11)
         # OS'es with OpenSSL 0.9.8 libs, older cryptography would be needed,
         # but upstream provides a Linux wheel that works, at least on SLES 11.
         # It currently bundles OpenSSL 1.1.0h with cryptography 2.2.2.
         # Otherwise, just set PIP_LIBRARIES to PIP_LIBRARIES_OPENSSL_098.
+        # Use PyCryptodome's wheel, as there are issues not solved upstream yet.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
+            pycryptodome==${PYCRYPTODOME_VERSION}upstream \
             cryptography==${CRYPTOGRAPHY_VERSION}upstream \
             pyOpenSSL==${PYOPENSSL_VERSION} \
             scandir==${SCANDIR_VERSION} \
@@ -418,9 +437,6 @@ if [ "${OS%solaris*}" = "" ]; then
     if [ ${ARCH} = "sparc64" ]; then
         # Required for compiling GMP on Solaris for SPARC with Sun Studio.
         export CFLAGS="$CFLAGS -xcode=abs64"
-    elif [ ${ARCH} = "x64" ]; then
-        # Required for linking to libedit, which has a simpler configure setup.
-        export CFLAGS="$CFLAGS -xcode=pic32"
     fi
 elif [ "${OS%freebsd*}" = "" -o "${OS%openbsd*}" = "" ]; then
     # Use PIC (Position Independent Code) on FreeBSD and OpenBSD with Clang.
@@ -815,6 +831,21 @@ command_test() {
     execute $LOCAL_PYTHON_BINARY ${test_file}
 
     echo '##### Executing tests for included Python modules... #####'
+
+    # This test requires quite some RAM, so beware of heavy swapping.
+    echo 'Testing PyCryptodome...'
+    case "$OS-$ARCH" in
+        hpux*)
+            # FIXME:5017:
+            # CFFI crashes on HP-UX.
+            (>&2 echo -e "\tSkipping because of cffi-related crash.")
+            ;;
+
+        *)
+            execute $LOCAL_PYTHON_BINARY -m Crypto.SelfTest
+            ;;
+    esac
+
     echo 'Testing scandir...'
     # There are a series of issues with the scandir tests in Linux/Unix.
     # Reported upstream at https://github.com/benhoyt/scandir/issues/78.

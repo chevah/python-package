@@ -21,6 +21,9 @@ chevahbs_configure() {
         archlinux)
             LDFLAGS="$LDFLAGS -ltinfo"
             ;;
+        solaris*)
+            # Required when linking to libedit, which has a simpler configure.
+            CFLAGS="$CFLAGS -xcode=pic32"
     esac
     # We touch all files to prevent build aborts with:
     # "WARNING: 'aclocal-1.15' is missing on your system."

@@ -465,7 +465,7 @@ def get_actual_deps(script_helper):
     # the needed libs are in the 7th colon, which also includes a colon header.
     openbsd_ignored_strings = ( 'Name', os.getcwd(), './', )
     # On Linux with glibc we ignore ld-linux*, virtual deps and other special
-    # libs, in order to only get deps of regular libs with full paths from ldd.
+    # libs and messages, to only get deps of regular libs with full paths.
     linux_ignored_strings = (
                             'linux-gate.so',
                             'linux-vdso.so',
@@ -475,6 +475,7 @@ def get_actual_deps(script_helper):
                             'ld-linux-armhf.so',
                             'arm-linux-gnueabihf/libcofi_rpi.so',
                             'arm-linux-gnueabihf/libarmmem.so',
+                            'statically linked',
                             )
 
     try:
@@ -620,8 +621,7 @@ def main():
             openssl_version = backend.openssl_version_text()
             print 'cryptography %s - OpenSSL %s' % (
                 cryptography.__version__, openssl_version)
-
-            if chevah_os in [ "windows",  "osx108", "sles11", "rhel5" ]:
+            if chevah_os in [ "windows", "osx108", "sles11", "rhel5" ]:
                 # Check OpenSSL version from upstream wheels.
                 expecting = u'OpenSSL 1.1.0h  27 Mar 2018'
                 if openssl_version != expecting:
@@ -646,9 +646,10 @@ def main():
 
     try:
         import Crypto
-        print 'PyCrypto %s' % (Crypto.__version__,)
+        pycrypto_version = Crypto.__version__
+        print 'PyCryptodome %s' % (pycrypto_version)
     except:
-        sys.stderr.write('"PyCrypto" missing.\n')
+        sys.stderr.write('"PyCryptodome" missing.\n')
         exit_code = 4
 
     try:
@@ -743,13 +744,6 @@ def main():
         except:
             sys.stderr.write('"setproctitle" missing.\n')
             exit_code = 7
-
-        try:
-            from Crypto.PublicKey import _fastmath
-            exit_code = egg_check(_fastmath) | exit_code
-        except:
-            sys.stderr.write('Crypto.PublicKey._fastmath missing. No GMP?\n')
-            exit_code = 10
 
         # Check for the git revision in Python's sys.version on Linux and Unix.
         try:

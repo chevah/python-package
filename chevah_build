@@ -32,6 +32,7 @@ SETPROCTITLE_VERSION="1.1.10"
 SCANDIR_VERSION="1.7"
 GMPY2_VERSION="2.0.8"
 GMPY_VERSION="1.17"
+SAFETY_VERSION="1.8.4"
 PYPIWIN32_VERSION="219"
 
 # pycparser needs to be explicitly installed to work around setuptools auto
@@ -64,6 +65,7 @@ EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/pycryptodome-${PYCRYPTODOME_VERSION} \
     python-modules/python-setproctitle-1.1.8.dev0 \
     python-modules/python-scandir-${SCANDIR_VERSION} \
+    python-modules/python-safety-${SAFETY_VERSION} \
     "
 
 # List of python modules installed using pip
@@ -73,6 +75,7 @@ PIP_LIBRARIES="\
     cryptography==${CRYPTOGRAPHY_VERSION} \
     pyOpenSSL==${PYOPENSSL_VERSION} \
     scandir==${SCANDIR_VERSION} \
+    safety==${SAFETY_VERSION} \
     "
 # Pre-compiled libraries distributed as wheels for Windows.
 PIP_LIBRARIES_WIN="$PIP_LIBRARIES \
@@ -88,6 +91,7 @@ PIP_LIBRARIES_OPENSSL_098="\
     cryptography==1.3.4 \
     pyOpenSSL==16.0.0 \
     scandir==${SCANDIR_VERSION} \
+    safety==${SAFETY_VERSION} \
     "
 
 # Arguments that are sent when using pip.
@@ -262,6 +266,7 @@ case $OS in
                     cryptography==2.2.2chevah \
                     pyOpenSSL==${PYOPENSSL_VERSION} \
                     scandir==${SCANDIR_VERSION} \
+                    safety==${SAFETY_VERSION} \
                     "
             elif [ -f /usr/include/openssl/cmac.h ]; then
                 # 1.8.2 was last version to build without Elliptic-curve crypto,
@@ -273,6 +278,7 @@ case $OS in
                     cryptography==1.8.2 \
                     pyOpenSSL==17.0.0 \
                     scandir==${SCANDIR_VERSION} \
+                    safety==${SAFETY_VERSION} \
                     "
             else
                 # 1.6 still supported OpenSSL 1.0.0, the default in 11.0/11.1.
@@ -283,6 +289,7 @@ case $OS in
                     cryptography==1.6 \
                     pyOpenSSL==${PYOPENSSL_VERSION} \
                     scandir==${SCANDIR_VERSION} \
+                    safety==${SAFETY_VERSION} \
                     "
             fi
         fi
@@ -352,6 +359,7 @@ case $OS in
             cryptography==${CRYPTOGRAPHY_VERSION}upstream \
             pyOpenSSL==${PYOPENSSL_VERSION} \
             scandir==${SCANDIR_VERSION} \
+            safety==${SAFETY_VERSION} \
             "
         ;;
     macos*)
@@ -378,6 +386,7 @@ case $OS in
             cryptography==2.2.2chevah2 \
             pyOpenSSL==${PYOPENSSL_VERSION} \
             scandir==${SCANDIR_VERSION} \
+            safety==${SAFETY_VERSION} \
             "
         ;;
     freebsd*)
@@ -398,6 +407,7 @@ case $OS in
             cryptography==${CRYPTOGRAPHY_VERSION} \
             pyOpenSSL==${PYOPENSSL_VERSION} \
             scandir==${SCANDIR_VERSION} \
+            safety==${SAFETY_VERSION} \
             "
         ;;
     rhel5|sles11)
@@ -412,6 +422,7 @@ case $OS in
             cryptography==${CRYPTOGRAPHY_VERSION}upstream \
             pyOpenSSL==${PYOPENSSL_VERSION} \
             scandir==${SCANDIR_VERSION} \
+            safety==${SAFETY_VERSION} \
             "
         ;;
     sles10)
@@ -829,6 +840,10 @@ command_test() {
 
     echo '##### Executing Chevah tests... #####'
     execute $LOCAL_PYTHON_BINARY ${test_file}
+
+    echo '##### Testing for outdated packages and security issues... #####'
+    execute $PYTHON_BIN -m pip list $PIP_ARGS --outdated --format=columns
+    execute $PYTHON_BIN -m safety check --full-report
 
     echo '##### Executing tests for included Python modules... #####'
 

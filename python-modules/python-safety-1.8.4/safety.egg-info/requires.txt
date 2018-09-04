@@ -1,0 +1,5 @@
+pip
+Click>=6.0
+requests
+packaging
+dparse>=0.4.1

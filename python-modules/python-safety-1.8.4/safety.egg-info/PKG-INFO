@@ -1,0 +1,477 @@
+Metadata-Version: 1.1
+Name: safety
+Version: 1.8.4
+Summary: Safety checks your installed dependencies for known security vulnerabilities.
+Home-page: https://github.com/pyupio/safety
+Author: pyup.io
+Author-email: support@pyup.io
+License: MIT license
+Description: [![safety](https://raw.githubusercontent.com/pyupio/safety/master/safety.jpg)](https://pyup.io/safety/)
+        
+        [![PyPi](https://img.shields.io/pypi/v/safety.svg)](https://pypi.python.org/pypi/safety)
+        [![Travis](https://img.shields.io/travis/pyupio/safety.svg)](https://travis-ci.org/pyupio/safety)
+        [![Updates](https://pyup.io/repos/github/pyupio/safety/shield.svg)](https://pyup.io/repos/github/pyupio/safety/)
+        
+        Safety checks your installed dependencies for known security vulnerabilities. 
+        
+        By default it uses the open Python vulnerability database [Safety DB](https://github.com/pyupio/safety-db), 
+        but can be upgraded to use pyup.io's [Safety API](https://github.com/pyupio/safety/blob/master/docs/api_key.md) using the `--key` option. 
+        
+        # Installation
+        
+        Install `safety` with pip
+        
+        ```bash
+        pip install safety
+        ```
+        
+        # Usage
+        
+        To check your currently selected virtual environment for dependencies with known security
+         vulnerabilites, run:
+        
+        ```bash
+        safety check
+        ```
+        
+        You should get a report similar to this:
+        ```bash
+        ╒══════════════════════════════════════════════════════════════════════════════╕
+        │                                                                              │
+        │                               /$$$$$$            /$$                         │
+        │                              /$$__  $$          | $$                         │
+        │           /$$$$$$$  /$$$$$$ | $$  \__//$$$$$$  /$$$$$$   /$$   /$$           │
+        │          /$$_____/ |____  $$| $$$$   /$$__  $$|_  $$_/  | $$  | $$           │
+        │         |  $$$$$$   /$$$$$$$| $$_/  | $$$$$$$$  | $$    | $$  | $$           │
+        │          \____  $$ /$$__  $$| $$    | $$_____/  | $$ /$$| $$  | $$           │
+        │          /$$$$$$$/|  $$$$$$$| $$    |  $$$$$$$  |  $$$$/|  $$$$$$$           │
+        │         |_______/  \_______/|__/     \_______/   \___/   \____  $$           │
+        │                                                          /$$  | $$           │
+        │                                                         |  $$$$$$/           │
+        │  by pyup.io                                              \______/            │
+        │                                                                              │
+        ╞══════════════════════════════════════════════════════════════════════════════╡
+        │ REPORT                                                                       │
+        ╞══════════════════════════════════════════════════════════════════════════════╡
+        │ No known security vulnerabilities found.                                     │
+        ╘══════════════════════════════════════════════════════════════════════════════╛
+        ```
+        
+        Now, let's install something insecure:
+        
+        ```bash
+        pip install insecure-package
+        ```
+        *Yeah, you can really install that.*
+        
+        Run `safety check` again:
+        ```bash
+        ╒══════════════════════════════════════════════════════════════════════════════╕
+        │                                                                              │
+        │                               /$$$$$$            /$$                         │
+        │                              /$$__  $$          | $$                         │
+        │           /$$$$$$$  /$$$$$$ | $$  \__//$$$$$$  /$$$$$$   /$$   /$$           │
+        │          /$$_____/ |____  $$| $$$$   /$$__  $$|_  $$_/  | $$  | $$           │
+        │         |  $$$$$$   /$$$$$$$| $$_/  | $$$$$$$$  | $$    | $$  | $$           │
+        │          \____  $$ /$$__  $$| $$    | $$_____/  | $$ /$$| $$  | $$           │
+        │          /$$$$$$$/|  $$$$$$$| $$    |  $$$$$$$  |  $$$$/|  $$$$$$$           │
+        │         |_______/  \_______/|__/     \_______/   \___/   \____  $$           │
+        │                                                          /$$  | $$           │
+        │                                                         |  $$$$$$/           │
+        │  by pyup.io                                              \______/            │
+        │                                                                              │
+        ╞══════════════════════════════════════════════════════════════════════════════╡
+        │ REPORT                                                                       │
+        ╞══════════════════════════╤═══════════════╤═══════════════════╤═══════════════╡
+        │ package                  │ installed     │ affected          │ source        │
+        ╞══════════════════════════╧═══════════════╧═══════════════════╧═══════════════╡
+        │ insecure-package         │ 0.1.0         │ <0.2.0            │ changelog     │
+        ╘══════════════════════════╧═══════════════╧═══════════════════╧═══════════════╛
+        ```
+        
+        ## Examples
+        
+        ### Read requirement files
+        Just like pip, Safety is able to read local requirement files:
+        
+        ```bash
+        safety check -r requirements.txt
+        ```
+        
+        ### Read from stdin
+        Safety is also able to read from stdin with the `--stdin` flag set.
+        
+        To check a local requirements file, run:
+        ```
+        cat requirements.txt | safety check --stdin
+        ```
+        
+        or the output of `pip freeze`:
+        ```
+        pip freeze | safety check --stdin
+        ```
+        
+        or to check a single package:
+        ```
+        echo "insecure-package==0.1" | safety check --stdin
+        ```
+        
+        *For more examples, take a look at the [options](#options) section.*
+        
+        ## Using Safety with a CI service
+        
+        Safety works great in your CI pipeline. It returns a non-zero exit status if it finds a vulnerability. 
+        
+        Run it before or after your tests. If Safety finds something, your tests will fail.
+        
+        **Travis**
+        ```
+        install:
+          - pip install safety
+        
+        script:
+          - safety check
+        ```
+        
+        **Deep GitHub Integration**
+        
+        If you are looking for a deep integration with your GitHub repositories: Safety is available as a 
+        part of [pyup.io](https://pyup.io/), called [Safety CI](https://pyup.io/safety/ci/). Safety CI 
+        checks your commits and pull requests for dependencies with known security vulnerabilities 
+        and displays a status on GitHub.
+        
+        ![Safety CI](https://github.com/pyupio/safety/raw/master/safety_ci.png)
+        
+        
+        # Using Safety in production
+        
+        Safety is free and open source (MIT Licensed). The underlying open vulnerability database is updated once per month.
+        
+        To get access to all vulnerabilites as soon as they are added, you need a [Safety API key](https://github.com/pyupio/safety/blob/master/docs/api_key.md) that comes with a paid [pyup.io](https://pyup.io) account, starting at $14.99 for individuals, or $49.99 for organizations.
+        
+        ## Options
+        
+        ### `--key`
+        
+        *API Key for pyup.io's vulnerability database. Can be set as `SAFETY_API_KEY` environment variable.*
+        
+        **Example**
+        ```bash
+        safety check --key=12345-ABCDEFGH
+        ```
+        
+        ___
+        
+        ### `--db`
+        
+        *Path to a directory with a local vulnerability database including `insecure.json` and `insecure_full.json`*
+        
+        **Example**
+        ```bash
+        safety check --db=/home/safety-db/data
+        ```
+        
+        ___
+        
+        ### `--json`
+        
+        *Output vulnerabilities in JSON format.*
+        
+        **Example**
+        ```bash
+        safety check --json
+        ```
+        ```javascript
+        [
+            [
+                "django",
+                "<1.2.2",
+                "1.2",
+                "Cross-site scripting (XSS) vulnerability in Django 1.2.x before 1.2.2 allows remote attackers to inject arbitrary web script or HTML via a csrfmiddlewaretoken (aka csrf_token) cookie.",
+                "25701"
+            ]
+        ]
+        ```
+        ___
+        
+        ### `--full-report`
+        
+        *Full reports include a security advisory (if available).*
+        
+        **Example**
+        ```bash
+        safety check --full-report
+        ```
+        
+        ```
+        ╒══════════════════════════════════════════════════════════════════════════════╕
+        │                                                                              │
+        │                               /$$$$$$            /$$                         │
+        │                              /$$__  $$          | $$                         │
+        │           /$$$$$$$  /$$$$$$ | $$  \__//$$$$$$  /$$$$$$   /$$   /$$           │
+        │          /$$_____/ |____  $$| $$$$   /$$__  $$|_  $$_/  | $$  | $$           │
+        │         |  $$$$$$   /$$$$$$$| $$_/  | $$$$$$$$  | $$    | $$  | $$           │
+        │          \____  $$ /$$__  $$| $$    | $$_____/  | $$ /$$| $$  | $$           │
+        │          /$$$$$$$/|  $$$$$$$| $$    |  $$$$$$$  |  $$$$/|  $$$$$$$           │
+        │         |_______/  \_______/|__/     \_______/   \___/   \____  $$           │
+        │                                                          /$$  | $$           │
+        │                                                         |  $$$$$$/           │
+        │  by pyup.io                                              \______/            │
+        │                                                                              │
+        ╞══════════════════════════════════════════════════════════════════════════════╡
+        │ REPORT                                                                       │
+        ╞════════════════════════════╤═══════════╤══════════════════════════╤══════════╡
+        │ package                    │ installed │ affected                 │ ID       │
+        ╞════════════════════════════╧═══════════╧══════════════════════════╧══════════╡
+        │ django                     │ 1.2       │ <1.2.2                   │ 25701    │
+        ╞══════════════════════════════════════════════════════════════════════════════╡
+        │ Cross-site scripting (XSS) vulnerability in Django 1.2.x before 1.2.2 allows │
+        │  remote attackers to inject arbitrary web script or HTML via a csrfmiddlewar │
+        │ etoken (aka csrf_token) cookie.                                              │
+        ╘══════════════════════════════════════════════════════════════════════════════╛
+        ```
+        ___
+        
+        ### `--bare`
+        
+        *Output vulnerable packages only. Useful in combination with other tools.*
+        
+        **Example**
+        ```bash
+        safety check --bare
+        ```
+        
+        ```
+        cryptography django
+        ```
+        ___
+        
+        ### `--cache`
+        
+        *Cache requests to the vulnerability database locally for 2 hours.*
+        
+        **Example**
+        ```bash
+        safety check --cache
+        ```
+        ___
+        
+        ### `--stdin`
+        
+        *Read input from stdin.*
+        
+        **Example**
+        ```bash
+        cat requirements.txt | safety check --stdin
+        ```
+        ```bash
+        pip freeze | safety check --stdin
+        ```
+        ```bash
+        echo "insecure-package==0.1" | safety check --stdin
+        ```
+        ___
+        
+        ### `--file`, `-r`
+        
+        *Read input from one (or multiple) requirement files.*
+        
+        **Example**
+        ```bash
+        safety check -r requirements.txt
+        ```
+        ```bash
+        safety check --file=requirements.txt
+        ```
+        ```bash
+        safety check -r req_dev.txt -r req_prod.txt
+        ```
+        ___
+        
+        ### `--ignore`, `-i`
+        
+        *Ignore one (or multiple) vulnerabilities by ID*
+        
+        **Example**
+        ```bash
+        safety check -i 1234
+        ```
+        ```bash
+        safety check --ignore=1234
+        ```
+        ```bash
+        safety check -i 1234 -i 4567 -i 89101
+        ```
+        ___
+        
+        
+        =======
+        History
+        =======
+        
+        1.8.4 (2018-08-03)
+        ------------------
+        
+        * Update cryptography dependency from verision 1.9 to version 2.3 due to security vulnerability
+        
+        1.8.3b (2018-07-24)
+        ------------------
+        
+        * Allows both unicode and non-unicode type encoding when parsing requriment files
+        
+        1.8.2 (2018-07-10)
+        ------------------
+        
+        * Fixed unicode error
+        
+        1.8.1 (2018-04-06)
+        ------------------
+        
+        * Fixed a packaging error with the dparse dependency
+        
+        1.8.0 (2018-04-05)
+        ------------------
+        
+        * Safety now support pip 10
+        
+        1.7.0 (2018-02-03)
+        ------------------
+        
+        * Safety now shows a filename if it finds an unpinned requirement. Thanks @nnadeau
+        * Removed official support for Python 2.6 and Python 3.3. Thanks @nnadeau
+        
+        1.6.1 (2017-10-20)
+        ------------------
+        
+        * Fixed an error that caused the CLI to fail on requirement files/stdin.
+        
+        1.6.0 (2017-10-20)
+        ------------------
+        
+        * Added an indicator which DB is currently used
+        * Added a package count how many packages have been checked
+        * Allow multiple version of the same library. Thanks @thatarchguy
+        
+        1.5.1 (2017-07-20)
+        ------------------
+        
+        * Fixed an error on unpinned VCS requirements. This is a regression, see https://github.com/pyupio/safety/issues/72
+        
+        1.5.0 (2017-07-19)
+        ------------------
+        
+        * Internal refactoring. Removed dependency on setuptools and switched to the new dparse library.
+        
+        1.4.1 (2017-07-04)
+        ------------------
+        
+        * Fixed a bug where absence of ``stty`` was causing a traceback in ``safety
+          check`` on Python 2.7 for Windows.
+        
+        1.4.0 (2017-04-21)
+        ------------------
+        
+        * Added the ability to ignore one (or multiple) vulnerabilities by ID via the `--ignore`/`-i` flag.
+        
+        1.3.0 (2017-04-21)
+        ------------------
+        
+        * Added `--bare` output format.
+        * Added a couple of help text to the command line interface.
+        * Fixed a bug that caused requirement files with unpinned dependencies to fail when using
+         a recent setuptools release.
+        
+        1.2.0 (2017-04-06)
+        ------------------
+        
+        * Added JSON as an output format. Use it with the `--json` flag. Thanks @Stype.
+        
+        1.1.1 (2017-03-27)
+        ------------------
+        
+        * Fixed terminal size detection when fed via stdin.
+        
+        1.1.0 (2017-03-23)
+        ------------------
+        
+        * Compatibility release. Safety should now run on macOs, Linux and Windows with Python 2.7, 3.3-3.6.
+         Python 2.6 support is available on a best-effort basis on Linux.
+        
+        1.0.2 (2017-03-23)
+        ------------------
+        
+        * Fixed another error on Python 2. The fallback function for get_terminal_size wasn't working correctly.
+        
+        1.0.1 (2017-03-23)
+        ------------------
+        
+        * Fixed an error on Python 2, FileNotFoundError was introduced in Python 3.
+        
+        1.0.0 (2017-03-22)
+        ------------------
+        
+        * Added terminal size detection. Terminals with fewer than 80 columns should now display nicer reports.
+        * Added an option to load the database from the filesystem or a mirror that's reachable via http(s).
+         This can be done by using the --db flag.
+        * Added an API Key option that uses pyup.io's vulnerability database.
+        * Added an option to cache the database locally for 2 hours. The default still is to not use the cache. Use the --cache flag.
+        
+        
+        0.6.0 (2017-03-10)
+        ------------------
+        
+        * Made the requirements parser more robust. The parser should no longer fail on editable requirements
+          and requirements that are supplied by package URL.
+        * Running safety requires setuptools >= 16
+        
+        0.5.1 (2016-11-08)
+        ------------------
+        
+        * Fixed a bug where not all requirement files were read correctly.
+        
+        0.5.0 (2016-11-08)
+        ------------------
+        
+        * Added option to read requirements from files.
+        
+        0.4.0 (2016-11-07)
+        ------------------
+        
+        * Filter out non-requirements when reading from stdin.
+        
+        0.3.0 (2016-10-28)
+        ------------------
+        
+        * Added option to read from stdin.
+        
+        0.2.2 (2016-10-21)
+        ------------------
+        
+        * Fix import errors on python 2.6 and 2.7.
+        
+        0.2.1 (2016-10-21)
+        ------------------
+        
+        * Fix packaging bug.
+        
+        0.2.0 (2016-10-20)
+        ------------------
+        
+        * Releasing first prototype.
+        
+        0.1.0 (2016-10-19)
+        ------------------
+        
+        * First release on PyPI.
+        
+Keywords: safety
+Platform: UNKNOWN
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6

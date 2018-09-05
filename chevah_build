@@ -252,19 +252,10 @@ case $OS in
                 # There's a problem with linking readline in 11.2 for SPARC.
                 export BUILD_LIBEDIT="no"
             fi
-            # Theoretically, cryptography 2.2+ should work in Solaris 11.x, as
-            # it has OpenSSL 1.0.1, but EC crypto is enabled only in 11.3 SRU19.
-            if [ -f /usr/include/openssl/ecdh.h ]; then
-                # No "-Wconversion -Wno-error=sign-conversion" for Studio's cc.
-                # https://git.io/fAR2P to be upstreamed after upgrading to 11.3.
-                PIP_LIBRARIES="\
-                    setproctitle==${SETPROCTITLE_VERSION} \
-                    pycryptodome==${PYCRYPTODOME_VERSION} \
-                    cryptography==${CRYPTOGRAPHY_VERSION} \
-                    pyOpenSSL==${PYOPENSSL_VERSION} \
-                    scandir==${SCANDIR_VERSION} \
-                    "
-            elif [ -f /usr/include/openssl/cmac.h ]; then
+            # Latest cryptography needs EC crypto, enabled only in 11.3 SRU19.
+            # Also, latest cryptography versions don't build with Studio's CC.
+            # https://git.io/fAR2P to be upstreamed after upgrading to 11.3.
+            if [ ! -f /usr/include/openssl/ecdh.h ]; then
                 # 1.8.2 was last version to build without Elliptic-curve crypto,
                 # as this is missing from OpenSSL 1.0.1 libs in Solaris 11.2.
                 # pyOpenSSL 17.0.0, last version to support cryptography 1.8.2.
@@ -275,7 +266,8 @@ case $OS in
                     pyOpenSSL==17.0.0 \
                     scandir==${SCANDIR_VERSION} \
                     "
-            else
+            fi
+            if [ ! -f /usr/include/openssl/cmac.h ]; then
                 # 1.6 still supported OpenSSL 1.0.0, the default in 11.0/11.1.
                 # Watch out for errors related to "-Wconversion".
                 PIP_LIBRARIES="\

@@ -25,7 +25,7 @@ SETUPTOOLS_VERSION="39.0.1"
 
 # Python modules versions to be used everywhere possible.
 CFFI_VERSION="1.11.5"
-PYCRYPTODOME_VERSION="3.6.4"
+PYCRYPTODOME_VERSION="3.6.5"
 PYOPENSSL_VERSION="17.5.0"
 CRYPTOGRAPHY_VERSION="2.2.2"
 SETPROCTITLE_VERSION="1.1.10"
@@ -324,6 +324,8 @@ case $OS in
         export CXX="/opt/aCC/bin/aCC"
         # Native make needed for parallel builds, use gmake where this breaks.
         export MAKE="make -P"
+        # Even though we don't use CFFI, libffi is needed to build _ctypes,
+        # which is then needed by gmpy 1.x
         export BUILD_LIBFFI="yes"
         export BUILD_ZLIB="yes"
         # CFFI/cryptography build on HP-UX, but libffi breaks for CFFI. More at
@@ -387,7 +389,8 @@ case $OS in
         # to local ncurses libs and the result is not very portable.
         export BUILD_LIBEDIT="no"
         ;;
-    rhel6|sles11sm)
+
+    sles11sm)
         # Use PyCryptodome's wheel, as there are issues not solved upstream yet.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \

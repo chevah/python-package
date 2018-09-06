@@ -252,8 +252,8 @@ case $OS in
                 # There's a problem with linking readline in 11.2 for SPARC.
                 export BUILD_LIBEDIT="no"
             fi
-            # Latest cryptography needs EC crypto, enabled only in 11.3 SRU19.
-            # Also, latest cryptography versions don't build with Studio's CC.
+            # Latest cryptography needs EC crypto, enabled in 11.3 SRU19 and
+            # newer. Also, latest versions don't build with Studio's CC.
             # https://git.io/fAR2P to be upstreamed after upgrading to 11.3.
             if [ ! -f /usr/include/openssl/ecdh.h ]; then
                 # 1.8.2 was last version to build without Elliptic-curve crypto,

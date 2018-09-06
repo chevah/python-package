@@ -25,9 +25,9 @@ SETUPTOOLS_VERSION="39.0.1"
 
 # Python modules versions to be used everywhere possible.
 CFFI_VERSION="1.11.5"
-PYCRYPTODOME_VERSION="3.6.5"
+PYCRYPTODOME_VERSION="3.6.6"
 PYOPENSSL_VERSION="17.5.0"
-CRYPTOGRAPHY_VERSION="2.2.2"
+CRYPTOGRAPHY_VERSION="2.3.1"
 SETPROCTITLE_VERSION="1.1.10"
 SCANDIR_VERSION="1.7"
 GMPY2_VERSION="2.0.8"
@@ -256,19 +256,10 @@ case $OS in
                 # There's a problem with linking readline in 11.2 for SPARC.
                 export BUILD_LIBEDIT="no"
             fi
-            # Theoretically, cryptography 2.2.2 should work in Solaris 11.x, as
-            # it has OpenSSL 1.0.1, but EC crypto is enabled only in 11.3 SRU19.
-            if [ -f /usr/include/openssl/ecdh.h ]; then
-                # No "-Wconversion -Wno-error=sign-conversion" for Studio's cc.
-                PIP_LIBRARIES="\
-                    setproctitle==${SETPROCTITLE_VERSION} \
-                    pycryptodome==${PYCRYPTODOME_VERSION} \
-                    cryptography==2.2.2chevah \
-                    pyOpenSSL==${PYOPENSSL_VERSION} \
-                    scandir==${SCANDIR_VERSION} \
-                    safety==${SAFETY_VERSION} \
-                    "
-            elif [ -f /usr/include/openssl/cmac.h ]; then
+            # Latest cryptography needs EC crypto, enabled in 11.3 SRU19 and
+            # newer. Also, latest versions don't build with Studio's CC.
+            # https://git.io/fAR2P to be upstreamed after upgrading to 11.3.
+            if [ ! -f /usr/include/openssl/ecdh.h ]; then
                 # 1.8.2 was last version to build without Elliptic-curve crypto,
                 # as this is missing from OpenSSL 1.0.1 libs in Solaris 11.2.
                 # pyOpenSSL 17.0.0, last version to support cryptography 1.8.2.
@@ -280,7 +271,8 @@ case $OS in
                     scandir==${SCANDIR_VERSION} \
                     safety==${SAFETY_VERSION} \
                     "
-            else
+            fi
+            if [ ! -f /usr/include/openssl/cmac.h ]; then
                 # 1.6 still supported OpenSSL 1.0.0, the default in 11.0/11.1.
                 # Watch out for errors related to "-Wconversion".
                 PIP_LIBRARIES="\
@@ -374,22 +366,7 @@ case $OS in
         # "10.4", and then tries to avoid the broken readline in OS X 10.4.
         export MACOSX_DEPLOYMENT_TARGET=10.11
         ;;
-
-    openbsd*)
-        export CC="clang"
-        export CXX="clang++"
-        export BUILD_LIBFFI="yes"
-        # Fix from upstream, newer cryptography versions should work as-is.
-        PIP_LIBRARIES="\
-            setproctitle==${SETPROCTITLE_VERSION} \
-            pycryptodome==${PYCRYPTODOME_VERSION} \
-            cryptography==2.2.2chevah2 \
-            pyOpenSSL==${PYOPENSSL_VERSION} \
-            scandir==${SCANDIR_VERSION} \
-            safety==${SAFETY_VERSION} \
-            "
-        ;;
-    freebsd*)
+    freebsd*|openbsd*)
         export CC="clang"
         export CXX="clang++"
         export BUILD_LIBFFI="yes"

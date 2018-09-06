@@ -29,7 +29,7 @@ PYCRYPTODOME_VERSION="3.6.6"
 PYOPENSSL_VERSION="17.5.0"
 CRYPTOGRAPHY_VERSION="2.3.1"
 SETPROCTITLE_VERSION="1.1.10"
-SCANDIR_VERSION="1.7"
+SCANDIR_VERSION="1.9.0"
 GMPY2_VERSION="2.0.8"
 GMPY_VERSION="1.17"
 SAFETY_VERSION="1.8.4"
@@ -845,14 +845,12 @@ command_test() {
     echo 'Testing scandir...'
     # There are a series of issues with the scandir tests in Linux/Unix.
     # Reported upstream at https://github.com/benhoyt/scandir/issues/78.
-    SCANDIR_FOLDER="../python-modules/python-scandir-${SCANDIR_VERSION}"
+    SCANDIR_FOLDER="../python-modules/scandir-${SCANDIR_VERSION}"
     case "$OS-$ARCH" in
         osx*|macos*|windows*)
             execute $LOCAL_PYTHON_BINARY ${SCANDIR_FOLDER}/test/run_tests.py
             ;;
-        aix*|hpux*|openbsd*|solaris10-sparc)
-            # In OpenBSD there are even more issues actually.
-            # Details at https://github.com/benhoyt/scandir/issues/79.
+        aix*|hpux*|solaris10-sparc)
             (>&2 echo -e "\tSkipping because of upstream issues.")
             ;;
         *)

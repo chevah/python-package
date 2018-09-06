@@ -623,7 +623,7 @@ def main():
                 cryptography.__version__, openssl_version)
             if chevah_os in [ "windows", "osx108", "sles11", "rhel5" ]:
                 # Check OpenSSL version from upstream wheels.
-                expecting = u'OpenSSL 1.1.0h  27 Mar 2018'
+                expecting = u'OpenSSL 1.1.0i  14 Aug 2018'
                 if openssl_version != expecting:
                     sys.stderr.write('Expecting %s got %s.\n' % (
                         expecting, openssl_version))

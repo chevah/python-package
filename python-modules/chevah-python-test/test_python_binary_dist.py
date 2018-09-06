@@ -372,7 +372,7 @@ def get_allowed_deps():
             '/usr/lib/hpux32/libxti.so.1',
             ]
     elif platform_system == 'darwin':
-        # Common deps for OS X 10.8 and macOS 10.12, with full path.
+        # Common deps for OS X 10.8 and macOS 10.12+, with full path.
         allowed_deps = [
             '/System/Library/Frameworks/ApplicationServices.framework/Versions/A/ApplicationServices',
             '/System/Library/Frameworks/Carbon.framework/Versions/A/Carbon',
@@ -394,12 +394,12 @@ def get_allowed_deps():
                 '/usr/local/opt/libyaml/lib/libyaml-0.2.dylib',
                 ])
         elif ('macos' in chevah_os):
-            # Additional deps for MacOS 10.12 when using Homebrew's OpenSSL.
+            # Additional deps for MacOS 10.12+ when using Homebrew's OpenSSL.
             allowed_deps.extend([
                 '/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics',
                 '/usr/lib/libncurses.5.4.dylib',
                 '/usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib',
-                '/usr/local/opt/openssl/lib/libssl.2.0.0.dylib',
+                '/usr/local/opt/openssl/lib/libssl.1.0.0.dylib',
                 '/usr/local/opt/libyaml/lib/libyaml-0.2.dylib',
                 ])
     elif platform_system == 'freebsd':

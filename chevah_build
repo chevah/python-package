@@ -63,9 +63,6 @@ EXTRA_LIBRARIES="\
 EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/pyOpenSSL-0.13.1 \
     python-modules/pycryptodome-${PYCRYPTODOME_VERSION} \
-    python-modules/python-setproctitle-1.1.8.dev0 \
-    python-modules/python-scandir-${SCANDIR_VERSION} \
-    python-modules/python-safety-${SAFETY_VERSION} \
     "
 
 # List of python modules installed using pip
@@ -82,7 +79,6 @@ PIP_LIBRARIES_WIN="$PIP_LIBRARIES \
     pypiwin32==${PYPIWIN32_VERSION} \
     gmpy2==${GMPY2_VERSION} \
     "
-
 # cryptography 1.3.4 was last upstream version to support OpenSSL 0.9.8.
 # pyOpenSSL 16.0.0 was last upstream version to support OpenSSL 0.9.8.
 PIP_LIBRARIES_OPENSSL_098="\
@@ -90,6 +86,12 @@ PIP_LIBRARIES_OPENSSL_098="\
     pycryptodome==${PYCRYPTODOME_VERSION} \
     cryptography==1.3.4 \
     pyOpenSSL==16.0.0 \
+    scandir==${SCANDIR_VERSION} \
+    safety==${SAFETY_VERSION} \
+    "
+# Python modules installed through pip on systems not build around cffi.
+PIP_LIBRARIES_NO_CFFI="\
+    setproctitle==${SETPROCTITLE_VERSION} \
     scandir==${SCANDIR_VERSION} \
     safety==${SAFETY_VERSION} \
     "
@@ -249,7 +251,7 @@ case $OS in
             # SSL_CTX_set_next_proto_select_cb: referenced symbol not found".
             # cryptography 0.3 doesn't build on Solaris 10, so we are stuck.
             export BUILD_CFFI="no"
-            PIP_LIBRARIES=""
+            PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
             EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         else
             if [ ${ARCH} = "sparc" ]; then
@@ -308,7 +310,9 @@ case $OS in
             # the SSL_set_SSL_CTX symbol.
             # pyOpenSSL 0.13 was last version to build without SSL_set_SSL_CTX.
             export BUILD_CFFI="no"
-            PIP_LIBRARIES=""
+            # If latest setproctitle fails, look in the history of this repo
+            # for python-modules/python-setproctitle-1.1.8.dev0 for extra libs.
+            PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
             EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         fi
         ;;
@@ -330,7 +334,7 @@ case $OS in
         # CFFI/cryptography build on HP-UX, but libffi breaks for CFFI. More at
         # https://bitbucket.org/cffi/cffi/issues/368/segmentation-fault-in-hp-ux
         export BUILD_CFFI="no"
-        PIP_LIBRARIES=""
+        PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
@@ -404,7 +408,7 @@ case $OS in
         ;;
     sles10)
         export BUILD_CFFI="no"
-        PIP_LIBRARIES=""
+        PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
     windows*)

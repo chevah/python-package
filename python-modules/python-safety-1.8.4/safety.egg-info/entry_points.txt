@@ -1,3 +1,0 @@
-[console_scripts]
-safety = safety.cli:cli
-

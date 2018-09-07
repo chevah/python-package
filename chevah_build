@@ -117,12 +117,13 @@ OS=`cut -d' ' -f 3 DEFAULT_VALUES`
 ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 
 # List of OS packages required for building Python/pyOpenSSL/cryptography etc.
-COMMON_PKGS="gcc make m4 automake libtool texinfo git patch"
-COMMON_SLES_PKGS="$COMMON_PKGS zlib-devel libffi-devel ncurses-devel"
-DEBIAN_PKGS="$COMMON_PKGS libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
-RHEL_PKGS="$COMMON_PKGS openssl-devel zlib-devel libffi-devel ncurses-devel"
-ALPINE_PKGS="$COMMON_PKGS libc-dev libressl-dev zlib-dev libffi-dev ncurses-dev"
-ARCH_PKGS="$COMMON_PKGS libffi ncurses"
+COMMON_PKGS="gcc make m4 automake libtool texinfo patch"
+COMMON_SLES_PKGS="$COMMON_PKGS git-core zlib-devel libffi-devel ncurses-devel"
+DEBIAN_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
+RHEL_PKGS="$COMMON_PKGS git openssl-devel zlib-devel libffi-devel ncurses-devel"
+ALPINE_PKGS=\
+    "$COMMON_PKGS git libc-dev libressl-dev zlib-dev libffi-dev ncurses-dev"
+ARCH_PKGS="$COMMON_PKGS git libffi ncurses"
 case "$OS" in
     rhel5)
         RHEL_PKGS="$RHEL_PKGS automake15"

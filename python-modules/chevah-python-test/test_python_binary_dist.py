@@ -162,7 +162,6 @@ def get_allowed_deps():
                 '/usr/lib/libssl.so.1.1',
                 '/usr/lib/libutil.so.1',
                 '/usr/lib/libz.so.1',
-                '/usr/lib/libyaml-0.so.2',
                 ]
         elif ('alpine' in chevah_os):
             # Full deps with paths, but no minor versions, for Alpine 3.6.
@@ -386,12 +385,10 @@ def get_allowed_deps():
             ]
         if ('osx' in chevah_os):
             # Additional deps when using the OS-included OpenSSL.
-            # The Homebrew dep in /usr/local/opt is for the "safety" module.
             allowed_deps.extend([
                 '/usr/lib/libcrypto.0.9.8.dylib',
                 '/usr/lib/libssl.0.9.8.dylib',
                 '/usr/lib/libncurses.5.4.dylib',
-                '/usr/local/opt/libyaml/lib/libyaml-0.2.dylib',
                 ])
         elif ('macos' in chevah_os):
             # Additional deps for MacOS 10.12+ when using Homebrew's OpenSSL.
@@ -400,7 +397,6 @@ def get_allowed_deps():
                 '/usr/lib/libncurses.5.4.dylib',
                 '/usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib',
                 '/usr/local/opt/openssl/lib/libssl.1.0.0.dylib',
-                '/usr/local/opt/libyaml/lib/libyaml-0.2.dylib',
                 ])
     elif platform_system == 'freebsd':
         # This is the common list of deps for FreeBSD 10 and newer, with paths.

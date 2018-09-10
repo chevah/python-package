@@ -56,9 +56,6 @@ EXTRA_LIBRARIES="\
     "
 
 # Libraries for legacy systems not built around cffi and pip.
-# pyOpenSSL 0.13.1 was last upstream version before the port to
-# the cffi-based OpenSSL bindings provided by the cryptography module.
-# pyOpenSSL 0.13.1, that fixes CVE-2013-4314, requires SSL_set_SSL_CTX.
 EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/pycryptodome-${PYCRYPTODOME_VERSION} \
     "
@@ -86,8 +83,11 @@ PIP_LIBRARIES_OPENSSL_098="\
     scandir==${SCANDIR_VERSION} \
     "
 # Python modules installed through pip on systems not built around cffi.
+# pyOpenSSL 0.13.1 was last upstream version before the port to
+# the cffi-based OpenSSL bindings provided by the cryptography module.
+# pyOpenSSL 0.13.1, that fixes CVE-2013-4314, requires SSL_set_SSL_CTX.
 PIP_LIBRARIES_NO_CFFI="\
-    python-modules/pyOpenSSL-0.13.1 \
+    pyOpenSSL==0.13.1 \
     setproctitle==${SETPROCTITLE_VERSION} \
     scandir==${SCANDIR_VERSION} \
     "
@@ -887,7 +887,7 @@ command_test_compat() {
     # and copy it in cache so that it will be picked up by the new build.
     execute echo -e "\nPYTHON_CONFIGURATION=default@${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" >> paver.conf
     # Also copy latest paver.sh, as some changes might require it.
-    execute cp ../../paver.sh ./
+    execute cp ../../paver.{conf,sh} ./
     # Populate the cache with the latest version so that we don't have to
     # download it.
     execute mkdir cache

@@ -625,7 +625,7 @@ def main():
                 # Check OpenSSL version from upstream wheels.
                 expecting = u'OpenSSL 1.1.0i  14 Aug 2018'
                 if openssl_version != expecting:
-                    sys.stderr.write('Expecting %s got %s.\n' % (
+                    sys.stderr.write('Expecting %s, got %s.\n' % (
                         expecting, openssl_version))
                     exit_code = 13
         except Exception as error:
@@ -700,7 +700,7 @@ def main():
             x=gmpy.mpz(123456789123456789)
             if not x==gmpy.mpz(gmpy.binary(x), 256):
                 sys.stderr.write('"gmpy" present, but broken!\n')
-                exit_code = 20
+                exit_code = 21
         except:
             sys.stderr.write('"gmpy2" and "gmpy" missing.\n')
             exit_code = 19
@@ -720,6 +720,12 @@ def main():
         except:
             sys.stderr.write('"sqlite3" missing or broken.\n')
             exit_code = 6
+        try:
+            import win32service
+            win32service.EnumWindowStations()
+        except:
+            sys.stderr.write('"pywin32" missing or broken.\n')
+            exit_code = 22
 
     else:
         # Linux / Unix stuff.

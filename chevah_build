@@ -32,7 +32,7 @@ SETPROCTITLE_VERSION="1.1.10"
 SCANDIR_VERSION="1.9.0"
 GMPY2_VERSION="2.0.8"
 GMPY_VERSION="1.17"
-PYPIWIN32_VERSION="219"
+PYWIN32_VERSION="223"
 
 # pycparser needs to be explicitly installed to work around setuptools auto
 # dependencies.
@@ -70,7 +70,7 @@ PIP_LIBRARIES="\
     "
 # Pre-compiled libraries distributed as wheels for Windows.
 PIP_LIBRARIES_WIN="$PIP_LIBRARIES \
-    pypiwin32==${PYPIWIN32_VERSION} \
+    pywin32==${PYWIN32_VERSION} \
     gmpy2==${GMPY2_VERSION} \
     "
 # cryptography 1.3.4 was last upstream version to support OpenSSL 0.9.8.

@@ -815,7 +815,7 @@ command_test() {
     execute $LOCAL_PYTHON_BINARY ${test_file}
 
     echo '##### Testing for outdated packages and security issues... #####'
-    execute $PYTHON_BIN -m pip list $PIP_ARGS --outdated --format=columns
+    execute $PYTHON_BIN -m pip list --outdated --format=columns
     execute $PYTHON_BIN -m pip install $PIP_ARGS safety
     execute $PYTHON_BIN -m safety check --full-report
 

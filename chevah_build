@@ -20,7 +20,7 @@ GMP_VERSION="6.1.2"
 SQLITE_VERSION="3.23.1"
 PYSQLITE_VERSION="2.8.3"
 # These are used by get-pip.py.
-PIP_VERSION="9.0.3"
+PIP_VERSION="18.0"
 SETUPTOOLS_VERSION="39.0.1"
 
 # Python modules versions to be used everywhere possible.

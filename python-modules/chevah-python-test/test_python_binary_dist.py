@@ -371,7 +371,7 @@ def get_allowed_deps():
             '/usr/lib/hpux32/libxti.so.1',
             ]
     elif platform_system == 'darwin':
-        # Common deps for OS X 10.8 and macOS 10.12, with full path.
+        # Common deps for OS X 10.8 and macOS 10.12+, with full path.
         allowed_deps = [
             '/System/Library/Frameworks/ApplicationServices.framework/Versions/A/ApplicationServices',
             '/System/Library/Frameworks/Carbon.framework/Versions/A/Carbon',
@@ -391,7 +391,7 @@ def get_allowed_deps():
                 '/usr/lib/libncurses.5.4.dylib',
                 ])
         elif ('macos' in chevah_os):
-            # Additional deps for MacOS 10.12 when using Homebrew's OpenSSL.
+            # Additional deps for MacOS 10.12+ when using Homebrew's OpenSSL.
             allowed_deps.extend([
                 '/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics',
                 '/usr/lib/libncurses.5.4.dylib',
@@ -625,7 +625,7 @@ def main():
                 # Check OpenSSL version from upstream wheels.
                 expecting = u'OpenSSL 1.1.0i  14 Aug 2018'
                 if openssl_version != expecting:
-                    sys.stderr.write('Expecting %s got %s.\n' % (
+                    sys.stderr.write('Expecting %s, got %s.\n' % (
                         expecting, openssl_version))
                     exit_code = 13
         except Exception as error:
@@ -700,7 +700,7 @@ def main():
             x=gmpy.mpz(123456789123456789)
             if not x==gmpy.mpz(gmpy.binary(x), 256):
                 sys.stderr.write('"gmpy" present, but broken!\n')
-                exit_code = 20
+                exit_code = 21
         except:
             sys.stderr.write('"gmpy2" and "gmpy" missing.\n')
             exit_code = 19
@@ -720,6 +720,12 @@ def main():
         except:
             sys.stderr.write('"sqlite3" missing or broken.\n')
             exit_code = 6
+        try:
+            import win32service
+            win32service.EnumWindowStations()
+        except:
+            sys.stderr.write('"pywin32" missing or broken.\n')
+            exit_code = 22
 
     else:
         # Linux / Unix stuff.

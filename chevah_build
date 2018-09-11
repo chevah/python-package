@@ -20,7 +20,7 @@ GMP_VERSION="6.1.2"
 SQLITE_VERSION="3.23.1"
 PYSQLITE_VERSION="2.8.3"
 # These are used by get-pip.py.
-PIP_VERSION="9.0.3"
+PIP_VERSION="18.0"
 SETUPTOOLS_VERSION="39.0.1"
 
 # Python modules versions to be used everywhere possible.
@@ -29,10 +29,10 @@ PYCRYPTODOME_VERSION="3.6.6"
 PYOPENSSL_VERSION="17.5.0"
 CRYPTOGRAPHY_VERSION="2.3.1"
 SETPROCTITLE_VERSION="1.1.10"
-SCANDIR_VERSION="1.7"
+SCANDIR_VERSION="1.9.0"
 GMPY2_VERSION="2.0.8"
 GMPY_VERSION="1.17"
-PYPIWIN32_VERSION="219"
+PYWIN32_VERSION="223"
 
 # pycparser needs to be explicitly installed to work around setuptools auto
 # dependencies.
@@ -56,14 +56,8 @@ EXTRA_LIBRARIES="\
     "
 
 # Libraries for legacy systems not built around cffi and pip.
-# pyOpenSSL 0.13.1 was last upstream version before the port to
-# the cffi-based OpenSSL bindings provided by the cryptography module.
-# pyOpenSSL 0.13.1, that fixes CVE-2013-4314, requires SSL_set_SSL_CTX.
 EXTRA_LIBRARIES_NO_CFFI="\
-    python-modules/pyOpenSSL-0.13.1 \
     python-modules/pycryptodome-${PYCRYPTODOME_VERSION} \
-    python-modules/python-setproctitle-1.1.8.dev0 \
-    python-modules/python-scandir-${SCANDIR_VERSION} \
     "
 
 # List of python modules installed using pip
@@ -76,10 +70,9 @@ PIP_LIBRARIES="\
     "
 # Pre-compiled libraries distributed as wheels for Windows.
 PIP_LIBRARIES_WIN="$PIP_LIBRARIES \
-    pypiwin32==${PYPIWIN32_VERSION} \
+    pywin32==${PYWIN32_VERSION} \
     gmpy2==${GMPY2_VERSION} \
     "
-
 # cryptography 1.3.4 was last upstream version to support OpenSSL 0.9.8.
 # pyOpenSSL 16.0.0 was last upstream version to support OpenSSL 0.9.8.
 PIP_LIBRARIES_OPENSSL_098="\
@@ -89,10 +82,19 @@ PIP_LIBRARIES_OPENSSL_098="\
     pyOpenSSL==16.0.0 \
     scandir==${SCANDIR_VERSION} \
     "
+# Python modules installed through pip on systems not built around cffi.
+# pyOpenSSL 0.13.1 was last upstream version before the port to
+# the cffi-based OpenSSL bindings provided by the cryptography module.
+# pyOpenSSL 0.13.1, that fixes CVE-2013-4314, requires SSL_set_SSL_CTX.
+PIP_LIBRARIES_NO_CFFI="\
+    pyOpenSSL==0.13.1 \
+    setproctitle==${SETPROCTITLE_VERSION} \
+    scandir==${SCANDIR_VERSION} \
+    "
 
 # Arguments that are sent when using pip.
 PIP_ARGS="\
-    -i http://pypi.chevah.com/simple \
+    --index-url=http://pypi.chevah.com/simple \
     --trusted-host=pypi.chevah.com \
     "
 
@@ -114,12 +116,24 @@ OS=`cut -d' ' -f 3 DEFAULT_VALUES`
 ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 
 # List of OS packages required for building Python/pyOpenSSL/cryptography etc.
-COMMON_PKGS="gcc make m4 automake libtool texinfo git patch"
-COMMON_SLES_PKGS="$COMMON_PKGS zlib-devel libffi-devel ncurses-devel"
-DEBIAN_PKGS="$COMMON_PKGS libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
-RHEL_PKGS="$COMMON_PKGS openssl-devel zlib-devel libffi-devel ncurses-devel"
-ALPINE_PKGS="$COMMON_PKGS libc-dev libressl-dev zlib-dev libffi-dev ncurses-dev"
-ARCH_PKGS="$COMMON_PKGS libffi ncurses"
+# Lately we don't install anything automatically, we just check for the
+# presence of required packages on everything but AIX, HP-UX, macOS, OS X,
+# Solaris, Windows and generic Linux builds.
+# This build of Python / pyOpenSSL / cryptography / etc.  requires:
+# a C compiler, make, m4, libs and headers for OpenSSL / zlib / libffi,
+# git (for patching Python's version), patch (for applying our own patches),
+# and optionally texinfo (link texinfo to `true` if missing on your platform).
+# To build libedit for the readline module, we need the headers of
+# a curses library, automake and libtool.
+# On platforms with a choice of C compilers, you may choose among the
+# available compilers by setting CC and CXX further in this script.
+COMMON_PKGS="gcc make m4 automake libtool texinfo patch"
+COMMON_SLES_PKGS="$COMMON_PKGS git-core zlib-devel libffi-devel ncurses-devel"
+DEBIAN_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
+RHEL_PKGS="$COMMON_PKGS git openssl-devel zlib-devel libffi-devel ncurses-devel"
+ALPINE_PKGS="\
+    $COMMON_PKGS git libc-dev libressl-dev zlib-dev libffi-dev ncurses-dev"
+ARCH_PKGS="$COMMON_PKGS git libffi ncurses"
 case "$OS" in
     rhel5)
         RHEL_PKGS="$RHEL_PKGS automake15"
@@ -135,18 +149,6 @@ case "$OS" in
         SLES_PKGS="$COMMON_SLES_PKGS libopenssl-devel"
         ;;
 esac
-
-# Lately we don't install anything automatically, we just check for the
-# presence of required packages on everything but AIX, HP-UX, macOS, OS X,
-# Solaris, Windows and generic Linux builds.
-# This build of Python / pyOpenSSL / cryptography / etc.  requires:
-# a C compiler, make, m4, libs and headers for OpenSSL / zlib / libffi,
-# git (for patching Python's version), patch (for applying our own patches),
-# and optionally texinfo (link texinfo to `true` if missing on your platform).
-# To build libedit for the readline module, we need the headers of
-# a curses library, automake and libtool.
-# On platforms with a choice of C compilers, you may choose among the
-# available compilers by setting CC and CXX further in this script.
 
 # In Solaris and AIX we use $ARCH to choose if we build a 32bit or 64bit
 # package. This way we are able to force a 32bit build on a 64bit machine,
@@ -245,7 +247,7 @@ case $OS in
             # SSL_CTX_set_next_proto_select_cb: referenced symbol not found".
             # cryptography 0.3 doesn't build on Solaris 10, so we are stuck.
             export BUILD_CFFI="no"
-            PIP_LIBRARIES=""
+            PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
             EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         else
             if [ ${ARCH} = "sparc" ]; then
@@ -302,7 +304,9 @@ case $OS in
             # the SSL_set_SSL_CTX symbol.
             # pyOpenSSL 0.13 was last version to build without SSL_set_SSL_CTX.
             export BUILD_CFFI="no"
-            PIP_LIBRARIES=""
+            # If latest setproctitle fails, look in the history of this repo
+            # for python-modules/python-setproctitle-1.1.8.dev0 for extra libs.
+            PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
             EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         fi
         ;;
@@ -324,7 +328,7 @@ case $OS in
         # CFFI/cryptography build on HP-UX, but libffi breaks for CFFI. More at
         # https://bitbucket.org/cffi/cffi/issues/368/segmentation-fault-in-hp-ux
         export BUILD_CFFI="no"
-        PIP_LIBRARIES=""
+        PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
@@ -338,7 +342,6 @@ case $OS in
         export MACOSX_DEPLOYMENT_TARGET=10.8
         # OS X 10.8 not supported by cryptography 1.9, so you'll normally use
         # 1.8.2, but cryptography 2.2.2 has a working wheel for MacOS 10.6+.
-        # It currently bundles OpenSSL 1.1.0h with cryptography 2.2.2.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
             pycryptodome==${PYCRYPTODOME_VERSION} \
@@ -382,7 +385,6 @@ case $OS in
     rhel5|sles11)
         # OS'es with OpenSSL 0.9.8 libs, older cryptography would be needed,
         # but upstream provides a Linux wheel that works, at least on SLES 11.
-        # It currently bundles OpenSSL 1.1.0h with cryptography 2.2.2.
         # Otherwise, just set PIP_LIBRARIES to PIP_LIBRARIES_OPENSSL_098.
         # Use PyCryptodome's wheel, as there are issues not solved upstream yet.
         PIP_LIBRARIES="\
@@ -395,7 +397,7 @@ case $OS in
         ;;
     sles10)
         export BUILD_CFFI="no"
-        PIP_LIBRARIES=""
+        PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
     windows*)
@@ -809,6 +811,11 @@ command_test() {
     echo '##### Executing Chevah tests... #####'
     execute $LOCAL_PYTHON_BINARY ${test_file}
 
+    echo '##### Testing for outdated packages and security issues... #####'
+    execute $PYTHON_BIN -m pip list --outdated --format=columns
+    execute $PYTHON_BIN -m pip install $PIP_ARGS safety
+    execute $PYTHON_BIN -m safety check --full-report
+
     echo '##### Executing tests for included Python modules... #####'
 
     # This test requires quite some RAM, so beware of heavy swapping.
@@ -828,14 +835,12 @@ command_test() {
     echo 'Testing scandir...'
     # There are a series of issues with the scandir tests in Linux/Unix.
     # Reported upstream at https://github.com/benhoyt/scandir/issues/78.
-    SCANDIR_FOLDER="../python-modules/python-scandir-${SCANDIR_VERSION}"
+    SCANDIR_FOLDER="../python-modules/scandir-${SCANDIR_VERSION}"
     case "$OS-$ARCH" in
         osx*|macos*|windows*)
             execute $LOCAL_PYTHON_BINARY ${SCANDIR_FOLDER}/test/run_tests.py
             ;;
-        aix*|hpux*|openbsd*|solaris10-sparc)
-            # In OpenBSD there are even more issues actually.
-            # Details at https://github.com/benhoyt/scandir/issues/79.
+        aix*|hpux*|solaris10-sparc)
             (>&2 echo -e "\tSkipping because of upstream issues.")
             ;;
         *)
@@ -879,7 +884,7 @@ command_test_compat() {
     # and copy it in cache so that it will be picked up by the new build.
     execute echo -e "\nPYTHON_CONFIGURATION=default@${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" >> paver.conf
     # Also copy latest paver.sh, as some changes might require it.
-    execute cp ../../paver.sh ./
+    execute cp ../../paver.{conf,sh} ./
     # Populate the cache with the latest version so that we don't have to
     # download it.
     execute mkdir cache

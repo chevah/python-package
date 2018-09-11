@@ -116,6 +116,17 @@ OS=`cut -d' ' -f 3 DEFAULT_VALUES`
 ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 
 # List of OS packages required for building Python/pyOpenSSL/cryptography etc.
+# Lately we don't install anything automatically, we just check for the
+# presence of required packages on everything but AIX, HP-UX, macOS, OS X,
+# Solaris, Windows and generic Linux builds.
+# This build of Python / pyOpenSSL / cryptography / etc.  requires:
+# a C compiler, make, m4, libs and headers for OpenSSL / zlib / libffi,
+# git (for patching Python's version), patch (for applying our own patches),
+# and optionally texinfo (link texinfo to `true` if missing on your platform).
+# To build libedit for the readline module, we need the headers of
+# a curses library, automake and libtool.
+# On platforms with a choice of C compilers, you may choose among the
+# available compilers by setting CC and CXX further in this script.
 COMMON_PKGS="gcc make m4 automake libtool texinfo patch"
 COMMON_SLES_PKGS="$COMMON_PKGS git-core zlib-devel libffi-devel ncurses-devel"
 DEBIAN_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
@@ -138,18 +149,6 @@ case "$OS" in
         SLES_PKGS="$COMMON_SLES_PKGS libopenssl-devel"
         ;;
 esac
-
-# Lately we don't install anything automatically, we just check for the
-# presence of required packages on everything but AIX, HP-UX, macOS, OS X,
-# Solaris, Windows and generic Linux builds.
-# This build of Python / pyOpenSSL / cryptography / etc.  requires:
-# a C compiler, make, m4, libs and headers for OpenSSL / zlib / libffi,
-# git (for patching Python's version), patch (for applying our own patches),
-# and optionally texinfo (link texinfo to `true` if missing on your platform).
-# To build libedit for the readline module, we need the headers of
-# a curses library, automake and libtool.
-# On platforms with a choice of C compilers, you may choose among the
-# available compilers by setting CC and CXX further in this script.
 
 # In Solaris and AIX we use $ARCH to choose if we build a 32bit or 64bit
 # package. This way we are able to force a 32bit build on a 64bit machine,
@@ -343,7 +342,6 @@ case $OS in
         export MACOSX_DEPLOYMENT_TARGET=10.8
         # OS X 10.8 not supported by cryptography 1.9, so you'll normally use
         # 1.8.2, but cryptography 2.2.2 has a working wheel for MacOS 10.6+.
-        # It currently bundles OpenSSL 1.1.0h with cryptography 2.2.2.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
             pycryptodome==${PYCRYPTODOME_VERSION} \
@@ -387,7 +385,6 @@ case $OS in
     rhel5|sles11)
         # OS'es with OpenSSL 0.9.8 libs, older cryptography would be needed,
         # but upstream provides a Linux wheel that works, at least on SLES 11.
-        # It currently bundles OpenSSL 1.1.0h with cryptography 2.2.2.
         # Otherwise, just set PIP_LIBRARIES to PIP_LIBRARIES_OPENSSL_098.
         # Use PyCryptodome's wheel, as there are issues not solved upstream yet.
         PIP_LIBRARIES="\

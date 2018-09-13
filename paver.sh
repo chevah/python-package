@@ -640,6 +640,10 @@ detect_os() {
                     # Arch Linux is a rolling distro, no version info available.
                     OS="archlinux"
                     ;;
+                *)
+                    echo 'Unsupported Linux distribution:' $ID
+                    exit 15
+                    ;;
             esac
         fi
     elif [ "${OS}" = "darwin" ]; then

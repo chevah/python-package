@@ -174,8 +174,8 @@ def get_allowed_deps():
                 '/usr/lib/libffi.so.6',
                 '/usr/lib/libncursesw.so.6',
                 ]
-        else:
-            # Deps for generic Linux (currently Debian 7), sans paths.
+        elif ('debian' in chevah_os):
+            # Deps for Debian version 7, sans paths, to match all arches.
             allowed_deps=[
                 'libc.so.6',
                 'libcrypt.so.1',
@@ -183,8 +183,10 @@ def get_allowed_deps():
                 'libdl.so.2',
                 'libffi.so.5',
                 'libm.so.6',
+                'libncurses.so.5',
                 'libnsl.so.1',
                 'libpthread.so.0',
+                'libtinfo.so.5',
                 'libssl.so.1.0.0',
                 'libutil.so.1',
                 'libz.so.1',

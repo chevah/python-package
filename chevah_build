@@ -367,11 +367,6 @@ case $OS in
         export CXX="clang++"
         export BUILD_LIBFFI="yes"
         ;;
-    linux*)
-        # We don't compile libedit for generic Linux builds because it links
-        # to local ncurses libs and the result is not very portable.
-        export BUILD_LIBEDIT="no"
-        ;;
     sles11sm)
         # Use PyCryptodome's wheel, as there are issues not solved upstream yet.
         PIP_LIBRARIES="\
@@ -457,7 +452,7 @@ check_dependencies() {
 
     case $OS in
         # Debian-derived distros are similar in this regard.
-        ubuntu*|raspbian*)
+        ubuntu*|debian*|raspbian*)
             packages=$DEBIAN_PKGS
             check_command='dpkg --status'
             ;;

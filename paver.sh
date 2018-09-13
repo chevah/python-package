@@ -618,6 +618,12 @@ detect_os() {
                         echo "Unsupported Ubuntu, using generic Linux binaries!"
                     fi
                     ;;
+                "debian")
+                    os_version_raw="$VERSION_ID"
+                    check_os_version "$distro_fancy_name" 7 \
+                        "$os_version_raw" os_version_chevah
+                    OS="debian${os_version_chevah}"
+                    ;;
                 "raspbian")
                     os_version_raw="$VERSION_ID"
                     check_os_version "$distro_fancy_name" 7 \

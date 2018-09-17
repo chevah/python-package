@@ -875,8 +875,8 @@ command_test_compat() {
     execute rm -rf compat
     execute git clone https://github.com/chevah/compat.git --depth=1 -b master
     execute pushd compat
-    # Copy over the latest paver stuff, as some changes might require it.
-    execute cp ../../paver.{conf,sh} ./
+    # Copy over the latest paver.sh, as some changes might require it.
+    execute cp ../../paver.sh ./
     # We patch the Python version to match the one that we have just built
     # and copy it in cache so that it will be picked up by the new build.
     execute echo -e "\nPYTHON_CONFIGURATION=default@${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" >> paver.conf

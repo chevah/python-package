@@ -316,8 +316,8 @@ case $OS in
         # Don't use CFLAGS with native ld, it chokes on some parameters.
         # An alternative is LDSHARED="/opt/aCC/bin/aCC -b" with CC="aCC -Ae".
         # As little warnings as possible, HP's compilers generate lots.
-        # Force 32bit binaries (the OS default) and Position-Independent Code.
-        export CC="/opt/aCC/bin/cc -w +DD32 +z"
+        # Force 64bit, as needed for libffi. And Position-Independent Code.
+        export CC="/opt/aCC/bin/cc -w +DD64 +z"
         export CXX="/opt/aCC/bin/aCC"
         # Native make needed for parallel builds, use gmake where this breaks.
         export MAKE="make -P"

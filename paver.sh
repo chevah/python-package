@@ -227,12 +227,11 @@ pip_install() {
     # See https://github.com/pypa/pip/issues/3564
     rm -rf ${BUILD_FOLDER}/pip-build
     ${PYTHON_BIN} -m \
-        pip.__init__ install $1 \
+        pip install $1 \
             --trusted-host pypi.chevah.com \
             --index-url=$PIP_INDEX/simple \
             --build=${BUILD_FOLDER}/pip-build \
-            --cache-dir=${CACHE_FOLDER} \
-            --use-wheel
+            --cache-dir=${CACHE_FOLDER}
 
     exit_code=$?
     set -e

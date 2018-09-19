@@ -885,6 +885,7 @@ command_test_compat() {
     execute mkdir cache
     execute cp -r ../$LOCAL_PYTHON_BINARY_DIST cache/
     # Some tests might fail due to causes which are not related to python.
+    execute ./paver.sh deps
     execute ./paver.sh test_ci
     execute popd
 

@@ -20,7 +20,7 @@ GMP_VERSION="6.1.2"
 SQLITE_VERSION="3.23.1"
 PYSQLITE_VERSION="2.8.3"
 # These are used by get-pip.py.
-PIP_VERSION="18.0"
+PIP_VERSION="9.0.3"
 SETUPTOOLS_VERSION="39.0.1"
 
 # Python modules versions to be used everywhere possible.
@@ -62,7 +62,6 @@ EXTRA_LIBRARIES_NO_CFFI="\
 
 # List of python modules installed using pip
 PIP_LIBRARIES="\
-    pip==9.0.3 \
     setproctitle==${SETPROCTITLE_VERSION} \
     pycryptodome==${PYCRYPTODOME_VERSION} \
     cryptography==${CRYPTOGRAPHY_VERSION} \
@@ -77,7 +76,6 @@ PIP_LIBRARIES_WIN="$PIP_LIBRARIES \
 # cryptography 1.3.4 was last upstream version to support OpenSSL 0.9.8.
 # pyOpenSSL 16.0.0 was last upstream version to support OpenSSL 0.9.8.
 PIP_LIBRARIES_OPENSSL_098="\
-    pip==9.0.3 \
     setproctitle==${SETPROCTITLE_VERSION} \
     pycryptodome==${PYCRYPTODOME_VERSION} \
     cryptography==1.3.4 \
@@ -89,7 +87,6 @@ PIP_LIBRARIES_OPENSSL_098="\
 # the cffi-based OpenSSL bindings provided by the cryptography module.
 # pyOpenSSL 0.13.1, that fixes CVE-2013-4314, requires SSL_set_SSL_CTX.
 PIP_LIBRARIES_NO_CFFI="\
-    pip==9.0.3 \
     pyOpenSSL==0.13.1 \
     setproctitle==${SETPROCTITLE_VERSION} \
     scandir==${SCANDIR_VERSION} \

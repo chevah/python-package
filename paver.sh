@@ -227,12 +227,11 @@ pip_install() {
     # See https://github.com/pypa/pip/issues/3564
     rm -rf ${BUILD_FOLDER}/pip-build
     ${PYTHON_BIN} -m \
-        pip.__init__ install $1 \
+        pip install $1 \
             --trusted-host pypi.chevah.com \
             --index-url=$PIP_INDEX/simple \
             --build=${BUILD_FOLDER}/pip-build \
-            --cache-dir=${CACHE_FOLDER} \
-            --use-wheel
+            --cache-dir=${CACHE_FOLDER}
 
     exit_code=$?
     set -e
@@ -618,6 +617,12 @@ detect_os() {
                         echo "Unsupported Ubuntu, using generic Linux binaries!"
                     fi
                     ;;
+                "debian")
+                    os_version_raw="$VERSION_ID"
+                    check_os_version "$distro_fancy_name" 7 \
+                        "$os_version_raw" os_version_chevah
+                    OS="debian${os_version_chevah}"
+                    ;;
                 "raspbian")
                     os_version_raw="$VERSION_ID"
                     check_os_version "$distro_fancy_name" 7 \
@@ -633,6 +638,10 @@ detect_os() {
                 "arch")
                     # Arch Linux is a rolling distro, no version info available.
                     OS="archlinux"
+                    ;;
+                *)
+                    echo "Unsupported Linux distribution type: $linux_distro."
+                    exit 15
                     ;;
             esac
         fi

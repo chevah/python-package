@@ -227,12 +227,11 @@ pip_install() {
     # See https://github.com/pypa/pip/issues/3564
     rm -rf ${BUILD_FOLDER}/pip-build
     ${PYTHON_BIN} -m \
-        pip.__init__ install $1 \
+        pip install $1 \
             --trusted-host pypi.chevah.com \
             --index-url=$PIP_INDEX/simple \
             --build=${BUILD_FOLDER}/pip-build \
-            --cache-dir=${CACHE_FOLDER} \
-            --use-wheel
+            --cache-dir=${CACHE_FOLDER}
 
     exit_code=$?
     set -e
@@ -604,7 +603,7 @@ detect_os() {
             linux_distro="$ID"
             distro_fancy_name="$NAME"
             case "$linux_distro" in
-                "ubuntu")
+                "ubuntu"|"ubuntu-core")
                     os_version_raw="$VERSION_ID"
                     check_os_version "$distro_fancy_name" 14.04 \
                         "$os_version_raw" os_version_chevah
@@ -615,8 +614,15 @@ detect_os() {
                         $(( ${os_version_chevah%%04} % 2 )) -eq 0 ]; then
                         OS="ubuntu${os_version_chevah}"
                     else
-                        echo "Unsupported Ubuntu, using generic Linux binaries!"
+                        echo "Unsupported Ubuntu, please try a LTS version!"
+                        exit 16
                     fi
+                    ;;
+                "debian")
+                    os_version_raw="$VERSION_ID"
+                    check_os_version "$distro_fancy_name" 7 \
+                        "$os_version_raw" os_version_chevah
+                    OS="debian${os_version_chevah}"
                     ;;
                 "raspbian")
                     os_version_raw="$VERSION_ID"
@@ -633,6 +639,10 @@ detect_os() {
                 "arch")
                     # Arch Linux is a rolling distro, no version info available.
                     OS="archlinux"
+                    ;;
+                *)
+                    echo "Unsupported Linux distribution type: $linux_distro."
+                    exit 15
                     ;;
             esac
         fi

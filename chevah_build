@@ -378,11 +378,6 @@ case $OS in
         export CXX="clang++"
         export BUILD_LIBFFI="yes"
         ;;
-    linux*)
-        # We don't compile libedit for generic Linux builds because it links
-        # to local ncurses libs and the result is not very portable.
-        export BUILD_LIBEDIT="no"
-        ;;
     rhel5|sles11)
         # OS'es with OpenSSL 0.9.8 libs, older cryptography would be needed,
         # but upstream provides a Linux wheel that works, at least on SLES 11.
@@ -460,7 +455,7 @@ check_dependencies() {
 
     case $OS in
         # Debian-derived distros are similar in this regard.
-        ubuntu*|raspbian*)
+        ubuntu*|debian*|raspbian*)
             packages=$DEBIAN_PKGS
             check_command='dpkg --status'
             ;;

@@ -128,7 +128,7 @@ ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 # On platforms with a choice of C compilers, you may choose among the
 # available compilers by setting CC and CXX further in this script.
 COMMON_PKGS="gcc make m4 automake libtool texinfo patch"
-COMMON_SLES_PKGS="$COMMON_PKGS git-core zlib-devel libffi-devel ncurses-devel"
+COMMON_SLES_PKGS="$COMMON_PKGS git-core zlib-devel ncurses-devel"
 DEBIAN_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
 RHEL_PKGS="$COMMON_PKGS git openssl-devel zlib-devel libffi-devel ncurses-devel"
 ALPINE_PKGS="\

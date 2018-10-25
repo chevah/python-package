@@ -603,7 +603,7 @@ detect_os() {
             linux_distro="$ID"
             distro_fancy_name="$NAME"
             case "$linux_distro" in
-                "ubuntu")
+                "ubuntu"|"ubuntu-core")
                     os_version_raw="$VERSION_ID"
                     check_os_version "$distro_fancy_name" 14.04 \
                         "$os_version_raw" os_version_chevah
@@ -614,7 +614,8 @@ detect_os() {
                         $(( ${os_version_chevah%%04} % 2 )) -eq 0 ]; then
                         OS="ubuntu${os_version_chevah}"
                     else
-                        echo "Unsupported Ubuntu, using generic Linux binaries!"
+                        echo "Unsupported Ubuntu, please try a LTS version!"
+                        exit 16
                     fi
                     ;;
                 "debian")

@@ -114,12 +114,24 @@ OS=`cut -d' ' -f 3 DEFAULT_VALUES`
 ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 
 # List of OS packages required for building Python/pyOpenSSL/cryptography etc.
-COMMON_PKGS="gcc make m4 automake libtool texinfo git patch"
-COMMON_SLES_PKGS="$COMMON_PKGS zlib-devel ncurses-devel"
-DEBIAN_PKGS="$COMMON_PKGS libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
-RHEL_PKGS="$COMMON_PKGS openssl-devel zlib-devel libffi-devel ncurses-devel"
-ALPINE_PKGS="$COMMON_PKGS libc-dev libressl-dev zlib-dev libffi-dev ncurses-dev"
-ARCH_PKGS="$COMMON_PKGS libffi ncurses"
+# Lately we don't install anything automatically, we just check for the
+# presence of required packages on everything but AIX, HP-UX, macOS, OS X,
+# Solaris, Windows and generic Linux builds.
+# This build of Python / pyOpenSSL / cryptography / etc.  requires:
+# a C compiler, make, m4, libs and headers for OpenSSL / zlib / libffi,
+# git (for patching Python's version), patch (for applying our own patches),
+# and optionally texinfo (link texinfo to `true` if missing on your platform).
+# To build libedit for the readline module, we need the headers of
+# a curses library, automake and libtool.
+# On platforms with a choice of C compilers, you may choose among the
+# available compilers by setting CC and CXX further in this script.
+COMMON_PKGS="gcc make m4 automake libtool texinfo patch"
+COMMON_SLES_PKGS="$COMMON_PKGS git-core zlib-devel ncurses-devel"
+DEBIAN_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
+RHEL_PKGS="$COMMON_PKGS git openssl-devel zlib-devel libffi-devel ncurses-devel"
+ALPINE_PKGS="\
+    $COMMON_PKGS git libc-dev libressl-dev zlib-dev libffi-dev ncurses-dev"
+ARCH_PKGS="$COMMON_PKGS git libffi ncurses"
 case "$OS" in
     rhel5)
         RHEL_PKGS="$RHEL_PKGS automake15"
@@ -135,18 +147,6 @@ case "$OS" in
         SLES_PKGS="$COMMON_SLES_PKGS libopenssl-devel"
         ;;
 esac
-
-# Lately we don't install anything automatically, we just check for the
-# presence of required packages on everything but AIX, HP-UX, macOS, OS X,
-# Solaris, Windows and generic Linux builds.
-# This build of Python / pyOpenSSL / cryptography / etc.  requires:
-# a C compiler, make, m4, libs and headers for OpenSSL / zlib / libffi,
-# git (for patching Python's version), patch (for applying our own patches),
-# and optionally texinfo (link texinfo to `true` if missing on your platform).
-# To build libedit for the readline module, we need the headers of
-# a curses library, automake and libtool.
-# On platforms with a choice of C compilers, you may choose among the
-# available compilers by setting CC and CXX further in this script.
 
 # In Solaris and AIX we use $ARCH to choose if we build a 32bit or 64bit
 # package. This way we are able to force a 32bit build on a 64bit machine,
@@ -486,7 +486,7 @@ check_dependencies() {
             # check that the expected version is installed, as hardcoded below.
             homebrew_openssl_version=`brew list --versions openssl`
             if [[ $homebrew_openssl_version != "openssl 1.0.2"* ]]; then
-                echo "Unsupported OpenSSL version: $homebrew_openssl_version"
+                (>&2 echo "Unsupported version: $homebrew_openssl_version")
                 exit 102
             fi
             # But we also check for the required commands, as for below OS'es.
@@ -523,7 +523,7 @@ check_dependencies() {
     fi
 
     if [ -n "$missing_packages" ]; then
-        echo "Sorry, following dependencies were not found: $missing_packages."
+        (>&2 echo "Missing required dependencies: $missing_packages.")
         exit 101
     fi
     if [ -n "$packages" ]; then

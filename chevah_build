@@ -485,7 +485,7 @@ check_dependencies() {
             # check that the expected version is installed, as hardcoded below.
             homebrew_openssl_version=`brew list --versions openssl`
             if [[ $homebrew_openssl_version != "openssl 1.0.2"* ]]; then
-                echo "Unsupported OpenSSL version: $homebrew_openssl_version"
+                (>&2 echo "Unsupported version: $homebrew_openssl_version")
                 exit 102
             fi
             # But we also check for the required commands, as for below OS'es.
@@ -522,7 +522,7 @@ check_dependencies() {
     fi
 
     if [ -n "$missing_packages" ]; then
-        echo "Sorry, following dependencies were not found: $missing_packages."
+        (>&2 echo "Missing required dependencies: $missing_packages.")
         exit 101
     fi
     if [ -n "$packages" ]; then

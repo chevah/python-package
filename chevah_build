@@ -367,7 +367,13 @@ case $OS in
         export CXX="clang++"
         export BUILD_LIBFFI="yes"
         ;;
+    sles12)
+        # SLES's libffi headers from SDK do not match default-available package.
+        export BUILD_LIBFFI="yes"
+        ;;
     sles11sm)
+        # SLES's libffi headers from SDK do not match default-available package.
+        export BUILD_LIBFFI="yes"
         # Use PyCryptodome's wheel, as there are issues not solved upstream yet.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
@@ -378,6 +384,8 @@ case $OS in
             "
         ;;
     rhel5|sles11)
+        # SLES's libffi headers from SDK do not match default-available package.
+        export BUILD_LIBFFI="yes"
         # OS'es with OpenSSL 0.9.8 libs, older cryptography would be needed,
         # but upstream provides a Linux wheel that works, at least on SLES 11.
         # Otherwise, just set PIP_LIBRARIES to PIP_LIBRARIES_OPENSSL_098.

@@ -115,7 +115,7 @@ ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 
 # List of OS packages required for building Python/pyOpenSSL/cryptography etc.
 COMMON_PKGS="gcc make m4 automake libtool texinfo git patch"
-COMMON_SLES_PKGS="$COMMON_PKGS zlib-devel libffi-devel ncurses-devel"
+COMMON_SLES_PKGS="$COMMON_PKGS zlib-devel ncurses-devel"
 DEBIAN_PKGS="$COMMON_PKGS libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
 RHEL_PKGS="$COMMON_PKGS openssl-devel zlib-devel libffi-devel ncurses-devel"
 ALPINE_PKGS="$COMMON_PKGS libc-dev libressl-dev zlib-dev libffi-dev ncurses-dev"
@@ -378,7 +378,13 @@ case $OS in
         export CXX="clang++"
         export BUILD_LIBFFI="yes"
         ;;
+    sles11sm|sles12)
+        # SLES's libffi headers from SDK do not match default-available package.
+        export BUILD_LIBFFI="yes"
+        ;;
     rhel5|sles11)
+        # SLES's libffi headers from SDK do not match default-available package.
+        export BUILD_LIBFFI="yes"
         # OS'es with OpenSSL 0.9.8 libs, older cryptography would be needed,
         # but upstream provides a Linux wheel that works, at least on SLES 11.
         # It currently bundles OpenSSL 1.1.0h with cryptography 2.2.2.

@@ -69,7 +69,6 @@ def get_allowed_deps():
                 '/lib64/libpthread.so.0',
                 '/lib64/libutil.so.1',
                 '/lib64/libz.so.1',
-                '/usr/lib64/libffi.so.6',
                 ]
             if sles_version == "11":
                 allowed_deps.extend([

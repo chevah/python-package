@@ -128,7 +128,7 @@ ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 # On platforms with a choice of C compilers, you may choose among the
 # available compilers by setting CC and CXX further in this script.
 COMMON_PKGS="gcc make m4 automake libtool texinfo patch"
-COMMON_SLES_PKGS="$COMMON_PKGS git-core zlib-devel libffi-devel ncurses-devel"
+COMMON_SLES_PKGS="$COMMON_PKGS git-core zlib-devel ncurses-devel"
 DEBIAN_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
 RHEL_PKGS="$COMMON_PKGS git openssl-devel zlib-devel libffi-devel ncurses-devel"
 ALPINE_PKGS="\
@@ -367,7 +367,13 @@ case $OS in
         export CXX="clang++"
         export BUILD_LIBFFI="yes"
         ;;
+    sles12)
+        # SLES's libffi headers from SDK do not match default-available package.
+        export BUILD_LIBFFI="yes"
+        ;;
     sles11sm)
+        # SLES's libffi headers from SDK do not match default-available package.
+        export BUILD_LIBFFI="yes"
         # Use PyCryptodome's wheel, as there are issues not solved upstream yet.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
@@ -378,6 +384,8 @@ case $OS in
             "
         ;;
     rhel5|sles11)
+        # SLES's libffi headers from SDK do not match default-available package.
+        export BUILD_LIBFFI="yes"
         # OS'es with OpenSSL 0.9.8 libs, older cryptography would be needed,
         # but upstream provides a Linux wheel that works, at least on SLES 11.
         # Otherwise, just set PIP_LIBRARIES to PIP_LIBRARIES_OPENSSL_098.
@@ -477,7 +485,7 @@ check_dependencies() {
             # check that the expected version is installed, as hardcoded below.
             homebrew_openssl_version=`brew list --versions openssl`
             if [[ $homebrew_openssl_version != "openssl 1.0.2"* ]]; then
-                echo "Unsupported OpenSSL version: $homebrew_openssl_version"
+                (>&2 echo "Unsupported version: $homebrew_openssl_version")
                 exit 102
             fi
             # But we also check for the required commands, as for below OS'es.
@@ -514,7 +522,7 @@ check_dependencies() {
     fi
 
     if [ -n "$missing_packages" ]; then
-        echo "Sorry, following dependencies were not found: $missing_packages."
+        (>&2 echo "Missing required dependencies: $missing_packages.")
         exit 101
     fi
     if [ -n "$packages" ]; then

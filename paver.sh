@@ -641,7 +641,7 @@ detect_os() {
                     OS="archlinux"
                     ;;
                 *)
-                    echo "Unsupported Linux distribution type: $linux_distro."
+                    echo "Unsupported Linux distribution: $distro_fancy_name."
                     exit 15
                     ;;
             esac

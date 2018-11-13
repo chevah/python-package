@@ -640,8 +640,14 @@ detect_os() {
                     # Arch Linux is a rolling distro, no version info available.
                     OS="archlinux"
                     ;;
+                "amzn")
+                    os_version_raw="$VERSION_ID"
+                    check_os_version "$distro_fancy_name" 2 \
+                        "$os_version_raw" os_version_chevah
+                    OS="amazon${os_version_chevah}"
+                    ;;
                 *)
-                    echo "Unsupported Linux distribution type: $linux_distro."
+                    echo "Unsupported Linux distribution: $distro_fancy_name."
                     exit 15
                     ;;
             esac

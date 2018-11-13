@@ -465,7 +465,7 @@ check_dependencies() {
             packages=$DEBIAN_PKGS
             check_command='dpkg --status'
             ;;
-        rhel*)
+        rhel*|amazon*)
             packages=$RHEL_PKGS
             check_command='rpm --query'
             ;;

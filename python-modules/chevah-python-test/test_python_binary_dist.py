@@ -56,6 +56,31 @@ def get_allowed_deps():
                     '/lib64/libpcre.so.1',
                     '/lib64/libssl.so.10',
                     ])
+        elif ('amazon' in chevah_os):
+            # Deps for Amazon Linux 2 (x86_64 only).
+            allowed_deps=[
+                '/lib64/libcom_err.so.2',
+                '/lib64/libcrypto.so.10',
+                '/lib64/libcrypt.so.1',
+                '/lib64/libc.so.6',
+                '/lib64/libdl.so.2',
+                '/lib64/libffi.so.6',
+                '/lib64/libgssapi_krb5.so.2',
+                '/lib64/libk5crypto.so.3',
+                '/lib64/libkeyutils.so.1',
+                '/lib64/libkrb5.so.3',
+                '/lib64/libkrb5support.so.0',
+                '/lib64/libm.so.6',
+                '/lib64/libncursesw.so.6',
+                '/lib64/libpcre.so.1',
+                '/lib64/libpthread.so.0',
+                '/lib64/libresolv.so.2',
+                '/lib64/libselinux.so.1',
+                '/lib64/libssl.so.10',
+                '/lib64/libtinfo.so.6',
+                '/lib64/libutil.so.1',
+                '/lib64/libz.so.1',
+                ]
         elif ('sles' in chevah_os):
             sles_version = chevah_os[4:]
             # Common deps for SLES 11, 11SM and 12 w/ full paths (x86_64 only).

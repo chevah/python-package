@@ -678,7 +678,7 @@ def main():
         from OpenSSL import SSL, crypto, rand, __version__ as pyopenssl_version
         crypto
         rand
-        print 'pyopenssl %s - OpenSSL %s' % (
+        print 'pyOpenSSL %s - OpenSSL %s' % (
             pyopenssl_version,
             SSL.SSLeay_version(SSL.SSLEAY_VERSION),
             )
@@ -687,11 +687,11 @@ def main():
         exit_code = 3
 
     try:
-        import Crypto
-        pycrypto_version = Crypto.__version__
-        print 'PyCryptodome %s' % (pycrypto_version)
+        import Cryptodome
+        pycryptodomex_version = Cryptodome.__version__
+        print 'PyCryptodomex %s' % (pycryptodomex_version)
     except:
-        sys.stderr.write('"PyCryptodome" missing.\n')
+        sys.stderr.write('"PyCryptodomex" missing.\n')
         exit_code = 4
 
     try:

@@ -149,7 +149,7 @@ chevahbs_configure() {
             echo "Skip configure on Windows."
             ;;
         *)
-            execute ./configure --prefix="" $CONFIG_ARGS
+            execute eval $CONF_VARS ./configure --prefix="" $CONFIG_ARGS
             # These files are already created in the Python distribution,
             # but for some strange reason, make tries to recreate them.
             # We just touch them so that make will see them up to date.

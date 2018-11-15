@@ -27,9 +27,10 @@ chevahbs_configure() {
         hpux*)
             # Parallel builds frequently fail for GMP, so we use gmake here.
             MAKE="gmake"
+            unset CFLAGS
             ;;
     esac
-    execute ./configure --prefix="" $CONF_OPTS
+    execute eval $CONF_VARS ./configure --prefix="" $CONF_OPTS
 }
 
 

@@ -9,6 +9,8 @@
 
 
 chevahbs_configure() {
+    # We want only static build so that we don't have to mess with LIBPATH.
+    CONF_OPTS='--prefix="" --disable-shared --enable-static'
     case $OS in
         solaris10u3)
             # On some exotic platforms libffi only compiles with GCC.
@@ -17,24 +19,11 @@ chevahbs_configure() {
             MAKE="gmake"
             unset CFLAGS
             ;;
-    esac
-    # We want only static build so that we don't have to mess with LIBPATH.
-    case $OS in
         hpux*)
-            # Complements patch from https://github.com/libffi/libffi/issues/328
+            # Needed patch: https://github.com/libffi/libffi/issues/328.
             MAKE="gmake"
-            CC="/opt/aCC/bin/aCC -Ae -w"
-            LDSHARED="/opt/aCC/bin/aCC -b"
-            CFLAGS="+DD64 +Ofaster +Otype_safety=ansi -Agcc" \
-            HAVE_LONG_DOUBLE=1 \
-            ac_cv_c_compiler_gnu=no \
-            ac_cv_cflags_warn_all=no \
-            execute ./configure --prefix="" --disable-shared --enable-static
-            ;;
-        *)
-            execute ./configure --prefix="" --disable-shared --enable-static
-            ;;
-     esac
+    esac
+    execute eval "$CONF_VARS" ./configure $CONF_OPTS
 }
 
 

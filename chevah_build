@@ -317,8 +317,13 @@ case $OS in
         # An alternative is LDSHARED="/opt/aCC/bin/aCC -b" with CC="aCC -Ae".
         # As little warnings as possible, HP's compilers generate lots.
         # Force 64bit, as needed for libffi. And Position-Independent Code.
-        export CC="/opt/aCC/bin/cc -w +DD64 +z"
+        export CC="/opt/aCC/bin/aCC -Ae -w +DD64 +z"
         export CXX="/opt/aCC/bin/aCC"
+        export LDSHARED="/opt/aCC/bin/aCC -b"
+        export CFLAGS="+Ofaster +Otype_safety=strong -Agcc"
+        # Special variables for ./configure to spare the compiler of some stuff.
+        export CONF_VARS="ac_cv_c_compiler_gnu=no ac_cv_cflags_warn_all=no"
+        export HAVE_LONG_DOUBLE=1
         # Native make needed for parallel builds, use gmake where this breaks.
         export MAKE="make -P"
         # Even though we don't use CFFI, libffi is needed to build _ctypes,

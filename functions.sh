@@ -306,3 +306,21 @@ aix_ld_hack() {
             ;;
     esac
 }
+
+#
+# Safety DB IDs to be ignored when using pyOpenSSL older than 17.5.0.
+#
+add_ignored_safety_ids_for_pyopenssl_pre17_5_0() {
+    # ID 36533: Python Cryptographic Authority pyopenssl version prior to
+    #     version 17.5.0 contains a CWE-416: Use After Freevulnerability
+    #     in X509 object handling that can result in Use after free can
+    #     lead to possible denial of service or remote code execution.
+    #     This attack appear to be exploitable via Depends on the calling
+    #     application and if it retains a reference to the memory..
+    #     This vulnerability appears to have been fixed in 17.5.0.
+    # ID 36534: Python Cryptographic Authority pyopenssl version Before
+    #     17.5.0 contains a CWE - 401 : Failure to Release Memory Before
+    #     Removing Last Reference vulnerability in PKCS #12 Store that can
+    #     result in Denial of service if memory  runs low or is exhausted.
+    SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 36533 -i 36534"
+}

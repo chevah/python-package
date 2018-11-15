@@ -26,6 +26,11 @@ SETUPTOOLS_VERSION="39.0.1"
 # Python modules versions to be used everywhere possible.
 CFFI_VERSION="1.11.5"
 PYCRYPTO_VERSION="2.6.1"
+# ID 35015: Heap-based buffer overflow in the ALGnew function in
+#     block_templace.c in Python Cryptography Toolkit (aka pycrypto) 2.6.1
+#     allows remote attackers to execute arbitrary code as demonstrated by
+#     a crafted iv parameter to cryptmsg.py.
+SAFETY_IGNORED_OPTS="-i 35015"
 PYCRYPTODOMEX_VERSION="3.6.6"
 PYOPENSSL_VERSION="17.5.0"
 CRYPTOGRAPHY_VERSION="2.3.1"
@@ -251,6 +256,7 @@ case $OS in
             # SSL_CTX_set_next_proto_select_cb: referenced symbol not found".
             # cryptography 0.3 doesn't build on Solaris 10, so we are stuck.
             export BUILD_CFFI="no"
+            add_ignored_safety_ids_for_pyopenssl_pre17_5_0
             PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
             EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         else
@@ -265,8 +271,10 @@ case $OS in
                 # 1.8.2 was last version to build without Elliptic-curve crypto,
                 # as this is missing from OpenSSL 1.0.1 libs in Solaris 11.2.
                 # pyOpenSSL 17.0.0, last version to support cryptography 1.8.2.
+                add_ignored_safety_ids_for_pyopenssl_pre17_5_0
                 PIP_LIBRARIES="\
                     setproctitle==${SETPROCTITLE_VERSION} \
+                    pycrypto==${PYCRYPTO_VERSION} \
                     pycryptodomex==${PYCRYPTODOMEX_VERSION} \
                     cryptography==1.8.2 \
                     pyOpenSSL==17.0.0 \
@@ -276,11 +284,14 @@ case $OS in
             if [ ! -f /usr/include/openssl/cmac.h ]; then
                 # 1.6 still supported OpenSSL 1.0.0, the default in 11.0/11.1.
                 # Watch out for errors related to "-Wconversion".
+                # pyOpenSSL 17.0.0, last version to support OpenSSL 1.0.0.
+                add_ignored_safety_ids_for_pyopenssl_pre17_5_0
                 PIP_LIBRARIES="\
                     setproctitle==${SETPROCTITLE_VERSION} \
+                    pycrypto==${PYCRYPTO_VERSION} \
                     pycryptodomex==${PYCRYPTODOMEX_VERSION} \
                     cryptography==1.6 \
-                    pyOpenSSL==${PYOPENSSL_VERSION} \
+                    pyOpenSSL==17.0.0 \
                     scandir==${SCANDIR_VERSION} \
                     "
             fi
@@ -310,6 +321,7 @@ case $OS in
             export BUILD_CFFI="no"
             # If latest setproctitle fails, look in the history of this repo
             # for python-modules/python-setproctitle-1.1.8.dev0 for extra libs.
+            add_ignored_safety_ids_for_pyopenssl_pre17_5_0
             PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
             EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         fi
@@ -332,6 +344,7 @@ case $OS in
         # CFFI/cryptography build on HP-UX, but libffi breaks for CFFI. More at
         # https://bitbucket.org/cffi/cffi/issues/368/segmentation-fault-in-hp-ux
         export BUILD_CFFI="no"
+        add_ignored_safety_ids_for_pyopenssl_pre17_5_0
         PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         # libedit requires __STDC_ISO_10646__.
@@ -348,6 +361,7 @@ case $OS in
         # 1.8.2, but cryptography 2.2.2 has a working wheel for MacOS 10.6+.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
+            pycrypto==${PYCRYPTO_VERSION} \
             pycryptodomex==${PYCRYPTODOMEX_VERSION} \
             cryptography==${CRYPTOGRAPHY_VERSION}upstream \
             pyOpenSSL==${PYOPENSSL_VERSION} \
@@ -381,6 +395,7 @@ case $OS in
         # Use PyCryptodome's wheel, as there are issues not solved upstream yet.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
+            pycrypto==${PYCRYPTO_VERSION} \
             pycryptodomex==${PYCRYPTODOMEX_VERSION}upstream \
             cryptography==${CRYPTOGRAPHY_VERSION} \
             pyOpenSSL==${PYOPENSSL_VERSION} \
@@ -396,6 +411,7 @@ case $OS in
         # Use PyCryptodomex' wheel, as there are issues not solved upstream yet.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
+            pycrypto==${PYCRYPTO_VERSION} \
             pycryptodomex==${PYCRYPTODOMEX_VERSION}upstream \
             cryptography==${CRYPTOGRAPHY_VERSION}upstream \
             pyOpenSSL==${PYOPENSSL_VERSION} \
@@ -404,6 +420,7 @@ case $OS in
         ;;
     sles10)
         export BUILD_CFFI="no"
+        add_ignored_safety_ids_for_pyopenssl_pre17_5_0
         PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
@@ -821,13 +838,9 @@ command_test() {
     echo '##### Testing for outdated packages and security issues... #####'
     execute $PYTHON_BIN -m pip list --outdated --format=columns
     execute $PYTHON_BIN -m pip install $PIP_ARGS safety
-    execute $PYTHON_BIN -m safety check --full-report --ignore 35015
-    # ID 35015: Heap-based buffer overflow in the ALGnew function in
-    #     block_templace.c inPython Cryptography Toolkit (aka pycrypto) 2.6.1
-    #     allows remote attackers to execute arbitrary code as demonstrated by
-    #     a crafted iv parameter to cryptmsg.py
-    (>&2 echo 'ATTENTION!')
-    (>&2 echo 'PyCrypto 2.6.1 was excepted from these checks.')
+    execute $PYTHON_BIN -m safety check --full-report $SAFETY_IGNORED_OPTS
+    (>&2 echo "ATTENTION! Following Safety DB IDs were excepted from checks:")
+    (>&2 echo -e "\t$SAFETY_IGNORED_OPTS")
 
     echo '##### Executing tests for included Python modules... #####'
 

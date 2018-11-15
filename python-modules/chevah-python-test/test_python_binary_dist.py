@@ -687,12 +687,20 @@ def main():
         exit_code = 3
 
     try:
+        import Crypto
+        pycrypto_version = Crypto.__version__
+        print 'PyCrypto %s' % (pycrypto_version)
+    except:
+        sys.stderr.write('"PyCrypto" missing.\n')
+        exit_code = 4
+
+    try:
         import Cryptodome
         pycryptodomex_version = Cryptodome.__version__
         print 'PyCryptodomex %s' % (pycryptodomex_version)
     except:
         sys.stderr.write('"PyCryptodomex" missing.\n')
-        exit_code = 4
+        exit_code = 11
 
     try:
         from ctypes import CDLL

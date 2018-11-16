@@ -57,10 +57,13 @@ export BUILD_LIBEDIT="yes"
 export BUILD_GMP="yes"
 export BUILD_LIBFFI="no"
 export BUILD_CFFI="yes"
+
+# Patches for libs in "python-modules/" should reside in a unified diff named
+# "python-modules/lib-${LIB_VERSION}.patch" to be applied when needed during
+# the build. See the diff file for Python 2.6.1 for an example.
 EXTRA_LIBRARIES="\
     python-modules/cffi-${CFFI_VERSION} \
     "
-
 # Libraries for legacy systems not built around cffi and pip.
 EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/pycrypto-${PYCRYPTO_VERSION} \
@@ -744,6 +747,13 @@ command_build_python_extra_libraries() {
         version_folder=${library#*/}
         target_folder=${BUILD_FOLDER}/$version_folder
 
+        # Patch the sources if there's a patch file with the right name.
+        if [ -f "$library".patch ]; then
+            echo "Applying patch: ${library}.patch"
+            execute pushd "$library"
+                execute patch -p1 < ../../"$library".patch
+            execute popd
+        fi
         initialize_python_module $library $target_folder
 
         execute pushd $target_folder

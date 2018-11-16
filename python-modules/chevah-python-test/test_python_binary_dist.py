@@ -696,10 +696,10 @@ def main():
 
     try:
         import Cryptodome
-        pycryptodomex_version = Cryptodome.__version__
-        print 'PyCryptodomex %s' % (pycryptodomex_version)
+        pycryptodome_version = Cryptodome.__version__
+        print 'PyCryptodome %s' % (pycryptodome_version)
     except:
-        sys.stderr.write('"PyCryptodomex" missing.\n')
+        sys.stderr.write('"PyCryptodome" missing.\n')
         exit_code = 11
 
     try:

@@ -860,8 +860,9 @@ command_test() {
     execute $PYTHON_BIN -m pip list --outdated --format=columns
     execute $PYTHON_BIN -m pip install $PIP_ARGS safety
     execute $PYTHON_BIN -m safety check --full-report $SAFETY_IGNORED_OPTS
+    SAFETY_IGNORED_IDS="$(echo $SAFETY_IGNORED_OPTS | sed s/\-i\ //g)"
     (>&2 echo "ATTENTION! Following Safety DB IDs were excepted from checks:")
-    (>&2 echo -e "\t$SAFETY_IGNORED_OPTS")
+    (>&2 echo -e "\t${SAFETY_IGNORED_IDS}")
 
     echo '##### Executing tests for included Python modules... #####'
 

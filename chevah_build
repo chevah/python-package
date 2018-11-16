@@ -219,6 +219,17 @@ case $OS in
         export BUILD_LIBFFI="yes"
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
+
+        # PyCrypto 2.6.1 needs patching to build in AIX, so we build it
+        # from EXTRA_LIBRARIES, and define PIP_LIBRARIES without it.
+        EXTRA_LIBRARIES="python-modules/pycrypto-${PYCRYPTO_VERSION}"
+        PIP_LIBRARIES="\
+            setproctitle==${SETPROCTITLE_VERSION} \
+            pycryptodomex==${PYCRYPTODOMEX_VERSION} \
+            cryptography==${CRYPTOGRAPHY_VERSION} \
+            pyOpenSSL==${PYOPENSSL_VERSION} \
+            scandir==${SCANDIR_VERSION} \
+        "
         ;;
     solaris*)
         # By default, we use Sun's Studio compiler. Comment these two for GCC.

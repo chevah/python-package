@@ -1,0 +1,63 @@
+diff -Naur pycrypto-2.6.1/configure pycrypto-2.6.1/configure
+--- pycrypto-2.6.1/configure	Tue Oct 15 00:38:10 2013
++++ pycrypto-2.6.1/configure	Thu Nov 15 11:31:25 2018
+@@ -3828,6 +3828,7 @@
+ 
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for GNU libc compatible malloc" >&5
+ $as_echo_n "checking for GNU libc compatible malloc... " >&6; }
++ac_cv_func_malloc_0_nonnull=yes
+ if ${ac_cv_func_malloc_0_nonnull+:} false; then :
+   $as_echo_n "(cached) " >&6
+ else
+diff -Naur pycrypto-2.6.1/setup.py pycrypto-2.6.1/setup.py
+--- pycrypto-2.6.1/setup.py	Tue Oct 15 00:38:10 2013
++++ pycrypto-2.6.1/setup.py	Thu Nov 15 11:31:25 2018
+@@ -118,9 +118,13 @@
+             self.__add_compiler_option("-std=c99")
+ 
+             # ... but don't tell that to the aCC compiler on HP-UX
+-            if self.compiler.compiler_so[0] == 'cc' and sys.platform.startswith('hp-ux'):
++            if not 'gcc' in self.compiler.compiler_so[0] and sys.platform.startswith('hp-ux'):
+                 self.__remove_compiler_option("-std=c99")
+ 
++            # Or on AIX.
++            if sys.platform.startswith('aix'):
++                self.__remove_compiler_option("-std=c99")
++
+             # Make assert() statements always work
+             self.__remove_compiler_option("-DNDEBUG")
+ 
+@@ -134,8 +138,19 @@
+             else:
+                 # Speed up execution by tweaking compiler options.  This
+                 # especially helps the DES modules.
+-                self.__add_compiler_option("-O3")
+-                self.__add_compiler_option("-fomit-frame-pointer")
++                if sys.platform.startswith('aix'):
++                    self.__add_compiler_option("-D_LARGE_FILES")
++                    self.__add_compiler_option("-D_LARGE_FILE_API")
++                else:
++                    self.__add_compiler_option("-O3")
++                    self.__add_compiler_option("-fomit-frame-pointer")
++
++            # Chevah stuff.
++            if not 'gcc' in self.compiler.compiler_so[0] and sys.platform.startswith('hp-ux'):
++                self.__remove_compiler_option("-fomit-frame-pointer")
++            if not 'gcc' in self.compiler.compiler_so[0] and sys.platform.startswith('sunos'):
++                self.__remove_compiler_option("-fomit-frame-pointer")
++
+                 # Don't include debug symbols unless debugging
+                 self.__remove_compiler_option("-g")
+                 # Don't include profiling information (incompatible with
+diff -Naur pycrypto-2.6.1/src/hash_SHA2.h pycrypto-2.6.1/src/hash_SHA2.h
+--- pycrypto-2.6.1/src/hash_SHA2.h	Tue Oct 15 00:38:10 2013
++++ pycrypto-2.6.1/src/hash_SHA2.h	Thu Nov 15 11:31:25 2018
+@@ -77,7 +77,7 @@
+ typedef unsigned char		U8;
+ typedef unsigned __int64	U64;
+ typedef unsigned int		U32;
+-#elif defined(__sun) || defined(__sun__)
++#elif defined(__sun) || defined(__sun__) || defined(_AIX)
+ #include <sys/inttypes.h>
+ typedef uint8_t				U8;
+ typedef uint32_t			U32;

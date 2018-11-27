@@ -383,11 +383,13 @@ case $OS in
             "
         ;;
     macos*)
-        # On macOS 10.12 or newer we need the Homebrew version of OpenSSL,
-        # as Apple only provides an old OpenSSL version: 0.9.8.
         export CC="clang"
         export CXX="clang++"
-        # The location of the Homebrew OpenSSL libs and include directories.
+        # No zlib headers on macOS 10.14.
+        export BUILD_ZLIB="yes"
+        # Up to macOS 10.12, Apple only provides OpenSSL version 0.9.8zh.
+        # macOS 10.13 and newer come with LibreSSL, not clear if maintained.
+        # Therefore, we require Homebrew's OpenSSL libs, located as follows.
         export LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"
         export CPPFLAGS="$CPPFLAGS -I/usr/local/opt/openssl/include"
         # setup.py skips building readline by default, as it sets this to

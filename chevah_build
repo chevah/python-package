@@ -33,7 +33,7 @@ PYCRYPTO_VERSION="2.6.1"
 SAFETY_IGNORED_OPTS="-i 35015"
 PYCRYPTODOMEX_VERSION="3.6.6"
 PYOPENSSL_VERSION="17.5.0"
-CRYPTOGRAPHY_VERSION="2.3.1"
+CRYPTOGRAPHY_VERSION="2.4.2"
 SETPROCTITLE_VERSION="1.1.10"
 SCANDIR_VERSION="1.9.0"
 GMPY2_VERSION="2.0.8"
@@ -277,14 +277,6 @@ case $OS in
             # Only cryptography 2.4+ builds with Studio's CC unpatched.
             # If there are errors related to "-Wconversion" on older versions,
             # use the diff from https://github.com/pyca/cryptography/pull/4545.
-            PIP_LIBRARIES="\
-                setproctitle==${SETPROCTITLE_VERSION} \
-                pycrypto==${PYCRYPTO_VERSION} \
-                pycryptodomex==${PYCRYPTODOMEX_VERSION} \
-                cryptography==2.4.2 \
-                pyOpenSSL==${PYOPENSSL_VERSION} \
-                scandir==${SCANDIR_VERSION} \
-                "
             # cryptography needs EC crypto, enabled in 11.3 SRU19 and newer.
             if [ ! -f /usr/include/openssl/ecdh.h ]; then
                 # 1.8.2 was last version to build without Elliptic-curve crypto,

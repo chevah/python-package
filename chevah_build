@@ -219,7 +219,6 @@ case $OS in
         export BUILD_LIBFFI="yes"
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
-
         # PyCrypto 2.6.1 needs patching to build in AIX, so we build it
         # from EXTRA_LIBRARIES, and define PIP_LIBRARIES without it.
         EXTRA_LIBRARIES="python-modules/pycrypto-${PYCRYPTO_VERSION}"
@@ -274,13 +273,19 @@ case $OS in
             PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
             EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         else
-            if [ ${ARCH} = "sparc" ]; then
-                # There's a problem with linking readline in 11.2 for SPARC.
-                export BUILD_LIBEDIT="no"
-            fi
-            # Latest cryptography needs EC crypto, enabled in 11.3 SRU19 and
-            # newer. Also, latest versions don't build with Studio's CC.
-            # https://git.io/fAR2P to be upstreamed after upgrading to 11.3.
+            # Solaris 11 is much more modern, but still has some quirks.
+            # For some reason system libffi is not found in Solaris 11.4.
+            export BUILD_LIBFFI="yes"
+            # Only cryptography 2.4+ build with Studio's CC with no changes.
+            PIP_LIBRARIES="\
+                setproctitle==${SETPROCTITLE_VERSION} \
+                pycrypto==${PYCRYPTO_VERSION} \
+                pycryptodomex==${PYCRYPTODOMEX_VERSION} \
+                cryptography==2.4.2 \
+                pyOpenSSL==${PYOPENSSL_VERSION} \
+                scandir==${SCANDIR_VERSION} \
+                "
+            # cryptography needs EC crypto, enabled in 11.3 SRU19 and newer.
             if [ ! -f /usr/include/openssl/ecdh.h ]; then
                 # 1.8.2 was last version to build without Elliptic-curve crypto,
                 # as this is missing from OpenSSL 1.0.1 libs in Solaris 11.2.
@@ -458,6 +463,8 @@ if [ "${OS%solaris*}" = "" ]; then
     if [ ${ARCH} = "sparc64" ]; then
         # Required for compiling GMP on Solaris for SPARC with Sun Studio.
         export CFLAGS="$CFLAGS -xcode=abs64"
+    elif [ ${ARCH} = "x64" -a "${OS%solaris11*}" = "" ]; then
+        export CFLAGS="$CFLAGS -Kpic"
     fi
 elif [ "${OS%freebsd*}" = "" -o "${OS%openbsd*}" = "" ]; then
     # Use PIC (Position Independent Code) on FreeBSD and OpenBSD with Clang.

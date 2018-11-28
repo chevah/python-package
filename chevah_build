@@ -274,9 +274,9 @@ case $OS in
             EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         else
             # Solaris 11 is much more modern, but still has some quirks.
-            # For some reason system libffi is not found in Solaris 11.4.
-            export BUILD_LIBFFI="yes"
-            # Only cryptography 2.4+ build with Studio's CC with no changes.
+            # Only cryptography 2.4+ builds with Studio's CC unpatched.
+            # If there are errors related to "-Wconversion" on older versions,
+            # use the diff from https://github.com/pyca/cryptography/pull/4545.
             PIP_LIBRARIES="\
                 setproctitle==${SETPROCTITLE_VERSION} \
                 pycrypto==${PYCRYPTO_VERSION} \
@@ -302,7 +302,7 @@ case $OS in
             fi
             if [ ! -f /usr/include/openssl/cmac.h ]; then
                 # 1.6 still supported OpenSSL 1.0.0, the default in 11.0/11.1.
-                # Watch out for errors related to "-Wconversion".
+
                 # pyOpenSSL 17.0.0, last version to support OpenSSL 1.0.0.
                 add_ignored_safety_ids_for_pyopenssl_pre17_5_0
                 PIP_LIBRARIES="\

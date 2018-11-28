@@ -321,13 +321,12 @@ def get_allowed_deps():
                     '/lib/64/libz.so.1',
                     '/usr/lib/64/libcrypt.so.1',
                     '/usr/lib/64/libncurses.so.5',
-                    '/usr/lib/64/libncursesw.so.5',
                     '/usr/lib/64/libsqlite3.so.0',
                     ])
                 if 'sparc' in chevah_arch:
                     allowed_deps.extend([
-                        '/usr/lib/sparcv9/libffi.so.5',
                         '/usr/lib/sparcv9/libc.so.1',
+                        '/usr/lib/sparcv9/libffi.so.5',
                         ])
                 else:
                     allowed_deps.extend([

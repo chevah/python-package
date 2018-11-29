@@ -337,27 +337,11 @@ def get_allowed_deps():
                     allowed_deps.extend([
                         '/usr/lib/64/libncursesw.so.5',
                         ])
-                    if 'sparc' in chevah_arch:
-                        allowed_deps.extend([
-                            '/usr/lib/sparcv9/libffi.so.6',
-                            ])
-                    else:
-                        allowed_deps.extend([
-                            '/usr/lib/64/libffi.so.6',
-                            ])
                 else:
                     # Solaris deps for 11.0-11.3.
                     allowed_deps.extend([
                         '/usr/lib/64/libncurses.so.5',
                         ])
-                    if 'sparc' in chevah_arch:
-                        allowed_deps.extend([
-                            '/usr/lib/sparcv9/libffi.so.5',
-                            ])
-                    else:
-                        allowed_deps.extend([
-                            '/usr/lib/64/libffi.so.5',
-                            ])
         else:
             # This is the common list of deps for Solaris 10 & 11 32bit builds.
             allowed_deps = [
@@ -425,12 +409,10 @@ def get_allowed_deps():
                     # Solaris 11.4 deps.
                     allowed_deps.extend([
                         '/usr/lib/64/libncursesw.so.5',
-                        '/usr/lib/libffi.so.6',
                         ])
                 else:
                     # Solaris deps for 11.0-11.3.
                     allowed_deps.extend([
-                        '/usr/lib/libffi.so.5',
                         '/usr/lib/libncurses.so.5',
                         ])
     elif platform_system == 'hp-ux':

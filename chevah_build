@@ -274,6 +274,8 @@ case $OS in
             EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         else
             # Solaris 11 is much more modern, but still has some quirks.
+            # Multiple system libffi libs present, this is a problem in 11.4.
+            export BUILD_LIBFFI="yes"
             # Only cryptography 2.4+ builds unpatched with Studio's CC.
             # If there are errors related to "-Wconversion" on older versions,
             # use the diff from https://github.com/pyca/cryptography/pull/4545.
@@ -294,8 +296,9 @@ case $OS in
                     "
             fi
             if [ ! -f /usr/include/openssl/cmac.h ]; then
-                # Solaris 11.0/11.1 has OpenSSL 1.0.0, cryptography 1.6.
-                # pyOpenSSL 17.0.0, last version to support cryptography 1.6,
+                # Solaris 11.0/11.1 has OpenSSL 1.0.0.
+                # cryptography 1.6 is the last version to support it.
+                # pyOpenSSL 17.0.0, last version to support cryptography 1.6.
                 # but it's vulnerable to CVE-2018-1000807 and CVE-2018-1000807.
                 # You might want to use the libraries not requiring CFFI here.
                 EXTRA_LIBRARIES="python-modules/pyOpenSSL-17.0.0"

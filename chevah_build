@@ -862,10 +862,15 @@ command_test() {
     echo '##### Testing for outdated packages and security issues... #####'
     execute $PYTHON_BIN -m pip list --outdated --format=columns
     execute $PYTHON_BIN -m pip install $PIP_ARGS safety
-    execute $PYTHON_BIN -m safety check --full-report $SAFETY_IGNORED_OPTS
+    execute $PYTHON_BIN -m safety check --full-report \
+        $SAFETY_IGNORED_OPTS $SAFETY_FALSE_POSITIVES_OPTS
     SAFETY_IGNORED_IDS="$(echo $SAFETY_IGNORED_OPTS | sed s/\-i\ //g)"
     (>&2 echo "ATTENTION! Following Safety DB IDs were excepted from checks:")
     (>&2 echo -e "\t${SAFETY_IGNORED_IDS}")
+    SAFETY_FALSE_POSITIVES_IDS="\
+        $(echo $SAFETY_FALSE_POSITIVES_OPTS | sed s/\-i\ //g)"
+    echo "Also, following Safety DB IDs were excepted as false positives:"
+    echo "${SAFETY_FALSE_POSITIVES_IDS}"
 
     echo '##### Executing tests for included Python modules... #####'
 

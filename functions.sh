@@ -323,5 +323,5 @@ add_ignored_safety_ids_for_pyopenssl_false_positives() {
     #     17.5.0 contains a CWE - 401 : Failure to Release Memory Before
     #     Removing Last Reference vulnerability in PKCS #12 Store that can
     #     result in Denial of service if memory  runs low or is exhausted.
-    SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 36533 -i 36534"
+    SAFETY_FALSE_POSITIVES_OPTS="-i 36533 -i 36534"
 }

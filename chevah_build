@@ -269,20 +269,21 @@ case $OS in
             # SSL_CTX_set_next_proto_select_cb: referenced symbol not found".
             # cryptography 0.3 doesn't build on Solaris 10, so we are stuck.
             export BUILD_CFFI="no"
-            add_ignored_safety_ids_for_pyopenssl_pre17_5_0
+            add_ignored_safety_ids_for_pyopenssl_false_positives
             PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
             EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         else
             # Solaris 11 is much more modern, but still has some quirks.
-            # Only cryptography 2.4+ builds with Studio's CC unpatched.
+            # Only cryptography 2.4+ builds unpatched with Studio's CC.
             # If there are errors related to "-Wconversion" on older versions,
             # use the diff from https://github.com/pyca/cryptography/pull/4545.
-            # cryptography needs EC crypto, enabled in 11.3 SRU19 and newer.
+            # cryptography 1.9+ needs EC crypto, enabled in 11.3 SRU19 or newer.
             if [ ! -f /usr/include/openssl/ecdh.h ]; then
-                # 1.8.2 was last version to build without Elliptic-curve crypto,
-                # as this is missing from OpenSSL 1.0.1 libs in Solaris 11.2.
-                # pyOpenSSL 17.0.0, last version to support cryptography 1.8.2.
-                add_ignored_safety_ids_for_pyopenssl_pre17_5_0
+                # Solaris 11.2 (or 11.3 up to SRU 18) has OpenSSL 1.0.1 without
+                # Elliptic-curve crypto, thus only cryptography 1.8.2 works.
+                # pyOpenSSL 17.0.0, last version to support cryptography 1.8.2,
+                # but it's vulnerable to CVE-2018-1000807 and CVE-2018-1000807.
+                # You might want to use the libraries not requiring CFFI here.
                 PIP_LIBRARIES="\
                     setproctitle==${SETPROCTITLE_VERSION} \
                     pycrypto==${PYCRYPTO_VERSION} \
@@ -293,10 +294,11 @@ case $OS in
                     "
             fi
             if [ ! -f /usr/include/openssl/cmac.h ]; then
-                # 1.6 still supported OpenSSL 1.0.0, the default in 11.0/11.1.
-
-                # pyOpenSSL 17.0.0, last version to support OpenSSL 1.0.0.
-                add_ignored_safety_ids_for_pyopenssl_pre17_5_0
+                # Solaris 11.0/11.1 has OpenSSL 1.0.0, cryptography 1.6.
+                # pyOpenSSL 17.0.0, last version to support cryptography 1.6,
+                # but it's vulnerable to CVE-2018-1000807 and CVE-2018-1000807.
+                # You might want to use the libraries not requiring CFFI here.
+                EXTRA_LIBRARIES="python-modules/pyOpenSSL-17.0.0"
                 PIP_LIBRARIES="\
                     setproctitle==${SETPROCTITLE_VERSION} \
                     pycrypto==${PYCRYPTO_VERSION} \
@@ -332,7 +334,7 @@ case $OS in
             export BUILD_CFFI="no"
             # If latest setproctitle fails, look in the history of this repo
             # for python-modules/python-setproctitle-1.1.8.dev0 for extra libs.
-            add_ignored_safety_ids_for_pyopenssl_pre17_5_0
+            add_ignored_safety_ids_for_pyopenssl_false_positives
             PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
             EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         fi
@@ -355,7 +357,7 @@ case $OS in
         # CFFI/cryptography build on HP-UX, but libffi breaks for CFFI. More at
         # https://bitbucket.org/cffi/cffi/issues/368/segmentation-fault-in-hp-ux
         export BUILD_CFFI="no"
-        add_ignored_safety_ids_for_pyopenssl_pre17_5_0
+        add_ignored_safety_ids_for_pyopenssl_false_positives
         PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         # libedit requires __STDC_ISO_10646__.
@@ -433,7 +435,7 @@ case $OS in
         ;;
     sles10)
         export BUILD_CFFI="no"
-        add_ignored_safety_ids_for_pyopenssl_pre17_5_0
+        add_ignored_safety_ids_for_pyopenssl_false_positives
         PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;

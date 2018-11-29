@@ -308,9 +308,10 @@ aix_ld_hack() {
 }
 
 #
-# Safety DB IDs to be ignored when using pyOpenSSL older than 17.5.0.
+# Safety DB IDs to be ignored when using pyOpenSSL 0.13.1.
+# Reported upstream at https://github.com/pyupio/safety/issues/174.
 #
-add_ignored_safety_ids_for_pyopenssl_pre17_5_0() {
+add_ignored_safety_ids_for_pyopenssl_false_positives() {
     # ID 36533: Python Cryptographic Authority pyopenssl version prior to
     #     version 17.5.0 contains a CWE-416: Use After Freevulnerability
     #     in X509 object handling that can result in Use after free can

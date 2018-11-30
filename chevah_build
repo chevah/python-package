@@ -83,6 +83,7 @@ PIP_LIBRARIES="\
     "
 # Pre-compiled libraries distributed as wheels for Windows.
 PIP_LIBRARIES_WIN="$PIP_LIBRARIES \
+    pycrypto==${PYCRYPTO_VERSION}chevah1 \
     pywin32==${PYWIN32_VERSION} \
     gmpy2==${GMPY2_VERSION} \
     "
@@ -847,19 +848,20 @@ command_test() {
     execute $PYTHON_BIN -m pip list --outdated --format=columns
     execute $PYTHON_BIN -m pip install $PIP_ARGS safety
     execute $PYTHON_BIN -m safety check --full-report \
-        $SAFETY_IGNORED_OPTS $SAFETY_FALSE_POSITIVES_OPTS
-    if [ -n "$SAFETY_IGNORED_OPTS" ]; then
-        SAFETY_IGNORED_IDS="\
-            $(echo $SAFETY_IGNORED_OPTS | sed s/\-i\ //g)"
-        (>&2 echo "Following Safety DB IDs were excepted from checks:")
-        (>&2 echo "${SAFETY_IGNORED_IDS}")
-    fi
+        $SAFETY_FALSE_POSITIVES_OPTS $SAFETY_IGNORED_OPTS
     if [ -n "$SAFETY_FALSE_POSITIVES_OPTS" ]; then
         SAFETY_FALSE_POSITIVES_IDS="\
             $(echo $SAFETY_FALSE_POSITIVES_OPTS | sed s/\-i\ //g)"
         echo "Following Safety DB IDs were excepted as false positives:"
         echo "${SAFETY_FALSE_POSITIVES_IDS}"
     fi
+    if [ -n "$SAFETY_IGNORED_OPTS" ]; then
+        SAFETY_IGNORED_IDS="\
+            $(echo $SAFETY_IGNORED_OPTS | sed s/\-i\ //g)"
+        (>&2 echo "Following Safety DB IDs were excepted from checks:")
+        (>&2 echo "${SAFETY_IGNORED_IDS}")
+    fi
+    sleep 1 # Avoid having messages sometimes mangled for some reason.
 
     echo '##### Executing tests for included Python modules... #####'
 

@@ -58,11 +58,12 @@ export BUILD_GMP="yes"
 export BUILD_LIBFFI="no"
 export BUILD_CFFI="yes"
 
-# Patches for libs in "python-modules/" should reside in a unified diff named
-# "python-modules/lib-${LIB_VERSION}.patch" to be applied when needed during
-# the build. See the diff file for Python 2.6.1 for an example.
+# Patches for libs in "python-modules/" should reside in a sub-directory named
+# "python-modules/lib-${LIB_VERSION}-patches" to be applied when needed during
+# the build. See the diffs for PyCrypto 2.6.1 for an example.
 EXTRA_LIBRARIES="\
     python-modules/cffi-${CFFI_VERSION} \
+    python-modules/pycrypto-${PYCRYPTO_VERSION} \
     "
 # Libraries for legacy systems not built around cffi and pip.
 EXTRA_LIBRARIES_NO_CFFI="\
@@ -73,7 +74,6 @@ EXTRA_LIBRARIES_NO_CFFI="\
 # List of python modules installed using pip
 PIP_LIBRARIES="\
     setproctitle==${SETPROCTITLE_VERSION} \
-    pycrypto==${PYCRYPTO_VERSION} \
     pycryptodomex==${PYCRYPTODOMEX_VERSION} \
     cryptography==${CRYPTOGRAPHY_VERSION} \
     pyOpenSSL==${PYOPENSSL_VERSION} \
@@ -88,7 +88,6 @@ PIP_LIBRARIES_WIN="$PIP_LIBRARIES \
 # pyOpenSSL 16.0.0 was last upstream version to support OpenSSL 0.9.8.
 PIP_LIBRARIES_OPENSSL_098="\
     setproctitle==${SETPROCTITLE_VERSION} \
-    pycrypto==${PYCRYPTO_VERSION} \
     pycryptodomex==${PYCRYPTODOMEX_VERSION} \
     cryptography==1.3.4 \
     pyOpenSSL==16.0.0 \
@@ -219,16 +218,6 @@ case $OS in
         export BUILD_LIBFFI="yes"
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
-        # PyCrypto 2.6.1 needs patching to build in AIX, so we build it
-        # from EXTRA_LIBRARIES, and define PIP_LIBRARIES without it.
-        EXTRA_LIBRARIES="python-modules/pycrypto-${PYCRYPTO_VERSION}"
-        PIP_LIBRARIES="\
-            setproctitle==${SETPROCTITLE_VERSION} \
-            pycryptodomex==${PYCRYPTODOMEX_VERSION} \
-            cryptography==${CRYPTOGRAPHY_VERSION} \
-            pyOpenSSL==${PYOPENSSL_VERSION} \
-            scandir==${SCANDIR_VERSION} \
-        "
         ;;
     solaris*)
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
@@ -365,10 +354,9 @@ case $OS in
         export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
         export MACOSX_DEPLOYMENT_TARGET=10.8
         # OS X 10.8 not supported by cryptography 1.9, so you'll normally use
-        # 1.8.2, but cryptography 2.2.2 has a working wheel for MacOS 10.6+.
+        # 1.8.2, but cryptography still has a working wheel for MacOS 10.6+.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
-            pycrypto==${PYCRYPTO_VERSION} \
             pycryptodomex==${PYCRYPTODOMEX_VERSION} \
             cryptography==${CRYPTOGRAPHY_VERSION}upstream \
             pyOpenSSL==${PYOPENSSL_VERSION} \
@@ -404,7 +392,6 @@ case $OS in
         # Use PyCryptodome's wheel, as there are issues not solved upstream yet.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
-            pycrypto==${PYCRYPTO_VERSION} \
             pycryptodomex==${PYCRYPTODOMEX_VERSION}upstream \
             cryptography==${CRYPTOGRAPHY_VERSION} \
             pyOpenSSL==${PYOPENSSL_VERSION} \
@@ -420,7 +407,6 @@ case $OS in
         # Use PyCryptodomex' wheel, as there are issues not solved upstream yet.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
-            pycrypto==${PYCRYPTO_VERSION} \
             pycryptodomex==${PYCRYPTODOMEX_VERSION}upstream \
             cryptography==${CRYPTOGRAPHY_VERSION}upstream \
             pyOpenSSL==${PYOPENSSL_VERSION} \
@@ -755,12 +741,14 @@ command_build_python_extra_libraries() {
         version_folder=${library#*/}
         target_folder=${BUILD_FOLDER}/$version_folder
 
-        # Patch the sources if there's a patch file with the right name.
-        if [ -f "$library".patch ]; then
-            echo "Applying patch: ${library}.patch"
-            execute pushd "$library"
-                execute patch -p1 < ../../"$library".patch
-            execute popd
+        # Patch the sources if there's a patches sub-dir with the right name.
+        if [ -d "$library"-patches ]; then
+            for patch_file in "$library"-patches/*; do
+                echo "Applying patch: $patch_file"
+                execute pushd "$library"
+                    execute patch -p1 < ../../"$patch_file"
+                execute popd
+            done
         fi
         initialize_python_module $library $target_folder
 

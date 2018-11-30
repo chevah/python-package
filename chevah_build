@@ -285,31 +285,22 @@ case $OS in
                 # Elliptic-curve crypto, thus only cryptography 1.8.2 works.
                 # pyOpenSSL 17.0.0, last version to support cryptography 1.8.2,
                 # but it's vulnerable to CVE-2018-1000807 and CVE-2018-1000807.
-                # You might want to use the libraries not requiring CFFI here.
-                PIP_LIBRARIES="\
-                    setproctitle==${SETPROCTITLE_VERSION} \
-                    pycrypto==${PYCRYPTO_VERSION} \
-                    pycryptodomex==${PYCRYPTODOMEX_VERSION} \
-                    cryptography==1.8.2 \
-                    pyOpenSSL==17.0.0 \
-                    scandir==${SCANDIR_VERSION} \
-                    "
+                # So we use the libraries not requiring CFFI here.
+                export BUILD_CFFI="no"
+                add_ignored_safety_ids_for_pyopenssl_false_positives
+                PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
+                EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
             fi
             if [ ! -f /usr/include/openssl/cmac.h ]; then
                 # Solaris 11.0/11.1 have OpenSSL 1.0.0 libraries.
                 # cryptography 1.6 is the last version to support them.
                 # pyOpenSSL 17.0.0, last version to support cryptography 1.6.
                 # but it's vulnerable to CVE-2018-1000807 and CVE-2018-1000807.
-                # You might want to use the libraries not requiring CFFI here.
-                EXTRA_LIBRARIES="python-modules/pyOpenSSL-17.0.0"
-                PIP_LIBRARIES="\
-                    setproctitle==${SETPROCTITLE_VERSION} \
-                    pycrypto==${PYCRYPTO_VERSION} \
-                    pycryptodomex==${PYCRYPTODOMEX_VERSION} \
-                    cryptography==1.6 \
-                    pyOpenSSL==17.0.0 \
-                    scandir==${SCANDIR_VERSION} \
-                    "
+                # So we use the libraries not requiring CFFI here.
+                export BUILD_CFFI="no"
+                add_ignored_safety_ids_for_pyopenssl_false_positives
+                PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
+                EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
             fi
         fi
         if [ "$OS" = "solaris10u3" ]; then

@@ -296,8 +296,8 @@ case $OS in
                     "
             fi
             if [ ! -f /usr/include/openssl/cmac.h ]; then
-                # Solaris 11.0/11.1 has OpenSSL 1.0.0.
-                # cryptography 1.6 is the last version to support it.
+                # Solaris 11.0/11.1 have OpenSSL 1.0.0 libraries.
+                # cryptography 1.6 is the last version to support them.
                 # pyOpenSSL 17.0.0, last version to support cryptography 1.6.
                 # but it's vulnerable to CVE-2018-1000807 and CVE-2018-1000807.
                 # You might want to use the libraries not requiring CFFI here.

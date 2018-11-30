@@ -1,0 +1,91 @@
+Description: Update doctring to document actual behavior.
+ The IV passed to the cipher's new method may not be empty if a mode different
+ from MODE_EBC and MODE_CTR is used.
+Author: Stefano Rivera <stefano@rivera.za.net>
+Origin: https://github.com/dlitz/pycrypto/commit/cbc13b3f
+Last-Update: 2012-05-28
+
+diff --git a/lib/Crypto/Cipher/AES.py b/lib/Crypto/Cipher/AES.py
+index 14f68d8..eb91c5f 100644
+--- a/lib/Crypto/Cipher/AES.py
++++ b/lib/Crypto/Cipher/AES.py
+@@ -79,8 +79,7 @@ def new(key, *args, **kwargs):
+         actually the *encrypted* IV which was prefixed to the ciphertext).
+         It is mandatory.
+        
+-        For all other modes, it must be `block_size` bytes longs. It is optional and
+-        when not present it will be given a default value of all zeroes.
++        For all other modes, it must be `block_size` bytes longs.
+       counter : callable
+         (*Only* `MODE_CTR`). A stateful function that returns the next
+         *counter block*, which is a byte string of `block_size` bytes.
+diff --git a/lib/Crypto/Cipher/ARC2.py b/lib/Crypto/Cipher/ARC2.py
+index 7b5f43a..ddcca47 100644
+--- a/lib/Crypto/Cipher/ARC2.py
++++ b/lib/Crypto/Cipher/ARC2.py
+@@ -91,8 +91,7 @@ def new(key, *args, **kwargs):
+         actually the *encrypted* IV which was prefixed to the ciphertext).
+         It is mandatory.
+        
+-        For all other modes, it must be `block_size` bytes longs. It is optional and
+-        when not present it will be given a default value of all zeroes.
++        For all other modes, it must be `block_size` bytes longs.
+       counter : callable
+         (*Only* `MODE_CTR`). A stateful function that returns the next
+         *counter block*, which is a byte string of `block_size` bytes.
+diff --git a/lib/Crypto/Cipher/Blowfish.py b/lib/Crypto/Cipher/Blowfish.py
+index 3f12bea..2ce78e9 100644
+--- a/lib/Crypto/Cipher/Blowfish.py
++++ b/lib/Crypto/Cipher/Blowfish.py
+@@ -85,8 +85,7 @@ def new(key, *args, **kwargs):
+         actually the *encrypted* IV which was prefixed to the ciphertext).
+         It is mandatory.
+        
+-        For all other modes, it must be `block_size` bytes longs. It is optional and
+-        when not present it will be given a default value of all zeroes.
++        For all other modes, it must be `block_size` bytes longs.
+       counter : callable
+         (*Only* `MODE_CTR`). A stateful function that returns the next
+         *counter block*, which is a byte string of `block_size` bytes.
+diff --git a/lib/Crypto/Cipher/CAST.py b/lib/Crypto/Cipher/CAST.py
+index f08dab3..5f009a7 100644
+--- a/lib/Crypto/Cipher/CAST.py
++++ b/lib/Crypto/Cipher/CAST.py
+@@ -88,8 +88,7 @@ def new(key, *args, **kwargs):
+         actually the *encrypted* IV which was prefixed to the ciphertext).
+         It is mandatory.
+        
+-        For all other modes, it must be `block_size` bytes longs. It is optional and
+-        when not present it will be given a default value of all zeroes.
++        For all other modes, it must be `block_size` bytes longs.
+       counter : callable
+         (*Only* `MODE_CTR`). A stateful function that returns the next
+         *counter block*, which is a byte string of `block_size` bytes.
+diff --git a/lib/Crypto/Cipher/DES.py b/lib/Crypto/Cipher/DES.py
+index 2fae42f..17016cb 100644
+--- a/lib/Crypto/Cipher/DES.py
++++ b/lib/Crypto/Cipher/DES.py
+@@ -83,8 +83,7 @@ def new(key, *args, **kwargs):
+         actually the *encrypted* IV which was prefixed to the ciphertext).
+         It is mandatory.
+        
+-        For all other modes, it must be `block_size` bytes longs. It is optional and
+-        when not present it will be given a default value of all zeroes.
++        For all other modes, it must be `block_size` bytes longs.
+       counter : callable
+         (*Only* `MODE_CTR`). A stateful function that returns the next
+         *counter block*, which is a byte string of `block_size` bytes.
+diff --git a/lib/Crypto/Cipher/DES3.py b/lib/Crypto/Cipher/DES3.py
+index 7fedac8..56d413b 100644
+--- a/lib/Crypto/Cipher/DES3.py
++++ b/lib/Crypto/Cipher/DES3.py
+@@ -96,8 +96,7 @@ def new(key, *args, **kwargs):
+         actually the *encrypted* IV which was prefixed to the ciphertext).
+         It is mandatory.
+        
+-        For all other modes, it must be `block_size` bytes longs. It is optional and
+-        when not present it will be given a default value of all zeroes.
++        For all other modes, it must be `block_size` bytes longs.
+       counter : callable
+         (*Only* `MODE_CTR`). A stateful function that returns the next
+         *counter block*, which is a byte string of `block_size` bytes.

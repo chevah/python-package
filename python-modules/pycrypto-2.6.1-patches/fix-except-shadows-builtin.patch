@@ -1,0 +1,19 @@
+Description: Fix 'except shadows builtin' error.
+ Thanks to lintian4python for finding it.
+Author: Sebastian Ramacher <s.ramacher@gmx.at>
+Last-Update: 2012-05-28
+Forwarded: https://github.com/dlitz/pycrypto/pull/18
+
+diff --git a/lib/Crypto/PublicKey/RSA.py b/lib/Crypto/PublicKey/RSA.py
+index 99d851d..27c23be 100644
+--- a/lib/Crypto/PublicKey/RSA.py
++++ b/lib/Crypto/PublicKey/RSA.py
+@@ -582,7 +582,7 @@ class RSAImplementation(object):
+                     if privateKey.isType('OCTET STRING'):
+                         return self._importKeyDER(privateKey.payload)
+ 
+-        except ValueError, IndexError:
++        except (ValueError, IndexError):
+             pass
+ 
+         raise ValueError("RSA key format is not supported")

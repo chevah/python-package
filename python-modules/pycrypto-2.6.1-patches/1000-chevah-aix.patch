@@ -1,3 +1,49 @@
+diff -Naur pycrypto-2.6.1/configure pycrypto-2.6.1/configure
+--- pycrypto-2.6.1/configure    Fri Nov 30 18:44:19 2018
++++ pycrypto-2.6.1/configure    Fri Nov 30 18:47:10 2018
+@@ -3828,6 +3828,7 @@
+
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for GNU libc compatible malloc" >&5
+ $as_echo_n "checking for GNU libc compatible malloc... " >&6; }
++ac_cv_func_malloc_0_nonnull=yes
+ if ${ac_cv_func_malloc_0_nonnull+:} false; then :
+   $as_echo_n "(cached) " >&6
+ else
+diff -Naur pycrypto-2.6.1/setup.py pycrypto-2.6.1/setup.py
+--- pycrypto-2.6.1/setup.py     Fri Nov 30 18:44:19 2018
++++ pycrypto-2.6.1/setup.py     Fri Nov 30 18:49:56 2018
+@@ -117,9 +117,11 @@
+             # Tell GCC to compile using the C99 standard.
+             self.__add_compiler_option("-std=c99")
+
+-            # ... but don't tell that to the aCC compiler on HP-UX
++            # ... but don't tell that to the aCC compiler on HP-UX. And AIX
+             if self.compiler.compiler_so[0] == 'cc' and sys.platform.startswith('hp-ux'):
+                 self.__remove_compiler_option("-std=c99")
++            if self.compiler.compiler_so[0] == 'cc' and sys.platform.startswith('aix'):
++                self.__remove_compiler_option("-std=c99")
+
+             # Make assert() statements always work
+             self.__remove_compiler_option("-DNDEBUG")
+@@ -132,10 +134,14 @@
+             else:
+                 # Speed up execution by tweaking compiler options.  This
+                 # especially helps the DES modules.
+-                self.__add_compiler_option("-fomit-frame-pointer")
+-                # Don't include profiling information (incompatible with
+-                # -fomit-frame-pointer)
+-                self.__remove_compiler_option("-pg")
++                if sys.platform.startswith('aix'):
++                    self.__add_compiler_option("-D_LARGE_FILES")
++                    self.__add_compiler_option("-D_LARGE_FILE_API")
++                else:
++                    self.__add_compiler_option("-fomit-frame-pointer")
++                    # Don't include profiling information (incompatible with
++                    # -fomit-frame-pointer)
++                    self.__remove_compiler_option("-pg")
+             if USE_GCOV:
+                 self.__add_compiler_option("-fprofile-arcs")
+                 self.__add_compiler_option("-ftest-coverage")
 diff -Naur pycrypto-2.6.1/src/hash_SHA2.h pycrypto-2.6.1/src/hash_SHA2.h
 --- pycrypto-2.6.1/src/hash_SHA2.h	Tue Oct 15 00:38:10 2013
 +++ pycrypto-2.6.1/src/hash_SHA2.h	Thu Nov 15 11:31:25 2018

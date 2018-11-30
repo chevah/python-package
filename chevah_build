@@ -920,7 +920,7 @@ command_test_compat() {
 
     # compat is not suported on these platforms, so no need to test.
     case "$OS-$ARCH" in
-        freebsd11*|solaris11-sparc)
+        freebsd11*|solaris112-sparc)
             (>&2 echo -e "\tCompat tests not supported on this platform.")
             return
             ;;

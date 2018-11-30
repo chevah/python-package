@@ -1,0 +1,12 @@
+diff -Naur pycrypto-2.6.1/src/hash_SHA2.h pycrypto-2.6.1/src/hash_SHA2.h
+--- pycrypto-2.6.1/src/hash_SHA2.h	Tue Oct 15 00:38:10 2013
++++ pycrypto-2.6.1/src/hash_SHA2.h	Thu Nov 15 11:31:25 2018
+@@ -77,7 +77,7 @@
+ typedef unsigned char		U8;
+ typedef unsigned __int64	U64;
+ typedef unsigned int		U32;
+-#elif defined(__sun) || defined(__sun__)
++#elif defined(__sun) || defined(__sun__) || defined(_AIX)
+ #include <sys/inttypes.h>
+ typedef uint8_t				U8;
+ typedef uint32_t			U32;

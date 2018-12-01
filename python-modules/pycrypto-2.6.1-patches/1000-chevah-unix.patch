@@ -11,21 +11,22 @@ diff -Naur pycrypto-2.6.1/configure pycrypto-2.6.1/configure
  else
 diff -Naur pycrypto-2.6.1/setup.py pycrypto-2.6.1/setup.py
 --- pycrypto-2.6.1/setup.py     Fri Nov 30 18:44:19 2018
-+++ pycrypto-2.6.1/setup.py     Fri Nov 30 18:49:56 2018
-@@ -117,9 +117,11 @@
++++ pycrypto-2.6.1/setup.py     Sat Dec  1 13:13:32 2018
+@@ -117,9 +117,10 @@
              # Tell GCC to compile using the C99 standard.
              self.__add_compiler_option("-std=c99")
 
 -            # ... but don't tell that to the aCC compiler on HP-UX
-+            # ... but don't tell that to the aCC compiler on HP-UX. And AIX
-             if self.compiler.compiler_so[0] == 'cc' and sys.platform.startswith('hp-ux'):
-                 self.__remove_compiler_option("-std=c99")
-+            if self.compiler.compiler_so[0] == 'cc' and sys.platform.startswith('aix'):
-+                self.__remove_compiler_option("-std=c99")
+-            if self.compiler.compiler_so[0] == 'cc' and sys.platform.startswith('hp-ux'):
+-                self.__remove_compiler_option("-std=c99")
++            # ... but don't tell that to the non-gcc compilers on HP-UX. And AIX.
++            if sys.platform.startswith('hp-ux') or sys.platform.startswith('aix'):
++                if not 'gcc' in self.compiler.compiler_so[0]:
++                    self.__remove_compiler_option("-std=c99")
 
              # Make assert() statements always work
              self.__remove_compiler_option("-DNDEBUG")
-@@ -132,10 +134,14 @@
+@@ -132,10 +133,20 @@
              else:
                  # Speed up execution by tweaking compiler options.  This
                  # especially helps the DES modules.
@@ -41,6 +42,12 @@ diff -Naur pycrypto-2.6.1/setup.py pycrypto-2.6.1/setup.py
 +                    # Don't include profiling information (incompatible with
 +                    # -fomit-frame-pointer)
 +                    self.__remove_compiler_option("-pg")
++
++            # Remove problematic option on HP-UX and Solaris.
++            if sys.platform.startswith('hp-ux') or sys.platform.startswith('sunos'):
++                if not 'gcc' in self.compiler.compiler_so[0]:
++                    self.__remove_compiler_option("-fomit-frame-pointer")
++
              if USE_GCOV:
                  self.__add_compiler_option("-fprofile-arcs")
                  self.__add_compiler_option("-ftest-coverage")

@@ -61,9 +61,9 @@ export BUILD_GMP="yes"
 export BUILD_LIBFFI="no"
 export BUILD_CFFI="yes"
 
-# Patches for libs in "python-modules/" should reside in a sub-directory named
-# "python-modules/lib-${LIB_VERSION}-patches" to be applied when needed during
-# the build. See the patches for PyCrypto 2.6.1 for an example.
+# Patches for EXTRA_LIBRARIES libs should reside in a sub-directory named
+#"python-modules/lib-${LIB_VERSION}-patches", to be applied when needed
+# during the build. See the patches for PyCrypto 2.6.1 for an example.
 EXTRA_LIBRARIES="\
     python-modules/cffi-${CFFI_VERSION} \
     python-modules/pycrypto-${PYCRYPTO_VERSION} \
@@ -441,6 +441,7 @@ if [ "${OS%solaris*}" = "" ]; then
         # Required for compiling GMP on Solaris for SPARC with Sun Studio.
         export CFLAGS="$CFLAGS -xcode=abs64"
     elif [ ${ARCH} = "x64" -a "${OS%solaris11*}" = "" ]; then
+        # Not all packages enable PIC, we force it to avoid relocation issues.
         export CFLAGS="$CFLAGS -Kpic"
     fi
 elif [ "${OS%freebsd*}" = "" -o "${OS%openbsd*}" = "" ]; then
@@ -861,7 +862,8 @@ command_test() {
         (>&2 echo "Following Safety DB IDs were excepted from checks:")
         (>&2 echo "${SAFETY_IGNORED_IDS}")
     fi
-    sleep 1 # Avoid having messages sometimes mangled for some reason.
+    # Avoid having output messages sometimes mangled for some reason.
+    sleep 1
 
     echo '##### Executing tests for included Python modules... #####'
 

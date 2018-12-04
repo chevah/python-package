@@ -1,0 +1,89 @@
+Description: Re-enable redefined tests.
+ The test suite contains tests that are disabled because they have the same name
+ as other tests. Renaming them enables them again.
+ .
+ PKCS1_OAEP_Tests.testEncryptDecrypt1 is updated to work with the new interface
+ of PKCS1_OAEP.
+Author: Sebastian Ramacher <s.ramacher@gmx.at>
+Last-Update: 2012-05-28
+Forwarded: https://github.com/dlitz/pycrypto/pull/16
+
+diff --git a/lib/Crypto/SelfTest/Cipher/test_pkcs1_oaep.py b/lib/Crypto/SelfTest/Cipher/test_pkcs1_oaep.py
+index accca61..7ca5c15 100644
+--- a/lib/Crypto/SelfTest/Cipher/test_pkcs1_oaep.py
++++ b/lib/Crypto/SelfTest/Cipher/test_pkcs1_oaep.py
+@@ -314,11 +314,12 @@ class PKCS1_OAEP_Tests(unittest.TestCase):
+                 # Encrypt/Decrypt messages of length [0..128-2*20-2]
+                 for pt_len in xrange(0,128-2*20-2):
+                     pt = self.rng(pt_len)
+-                    ct = PKCS.encrypt(pt, self.key1024)
+-                    pt2 = PKCS.decrypt(ct, self.key1024)
++                    cipher = PKCS.new(self.key1024)
++                    ct = cipher.encrypt(pt)
++                    pt2 = cipher.decrypt(ct)
+                     self.assertEqual(pt,pt2)
+ 
+-        def testEncryptDecrypt1(self):
++        def testEncryptDecrypt2(self):
+                 # Helper function to monitor what's requested from RNG
+                 global asked
+                 def localRng(N):
+@@ -337,7 +338,7 @@ class PKCS1_OAEP_Tests(unittest.TestCase):
+                     self.assertEqual(cipher.decrypt(ct), pt)
+                     self.failUnless(asked > hashmod.digest_size)
+ 
+-        def testEncryptDecrypt2(self):
++        def testEncryptDecrypt3(self):
+                 # Verify that OAEP supports labels
+                 pt = self.rng(35)
+                 xlabel = self.rng(22)
+@@ -345,7 +346,7 @@ class PKCS1_OAEP_Tests(unittest.TestCase):
+                 ct = cipher.encrypt(pt)
+                 self.assertEqual(cipher.decrypt(ct), pt)
+ 
+-        def testEncryptDecrypt3(self):
++        def testEncryptDecrypt4(self):
+                 # Verify that encrypt() uses the custom MGF
+                 global mgfcalls
+                 # Helper function to monitor what's requested from MGF
+diff --git a/lib/Crypto/SelfTest/PublicKey/test_importKey.py b/lib/Crypto/SelfTest/PublicKey/test_importKey.py
+index 28a7eee..f7c1edc 100644
+--- a/lib/Crypto/SelfTest/PublicKey/test_importKey.py
++++ b/lib/Crypto/SelfTest/PublicKey/test_importKey.py
+@@ -298,7 +298,7 @@ Lr7UkvEtFrRhDDKMtuIIq19FrL4pUIMymPMSLBn3hJLe30Dw48GQM4UCAwEAAQ==
+         self.assertEqual(openssh_1[0], openssh_2[0])
+         self.assertEqual(openssh_1[1], openssh_2[1])
+ 
+-    def testExportKey4(self):
++    def testExportKey6(self):
+         key = self.rsa.construct([self.n, self.e, self.d, self.p, self.q, self.pInv])
+         # Tuple with index #1 is encrypted with 3DES
+         t = map(b,self.rsaKeyEncryptedPEM[1])
+@@ -307,12 +307,12 @@ Lr7UkvEtFrRhDDKMtuIIq19FrL4pUIMymPMSLBn3hJLe30Dw48GQM4UCAwEAAQ==
+         pemKey = key.exportKey("PEM", t[0])
+         self.assertEqual(pemKey, t[1])
+ 
+-    def testExportKey5(self):
++    def testExportKey7(self):
+         key = self.rsa.construct([self.n, self.e, self.d, self.p, self.q, self.pInv])
+         derKey = key.exportKey("DER", pkcs=8)
+         self.assertEqual(derKey, self.rsaKeyDER8)
+ 
+-    def testExportKey6(self):
++    def testExportKey8(self):
+         key = self.rsa.construct([self.n, self.e, self.d, self.p, self.q, self.pInv])
+         pemKey = key.exportKey("PEM", pkcs=8)
+         self.assertEqual(pemKey, b(self.rsaKeyPEM8))
+diff --git a/lib/Crypto/SelfTest/Util/test_asn1.py b/lib/Crypto/SelfTest/Util/test_asn1.py
+index 578dabe..bbd0a39 100644
+--- a/lib/Crypto/SelfTest/Util/test_asn1.py
++++ b/lib/Crypto/SelfTest/Util/test_asn1.py
+@@ -156,7 +156,7 @@ class DerSequenceTests(unittest.TestCase):
+ 		self.assertEqual(der[1:-1],[9])
+ 		self.assertEquals(der.encode(), b('0\x0A\x02\x02\x01\x80\x02\x01\x09\x02\x01\x08'))
+ 
+-	def testEncode6(self):
++	def testEncode7(self):
+ 		# One integer and another type (no matter what it is)
+ 		der = DerSequence()
+ 		der.append(0x180L)

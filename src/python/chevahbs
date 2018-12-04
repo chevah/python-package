@@ -129,7 +129,7 @@ chevahbs_configure() {
         archlinux)
             LDFLAGS="$LDFLAGS -ltinfo"
             ;;
-        freebsd*)
+        freebsd*|solaris11*)
             LDFLAGS="$LDFLAGS -lncurses"
             ;;
         openbsd*)

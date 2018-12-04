@@ -1,0 +1,25 @@
+Description: Fix handling of the output stream in SelfTest
+Author: Sebastian Ramacher <sramacher@debian.org>
+Last-Update: 2014-01-23
+Forwarded: https://github.com/dlitz/pycrypto/pull/39
+Applied-Upstream: yes
+
+diff --git a/lib/Crypto/SelfTest/__init__.py b/lib/Crypto/SelfTest/__init__.py
+index 40b3969..7110cd2 100644
+--- a/lib/Crypto/SelfTest/__init__.py
++++ b/lib/Crypto/SelfTest/__init__.py
+@@ -66,11 +66,13 @@ def run(module=None, verbosity=0, stream=None, tests=None, config=None, **kwargs
+             raise ValueError("'module' and 'tests' arguments are mutually exclusive")
+     if stream is None:
+         kwargs['stream'] = StringIO()
++    else:
++        kwargs['stream'] = stream
+     runner = unittest.TextTestRunner(verbosity=verbosity, **kwargs)
+     result = runner.run(suite)
+     if not result.wasSuccessful():
+         if stream is None:
+-            sys.stderr.write(stream.getvalue())
++            sys.stderr.write(kwargs['stream'].getvalue())
+         raise SelfTestError("Self-test failed", result)
+     return result
+ 

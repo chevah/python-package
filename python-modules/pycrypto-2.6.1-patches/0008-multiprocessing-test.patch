@@ -1,0 +1,25 @@
+Description: Do not run multiprocessing test if multiprocessing.synchronize is not working
+ On platforms that do not have a working sem_open implementation, importing
+ multiprocessing.synchronize will fail with an ImportError. While creating a
+ multiprocessing.Pool instance, multiprocessing.synchronize will be imported and
+ might throw an ImportError.
+Author: Sebastian Ramacher <sramacher@debian.org>
+Forwarded: yes, https://github.com/dlitz/pycrypto/pull/61
+Last-Update: 2013-10-17
+
+diff --git a/lib/Crypto/SelfTest/Random/test__UserFriendlyRNG.py b/lib/Crypto/SelfTest/Random/test__UserFriendlyRNG.py
+index 771a663..3fd7ad4 100644
+--- a/lib/Crypto/SelfTest/Random/test__UserFriendlyRNG.py
++++ b/lib/Crypto/SelfTest/Random/test__UserFriendlyRNG.py
+@@ -39,6 +39,11 @@
+ 
+ try:
+     import multiprocessing
++    # multiprocessing.Pool uses classes from multiprocessing.synchronize, so we
++    # need to check if multiprocessing.semaphore will work. Otherwise creating a
++    # multiprocessing.Pool instance will fail with an ImportError. See Python
++    # bug #3770 for details.
++    import multiprocessing.synchronize
+ except ImportError:
+     multiprocessing = None
+ 

@@ -1,0 +1,17 @@
+Description: fix exclude-introspect stanza in epydoc-config
+Author: Sebastian Ramacher <s.ramacher@gmx.at>
+Last-Modified: 2012-08-28
+Forwarded: https://github.com/dlitz/pycrypto/pull/17
+
+diff --git a/Doc/epydoc-config b/Doc/epydoc-config
+index 018e461..40209f7 100644
+--- a/Doc/epydoc-config
++++ b/Doc/epydoc-config
+@@ -15,6 +15,5 @@ link: <a href="http://www.pycrypto.org/">PyCrypto.org</a>
+ 
+ # The documentation is usually built on a Linux machine; nt.py tries to
+ # import the winrandom module.
+-exclude-introspect: ^Crypto\.Random\.OSRNG\.nt|Crypto\.Util\.winrandom$
+-exclude-introspect: ^Crypto\.Util\.osentropy\.nt$
++exclude-introspect: ^Crypto\.Random\.OSRNG\.nt|Crypto\.Util\.winrandom|Crypto\.Util\.osentropy\.nt$
+ exclude: ^Crypto\.SelfTest

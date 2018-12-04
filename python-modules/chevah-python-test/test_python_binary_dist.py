@@ -320,19 +320,27 @@ def get_allowed_deps():
                     '/lib/64/libssl.so.1.0.0',
                     '/lib/64/libz.so.1',
                     '/usr/lib/64/libcrypt.so.1',
-                    '/usr/lib/64/libncurses.so.5',
                     '/usr/lib/64/libsqlite3.so.0',
                     ])
                 if 'sparc' in chevah_arch:
                     allowed_deps.extend([
-                        '/usr/lib/sparcv9/libffi.so.5',
                         '/usr/lib/sparcv9/libc.so.1',
                         ])
                 else:
                     allowed_deps.extend([
                         '/lib/64/libelf.so.1',
-                        '/usr/lib/64/libffi.so.5',
                         '/usr/lib/amd64/libc.so.1',
+                        ])
+                solaris_version_minor = int(platform.version().split('.')[1])
+                if solaris_version_minor >= 4:
+                    # Solaris 11.4 deps.
+                    allowed_deps.extend([
+                        '/usr/lib/64/libncursesw.so.5',
+                        ])
+                else:
+                    # Solaris deps for 11.0-11.3.
+                    allowed_deps.extend([
+                        '/usr/lib/64/libncurses.so.5',
                         ])
         else:
             # This is the common list of deps for Solaris 10 & 11 32bit builds.
@@ -394,10 +402,19 @@ def get_allowed_deps():
                     '/lib/libssl.so.1.0.0',
                     '/lib/libz.so.1',
                     '/usr/lib/libcrypt.so.1',
-                    '/usr/lib/libffi.so.5',
-                    '/usr/lib/libncurses.so.5',
                     '/usr/lib/libsqlite3.so.0',
                     ])
+                solaris_version_minor = int(platform.version().split('.')[1])
+                if solaris_version_minor >= 4:
+                    # Solaris 11.4 deps.
+                    allowed_deps.extend([
+                        '/usr/lib/64/libncursesw.so.5',
+                        ])
+                else:
+                    # Solaris deps for 11.0-11.3.
+                    allowed_deps.extend([
+                        '/usr/lib/libncurses.so.5',
+                        ])
     elif platform_system == 'hp-ux':
         # Specific deps for HP-UX 11.31, with full path.
         allowed_deps = [
@@ -665,7 +682,7 @@ def main():
                 cryptography.__version__, openssl_version)
             if chevah_os in [ "windows", "osx108", "sles11", "rhel5" ]:
                 # Check OpenSSL version from upstream wheels.
-                expecting = u'OpenSSL 1.1.0i  14 Aug 2018'
+                expecting = u'OpenSSL 1.1.0j  20 Nov 2018'
                 if openssl_version != expecting:
                     sys.stderr.write('Expecting %s, got %s.\n' % (
                         expecting, openssl_version))
@@ -678,7 +695,7 @@ def main():
         from OpenSSL import SSL, crypto, rand, __version__ as pyopenssl_version
         crypto
         rand
-        print 'pyopenssl %s - OpenSSL %s' % (
+        print 'pyOpenSSL %s - OpenSSL %s' % (
             pyopenssl_version,
             SSL.SSLeay_version(SSL.SSLEAY_VERSION),
             )
@@ -689,10 +706,18 @@ def main():
     try:
         import Crypto
         pycrypto_version = Crypto.__version__
-        print 'PyCryptodome %s' % (pycrypto_version)
+        print 'PyCrypto %s' % (pycrypto_version)
+    except:
+        sys.stderr.write('"PyCrypto" missing.\n')
+        exit_code = 4
+
+    try:
+        import Cryptodome
+        pycryptodome_version = Cryptodome.__version__
+        print 'PyCryptodome %s' % (pycryptodome_version)
     except:
         sys.stderr.write('"PyCryptodome" missing.\n')
-        exit_code = 4
+        exit_code = 11
 
     try:
         from ctypes import CDLL

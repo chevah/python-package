@@ -82,12 +82,6 @@ PIP_LIBRARIES="\
     pyOpenSSL==${PYOPENSSL_VERSION} \
     scandir==${SCANDIR_VERSION} \
     "
-# Pre-compiled libraries distributed as wheels for Windows.
-PIP_LIBRARIES_WIN="$PIP_LIBRARIES \
-    pycrypto==${PYCRYPTO_VERSION}chevah1 \
-    pywin32==${PYWIN32_VERSION} \
-    gmpy2==${GMPY2_VERSION} \
-    "
 # cryptography 1.3.4 was last upstream version to support OpenSSL 0.9.8.
 # pyOpenSSL 16.0.0 was last upstream version to support OpenSSL 0.9.8.
 PIP_LIBRARIES_OPENSSL_098="\
@@ -427,12 +421,17 @@ case $OS in
         # On Windows, python executable is installed at a different path.
         LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
         PYTHON_BIN=$INSTALL_FOLDER/lib/python
-        # On windows extra libraries are installed only using PIP.
-        EXTRA_LIBRARIES=""
-        PIP_LIBRARIES=$PIP_LIBRARIES_WIN
         # For Windows we don't build everything from source yet.
         export BUILD_LIBEDIT="no"
         export BUILD_GMP="no"
+        # Extra libraries are installed only using PIP.
+        EXTRA_LIBRARIES=""
+        # And the patched PyCrypto is packed and uploaded to our PyPI server.
+        PIP_LIBRARIES="$PIP_LIBRARIES \
+            pycrypto==${PYCRYPTO_VERSION}chevah1 \
+            pywin32==${PYWIN32_VERSION} \
+            gmpy2==${GMPY2_VERSION} \
+            "
         ;;
 esac
 

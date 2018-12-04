@@ -26,12 +26,13 @@ SETUPTOOLS_VERSION="39.0.1"
 # Python modules versions to be used everywhere possible.
 CFFI_VERSION="1.11.5"
 PYCRYPTO_VERSION="2.6.1"
-# Pristine PyCrypto 2.6.1 is vulnerable to CVE-2013-7459 and CVE-2018-6594,
-# but we patch them and mark correspondent Safety DB IDs as false positives.
-# ID 35015: Heap-based buffer overflow in the ALGnew function in
-#     block_templace.c in Python Cryptography Toolkit (aka pycrypto) 2.6.1
-#     allows remote attackers to execute arbitrary code as demonstrated by
-#     a crafted iv parameter to cryptmsg.py.
+# PyCrypto 2.6.1 is vulnerable to CVE-2013-7459 and CVE-2018-6594, but we patch
+# these vulnerabilities, and mark correspondent Safety IDs as false positives.
+# Safety ID 35015 (CVE-2013-7459):
+#     "Heap-based buffer overflow in the ALGnew function in block_templace.c in
+#     Python Cryptography Toolkit (aka pycrypto) 2.6.1 allows remote attackers
+#     to execute arbitrary code as demonstrated by a crafted iv parameter to
+#     cryptmsg.py."
 SAFETY_FALSE_POSITIVES_OPTS="-i 35015"
 PYCRYPTODOMEX_VERSION="3.6.6"
 PYOPENSSL_VERSION="18.0.0"

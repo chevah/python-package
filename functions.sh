@@ -327,3 +327,11 @@ add_ignored_safety_ids_for_pyopenssl_false_positives() {
     #     of service if memory runs low or is exhausted."
     SAFETY_FALSE_POSITIVES_OPTS="$SAFETY_FALSE_POSITIVES_OPTS -i 36533 -i 36534"
 }
+
+#
+# Alpine's apk doesn't seem to have a check for installed packages individually.
+#
+apk_shim() {
+    pkg="$1"
+    apk info | grep -q ^"$pkg"$
+}

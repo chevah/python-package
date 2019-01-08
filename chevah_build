@@ -496,7 +496,7 @@ check_dependencies() {
             ;;
         alpine*)
             packages=$ALPINE_PKGS
-            check_command='apk info'
+            check_command=apk_shim
             ;;
         archlinux)
             packages=$ARCH_PKGS

@@ -750,6 +750,13 @@ def main():
         exit_code = 17
 
     try:
+        import psutil
+        print 'psutil %s' % (psutil.__version__,)
+    except:
+        sys.stderr.write('"psutil" missing.\n')
+        exit_code = 23
+
+    try:
         import gmpy2
         print 'gmpy2 %s with:' % (gmpy2.version())
         print '\tMP (Multiple-precision library) - %s' % (gmpy2.mp_version())

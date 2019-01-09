@@ -220,6 +220,16 @@ case $OS in
         export BUILD_LIBFFI="yes"
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
+        if [ "${OS%aix53}" = "" ]; then
+            # psutil doesn't build on AIX 5.3, so we do without it.
+            PIP_LIBRARIES="\
+                setproctitle==${SETPROCTITLE_VERSION} \
+                pycryptodomex==${PYCRYPTODOMEX_VERSION} \
+                cryptography==${CRYPTOGRAPHY_VERSION} \
+                pyOpenSSL==${PYOPENSSL_VERSION} \
+                scandir==${SCANDIR_VERSION} \
+                "
+        fi
         ;;
     solaris*)
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
@@ -339,14 +349,19 @@ case $OS in
         # which is then needed by gmpy 1.x
         export BUILD_LIBFFI="yes"
         export BUILD_ZLIB="yes"
+        # libedit requires __STDC_ISO_10646__.
+        export BUILD_LIBEDIT="no"
         # CFFI/cryptography build on HP-UX, but libffi breaks for CFFI. More at
         # https://bitbucket.org/cffi/cffi/issues/368/segmentation-fault-in-hp-ux
         export BUILD_CFFI="no"
         add_ignored_safety_ids_for_pyopenssl_false_positives
-        PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
+        # PIP_LIBRARIES_NO_CFFI without psutil, as it doesn't build in HP-UX.
+        PIP_LIBRARIES="\
+            pyOpenSSL==0.13.1 \
+            setproctitle==${SETPROCTITLE_VERSION} \
+            scandir==${SCANDIR_VERSION} \
+            "
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
-        # libedit requires __STDC_ISO_10646__.
-        export BUILD_LIBEDIT="no"
         ;;
     osx*)
         # The extra params needed to set the minimum target version to 10.8

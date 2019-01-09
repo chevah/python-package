@@ -210,8 +210,10 @@ def get_allowed_deps():
             allowed_deps=[
                 '/lib/ld-musl-x86_64.so.1',
                 '/lib/libc.musl-x86_64.so.1',
-                '/lib/libcrypto.so.41',
-                '/lib/libssl.so.43',
+                '/lib/libssl.so.44',
+                '/lib/libcrypto.so.42.0.0',
+                '/lib/libssl.so.44.0.1',
+                '/lib/libcrypto.so.42',
                 '/lib/libz.so.1',
                 '/usr/lib/libffi.so.6',
                 '/usr/lib/libncursesw.so.6',

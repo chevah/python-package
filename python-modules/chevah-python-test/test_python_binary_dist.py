@@ -264,9 +264,15 @@ def get_allowed_deps():
         # sys.platform could be 'aix5', 'aix6' etc.
         aix_version = int(sys.platform[-1])
         if aix_version >= 6:
-            # Specific deps to add for AIX 6.1 and 7.1.
+            # Specific deps to add for AIX 6.1 and 7.1, mostly psutil deps.
             allowed_deps.extend([
                 '/lib/libthread.a(shr.o)',
+                '/usr/lib/libcfg.a(shr.o)',
+                '/usr/lib/libcorcfg.a(shr.o)',
+                '/usr/lib/liblvm.a(shr.o)',
+                '/usr/lib/libodm.a(shr.o)',
+                '/usr/lib/libperfstat.a(shr.o)',
+                '/usr/lib/libsrc.a(shr.o)',
                 ])
     elif platform_system == 'sunos':
         # On Solaris, platform.release() can be: '5.9'. '5.10', '5.11' etc.
@@ -279,6 +285,7 @@ def get_allowed_deps():
                 '/lib/64/libm.so.2',
                 '/lib/64/libnsl.so.1',
                 '/lib/64/libsocket.so.1',
+                '/usr/lib/64/libkstat.so.1',
                 ]
             if solaris_version == '10':
                 # Specific deps to add for Solaris 10.
@@ -347,6 +354,7 @@ def get_allowed_deps():
             allowed_deps = [
                 '/lib/libc.so.1',
                 '/lib/libdl.so.1',
+                '/lib/libkstat.so.1',
                 '/lib/libm.so.2',
                 '/lib/libnsl.so.1',
                 '/lib/libsocket.so.1',
@@ -436,6 +444,7 @@ def get_allowed_deps():
             '/System/Library/Frameworks/Carbon.framework/Versions/A/Carbon',
             '/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation',
             '/System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices',
+            '/System/Library/Frameworks/IOKit.framework/Versions/A/IOKit',
             '/System/Library/Frameworks/Security.framework/Versions/A/Security',
             '/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/SystemConfiguration',
             '/usr/lib/libffi.dylib',
@@ -462,6 +471,7 @@ def get_allowed_deps():
         allowed_deps = [
             '/lib/libc.so.7',
             '/lib/libcrypt.so.5',
+            '/lib/libdevstat.so.7',
             '/lib/libm.so.5',
             '/lib/libncurses.so.8',
             '/lib/libthr.so.3',
@@ -474,12 +484,16 @@ def get_allowed_deps():
             # Additional deps, specific for FreeBSD 10.
             allowed_deps.extend([
                 '/lib/libcrypto.so.7',
+                '/lib/libkvm.so.6',
                 '/usr/lib/libssl.so.7',
             ])
         else:
             # Additional deps, specific for FreeBSD 11 and maybe newer.
             allowed_deps.extend([
                 '/lib/libcrypto.so.8',
+                '/lib/libelf.so.2',
+                '/lib/libkvm.so.7',
+                '/usr/lib/libdl.so.1',
                 '/usr/lib/libssl.so.8',
             ])
     elif platform_system == 'openbsd':
@@ -488,6 +502,7 @@ def get_allowed_deps():
             '/usr/lib/libc.so',
             '/usr/lib/libcrypto.so',
             '/usr/lib/libcurses.so',
+            '/usr/lib/libkvm.so',
             '/usr/lib/libm.so',
             '/usr/lib/libpthread.so',
             '/usr/lib/libssl.so',

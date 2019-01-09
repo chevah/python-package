@@ -144,8 +144,8 @@ COMMON_PKGS="gcc make m4 automake libtool texinfo patch"
 COMMON_SLES_PKGS="$COMMON_PKGS git-core zlib-devel ncurses-devel"
 DEBIAN_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
 RHEL_PKGS="$COMMON_PKGS git openssl-devel zlib-devel libffi-devel ncurses-devel"
-ALPINE_PKGS="\
-    $COMMON_PKGS git libc-dev libressl-dev zlib-dev libffi-dev ncurses-dev"
+ALPINE_PKGS="$COMMON_PKGS\
+    git libc-dev libressl-dev zlib-dev libffi-dev ncurses-dev linux-headers"
 ARCH_PKGS="$COMMON_PKGS git libffi ncurses"
 case "$OS" in
     rhel5)

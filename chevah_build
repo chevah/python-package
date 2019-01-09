@@ -439,6 +439,11 @@ case $OS in
         PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
+    debian*)
+        # Build here as portable as possible, akin to the old generic Linux.
+        export BUILD_LIBFFI="yes"
+        export BUILD_LIBEDIT="no"
+        ;;
     windows*)
         # On Windows, python executable is installed at a different path.
         LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python

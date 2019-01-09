@@ -154,24 +154,20 @@ def get_allowed_deps():
                     '/usr/lib/aarch64-linux-gnu/libffi.so.6',
                     ]
         elif ('debian' in chevah_os):
-            # Full deps for Debian 7.x amd64.
+            # Full deps for Debian 7.x/8.x amd64.
             allowed_deps=[
                 '/lib/x86_64-linux-gnu/libcrypt.so.1',
                 '/lib/x86_64-linux-gnu/libc.so.6',
                 '/lib/x86_64-linux-gnu/libdl.so.2',
-                '/lib/x86_64-linux-gnu/libgcc_s.so.1',
                 '/lib/x86_64-linux-gnu/libm.so.6',
-                '/lib/x86_64-linux-gnu/libncurses.so.5',
                 '/lib/x86_64-linux-gnu/libpthread.so.0',
-                '/lib/x86_64-linux-gnu/libtinfo.so.5',
                 '/lib/x86_64-linux-gnu/libutil.so.1',
                 '/lib/x86_64-linux-gnu/libz.so.1',
                 '/usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.0',
-                '/usr/lib/x86_64-linux-gnu/libffi.so.5',
                 '/usr/lib/x86_64-linux-gnu/libssl.so.1.0.0',
                 ]
             if 'x86' in chevah_arch:
-                # Full deps for Debian 7.x i386.
+                # Full deps for Debian 7.x/8.x i386.
                 allowed_deps=[
                     '/lib/i386-linux-gnu/i686/cmov/libc.so.6',
                     '/lib/i386-linux-gnu/i686/cmov/libcrypt.so.1',
@@ -179,13 +175,9 @@ def get_allowed_deps():
                     '/lib/i386-linux-gnu/i686/cmov/libm.so.6',
                     '/lib/i386-linux-gnu/i686/cmov/libpthread.so.0',
                     '/lib/i386-linux-gnu/i686/cmov/libutil.so.1',
-                    '/lib/i386-linux-gnu/libgcc_s.so.1',
-                    '/lib/i386-linux-gnu/libncurses.so.5',
-                    '/lib/i386-linux-gnu/libtinfo.so.5',
                     '/lib/i386-linux-gnu/libz.so.1',
                     '/usr/lib/i386-linux-gnu/i686/cmov/libcrypto.so.1.0.0',
                     '/usr/lib/i386-linux-gnu/i686/cmov/libssl.so.1.0.0',
-                    '/usr/lib/i386-linux-gnu/libffi.so.5',
                     ]
         elif ('raspbian' in chevah_os):
             # Common deps with full paths for Raspbian 7 and 8.

@@ -854,7 +854,8 @@ def main():
             exit_code = 18
 
     # Some OS'es are not supported by upstream psutil.
-    if not chevah_os in [ 'aix53', 'hpux1131' ]:
+    # Windows is special. We build on XP, but XP/2003 not supported any more.
+    if not chevah_os in [ 'aix53', 'hpux1131', 'windows' ]:
         try:
             import psutil
             print 'psutil %s' % (psutil.__version__,)

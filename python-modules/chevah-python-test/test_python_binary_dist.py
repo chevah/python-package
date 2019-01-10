@@ -854,9 +854,9 @@ def main():
             exit_code = 18
 
     # Some OS'es are not supported by upstream psutil.
-	# FIXME:5185:
-    # Windows is special. We build python-package on XP, with psutil as wheel,
-	# but XP/2003 not supported any more upstream, so we can't test for it.
+    # FIXME:5185:
+    # Windows is special. We build python-package on XP, with psutil as a wheel,
+    # but XP/2003 not supported any more upstream, so we can't test for it.
     if not chevah_os in [ 'aix53', 'hpux1131', 'windows' ]:
         try:
             import psutil

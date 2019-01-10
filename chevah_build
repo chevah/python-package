@@ -130,8 +130,7 @@ ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 
 # List of OS packages required for building Python/pyOpenSSL/cryptography etc.
 # Lately we don't install anything automatically, we just check for the
-# presence of required packages on everything but AIX, HP-UX, macOS, OS X,
-# Solaris, Windows and generic Linux builds.
+# presence of required packages. Or at least of the required commands...
 # This build of Python / pyOpenSSL / cryptography / etc.  requires:
 # a C compiler, make, m4, libs and headers for OpenSSL / zlib / libffi,
 # git (for patching Python's version), patch (for applying our own patches),
@@ -139,7 +138,7 @@ ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 # To build libedit for the readline module, we need the headers of
 # a curses library, automake and libtool.
 # On platforms with a choice of C compilers, you may choose among the
-# available compilers by setting CC and CXX further in this script.
+# available compilers by setting CC and CXX further down in this script.
 COMMON_PKGS="gcc make m4 automake libtool texinfo patch"
 COMMON_SLES_PKGS="$COMMON_PKGS git-core zlib-devel ncurses-devel"
 DEBIAN_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
@@ -355,7 +354,7 @@ case $OS in
         # https://bitbucket.org/cffi/cffi/issues/368/segmentation-fault-in-hp-ux
         export BUILD_CFFI="no"
         add_ignored_safety_ids_for_pyopenssl_false_positives
-        # PIP_LIBRARIES_NO_CFFI without psutil, as it doesn't build in HP-UX.
+        # PIP_LIBRARIES_NO_CFFI without psutil, which doesn't support HP-UX.
         PIP_LIBRARIES="\
             pyOpenSSL==0.13.1 \
             setproctitle==${SETPROCTITLE_VERSION} \
@@ -440,7 +439,7 @@ case $OS in
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
     debian*)
-        # Build here as portable as possible, akin to the old generic Linux.
+        # Build as portable as possible, akin to the old generic Linux builds.
         export BUILD_LIBFFI="yes"
         export BUILD_LIBEDIT="no"
         ;;

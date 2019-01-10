@@ -154,24 +154,20 @@ def get_allowed_deps():
                     '/usr/lib/aarch64-linux-gnu/libffi.so.6',
                     ]
         elif ('debian' in chevah_os):
-            # Full deps for Debian 7.x amd64.
+            # Full deps for Debian 7.x/8.x amd64.
             allowed_deps=[
                 '/lib/x86_64-linux-gnu/libcrypt.so.1',
                 '/lib/x86_64-linux-gnu/libc.so.6',
                 '/lib/x86_64-linux-gnu/libdl.so.2',
-                '/lib/x86_64-linux-gnu/libgcc_s.so.1',
                 '/lib/x86_64-linux-gnu/libm.so.6',
-                '/lib/x86_64-linux-gnu/libncurses.so.5',
                 '/lib/x86_64-linux-gnu/libpthread.so.0',
-                '/lib/x86_64-linux-gnu/libtinfo.so.5',
                 '/lib/x86_64-linux-gnu/libutil.so.1',
                 '/lib/x86_64-linux-gnu/libz.so.1',
                 '/usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.0',
-                '/usr/lib/x86_64-linux-gnu/libffi.so.5',
                 '/usr/lib/x86_64-linux-gnu/libssl.so.1.0.0',
                 ]
             if 'x86' in chevah_arch:
-                # Full deps for Debian 7.x i386.
+                # Full deps for Debian 7.x/8.x i386.
                 allowed_deps=[
                     '/lib/i386-linux-gnu/i686/cmov/libc.so.6',
                     '/lib/i386-linux-gnu/i686/cmov/libcrypt.so.1',
@@ -179,13 +175,9 @@ def get_allowed_deps():
                     '/lib/i386-linux-gnu/i686/cmov/libm.so.6',
                     '/lib/i386-linux-gnu/i686/cmov/libpthread.so.0',
                     '/lib/i386-linux-gnu/i686/cmov/libutil.so.1',
-                    '/lib/i386-linux-gnu/libgcc_s.so.1',
-                    '/lib/i386-linux-gnu/libncurses.so.5',
-                    '/lib/i386-linux-gnu/libtinfo.so.5',
                     '/lib/i386-linux-gnu/libz.so.1',
                     '/usr/lib/i386-linux-gnu/i686/cmov/libcrypto.so.1.0.0',
                     '/usr/lib/i386-linux-gnu/i686/cmov/libssl.so.1.0.0',
-                    '/usr/lib/i386-linux-gnu/libffi.so.5',
                     ]
         elif ('raspbian' in chevah_os):
             # Common deps with full paths for Raspbian 7 and 8.
@@ -210,8 +202,10 @@ def get_allowed_deps():
             allowed_deps=[
                 '/lib/ld-musl-x86_64.so.1',
                 '/lib/libc.musl-x86_64.so.1',
-                '/lib/libcrypto.so.41',
-                '/lib/libssl.so.43',
+                '/lib/libssl.so.44',
+                '/lib/libcrypto.so.42.0.0',
+                '/lib/libssl.so.44.0.1',
+                '/lib/libcrypto.so.42',
                 '/lib/libz.so.1',
                 '/usr/lib/libffi.so.6',
                 '/usr/lib/libncursesw.so.6',
@@ -264,9 +258,15 @@ def get_allowed_deps():
         # sys.platform could be 'aix5', 'aix6' etc.
         aix_version = int(sys.platform[-1])
         if aix_version >= 6:
-            # Specific deps to add for AIX 6.1 and 7.1.
+            # Specific deps to add for AIX 6.1 and 7.1, mostly psutil deps.
             allowed_deps.extend([
                 '/lib/libthread.a(shr.o)',
+                '/usr/lib/libcfg.a(shr.o)',
+                '/usr/lib/libcorcfg.a(shr.o)',
+                '/usr/lib/liblvm.a(shr.o)',
+                '/usr/lib/libodm.a(shr.o)',
+                '/usr/lib/libperfstat.a(shr.o)',
+                '/usr/lib/libsrc.a(shr.o)',
                 ])
     elif platform_system == 'sunos':
         # On Solaris, platform.release() can be: '5.9'. '5.10', '5.11' etc.
@@ -279,6 +279,7 @@ def get_allowed_deps():
                 '/lib/64/libm.so.2',
                 '/lib/64/libnsl.so.1',
                 '/lib/64/libsocket.so.1',
+                '/usr/lib/64/libkstat.so.1',
                 ]
             if solaris_version == '10':
                 # Specific deps to add for Solaris 10.
@@ -347,6 +348,7 @@ def get_allowed_deps():
             allowed_deps = [
                 '/lib/libc.so.1',
                 '/lib/libdl.so.1',
+                '/lib/libkstat.so.1',
                 '/lib/libm.so.2',
                 '/lib/libnsl.so.1',
                 '/lib/libsocket.so.1',
@@ -436,6 +438,7 @@ def get_allowed_deps():
             '/System/Library/Frameworks/Carbon.framework/Versions/A/Carbon',
             '/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation',
             '/System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices',
+            '/System/Library/Frameworks/IOKit.framework/Versions/A/IOKit',
             '/System/Library/Frameworks/Security.framework/Versions/A/Security',
             '/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/SystemConfiguration',
             '/usr/lib/libffi.dylib',
@@ -462,6 +465,7 @@ def get_allowed_deps():
         allowed_deps = [
             '/lib/libc.so.7',
             '/lib/libcrypt.so.5',
+            '/lib/libdevstat.so.7',
             '/lib/libm.so.5',
             '/lib/libncurses.so.8',
             '/lib/libthr.so.3',
@@ -474,12 +478,16 @@ def get_allowed_deps():
             # Additional deps, specific for FreeBSD 10.
             allowed_deps.extend([
                 '/lib/libcrypto.so.7',
+                '/lib/libkvm.so.6',
                 '/usr/lib/libssl.so.7',
             ])
         else:
             # Additional deps, specific for FreeBSD 11 and maybe newer.
             allowed_deps.extend([
                 '/lib/libcrypto.so.8',
+                '/lib/libelf.so.2',
+                '/lib/libkvm.so.7',
+                '/usr/lib/libdl.so.1',
                 '/usr/lib/libssl.so.8',
             ])
     elif platform_system == 'openbsd':
@@ -488,6 +496,7 @@ def get_allowed_deps():
             '/usr/lib/libc.so',
             '/usr/lib/libcrypto.so',
             '/usr/lib/libcurses.so',
+            '/usr/lib/libkvm.so',
             '/usr/lib/libm.so',
             '/usr/lib/libpthread.so',
             '/usr/lib/libssl.so',
@@ -844,6 +853,17 @@ def main():
             sys.stderr.write('"_scandir" missing.\n')
             exit_code = 18
 
+    # Some OS'es are not supported by upstream psutil.
+    # FIXME:5185:
+    # Windows is special. We build python-package on XP, with psutil as a wheel,
+    # but XP/2003 not supported any more upstream, so we can't test for it.
+    if not chevah_os in [ 'aix53', 'hpux1131', 'windows' ]:
+        try:
+            import psutil
+            print 'psutil %s' % (psutil.__version__,)
+        except:
+            sys.stderr.write('"psutil" missing.\n')
+            exit_code = 23
 
     if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
         try:

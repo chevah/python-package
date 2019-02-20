@@ -781,6 +781,13 @@ def main():
             sys.stderr.write('"gmpy2" and "gmpy" missing.\n')
             exit_code = 19
 
+    try:
+        import Cython
+        print 'Cython %s' % (Cython.__version__,)
+    except:
+        sys.stderr.write('"Cython" missing.\n')
+        exit_code = 24
+
     # Windows specific modules.
     if os.name == 'nt':
         try:

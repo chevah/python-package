@@ -232,6 +232,7 @@ case $OS in
                 cryptography==${CRYPTOGRAPHY_VERSION} \
                 pyOpenSSL==${PYOPENSSL_VERSION} \
                 scandir==${SCANDIR_VERSION} \
+                Cython==${CYTHON_VERSION} \
                 "
         fi
         ;;

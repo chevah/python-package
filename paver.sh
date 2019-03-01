@@ -521,7 +521,7 @@ detect_os() {
 
     OS=$(uname -s | tr "[A-Z]" "[a-z]")
 
-    if [ "${OS%mingw*}" = "" ]; then
+    if [ "${OS%mingw*}" = "" -o "${OS%msys*}" = "" ]; then
 
         OS='windows'
         ARCH='x86'

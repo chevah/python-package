@@ -24,7 +24,7 @@ PIP_VERSION="9.0.3"
 SETUPTOOLS_VERSION="39.0.1"
 
 # Python modules versions to be used everywhere possible.
-CFFI_VERSION="1.11.5"
+CFFI_VERSION="1.12.2"
 PYCRYPTO_VERSION="2.6.1"
 # PyCrypto 2.6.1 is vulnerable to CVE-2013-7459 and CVE-2018-6594, but we patch
 # these vulnerabilities, and mark correspondent Safety IDs as false positives.

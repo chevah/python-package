@@ -932,6 +932,7 @@ command_test() {
             # available, but they need to be requested for the tests to pass.
             export LC_ALL=en_US.UTF-8
             execute $LOCAL_PYTHON_BINARY ${SCANDIR_FOLDER}/test/run_tests.py
+            export LC_ALL=C
             ;;
     esac
 

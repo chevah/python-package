@@ -9,7 +9,7 @@
 #
 
 # Beware that older versions might be used for selected platforms below.
-PYTHON_BUILD_VERSION="2.7.15"
+PYTHON_BUILD_VERSION="2.7.16"
 LIBFFI_VERSION="3.2.1"
 ZLIB_VERSION="1.2.11"
 # We statically build the BSD libedit on selected platforms to get the
@@ -24,7 +24,7 @@ PIP_VERSION="9.0.3"
 SETUPTOOLS_VERSION="39.0.1"
 
 # Python modules versions to be used everywhere possible.
-CFFI_VERSION="1.11.5"
+CFFI_VERSION="1.12.2"
 PYCRYPTO_VERSION="2.6.1"
 # PyCrypto 2.6.1 is vulnerable to CVE-2013-7459 and CVE-2018-6594, but we patch
 # these vulnerabilities, and mark correspondent Safety IDs as false positives.
@@ -35,10 +35,10 @@ PYCRYPTO_VERSION="2.6.1"
 #     cryptmsg.py."
 SAFETY_FALSE_POSITIVES_OPTS="-i 35015"
 PYCRYPTODOMEX_VERSION="3.6.6"
-PYOPENSSL_VERSION="18.0.0"
-CRYPTOGRAPHY_VERSION="2.4.2"
+PYOPENSSL_VERSION="19.0.0"
+CRYPTOGRAPHY_VERSION="2.6.1"
 SETPROCTITLE_VERSION="1.1.10"
-SCANDIR_VERSION="1.9.0"
+SCANDIR_VERSION="1.10.0"
 PSUTIL_VERSION="5.4.8"
 CYTHON_VERSION="0.29.5"
 PYWIN32_VERSION="223"
@@ -911,7 +911,6 @@ command_test() {
             # CFFI crashes on HP-UX.
             (>&2 echo -e "\tSkipping because of cffi-related crash.")
             ;;
-
         *)
             execute $LOCAL_PYTHON_BINARY -m Cryptodome.SelfTest
             ;;

@@ -864,10 +864,12 @@ def main():
     if not chevah_os in [ 'aix53', 'hpux1131' ]:
         try:
             import psutil
-            print 'psutil %s' % (psutil.__version__,)
+            cpu_percent = psutil.cpu_percent()
         except:
-            sys.stderr.write('"psutil" missing.\n')
+            sys.stderr.write('"psutil" missing or broken.\n')
             exit_code = 23
+        else:
+            print 'psutil %s' % (psutil.__version__,)
 
     if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
         try:

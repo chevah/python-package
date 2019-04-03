@@ -39,7 +39,7 @@ PYOPENSSL_VERSION="19.0.0"
 CRYPTOGRAPHY_VERSION="2.6.1"
 SETPROCTITLE_VERSION="1.1.10"
 SCANDIR_VERSION="1.10.0"
-PSUTIL_VERSION="5.4.8"
+PSUTIL_VERSION="5.6.1"
 CYTHON_VERSION="0.29.5"
 PYWIN32_VERSION="223"
 GMPY2_VERSION="2.0.8"
@@ -151,6 +151,9 @@ RHEL_PKGS="$COMMON_PKGS git openssl-devel zlib-devel libffi-devel ncurses-devel"
 ALPINE_PKGS="$COMMON_PKGS\
     git libc-dev libressl-dev zlib-dev libffi-dev ncurses-dev linux-headers"
 ARCH_PKGS="$COMMON_PKGS git libffi ncurses"
+# Windows is special, but package management is possible through Chocolatey.
+# Chocolatey's git package comes with patch included through bundling MINGW4.
+CHOCO_PKGS="vcpython27 make git"
 case "$OS" in
     rhel5)
         RHEL_PKGS="$RHEL_PKGS automake15"
@@ -553,8 +556,15 @@ check_dependencies() {
         # On remaining OS'es we just check for some of the needed commands.
         windows)
             # The windows build is special.
-            packages="make git patch"
-            check_command="command -v"
+            command -v choco
+            if [ $? -eq 0 ]; then
+                # Chocolatey is present, let's use it.
+                packages=$CHOCO_PKGS
+                check_command="choco info --local-only --limit-output"
+            else
+                packages="make git patch"
+                check_command="command -v"
+            fi
             ;;
         hpux*)
             # Included CFLAGS get in the way on HP-UX.

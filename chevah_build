@@ -250,6 +250,9 @@ case $OS in
         export CC="cc"
         export CXX="CC"
         export MAKE="gmake"
+        # Needed for the subprocess32 module.
+        # More at https://github.com/google/python-subprocess32/issues/40.
+        export CFLAGS="$CFLAGS -DHAVE_DIRFD"
         # Here's where the system-included GCC is to be found.
         if [ "${CC}" = "gcc" ]; then
             export PATH="$PATH:/usr/sfw/bin/"

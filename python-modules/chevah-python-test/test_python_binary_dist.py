@@ -788,6 +788,15 @@ def main():
         sys.stderr.write('"Cython" missing.\n')
         exit_code = 24
 
+    try:
+        import subprocess32 as subprocess
+        dir_output = subprocess.check_output('ls')
+    except:
+        sys.stderr.write('"subprocess32" missing or broken.\n')
+        exit_code = 25
+    else:
+        print 'subprocess32 present'
+
     # Windows specific modules.
     if os.name == 'nt':
         try:

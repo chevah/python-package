@@ -41,6 +41,7 @@ SETPROCTITLE_VERSION="1.1.10"
 SCANDIR_VERSION="1.10.0"
 PSUTIL_VERSION="5.6.1"
 CYTHON_VERSION="0.29.5"
+SUBPROCESS32_VERSION="3.5.3"
 PYWIN32_VERSION="223"
 GMPY2_VERSION="2.0.8"
 GMPY_VERSION="1.17"
@@ -75,6 +76,7 @@ EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/pycrypto-${PYCRYPTO_VERSION} \
     python-modules/pycryptodomex-${PYCRYPTODOMEX_VERSION} \
     python-modules/Cython-${CYTHON_VERSION} \
+    python-modules/subprocess32-${SUBPROCESS32_VERSION} \
     "
 
 # List of python modules installed using pip
@@ -86,6 +88,7 @@ PIP_LIBRARIES="\
     scandir==${SCANDIR_VERSION} \
     psutil==${PSUTIL_VERSION} \
     Cython==${CYTHON_VERSION} \
+    subprocess32==${SUBPROCESS32_VERSION} \
     "
 # cryptography 1.3.4 was last upstream version to support OpenSSL 0.9.8.
 # pyOpenSSL 16.0.0 was last upstream version to support OpenSSL 0.9.8.
@@ -97,6 +100,7 @@ PIP_LIBRARIES_OPENSSL_098="\
     scandir==${SCANDIR_VERSION} \
     psutil==${PSUTIL_VERSION} \
     Cython==${CYTHON_VERSION} \
+    subprocess32==${SUBPROCESS32_VERSION} \
     "
 # Python modules installed through pip on systems not built around cffi.
 # pyOpenSSL 0.13.1 was last upstream version before the port to
@@ -108,6 +112,7 @@ PIP_LIBRARIES_NO_CFFI="\
     scandir==${SCANDIR_VERSION} \
     psutil==${PSUTIL_VERSION} \
     Cython==${CYTHON_VERSION} \
+    subprocess32==${SUBPROCESS32_VERSION} \
     "
 
 # Arguments that are sent when using pip.
@@ -236,6 +241,7 @@ case $OS in
                 pyOpenSSL==${PYOPENSSL_VERSION} \
                 scandir==${SCANDIR_VERSION} \
                 Cython==${CYTHON_VERSION} \
+                subprocess32==${SUBPROCESS32_VERSION} \
                 "
         fi
         ;;
@@ -388,6 +394,7 @@ case $OS in
             scandir==${SCANDIR_VERSION} \
             psutil==${PSUTIL_VERSION} \
             Cython==${CYTHON_VERSION} \
+            subprocess32==${SUBPROCESS32_VERSION} \
             "
         ;;
     macos*)
@@ -425,6 +432,7 @@ case $OS in
             scandir==${SCANDIR_VERSION} \
             psutil==${PSUTIL_VERSION} \
             Cython==${CYTHON_VERSION} \
+            subprocess32==${SUBPROCESS32_VERSION} \
             "
         ;;
     rhel5|sles11)
@@ -442,6 +450,7 @@ case $OS in
             scandir==${SCANDIR_VERSION} \
             psutil==${PSUTIL_VERSION} \
             Cython==${CYTHON_VERSION} \
+            subprocess32==${SUBPROCESS32_VERSION} \
             "
         ;;
     sles10)
@@ -470,6 +479,7 @@ case $OS in
             pywin32==${PYWIN32_VERSION} \
             gmpy2==${GMPY2_VERSION} \
             Cython==${CYTHON_VERSION} \
+            subprocess32==${SUBPROCESS32_VERSION} \
             "
         ;;
 esac

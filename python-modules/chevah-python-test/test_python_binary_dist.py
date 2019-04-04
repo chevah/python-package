@@ -666,19 +666,21 @@ def main():
 
     try:
         import zlib
-        print 'zlib %s' % (zlib.__version__,)
     except:
         sys.stderr.write('"zlib" missing.\n')
         exit_code = 1
+    else:
+        print 'zlib %s' % (zlib.__version__,)
 
     try:
         from ssl import OPENSSL_VERSION
-        print 'stdlib ssl %s' % (OPENSSL_VERSION,)
         import _hashlib
         exit_code = egg_check(_hashlib) | exit_code
     except:
         sys.stderr.write('standard "ssl" missing.\n')
         exit_code = 2
+    else:
+        print 'stdlib ssl %s' % (OPENSSL_VERSION,)
 
     # cryptography module and latest pyOpenSSL are only available on
     # systems with cffi.
@@ -687,8 +689,6 @@ def main():
             from cryptography.hazmat.backends.openssl.backend import backend
             import cryptography
             openssl_version = backend.openssl_version_text()
-            print 'cryptography %s - OpenSSL %s' % (
-                cryptography.__version__, openssl_version)
             if chevah_os in [ "windows", "osx108", "sles11", "rhel5" ]:
                 # Check OpenSSL version from upstream wheels.
                 expecting = u'OpenSSL 1.1.1b  26 Feb 2019'
@@ -699,43 +699,50 @@ def main():
         except Exception as error:
             sys.stderr.write('"cryptography" failure. %s\n' % (error,))
             exit_code = 14
+        else:
+            print 'cryptography %s - OpenSSL %s' % (
+                cryptography.__version__, openssl_version)
 
     try:
         from OpenSSL import SSL, crypto, rand, __version__ as pyopenssl_version
         crypto
         rand
+    except Exception as error:
+        sys.stderr.write('"OpenSSL" missing. %s\n' % (error,))
+        exit_code = 3
+    else:
         print 'pyOpenSSL %s - OpenSSL %s' % (
             pyopenssl_version,
             SSL.SSLeay_version(SSL.SSLEAY_VERSION),
             )
-    except Exception as error:
-        sys.stderr.write('"OpenSSL" missing. %s\n' % (error,))
-        exit_code = 3
 
     try:
         import Crypto
         pycrypto_version = Crypto.__version__
-        print 'PyCrypto %s' % (pycrypto_version)
     except:
         sys.stderr.write('"PyCrypto" missing.\n')
         exit_code = 4
+    else:
+        print 'PyCrypto %s' % (pycrypto_version)
 
     try:
         import Cryptodome
         pycryptodome_version = Cryptodome.__version__
-        print 'PyCryptodome %s' % (pycryptodome_version)
     except:
         sys.stderr.write('"PyCryptodome" missing.\n')
         exit_code = 11
+    else:
+        print 'PyCryptodome %s' % (pycryptodome_version)
 
     try:
         from ctypes import CDLL
         import ctypes
         CDLL
-        print 'ctypes %s' % (ctypes.__version__,)
     except:
         sys.stderr.write('"ctypes - CDLL" missing. %s\n')
         exit_code = 8
+    else:
+        print 'ctypes %s' % (ctypes.__version__,)
 
     try:
         from ctypes.util import find_library
@@ -748,7 +755,7 @@ def main():
         import multiprocessing
         multiprocessing.current_process()
     except:
-        sys.stderr.write('"multiprocessing" missing.\n')
+        sys.stderr.write('"multiprocessing" missing or broken.\n')
         exit_code = 16
 
     # The pure-Python scandir package is always available.
@@ -799,7 +806,7 @@ def main():
         sys.stderr.write('"subprocess32" missing or broken.\n')
         exit_code = 25
     else:
-        print 'subprocess32 is present.'
+        print '"subprocess32" module is present.'
 
     # Windows specific modules.
     if os.name == 'nt':
@@ -895,7 +902,7 @@ def main():
             import spwd
             spwd
         except:
-            sys.stderr.write('"spwd" missing.\n')
+            sys.stderr.write('"spwd" missing, but it should be present.\n')
             exit_code = 11
         else:
             print '"spwd" module is present.'

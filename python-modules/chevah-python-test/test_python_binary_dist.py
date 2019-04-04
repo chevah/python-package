@@ -754,8 +754,11 @@ def main():
     # The pure-Python scandir package is always available.
     try:
         import scandir
+        for item in scandir.scandir('/'):
+            if item.is_dir():
+                break
     except:
-        sys.stderr.write('"scandir" missing.\n')
+        sys.stderr.write('"scandir" missing or broken.\n')
         exit_code = 17
 
     try:
@@ -783,10 +786,11 @@ def main():
 
     try:
         import Cython
-        print 'Cython %s' % (Cython.__version__,)
     except:
         sys.stderr.write('"Cython" missing.\n')
         exit_code = 24
+    else:
+        print 'Cython %s' % (Cython.__version__,)
 
     try:
         import subprocess32 as subprocess
@@ -795,7 +799,7 @@ def main():
         sys.stderr.write('"subprocess32" missing or broken.\n')
         exit_code = 25
     else:
-        print 'subprocess32 present'
+        print 'subprocess32 is present.'
 
     # Windows specific modules.
     if os.name == 'nt':
@@ -805,13 +809,16 @@ def main():
         except:
             sys.stderr.write('"ctypes - windll" missing.\n')
             exit_code = 15
+
         try:
             from sqlite3 import dbapi2 as sqlite
-            print 'sqlite3 %s - sqlite %s' % (
-                    sqlite.version, sqlite.sqlite_version)
         except:
             sys.stderr.write('"sqlite3" missing or broken.\n')
             exit_code = 6
+        else:
+            print 'sqlite3 %s - sqlite %s' % (
+                    sqlite.version, sqlite.sqlite_version)
+
         try:
             import win32service
             win32service.EnumWindowStations()
@@ -830,18 +837,21 @@ def main():
 
         try:
             from pysqlite2 import dbapi2 as sqlite
+        except:
+            sys.stderr.write('"pysqlite2" missing.\n')
+            exit_code = 6
+        else:
             print 'pysqlite2 %s - sqlite %s' % (
                     sqlite.version, sqlite.sqlite_version)
-        except:
-            sys.stderr.write('"pysqlite2" missing or broken.\n')
-            exit_code = 6
 
         try:
             import setproctitle
-            print 'setproctitle %s' % (setproctitle.__version__,)
+            current_process_title = setproctitle.getproctitle()
         except:
-            sys.stderr.write('"setproctitle" missing.\n')
+            sys.stderr.write('"setproctitle" missing or broken.\n')
             exit_code = 7
+        else:
+            print 'setproctitle %s' % (setproctitle.__version__,)
 
         # Check for the git revision in Python's sys.version on Linux and Unix.
         try:
@@ -887,7 +897,8 @@ def main():
         except:
             sys.stderr.write('"spwd" missing.\n')
             exit_code = 11
-
+        else:
+            print '"spwd" module is present.'
 
     # We compile the readline module using libedit only on selected platforms.
     if BUILD_LIBEDIT:
@@ -895,7 +906,7 @@ def main():
             import readline
             readline.get_history_length()
         except:
-            sys.stderr.write('"readline" missing.\n')
+            sys.stderr.write('"readline" missing or broken.\n')
             exit_code = 12
         else:
             print '"readline" module is present.'

@@ -41,6 +41,7 @@ SETPROCTITLE_VERSION="1.1.10"
 SCANDIR_VERSION="1.10.0"
 PSUTIL_VERSION="5.6.1"
 CYTHON_VERSION="0.29.5"
+SUBPROCESS32_VERSION="3.5.3"
 PYWIN32_VERSION="223"
 GMPY2_VERSION="2.0.8"
 GMPY_VERSION="1.17"
@@ -63,7 +64,7 @@ export BUILD_GMP="yes"
 export BUILD_LIBFFI="no"
 export BUILD_CFFI="yes"
 
-# Patches for EXTRA_LIBRARIES libs should reside in a sub-directory named
+# Patches for EXTRA_LIBRARIES modules should reside in a sub-directory named
 #"python-modules/lib-${LIB_VERSION}-patches", to be applied when needed
 # during the build. See the patches for PyCrypto 2.6.1 for an example.
 EXTRA_LIBRARIES="\
@@ -74,7 +75,6 @@ EXTRA_LIBRARIES="\
 EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/pycrypto-${PYCRYPTO_VERSION} \
     python-modules/pycryptodomex-${PYCRYPTODOMEX_VERSION} \
-    python-modules/Cython-${CYTHON_VERSION} \
     "
 
 # List of python modules installed using pip
@@ -86,6 +86,7 @@ PIP_LIBRARIES="\
     scandir==${SCANDIR_VERSION} \
     psutil==${PSUTIL_VERSION} \
     Cython==${CYTHON_VERSION} \
+    subprocess32==${SUBPROCESS32_VERSION} \
     "
 # cryptography 1.3.4 was last upstream version to support OpenSSL 0.9.8.
 # pyOpenSSL 16.0.0 was last upstream version to support OpenSSL 0.9.8.
@@ -97,17 +98,20 @@ PIP_LIBRARIES_OPENSSL_098="\
     scandir==${SCANDIR_VERSION} \
     psutil==${PSUTIL_VERSION} \
     Cython==${CYTHON_VERSION} \
+    subprocess32==${SUBPROCESS32_VERSION} \
     "
 # Python modules installed through pip on systems not built around cffi.
 # pyOpenSSL 0.13.1 was last upstream version before the port to
 # the cffi-based OpenSSL bindings provided by the cryptography module.
 # pyOpenSSL 0.13.1, that fixes CVE-2013-4314, requires SSL_set_SSL_CTX.
+# psutil not included because it's broken on HP-UX (where it doesn't build),
+# and on Solaris (where it builds just fine, but version 5.6.1 doesn't work).
 PIP_LIBRARIES_NO_CFFI="\
     pyOpenSSL==0.13.1 \
     setproctitle==${SETPROCTITLE_VERSION} \
     scandir==${SCANDIR_VERSION} \
-    psutil==${PSUTIL_VERSION} \
     Cython==${CYTHON_VERSION} \
+    subprocess32==${SUBPROCESS32_VERSION} \
     "
 
 # Arguments that are sent when using pip.
@@ -236,6 +240,7 @@ case $OS in
                 pyOpenSSL==${PYOPENSSL_VERSION} \
                 scandir==${SCANDIR_VERSION} \
                 Cython==${CYTHON_VERSION} \
+                subprocess32==${SUBPROCESS32_VERSION} \
                 "
         fi
         ;;
@@ -244,6 +249,9 @@ case $OS in
         export CC="cc"
         export CXX="CC"
         export MAKE="gmake"
+        # Needed for the subprocess32 module.
+        # More at https://github.com/google/python-subprocess32/issues/40.
+        export CFLAGS="$CFLAGS -DHAVE_DIRFD"
         # Here's where the system-included GCC is to be found.
         if [ "${CC}" = "gcc" ]; then
             export PATH="$PATH:/usr/sfw/bin/"
@@ -363,12 +371,7 @@ case $OS in
         # https://bitbucket.org/cffi/cffi/issues/368/segmentation-fault-in-hp-ux
         export BUILD_CFFI="no"
         add_ignored_safety_ids_for_pyopenssl_false_positives
-        # PIP_LIBRARIES_NO_CFFI without psutil, which doesn't support HP-UX.
-        PIP_LIBRARIES="\
-            pyOpenSSL==0.13.1 \
-            setproctitle==${SETPROCTITLE_VERSION} \
-            scandir==${SCANDIR_VERSION} \
-            "
+        PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
     osx*)
@@ -388,6 +391,7 @@ case $OS in
             scandir==${SCANDIR_VERSION} \
             psutil==${PSUTIL_VERSION} \
             Cython==${CYTHON_VERSION} \
+            subprocess32==${SUBPROCESS32_VERSION} \
             "
         ;;
     macos*)
@@ -425,6 +429,7 @@ case $OS in
             scandir==${SCANDIR_VERSION} \
             psutil==${PSUTIL_VERSION} \
             Cython==${CYTHON_VERSION} \
+            subprocess32==${SUBPROCESS32_VERSION} \
             "
         ;;
     rhel5|sles11)
@@ -442,6 +447,7 @@ case $OS in
             scandir==${SCANDIR_VERSION} \
             psutil==${PSUTIL_VERSION} \
             Cython==${CYTHON_VERSION} \
+            subprocess32==${SUBPROCESS32_VERSION} \
             "
         ;;
     sles10)
@@ -470,6 +476,7 @@ case $OS in
             pywin32==${PYWIN32_VERSION} \
             gmpy2==${GMPY2_VERSION} \
             Cython==${CYTHON_VERSION} \
+            subprocess32==${SUBPROCESS32_VERSION} \
             "
         ;;
 esac

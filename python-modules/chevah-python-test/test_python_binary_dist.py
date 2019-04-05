@@ -279,7 +279,6 @@ def get_allowed_deps():
                 '/lib/64/libm.so.2',
                 '/lib/64/libnsl.so.1',
                 '/lib/64/libsocket.so.1',
-                '/usr/lib/64/libkstat.so.1',
                 ]
             if solaris_version == '10':
                 # Specific deps to add for Solaris 10.
@@ -336,6 +335,7 @@ def get_allowed_deps():
                 if solaris_version_minor >= 4:
                     # Solaris 11.4 deps.
                     allowed_deps.extend([
+                        '/usr/lib/64/libkstat.so.1',
                         '/usr/lib/64/libncursesw.so.5',
                         ])
                 else:
@@ -348,7 +348,6 @@ def get_allowed_deps():
             allowed_deps = [
                 '/lib/libc.so.1',
                 '/lib/libdl.so.1',
-                '/lib/libkstat.so.1',
                 '/lib/libm.so.2',
                 '/lib/libnsl.so.1',
                 '/lib/libsocket.so.1',
@@ -410,7 +409,8 @@ def get_allowed_deps():
                 if solaris_version_minor >= 4:
                     # Solaris 11.4 deps.
                     allowed_deps.extend([
-                        '/usr/lib/64/libncursesw.so.5',
+                        '/lib/libkstat.so.1',
+                        '/usr/lib/libncursesw.so.5',
                         ])
                 else:
                     # Solaris deps for 11.0-11.3.
@@ -666,19 +666,21 @@ def main():
 
     try:
         import zlib
-        print 'zlib %s' % (zlib.__version__,)
     except:
         sys.stderr.write('"zlib" missing.\n')
         exit_code = 1
+    else:
+        print 'zlib %s' % (zlib.__version__,)
 
     try:
         from ssl import OPENSSL_VERSION
-        print 'stdlib ssl %s' % (OPENSSL_VERSION,)
         import _hashlib
         exit_code = egg_check(_hashlib) | exit_code
     except:
         sys.stderr.write('standard "ssl" missing.\n')
         exit_code = 2
+    else:
+        print 'stdlib ssl %s' % (OPENSSL_VERSION,)
 
     # cryptography module and latest pyOpenSSL are only available on
     # systems with cffi.
@@ -687,8 +689,6 @@ def main():
             from cryptography.hazmat.backends.openssl.backend import backend
             import cryptography
             openssl_version = backend.openssl_version_text()
-            print 'cryptography %s - OpenSSL %s' % (
-                cryptography.__version__, openssl_version)
             if chevah_os in [ "windows", "osx108", "sles11", "rhel5" ]:
                 # Check OpenSSL version from upstream wheels.
                 expecting = u'OpenSSL 1.1.1b  26 Feb 2019'
@@ -699,43 +699,50 @@ def main():
         except Exception as error:
             sys.stderr.write('"cryptography" failure. %s\n' % (error,))
             exit_code = 14
+        else:
+            print 'cryptography %s - OpenSSL %s' % (
+                cryptography.__version__, openssl_version)
 
     try:
         from OpenSSL import SSL, crypto, rand, __version__ as pyopenssl_version
         crypto
         rand
+    except Exception as error:
+        sys.stderr.write('"OpenSSL" missing. %s\n' % (error,))
+        exit_code = 3
+    else:
         print 'pyOpenSSL %s - OpenSSL %s' % (
             pyopenssl_version,
             SSL.SSLeay_version(SSL.SSLEAY_VERSION),
             )
-    except Exception as error:
-        sys.stderr.write('"OpenSSL" missing. %s\n' % (error,))
-        exit_code = 3
 
     try:
         import Crypto
         pycrypto_version = Crypto.__version__
-        print 'PyCrypto %s' % (pycrypto_version)
     except:
         sys.stderr.write('"PyCrypto" missing.\n')
         exit_code = 4
+    else:
+        print 'PyCrypto %s' % (pycrypto_version)
 
     try:
         import Cryptodome
         pycryptodome_version = Cryptodome.__version__
-        print 'PyCryptodome %s' % (pycryptodome_version)
     except:
         sys.stderr.write('"PyCryptodome" missing.\n')
         exit_code = 11
+    else:
+        print 'PyCryptodome %s' % (pycryptodome_version)
 
     try:
         from ctypes import CDLL
         import ctypes
         CDLL
-        print 'ctypes %s' % (ctypes.__version__,)
     except:
         sys.stderr.write('"ctypes - CDLL" missing. %s\n')
         exit_code = 8
+    else:
+        print 'ctypes %s' % (ctypes.__version__,)
 
     try:
         from ctypes.util import find_library
@@ -748,14 +755,17 @@ def main():
         import multiprocessing
         multiprocessing.current_process()
     except:
-        sys.stderr.write('"multiprocessing" missing.\n')
+        sys.stderr.write('"multiprocessing" missing or broken.\n')
         exit_code = 16
 
     # The pure-Python scandir package is always available.
     try:
         import scandir
+        for item in scandir.scandir('/'):
+            if item.is_dir():
+                break
     except:
-        sys.stderr.write('"scandir" missing.\n')
+        sys.stderr.write('"scandir" missing or broken.\n')
         exit_code = 17
 
     try:
@@ -783,10 +793,20 @@ def main():
 
     try:
         import Cython
-        print 'Cython %s' % (Cython.__version__,)
     except:
         sys.stderr.write('"Cython" missing.\n')
         exit_code = 24
+    else:
+        print 'Cython %s' % (Cython.__version__,)
+
+    try:
+        import subprocess32 as subprocess
+        dir_output = subprocess.check_output('ls')
+    except:
+        sys.stderr.write('"subprocess32" missing or broken.\n')
+        exit_code = 25
+    else:
+        print '"subprocess32" module is present.'
 
     # Windows specific modules.
     if os.name == 'nt':
@@ -796,13 +816,16 @@ def main():
         except:
             sys.stderr.write('"ctypes - windll" missing.\n')
             exit_code = 15
+
         try:
             from sqlite3 import dbapi2 as sqlite
-            print 'sqlite3 %s - sqlite %s' % (
-                    sqlite.version, sqlite.sqlite_version)
         except:
             sys.stderr.write('"sqlite3" missing or broken.\n')
             exit_code = 6
+        else:
+            print 'sqlite3 %s - sqlite %s' % (
+                    sqlite.version, sqlite.sqlite_version)
+
         try:
             import win32service
             win32service.EnumWindowStations()
@@ -821,18 +844,21 @@ def main():
 
         try:
             from pysqlite2 import dbapi2 as sqlite
+        except:
+            sys.stderr.write('"pysqlite2" missing.\n')
+            exit_code = 6
+        else:
             print 'pysqlite2 %s - sqlite %s' % (
                     sqlite.version, sqlite.sqlite_version)
-        except:
-            sys.stderr.write('"pysqlite2" missing or broken.\n')
-            exit_code = 6
 
         try:
             import setproctitle
-            print 'setproctitle %s' % (setproctitle.__version__,)
+            current_process_title = setproctitle.getproctitle()
         except:
-            sys.stderr.write('"setproctitle" missing.\n')
+            sys.stderr.write('"setproctitle" missing or broken.\n')
             exit_code = 7
+        else:
+            print 'setproctitle %s' % (setproctitle.__version__,)
 
         # Check for the git revision in Python's sys.version on Linux and Unix.
         try:
@@ -861,7 +887,7 @@ def main():
             exit_code = 18
 
     # Some OS'es are not supported by upstream psutil.
-    if not chevah_os in [ 'aix53', 'hpux1131' ]:
+    if not chevah_os in [ 'aix53', 'hpux1131', 'solaris10', 'solaris112' ]:
         try:
             import psutil
             cpu_percent = psutil.cpu_percent()
@@ -876,9 +902,10 @@ def main():
             import spwd
             spwd
         except:
-            sys.stderr.write('"spwd" missing.\n')
+            sys.stderr.write('"spwd" missing, but it should be present.\n')
             exit_code = 11
-
+        else:
+            print '"spwd" module is present.'
 
     # We compile the readline module using libedit only on selected platforms.
     if BUILD_LIBEDIT:
@@ -886,7 +913,7 @@ def main():
             import readline
             readline.get_history_length()
         except:
-            sys.stderr.write('"readline" missing.\n')
+            sys.stderr.write('"readline" missing or broken.\n')
             exit_code = 12
         else:
             print '"readline" module is present.'

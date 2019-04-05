@@ -106,11 +106,12 @@ PIP_LIBRARIES_OPENSSL_098="\
 # pyOpenSSL 0.13.1 was last upstream version before the port to
 # the cffi-based OpenSSL bindings provided by the cryptography module.
 # pyOpenSSL 0.13.1, that fixes CVE-2013-4314, requires SSL_set_SSL_CTX.
+# psutil not included because it's broken on HP-UX (where it doesn't build),
+# and on Solaris (where it builds just fine, but version 5.6.1 doesn't work).
 PIP_LIBRARIES_NO_CFFI="\
     pyOpenSSL==0.13.1 \
     setproctitle==${SETPROCTITLE_VERSION} \
     scandir==${SCANDIR_VERSION} \
-    psutil==${PSUTIL_VERSION} \
     Cython==${CYTHON_VERSION} \
     subprocess32==${SUBPROCESS32_VERSION} \
     "
@@ -372,12 +373,7 @@ case $OS in
         # https://bitbucket.org/cffi/cffi/issues/368/segmentation-fault-in-hp-ux
         export BUILD_CFFI="no"
         add_ignored_safety_ids_for_pyopenssl_false_positives
-        # PIP_LIBRARIES_NO_CFFI without psutil, which doesn't support HP-UX.
-        PIP_LIBRARIES="\
-            pyOpenSSL==0.13.1 \
-            setproctitle==${SETPROCTITLE_VERSION} \
-            scandir==${SCANDIR_VERSION} \
-            "
+        PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
         EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         ;;
     osx*)

@@ -279,7 +279,6 @@ def get_allowed_deps():
                 '/lib/64/libm.so.2',
                 '/lib/64/libnsl.so.1',
                 '/lib/64/libsocket.so.1',
-                '/usr/lib/64/libkstat.so.1',
                 ]
             if solaris_version == '10':
                 # Specific deps to add for Solaris 10.
@@ -336,6 +335,7 @@ def get_allowed_deps():
                 if solaris_version_minor >= 4:
                     # Solaris 11.4 deps.
                     allowed_deps.extend([
+                        '/usr/lib/64/libkstat.so.1',
                         '/usr/lib/64/libncursesw.so.5',
                         ])
                 else:
@@ -348,7 +348,6 @@ def get_allowed_deps():
             allowed_deps = [
                 '/lib/libc.so.1',
                 '/lib/libdl.so.1',
-                '/lib/libkstat.so.1',
                 '/lib/libm.so.2',
                 '/lib/libnsl.so.1',
                 '/lib/libsocket.so.1',
@@ -410,7 +409,8 @@ def get_allowed_deps():
                 if solaris_version_minor >= 4:
                     # Solaris 11.4 deps.
                     allowed_deps.extend([
-                        '/usr/lib/64/libncursesw.so.5',
+                        '/lib/libkstat.so.1',
+                        '/usr/lib/libncursesw.so.5',
                         ])
                 else:
                     # Solaris deps for 11.0-11.3.
@@ -887,7 +887,7 @@ def main():
             exit_code = 18
 
     # Some OS'es are not supported by upstream psutil.
-    if not chevah_os in [ 'aix53', 'hpux1131' ]:
+    if not chevah_os in [ 'aix53', 'hpux1131', 'solaris10', 'solaris112' ]:
         try:
             import psutil
             cpu_percent = psutil.cpu_percent()

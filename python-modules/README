@@ -1,0 +1,11 @@
+This directory holds sources for modules not built through PIP.
+Their sub-directories should be named "lib-${LIB_VERSION}", to be picked up
+through the EXTRA_LIBRARIES variable in the "chevah_build" shell script.
+
+Patches for these modules should reside in a sub-directory named
+"lib-${LIB_VERSION}-patches", to be applied when needed during the build.
+See the patches for PyCrypto 2.6.1 for an example involving multiple patches
+to be applied in a predetermined order.
+
+For some modules built through PIP we keep source here as well because
+some of the files are needed in the test phase ('scandir' for now).

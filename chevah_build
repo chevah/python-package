@@ -64,7 +64,7 @@ export BUILD_GMP="yes"
 export BUILD_LIBFFI="no"
 export BUILD_CFFI="yes"
 
-# Patches for EXTRA_LIBRARIES libs should reside in a sub-directory named
+# Patches for EXTRA_LIBRARIES modules should reside in a sub-directory named
 #"python-modules/lib-${LIB_VERSION}-patches", to be applied when needed
 # during the build. See the patches for PyCrypto 2.6.1 for an example.
 EXTRA_LIBRARIES="\

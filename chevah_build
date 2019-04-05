@@ -76,7 +76,6 @@ EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/pycrypto-${PYCRYPTO_VERSION} \
     python-modules/pycryptodomex-${PYCRYPTODOMEX_VERSION} \
     python-modules/Cython-${CYTHON_VERSION} \
-    python-modules/subprocess32-${SUBPROCESS32_VERSION} \
     "
 
 # List of python modules installed using pip

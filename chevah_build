@@ -399,14 +399,10 @@ case $OS in
         export CXX="clang++"
         # No zlib headers on macOS 10.14.
         export BUILD_ZLIB="yes"
-        # Up to macOS 10.12, Apple only provides OpenSSL version 0.9.8zh.
-        # macOS 10.13 and newer come with LibreSSL, not clear if maintained.
-        # Therefore, we require Homebrew's OpenSSL libs, located as follows.
-        export LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"
-        export CPPFLAGS="$CPPFLAGS -I/usr/local/opt/openssl/include"
         # setup.py skips building readline by default, as it sets this to
         # "10.4", and then tries to avoid the broken readline in OS X 10.4.
-        export MACOSX_DEPLOYMENT_TARGET=10.11
+        # 10.13 and newer come with LibreSSL instead of the old OpenSSL libs.
+        export MACOSX_DEPLOYMENT_TARGET=10.13
         ;;
     freebsd*|openbsd*)
         export CC="clang"
@@ -548,19 +544,11 @@ check_dependencies() {
             packages=$ARCH_PKGS
             check_command='pacman -Qi'
             ;;
+        # On remaining OS'es we just check for some of the needed commands.
         macos*)
-            # On macOS we need OpenSSL installed via Homebrew, and here we
-            # check that the expected version is installed, as hardcoded below.
-            homebrew_openssl_version=`brew list --versions openssl`
-            if [[ $homebrew_openssl_version != "openssl 1.0.2"* ]]; then
-                (>&2 echo "Unsupported version: $homebrew_openssl_version")
-                exit 102
-            fi
-            # But we also check for the required commands, as for below OS'es.
             packages="$CC make m4 libtool git patch"
             check_command="command -v"
             ;;
-        # On remaining OS'es we just check for some of the needed commands.
         windows)
             # The windows build is special.
             command -v choco

@@ -401,8 +401,10 @@ case $OS in
         export BUILD_ZLIB="yes"
         # setup.py skips building readline by default, as it sets this to
         # "10.4", and then tries to avoid the broken readline in OS X 10.4.
-        # 10.13 and newer come with LibreSSL instead of the old OpenSSL libs.
         export MACOSX_DEPLOYMENT_TARGET=10.13
+        # 10.13 and newer come with LibreSSL instead of the old OpenSSL libs.
+        # But the headers are missing, so we copy them ourselves when building.
+        LIBRESSL_VERSION=2.2.7
         ;;
     freebsd*|openbsd*)
         export CC="clang"
@@ -645,6 +647,14 @@ command_build() {
     case $OS in
         windows*)
             build 'python' "Python-$PYTHON_BUILD_VERSION-windows" ${PYTHON_BUILD_FOLDER}
+            ;;
+        macos*)
+            # SSL headers are missing on macOS.
+            echo "Copying LibreSSL $LIBRESSL_VERSION headers. Updating CFLAGS."
+            cp -r src/libressl/libressl-${LIBRESSL_VERSION}/include/openssl \
+                $INSTALL_FOLDER/include/
+            export CFLAGS="$CFLAGS -I${INSTALL_FOLDER}/include"
+            build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
         *)
             build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}

@@ -446,19 +446,19 @@ def get_allowed_deps():
             '/usr/lib/libz.1.dylib',
             ]
         if ('osx' in chevah_os):
-            # Additional deps when using the OS-included OpenSSL.
+            # Additional deps when using the OS-included OpenSSL 0.9.8.
             allowed_deps.extend([
                 '/usr/lib/libcrypto.0.9.8.dylib',
                 '/usr/lib/libssl.0.9.8.dylib',
                 '/usr/lib/libncurses.5.4.dylib',
                 ])
         elif ('macos' in chevah_os):
-            # Additional deps for MacOS 10.12+ when using Homebrew's OpenSSL.
+            # Additional deps for MacOS 10.13+ when using OS-included LibreSSL.
             allowed_deps.extend([
                 '/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics',
+                '/usr/lib/libcrypto.35.dylib',
                 '/usr/lib/libncurses.5.4.dylib',
-                '/usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib',
-                '/usr/local/opt/openssl/lib/libssl.1.0.0.dylib',
+                '/usr/lib/libssl.35.dylib',
                 ])
     elif platform_system == 'freebsd':
         # This is the common list of deps for FreeBSD 10 and newer, with paths.

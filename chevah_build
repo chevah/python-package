@@ -397,14 +397,14 @@ case $OS in
     macos*)
         export CC="clang"
         export CXX="clang++"
-        # No zlib headers on macOS 10.14.
-        export BUILD_ZLIB="yes"
         # setup.py skips building readline by default, as it sets this to
         # "10.4", and then tries to avoid the broken readline in OS X 10.4.
         export MACOSX_DEPLOYMENT_TARGET=10.13
         # 10.13 and newer come with LibreSSL instead of the old OpenSSL libs.
         # But the headers are missing, so we copy them ourselves when building.
         LIBRESSL_VERSION=2.2.7
+        # Beware that zlib headers are not present either on macOS 10.14.
+        # We don't care here because we build on 10.13.
         ;;
     freebsd*|openbsd*)
         export CC="clang"

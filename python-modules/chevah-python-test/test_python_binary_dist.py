@@ -700,7 +700,7 @@ def main():
             sys.stderr.write('"cryptography" failure. %s\n' % (error,))
             exit_code = 14
         else:
-            print 'cryptography %s - OpenSSL %s' % (
+            print 'cryptography %s - %s' % (
                 cryptography.__version__, openssl_version)
 
     try:
@@ -711,7 +711,7 @@ def main():
         sys.stderr.write('"OpenSSL" missing. %s\n' % (error,))
         exit_code = 3
     else:
-        print 'pyOpenSSL %s - OpenSSL %s' % (
+        print 'pyOpenSSL %s - %s' % (
             pyopenssl_version,
             SSL.SSLeay_version(SSL.SSLEAY_VERSION),
             )

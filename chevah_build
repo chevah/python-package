@@ -646,11 +646,12 @@ command_build() {
 
     case $OS in
         windows*)
-            build 'python' "Python-$PYTHON_BUILD_VERSION-windows" ${PYTHON_BUILD_FOLDER}
+            build 'python' "Python-$PYTHON_BUILD_VERSION-windows" \
+                ${PYTHON_BUILD_FOLDER}
             ;;
         macos*)
             # SSL headers are missing on macOS.
-            echo "Copying LibreSSL $LIBRESSL_VERSION headers. Updating CFLAGS."
+            echo "Copying LibreSSL $LIBRESSL_VERSION headers. Updating CFLAGS!"
             cp -r src/libressl/libressl-${LIBRESSL_VERSION}/include/openssl \
                 $INSTALL_FOLDER/include/
             export CFLAGS="$CFLAGS -I${INSTALL_FOLDER}/include"

@@ -670,12 +670,12 @@ detect_os() {
 
         if [ ${os_version_chevah:0:2} -eq 10 -a \
             ${os_version_chevah:2:2} -ge 13 ]; then
-            # For macOS 10.13 or newer we use 'macos1013'.
-            OS="macos1013"
+            # For macOS 10.13 or newer we use 'macos'.
+            OS="macos"
         elif [ ${os_version_chevah:0:2} -eq 10 -a \
             ${os_version_chevah:2:2} -ge 8 ]; then
-            # For macOS 10.12 and OS X 10.8-10.11 we use 'osx108'.
-            OS="osx108"
+            # For macOS 10.12 and OS X 10.8-10.11 we use 'osx'.
+            OS="osx"
         else
             echo "Unsupported macOS / OS X version: $os_version_raw."
         fi

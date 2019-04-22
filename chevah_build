@@ -165,10 +165,6 @@ case "$OS" in
     sles10)
         SLES_PKGS="$COMMON_SLES_PKGS openssl-devel"
         ;;
-    sles11sm)
-        # SLES 11 with Security Module detected, OpenSSL 1.0.x headers needed.
-        SLES_PKGS="$COMMON_SLES_PKGS libopenssl1-devel"
-        ;;
     sles11|sles12)
         SLES_PKGS="$COMMON_SLES_PKGS libopenssl-devel"
         ;;
@@ -414,21 +410,6 @@ case $OS in
     sles12)
         # SLES's libffi headers from SDK do not match default-available package.
         export BUILD_LIBFFI="yes"
-        ;;
-    sles11sm)
-        # SLES's libffi headers from SDK do not match default-available package.
-        export BUILD_LIBFFI="yes"
-        # Use PyCryptodome's wheel, as there are issues not solved upstream yet.
-        PIP_LIBRARIES="\
-            setproctitle==${SETPROCTITLE_VERSION} \
-            pycryptodomex==${PYCRYPTODOMEX_VERSION}upstream \
-            cryptography==${CRYPTOGRAPHY_VERSION} \
-            pyOpenSSL==${PYOPENSSL_VERSION} \
-            scandir==${SCANDIR_VERSION} \
-            psutil==${PSUTIL_VERSION} \
-            Cython==${CYTHON_VERSION} \
-            subprocess32==${SUBPROCESS32_VERSION} \
-            "
         ;;
     rhel5|sles11)
         # SLES's libffi headers from SDK do not match default-available package.

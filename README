@@ -53,3 +53,15 @@ src/python/Python-2.7.13/Lib/site.py::
     diff -ru Lib/site.py Lib/site-patched.py
     # Copy the diff result, including the command line into a patch file,
     # for example at at src/python/name-of-the.patch
+
+
+External dependencies and associated vulnerabilities
+----------------------------------------------------
+
+This Python package builds on and links to third-party libraries.
+
+To document them for all OS'es and to list their known vulnerabilities,
+consult the LibreOffice spreadsheet `external_deps.fods`.
+
+For your convenience, this flat ODS file is also exported in CSV format in
+`external_deps.csv`.

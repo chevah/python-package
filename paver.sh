@@ -603,10 +603,6 @@ detect_os() {
                 check_os_version "SUSE Linux Enterprise Server" 10 \
                     "$os_version_raw" os_version_chevah
                 OS="sles${os_version_chevah}"
-                # On 11.x, check for OpenSSL 1.0.x (a.k.a. Security Module).
-                if [ ${os_version_chevah} -eq 11 -a -x /usr/bin/openssl1 ]; then
-                    OS="sles11sm"
-                fi
             fi
         elif [ -f /etc/os-release ]; then
             source /etc/os-release
@@ -669,12 +665,15 @@ detect_os() {
         check_os_version "Mac OS X" 10.8 "$os_version_raw" os_version_chevah
 
         if [ ${os_version_chevah:0:2} -eq 10 -a \
-            ${os_version_chevah:2:2} -ge 12  ]; then
-            # For newer, macOS versions, we use '1012'.
-            OS="macos1012"
+            ${os_version_chevah:2:2} -ge 13 ]; then
+            # For macOS 10.13 or newer we use 'macos'.
+            OS="macos"
+        elif [ ${os_version_chevah:0:2} -eq 10 -a \
+            ${os_version_chevah:2:2} -ge 8 ]; then
+            # For macOS 10.12 and OS X 10.8-10.11 we use 'osx'.
+            OS="osx"
         else
-            # For older, OS X versions, we use '108'.
-            OS="osx108"
+            echo "Unsupported Mac OS X version: $os_version_raw."
         fi
 
 

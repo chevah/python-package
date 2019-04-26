@@ -165,10 +165,6 @@ case "$OS" in
     sles10)
         SLES_PKGS="$COMMON_SLES_PKGS openssl-devel"
         ;;
-    sles11sm)
-        # SLES 11 with Security Module detected, OpenSSL 1.0.x headers needed.
-        SLES_PKGS="$COMMON_SLES_PKGS libopenssl1-devel"
-        ;;
     sles11|sles12)
         SLES_PKGS="$COMMON_SLES_PKGS libopenssl-devel"
         ;;
@@ -397,16 +393,14 @@ case $OS in
     macos*)
         export CC="clang"
         export CXX="clang++"
-        # No zlib headers on macOS 10.14.
-        export BUILD_ZLIB="yes"
-        # Up to macOS 10.12, Apple only provides OpenSSL version 0.9.8zh.
-        # macOS 10.13 and newer come with LibreSSL, not clear if maintained.
-        # Therefore, we require Homebrew's OpenSSL libs, located as follows.
-        export LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"
-        export CPPFLAGS="$CPPFLAGS -I/usr/local/opt/openssl/include"
         # setup.py skips building readline by default, as it sets this to
         # "10.4", and then tries to avoid the broken readline in OS X 10.4.
-        export MACOSX_DEPLOYMENT_TARGET=10.11
+        export MACOSX_DEPLOYMENT_TARGET=10.13
+        # 10.13 and newer come with LibreSSL instead of the old OpenSSL libs.
+        # But the headers are missing, so we copy them ourselves when building.
+        LIBRESSL_VERSION=2.2.7
+        # Beware that zlib headers are not present either on macOS 10.14.
+        # We don't care here because we build on 10.13.
         ;;
     freebsd*|openbsd*)
         export CC="clang"
@@ -416,21 +410,6 @@ case $OS in
     sles12)
         # SLES's libffi headers from SDK do not match default-available package.
         export BUILD_LIBFFI="yes"
-        ;;
-    sles11sm)
-        # SLES's libffi headers from SDK do not match default-available package.
-        export BUILD_LIBFFI="yes"
-        # Use PyCryptodome's wheel, as there are issues not solved upstream yet.
-        PIP_LIBRARIES="\
-            setproctitle==${SETPROCTITLE_VERSION} \
-            pycryptodomex==${PYCRYPTODOMEX_VERSION}upstream \
-            cryptography==${CRYPTOGRAPHY_VERSION} \
-            pyOpenSSL==${PYOPENSSL_VERSION} \
-            scandir==${SCANDIR_VERSION} \
-            psutil==${PSUTIL_VERSION} \
-            Cython==${CYTHON_VERSION} \
-            subprocess32==${SUBPROCESS32_VERSION} \
-            "
         ;;
     rhel5|sles11)
         # SLES's libffi headers from SDK do not match default-available package.
@@ -548,19 +527,11 @@ check_dependencies() {
             packages=$ARCH_PKGS
             check_command='pacman -Qi'
             ;;
+        # On remaining OS'es we just check for some of the needed commands.
         macos*)
-            # On macOS we need OpenSSL installed via Homebrew, and here we
-            # check that the expected version is installed, as hardcoded below.
-            homebrew_openssl_version=`brew list --versions openssl`
-            if [[ $homebrew_openssl_version != "openssl 1.0.2"* ]]; then
-                (>&2 echo "Unsupported version: $homebrew_openssl_version")
-                exit 102
-            fi
-            # But we also check for the required commands, as for below OS'es.
             packages="$CC make m4 libtool git patch"
             check_command="command -v"
             ;;
-        # On remaining OS'es we just check for some of the needed commands.
         windows)
             # The windows build is special.
             command -v choco
@@ -656,7 +627,16 @@ command_build() {
 
     case $OS in
         windows*)
-            build 'python' "Python-$PYTHON_BUILD_VERSION-windows" ${PYTHON_BUILD_FOLDER}
+            build 'python' "Python-$PYTHON_BUILD_VERSION-windows" \
+                ${PYTHON_BUILD_FOLDER}
+            ;;
+        macos*)
+            # SSL headers are missing on macOS.
+            echo "Copying LibreSSL $LIBRESSL_VERSION headers. Updating CFLAGS!"
+            cp -r src/libressl/libressl-${LIBRESSL_VERSION}/include/openssl \
+                $INSTALL_FOLDER/include/
+            export CFLAGS="$CFLAGS -I${INSTALL_FOLDER}/include"
+            build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
         *)
             build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}

@@ -453,7 +453,7 @@ def get_allowed_deps():
                 '/usr/lib/libncurses.5.4.dylib',
                 ])
         elif ('macos' in chevah_os):
-            # Additional deps for MacOS 10.13+ when using OS-included LibreSSL.
+            # Additional deps for macOS 10.13 with OS-included LibreSSL 2.2.7.
             allowed_deps.extend([
                 '/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics',
                 '/usr/lib/libcrypto.35.dylib',

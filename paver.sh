@@ -673,7 +673,7 @@ detect_os() {
             # For macOS 10.12 and OS X 10.8-10.11 we use 'osx'.
             OS="osx"
         else
-            echo "Unsupported macOS / OS X version: $os_version_raw."
+            echo "Unsupported Mac OS X version: $os_version_raw."
         fi
 
 

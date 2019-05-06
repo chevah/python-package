@@ -402,12 +402,7 @@ case $OS in
         # Beware that zlib headers are not present either on macOS 10.14.
         # We don't care here because we build on 10.13.
         ;;
-    freebsd*)
-        export CC="clang"
-        export CXX="clang++"
-        export BUILD_LIBFFI="yes"
-        ;;
-    openbsd*)
+    freebsd*|openbsd*)
         export CC="clang"
         export CXX="clang++"
         export BUILD_LIBFFI="yes"

@@ -154,7 +154,8 @@ def get_allowed_deps():
                     '/usr/lib/aarch64-linux-gnu/libffi.so.6',
                     ]
         elif ('debian' in chevah_os):
-            # Full deps for Debian 7.x/8.x amd64.
+            debian_version = chevah_os[6:]
+            # Common deps with full paths for Debian 7 amd64 and newer.
             allowed_deps=[
                 '/lib/x86_64-linux-gnu/libcrypt.so.1',
                 '/lib/x86_64-linux-gnu/libc.so.6',
@@ -163,22 +164,46 @@ def get_allowed_deps():
                 '/lib/x86_64-linux-gnu/libpthread.so.0',
                 '/lib/x86_64-linux-gnu/libutil.so.1',
                 '/lib/x86_64-linux-gnu/libz.so.1',
-                '/usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.0',
-                '/usr/lib/x86_64-linux-gnu/libssl.so.1.0.0',
                 ]
+            if debian_version in [ "7", "8" ]:
+                # Additional OpenSSL 1.0.1 deps for Debian 7.x/8.x amd64.
+                allowed_deps.extend([
+                    '/usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.0',
+                    '/usr/lib/x86_64-linux-gnu/libssl.so.1.0.0',
+                    ])
+            else:
+                # Additional OpenSSL 1.1.x deps for Debian 9.x+ amd64.
+                allowed_deps.extend([
+                    '/usr/lib/x86_64-linux-gnu/libcrypto.so.1.1',
+                    '/usr/lib/x86_64-linux-gnu/libssl.so.1.1',
+                    ])
             if 'x86' in chevah_arch:
-                # Full deps for Debian 7.x/8.x i386.
-                allowed_deps=[
-                    '/lib/i386-linux-gnu/i686/cmov/libc.so.6',
-                    '/lib/i386-linux-gnu/i686/cmov/libcrypt.so.1',
-                    '/lib/i386-linux-gnu/i686/cmov/libdl.so.2',
-                    '/lib/i386-linux-gnu/i686/cmov/libm.so.6',
-                    '/lib/i386-linux-gnu/i686/cmov/libpthread.so.0',
-                    '/lib/i386-linux-gnu/i686/cmov/libutil.so.1',
-                    '/lib/i386-linux-gnu/libz.so.1',
-                    '/usr/lib/i386-linux-gnu/i686/cmov/libcrypto.so.1.0.0',
-                    '/usr/lib/i386-linux-gnu/i686/cmov/libssl.so.1.0.0',
-                    ]
+                if debian_version in [ "7", "8" ]:
+                    # Full deps for Debian 7.x/8.x i386.
+                    allowed_deps=[
+                        '/lib/i386-linux-gnu/i686/cmov/libc.so.6',
+                        '/lib/i386-linux-gnu/i686/cmov/libcrypt.so.1',
+                        '/lib/i386-linux-gnu/i686/cmov/libdl.so.2',
+                        '/lib/i386-linux-gnu/i686/cmov/libm.so.6',
+                        '/lib/i386-linux-gnu/i686/cmov/libpthread.so.0',
+                        '/lib/i386-linux-gnu/i686/cmov/libutil.so.1',
+                        '/lib/i386-linux-gnu/libz.so.1',
+                        '/usr/lib/i386-linux-gnu/i686/cmov/libcrypto.so.1.0.0',
+                        '/usr/lib/i386-linux-gnu/i686/cmov/libssl.so.1.0.0',
+                        ]
+                else:
+                    # Full deps for Debian 9.x i386 (and possibly newer).
+                    allowed_deps=[
+                        '/lib/i386-linux-gnu/libcrypt.so.1',
+                        '/lib/i386-linux-gnu/libc.so.6',
+                        '/lib/i386-linux-gnu/libdl.so.2',
+                        '/lib/i386-linux-gnu/libm.so.6',
+                        '/lib/i386-linux-gnu/libpthread.so.0',
+                        '/lib/i386-linux-gnu/libutil.so.1',
+                        '/lib/i386-linux-gnu/libz.so.1',
+                        '/usr/lib/i386-linux-gnu/libcrypto.so.1.1',
+                        '/usr/lib/i386-linux-gnu/libssl.so.1.1',
+                        ]
         elif ('raspbian' in chevah_os):
             # Common deps with full paths for Raspbian 7 and 8.
             allowed_deps=[

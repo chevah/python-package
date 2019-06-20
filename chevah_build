@@ -45,6 +45,7 @@ SUBPROCESS32_VERSION="3.5.3"
 PYWIN32_VERSION="223"
 GMPY2_VERSION="2.0.8"
 GMPY_VERSION="1.17"
+BCRYPT_VERSION="3.1.7"
 
 # pycparser needs to be explicitly installed to work around setuptools auto
 # dependencies.
@@ -87,6 +88,7 @@ PIP_LIBRARIES="\
     psutil==${PSUTIL_VERSION} \
     Cython==${CYTHON_VERSION} \
     subprocess32==${SUBPROCESS32_VERSION} \
+    bcrypt==${BCRYPT_VERSION} \
     "
 # cryptography 1.3.4 was last upstream version to support OpenSSL 0.9.8.
 # pyOpenSSL 16.0.0 was last upstream version to support OpenSSL 0.9.8.
@@ -99,6 +101,7 @@ PIP_LIBRARIES_OPENSSL_098="\
     psutil==${PSUTIL_VERSION} \
     Cython==${CYTHON_VERSION} \
     subprocess32==${SUBPROCESS32_VERSION} \
+    bcrypt==${BCRYPT_VERSION} \
     "
 # Python modules installed through pip on systems not built around cffi.
 # pyOpenSSL 0.13.1 was last upstream version before the port to
@@ -112,6 +115,7 @@ PIP_LIBRARIES_NO_CFFI="\
     scandir==${SCANDIR_VERSION} \
     Cython==${CYTHON_VERSION} \
     subprocess32==${SUBPROCESS32_VERSION} \
+    bcrypt==${BCRYPT_VERSION} \
     "
 
 # Arguments that are sent when using pip.
@@ -237,6 +241,7 @@ case $OS in
                 scandir==${SCANDIR_VERSION} \
                 Cython==${CYTHON_VERSION} \
                 subprocess32==${SUBPROCESS32_VERSION} \
+                bcrypt==${BCRYPT_VERSION} \
                 "
         fi
         ;;
@@ -320,7 +325,7 @@ case $OS in
             # This code path also covers linking to OpenSSL 0.9.7 on all Solaris
             # 10 versions, including releases u7 and newer, with updated libc.
             # Paths for OpenSSL 0.9.7 and SQLite libs on Solaris 10.
-            # The latter were moved and are found easily on newer releases.
+            # The latter were moved and are now found easily on newer releases.
             if [ "${ARCH%64}" = "$ARCH" ]; then
                 export LDFLAGS="$LDFLAGS -L/usr/sfw/lib -R/usr/sfw/lib"
                 export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"
@@ -388,6 +393,7 @@ case $OS in
             psutil==${PSUTIL_VERSION} \
             Cython==${CYTHON_VERSION} \
             subprocess32==${SUBPROCESS32_VERSION} \
+            bcrypt==${BCRYPT_VERSION} \
             "
         ;;
     macos*)
@@ -400,7 +406,7 @@ case $OS in
         # But the headers are missing, so we copy them ourselves when building.
         LIBRESSL_VERSION=2.2.7
         # Beware that zlib headers are not present either on macOS 10.14.
-        # We don't care here because we build on 10.13.
+        # We don't care here because we build on 10.13 only.
         ;;
     freebsd*|openbsd*)
         export CC="clang"
@@ -417,6 +423,7 @@ case $OS in
                 psutil==${PSUTIL_VERSION} \
                 Cython==${CYTHON_VERSION} \
                 subprocess32==${SUBPROCESS32_VERSION} \
+                bcrypt==${BCRYPT_VERSION} \
                 "
         fi
         ;;
@@ -425,8 +432,6 @@ case $OS in
         export BUILD_LIBFFI="yes"
         ;;
     rhel5|sles11)
-        # SLES's libffi headers from SDK do not match default-available package.
-        export BUILD_LIBFFI="yes"
         # OS'es with OpenSSL 0.9.8 libs, older cryptography would be needed,
         # but upstream provides a Linux wheel that works, at least on SLES 11.
         # Otherwise, just set PIP_LIBRARIES to PIP_LIBRARIES_OPENSSL_098.
@@ -440,7 +445,10 @@ case $OS in
             psutil==${PSUTIL_VERSION} \
             Cython==${CYTHON_VERSION} \
             subprocess32==${SUBPROCESS32_VERSION} \
+            bcrypt==${BCRYPT_VERSION} \
             "
+        # SLES's libffi headers from SDK do not match default-available package.
+        export BUILD_LIBFFI="yes"
         ;;
     sles10)
         export BUILD_CFFI="no"
@@ -469,6 +477,7 @@ case $OS in
             gmpy2==${GMPY2_VERSION} \
             Cython==${CYTHON_VERSION} \
             subprocess32==${SUBPROCESS32_VERSION} \
+            bcrypt==${BCRYPT_VERSION} \
             "
         ;;
 esac

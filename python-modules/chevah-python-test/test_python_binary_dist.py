@@ -223,14 +223,14 @@ def get_allowed_deps():
                 '/usr/lib/arm-linux-gnueabihf/libssl.so.1.0.0',
                 ]
         elif ('alpine' in chevah_os):
-            # Full deps with paths, but no minor versions, for Alpine 3.6.
+            # Full deps with paths, but no minor versions, for Alpine 3.10+.
             allowed_deps=[
                 '/lib/ld-musl-x86_64.so.1',
                 '/lib/libc.musl-x86_64.so.1',
-                '/lib/libssl.so.44',
+                '/lib/libssl.so.1',
                 '/lib/libcrypto.so.42.0.0',
                 '/lib/libssl.so.44.0.1',
-                '/lib/libcrypto.so.42',
+                '/lib/libcrypto.so.1',
                 '/lib/libz.so.1',
                 '/usr/lib/libffi.so.6',
                 '/usr/lib/libncursesw.so.6',

@@ -833,6 +833,21 @@ def main():
     else:
         print '"subprocess32" module is present.'
 
+    try:
+        import bcrypt
+        password = b"super secret password"
+        # Hash the password with a randomly-generated salt.
+        hashed = bcrypt.hashpw(password, bcrypt.gensalt())
+        # Check that an unhashed password matches hashed one.
+        if bcrypt.checkpw(password, hashed):
+            print 'bcrypt %s' % (bcrypt.__version__,)
+        else:
+            sys.stderr.write('"bcrypt" present, but broken.\n')
+            exit_code = 26
+    except:
+        sys.stderr.write('"bcrypt" missing.\n')
+        exit_code = 27
+
     # Windows specific modules.
     if os.name == 'nt':
         try:

@@ -76,6 +76,7 @@ EXTRA_LIBRARIES="\
 EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/pycrypto-${PYCRYPTO_VERSION} \
     python-modules/pycryptodomex-${PYCRYPTODOMEX_VERSION} \
+    python-modules/bcrypt-${BCRYPT_VERSION} \
     "
 
 # List of python modules installed using pip
@@ -278,6 +279,8 @@ case $OS in
             export PATH=/usr/ccs/bin/:$PATH
             # Latest libedit sources do not build on Solaris 10 any more.
             export BUILD_LIBEDIT="no"
+            # bcrypt build fails with the system libffi.
+            export BUILD_LIBFFI="yes"
             # NPN functions missing from Oracle's OpenSSL patches, as of version
             # 1.0.2n from January 2018 (patches 151912-11/151913-11). Thus, the
             # new _ssl module in 2.7.9 won't build, error being "_ssl.so: symbol

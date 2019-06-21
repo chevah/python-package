@@ -735,6 +735,10 @@ detect_os() {
             ;;
         "amd64"|"x86_64")
             ARCH="x64"
+            if [ "${OS}" = "solaris10" ]; then
+                # Prior to adding "bcrypt" we were fine with x64 on Solaris 10.
+                ARCH="x86"
+            fi
             ;;
         "aarch64")
             ARCH="arm64"

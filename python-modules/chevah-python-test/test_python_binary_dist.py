@@ -223,18 +223,27 @@ def get_allowed_deps():
                 '/usr/lib/arm-linux-gnueabihf/libssl.so.1.0.0',
                 ]
         elif ('alpine' in chevah_os):
-            # Full deps with paths, but no minor versions, for Alpine 3.10+.
+            # Full deps with paths, but no minor versions, for Alpine 3.6+.
+            alpine_version = chevah_os[6:]
             allowed_deps=[
                 '/lib/ld-musl-x86_64.so.1',
                 '/lib/libc.musl-x86_64.so.1',
-                '/lib/libssl.so.1',
-                '/lib/libcrypto.so.42.0.0',
-                '/lib/libssl.so.44.0.1',
-                '/lib/libcrypto.so.1',
                 '/lib/libz.so.1',
                 '/usr/lib/libffi.so.6',
                 '/usr/lib/libncursesw.so.6',
                 ]
+            if alpine_version in [ "36", "37", "38" ]:
+                # These versions use LibreSSL by default.
+                allowed_deps.extend([
+                    '/lib/libcrypto.so.42',
+                    '/lib/libssl.so.44',
+                    ])
+            else:
+                # Alpine Linux 3.9 reverted to OpenSSL by default.
+                allowed_deps.extend([
+                    '/lib/libssl.so.1',
+                    '/lib/libcrypto.so.1',
+                    ])
         elif ('archlinux' in chevah_os):
             # Full deps with paths for Arch Linux, as of March 2018.
             allowed_deps=[

@@ -156,8 +156,10 @@ COMMON_PKGS="gcc make m4 automake libtool texinfo patch"
 COMMON_SLES_PKGS="$COMMON_PKGS git-core zlib-devel ncurses-devel"
 DEBIAN_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
 RHEL_PKGS="$COMMON_PKGS git openssl-devel zlib-devel libffi-devel ncurses-devel"
-ALPINE_PKGS="$COMMON_PKGS\
-    git libc-dev openssl-dev zlib-dev libffi-dev ncurses-dev linux-headers"
+ALPINE_COMMON_PKGS="$COMMON_PKGS\
+    git libc-dev zlib-dev libffi-dev ncurses-dev linux-headers"
+ALPINE_LIBRESSL_PKGS="$COMMON_PKGS libressl-dev"
+ALPINE_OPENSSL_PKGS="$COMMON_PKGS openssl-dev"
 ARCH_PKGS="$COMMON_PKGS git libffi ncurses"
 # Windows is special, but package management is possible through Chocolatey.
 # Chocolatey's git package comes with patch included through bundling MINGW4.
@@ -542,7 +544,13 @@ check_dependencies() {
             check_command='rpm --query'
             ;;
         alpine*)
-            packages=$ALPINE_PKGS
+            # Alpine 3.9 switched back to OpenSSL as default.
+            packages=$ALPINE_OPENSSL_PKGS
+            case $OS in
+                alpine36|alpine37|alpine38)
+                    packages=$ALPINE_LIBRESSL_PKGS
+                    ;;
+            esac
             check_command=apk_shim
             ;;
         archlinux)

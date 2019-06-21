@@ -378,7 +378,12 @@ case $OS in
         export BUILD_CFFI="no"
         add_ignored_safety_ids_for_pyopenssl_false_positives
         PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
-        EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
+        # EXTRA_LIBRARIES is EXTRA_LIBRARIES_NO_CFFI minus bcrypt,
+        # which doesn't support HP-UX at all.
+        EXTRA_LIBRARIES="\
+            python-modules/pycrypto-${PYCRYPTO_VERSION} \
+            python-modules/pycryptodomex-${PYCRYPTODOMEX_VERSION} \
+            "
         ;;
     osx*)
         # The extra params needed to set the minimum target version to 10.8

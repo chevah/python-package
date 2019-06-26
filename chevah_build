@@ -116,7 +116,6 @@ PIP_LIBRARIES_NO_CFFI="\
     scandir==${SCANDIR_VERSION} \
     Cython==${CYTHON_VERSION} \
     subprocess32==${SUBPROCESS32_VERSION} \
-    bcrypt==${BCRYPT_VERSION} \
     "
 
 # Arguments that are sent when using pip.

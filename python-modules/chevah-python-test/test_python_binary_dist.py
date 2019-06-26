@@ -241,8 +241,8 @@ def get_allowed_deps():
             else:
                 # Alpine Linux 3.9 reverted to OpenSSL by default.
                 allowed_deps.extend([
-                    '/lib/libssl.so.1',
                     '/lib/libcrypto.so.1',
+                    '/lib/libssl.so.1',
                     ])
         elif ('archlinux' in chevah_os):
             # Full deps with paths for Arch Linux, as of March 2018.
@@ -852,10 +852,10 @@ def main():
             print 'bcrypt %s' % (bcrypt.__version__,)
         else:
             sys.stderr.write('"bcrypt" present, but broken.\n')
-            exit_code = 26
+            exit_code = 27
     except:
         sys.stderr.write('"bcrypt" missing.\n')
-        exit_code = 27
+        exit_code = 26
 
     # Windows specific modules.
     if os.name == 'nt':

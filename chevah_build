@@ -330,7 +330,7 @@ case $OS in
             # This code path also covers linking to OpenSSL 0.9.7 on all Solaris
             # 10 versions, including releases u7 and newer, with updated libc.
             # Paths for OpenSSL 0.9.7 and SQLite libs on Solaris 10.
-            # The latter were moved and are now found easily on newer releases.
+            # The latter were moved and are found easily on newer releases.
             if [ "${ARCH%64}" = "$ARCH" ]; then
                 export LDFLAGS="$LDFLAGS -L/usr/sfw/lib -R/usr/sfw/lib"
                 export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"

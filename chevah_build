@@ -45,6 +45,7 @@ SUBPROCESS32_VERSION="3.5.3"
 PYWIN32_VERSION="223"
 GMPY2_VERSION="2.0.8"
 GMPY_VERSION="1.17"
+BCRYPT_VERSION="3.1.7"
 
 # pycparser needs to be explicitly installed to work around setuptools auto
 # dependencies.
@@ -75,6 +76,7 @@ EXTRA_LIBRARIES="\
 EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/pycrypto-${PYCRYPTO_VERSION} \
     python-modules/pycryptodomex-${PYCRYPTODOMEX_VERSION} \
+    python-modules/bcrypt-${BCRYPT_VERSION} \
     "
 
 # List of python modules installed using pip
@@ -87,6 +89,7 @@ PIP_LIBRARIES="\
     psutil==${PSUTIL_VERSION} \
     Cython==${CYTHON_VERSION} \
     subprocess32==${SUBPROCESS32_VERSION} \
+    bcrypt==${BCRYPT_VERSION} \
     "
 # cryptography 1.3.4 was last upstream version to support OpenSSL 0.9.8.
 # pyOpenSSL 16.0.0 was last upstream version to support OpenSSL 0.9.8.
@@ -99,6 +102,7 @@ PIP_LIBRARIES_OPENSSL_098="\
     psutil==${PSUTIL_VERSION} \
     Cython==${CYTHON_VERSION} \
     subprocess32==${SUBPROCESS32_VERSION} \
+    bcrypt==${BCRYPT_VERSION} \
     "
 # Python modules installed through pip on systems not built around cffi.
 # pyOpenSSL 0.13.1 was last upstream version before the port to
@@ -112,6 +116,7 @@ PIP_LIBRARIES_NO_CFFI="\
     scandir==${SCANDIR_VERSION} \
     Cython==${CYTHON_VERSION} \
     subprocess32==${SUBPROCESS32_VERSION} \
+    bcrypt==${BCRYPT_VERSION} \
     "
 
 # Arguments that are sent when using pip.
@@ -152,8 +157,10 @@ COMMON_PKGS="gcc make m4 automake libtool texinfo patch"
 COMMON_SLES_PKGS="$COMMON_PKGS git-core zlib-devel ncurses-devel"
 DEBIAN_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
 RHEL_PKGS="$COMMON_PKGS git openssl-devel zlib-devel libffi-devel ncurses-devel"
-ALPINE_PKGS="$COMMON_PKGS\
-    git libc-dev libressl-dev zlib-dev libffi-dev ncurses-dev linux-headers"
+ALPINE_COMMON_PKGS="$COMMON_PKGS\
+    git libc-dev zlib-dev libffi-dev ncurses-dev linux-headers"
+ALPINE_LIBRESSL_PKGS="$COMMON_PKGS libressl-dev"
+ALPINE_OPENSSL_PKGS="$COMMON_PKGS openssl-dev"
 ARCH_PKGS="$COMMON_PKGS git libffi ncurses"
 # Windows is special, but package management is possible through Chocolatey.
 # Chocolatey's git package comes with patch included through bundling MINGW4.
@@ -237,6 +244,7 @@ case $OS in
                 scandir==${SCANDIR_VERSION} \
                 Cython==${CYTHON_VERSION} \
                 subprocess32==${SUBPROCESS32_VERSION} \
+                bcrypt==${BCRYPT_VERSION} \
                 "
         fi
         ;;
@@ -271,6 +279,8 @@ case $OS in
             export PATH=/usr/ccs/bin/:$PATH
             # Latest libedit sources do not build on Solaris 10 any more.
             export BUILD_LIBEDIT="no"
+            # bcrypt build fails with the system libffi.
+            export BUILD_LIBFFI="yes"
             # NPN functions missing from Oracle's OpenSSL patches, as of version
             # 1.0.2n from January 2018 (patches 151912-11/151913-11). Thus, the
             # new _ssl module in 2.7.9 won't build, error being "_ssl.so: symbol
@@ -368,7 +378,12 @@ case $OS in
         export BUILD_CFFI="no"
         add_ignored_safety_ids_for_pyopenssl_false_positives
         PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
-        EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
+        # EXTRA_LIBRARIES is EXTRA_LIBRARIES_NO_CFFI minus bcrypt,
+        # which doesn't support HP-UX at all.
+        EXTRA_LIBRARIES="\
+            python-modules/pycrypto-${PYCRYPTO_VERSION} \
+            python-modules/pycryptodomex-${PYCRYPTODOMEX_VERSION} \
+            "
         ;;
     osx*)
         # The extra params needed to set the minimum target version to 10.8
@@ -388,6 +403,7 @@ case $OS in
             psutil==${PSUTIL_VERSION} \
             Cython==${CYTHON_VERSION} \
             subprocess32==${SUBPROCESS32_VERSION} \
+            bcrypt==${BCRYPT_VERSION} \
             "
         ;;
     macos*)
@@ -400,7 +416,7 @@ case $OS in
         # But the headers are missing, so we copy them ourselves when building.
         LIBRESSL_VERSION=2.2.7
         # Beware that zlib headers are not present either on macOS 10.14.
-        # We don't care here because we build on 10.13.
+        # We don't care here because we build on 10.13 only.
         ;;
     freebsd*|openbsd*)
         export CC="clang"
@@ -417,6 +433,7 @@ case $OS in
                 psutil==${PSUTIL_VERSION} \
                 Cython==${CYTHON_VERSION} \
                 subprocess32==${SUBPROCESS32_VERSION} \
+                bcrypt==${BCRYPT_VERSION} \
                 "
         fi
         ;;
@@ -425,8 +442,6 @@ case $OS in
         export BUILD_LIBFFI="yes"
         ;;
     rhel5|sles11)
-        # SLES's libffi headers from SDK do not match default-available package.
-        export BUILD_LIBFFI="yes"
         # OS'es with OpenSSL 0.9.8 libs, older cryptography would be needed,
         # but upstream provides a Linux wheel that works, at least on SLES 11.
         # Otherwise, just set PIP_LIBRARIES to PIP_LIBRARIES_OPENSSL_098.
@@ -440,7 +455,10 @@ case $OS in
             psutil==${PSUTIL_VERSION} \
             Cython==${CYTHON_VERSION} \
             subprocess32==${SUBPROCESS32_VERSION} \
+            bcrypt==${BCRYPT_VERSION} \
             "
+        # SLES's libffi headers from SDK do not match default-available package.
+        export BUILD_LIBFFI="yes"
         ;;
     sles10)
         export BUILD_CFFI="no"
@@ -469,6 +487,7 @@ case $OS in
             gmpy2==${GMPY2_VERSION} \
             Cython==${CYTHON_VERSION} \
             subprocess32==${SUBPROCESS32_VERSION} \
+            bcrypt==${BCRYPT_VERSION} \
             "
         ;;
 esac
@@ -533,7 +552,13 @@ check_dependencies() {
             check_command='rpm --query'
             ;;
         alpine*)
-            packages=$ALPINE_PKGS
+            # Alpine 3.9 switched back to OpenSSL as default.
+            packages=$ALPINE_OPENSSL_PKGS
+            case $OS in
+                alpine36|alpine37|alpine38)
+                    packages=$ALPINE_LIBRESSL_PKGS
+                    ;;
+            esac
             check_command=apk_shim
             ;;
         archlinux)

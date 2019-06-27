@@ -723,7 +723,7 @@ def main():
             from cryptography.hazmat.backends.openssl.backend import backend
             import cryptography
             openssl_version = backend.openssl_version_text()
-            if chevah_os in [ "windows", "osx108", "sles11", "rhel5" ]:
+            if chevah_os in [ "windows", "osx", "sles11", "rhel5" ]:
                 # Check OpenSSL version from upstream wheels.
                 expecting = u'OpenSSL 1.1.1c  28 May 2019'
                 if openssl_version != expecting:

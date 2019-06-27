@@ -725,7 +725,7 @@ def main():
             openssl_version = backend.openssl_version_text()
             if chevah_os in [ "windows", "osx108", "sles11", "rhel5" ]:
                 # Check OpenSSL version from upstream wheels.
-                expecting = u'OpenSSL 1.1.1b  26 Feb 2019'
+                expecting = u'OpenSSL 1.1.1c  28 May 2019'
                 if openssl_version != expecting:
                     sys.stderr.write('Expecting %s, got %s.\n' % (
                         expecting, openssl_version))

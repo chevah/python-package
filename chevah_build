@@ -36,7 +36,7 @@ PYCRYPTO_VERSION="2.6.1"
 SAFETY_FALSE_POSITIVES_OPTS="-i 35015"
 PYCRYPTODOMEX_VERSION="3.6.6"
 PYOPENSSL_VERSION="19.0.0"
-CRYPTOGRAPHY_VERSION="2.6.1"
+CRYPTOGRAPHY_VERSION="2.7"
 SETPROCTITLE_VERSION="1.1.10"
 SCANDIR_VERSION="1.10.0"
 PSUTIL_VERSION="5.6.1"
@@ -116,7 +116,6 @@ PIP_LIBRARIES_NO_CFFI="\
     scandir==${SCANDIR_VERSION} \
     Cython==${CYTHON_VERSION} \
     subprocess32==${SUBPROCESS32_VERSION} \
-    bcrypt==${BCRYPT_VERSION} \
     "
 
 # Arguments that are sent when using pip.
@@ -421,21 +420,8 @@ case $OS in
     freebsd*|openbsd*)
         export CC="clang"
         export CXX="clang++"
+        # libffi not available in the base systems, only as port/package.
         export BUILD_LIBFFI="yes"
-        if [ "$OS" = "openbsd65" ]; then
-            # Latest cryptography (2.6.1) fails to build on OpenBSD 6.5.
-            PIP_LIBRARIES="\
-                setproctitle==${SETPROCTITLE_VERSION} \
-                pycryptodomex==${PYCRYPTODOMEX_VERSION} \
-                cryptography==${CRYPTOGRAPHY_VERSION}obsd65 \
-                pyOpenSSL==${PYOPENSSL_VERSION} \
-                scandir==${SCANDIR_VERSION} \
-                psutil==${PSUTIL_VERSION} \
-                Cython==${CYTHON_VERSION} \
-                subprocess32==${SUBPROCESS32_VERSION} \
-                bcrypt==${BCRYPT_VERSION} \
-                "
-        fi
         ;;
     sles12)
         # SLES's libffi headers from SDK do not match default-available package.

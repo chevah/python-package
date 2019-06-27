@@ -723,9 +723,9 @@ def main():
             from cryptography.hazmat.backends.openssl.backend import backend
             import cryptography
             openssl_version = backend.openssl_version_text()
-            if chevah_os in [ "windows", "osx108", "sles11", "rhel5" ]:
+            if chevah_os in [ "windows", "osx", "sles11", "rhel5" ]:
                 # Check OpenSSL version from upstream wheels.
-                expecting = u'OpenSSL 1.1.1b  26 Feb 2019'
+                expecting = u'OpenSSL 1.1.1c  28 May 2019'
                 if openssl_version != expecting:
                     sys.stderr.write('Expecting %s, got %s.\n' % (
                         expecting, openssl_version))
@@ -842,20 +842,21 @@ def main():
     else:
         print '"subprocess32" module is present.'
 
-    try:
-        import bcrypt
-        password = b"super secret password"
-        # Hash the password with a randomly-generated salt.
-        hashed = bcrypt.hashpw(password, bcrypt.gensalt())
-        # Check that an unhashed password matches hashed one.
-        if bcrypt.checkpw(password, hashed):
-            print 'bcrypt %s' % (bcrypt.__version__,)
-        else:
-            sys.stderr.write('"bcrypt" present, but broken.\n')
-            exit_code = 27
-    except:
-        sys.stderr.write('"bcrypt" missing.\n')
-        exit_code = 26
+    if not platform_system == 'hp-ux':
+        try:
+            import bcrypt
+            password = b"super secret password"
+            # Hash the password with a randomly-generated salt.
+            hashed = bcrypt.hashpw(password, bcrypt.gensalt())
+            # Check that an unhashed password matches hashed one.
+            if bcrypt.checkpw(password, hashed):
+                print 'bcrypt %s' % (bcrypt.__version__,)
+            else:
+                sys.stderr.write('"bcrypt" present, but broken.\n')
+                exit_code = 27
+        except:
+            sys.stderr.write('"bcrypt" missing.\n')
+            exit_code = 26
 
     # Windows specific modules.
     if os.name == 'nt':

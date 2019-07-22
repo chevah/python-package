@@ -721,7 +721,8 @@ command_build_sqlite() {
     # Bring SQLite headers and source handy.
     execute cp src/sqlite/SQLite-${SQLITE_VERSION}/*.h \
         ${INSTALL_FOLDER}/include/
-    execute cp src/sqlite/SQLite-${SQLITE_VERSION}/sqlite3.c ${target_folder}/
+    execute cp src/sqlite/SQLite-${SQLITE_VERSION}/sqlite3.[ch]
+        ${target_folder}/
 
     # Build and install.
     execute pushd $target_folder

@@ -18,7 +18,7 @@ LIBEDIT_VERSION="20170329-3.1"
 # PyCrypto needs GMP or MPIR for fast math. GMP has support for AIX/HP-UX/etc.
 GMP_VERSION="6.1.2"
 SQLITE_VERSION="3.27.1"
-PYSQLITE_VERSION="2.8.3"
+PYSQLITE3_VERSION="0.2.1"
 # These are used by get-pip.py.
 PIP_VERSION="9.0.3"
 SETUPTOOLS_VERSION="39.0.1"
@@ -668,9 +668,9 @@ command_build() {
     esac
 
     aix_ld_hack init
-    command_build_sqlite
     command_build_gmpy
     command_build_python_extra_libraries
+    command_build_sqlite
     aix_ld_hack cleanup
 
     case $OS in
@@ -716,7 +716,7 @@ command_build_sqlite() {
     target_folder=${BUILD_FOLDER}/pysqlite
 
     initialize_python_module \
-        "python-modules/pysqlite-$PYSQLITE_VERSION" $target_folder
+        "python-modules/pysqlite3-$PYSQLITE3_VERSION" $target_folder
 
     # Bring SQLite headers and source handy.
     execute cp src/sqlite/SQLite-${SQLITE_VERSION}/*.h \

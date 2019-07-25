@@ -616,20 +616,17 @@ detect_os() {
                 fi
                 OS="rhel${os_version_chevah}"
             fi
-        elif [ -f /etc/SuSE-release ]; then
-            # Avoid getting confused by SUSE derivatives such as OpenSUSE.
-            if [ $(head -n1 /etc/SuSE-release | cut -d' ' -f1) = 'SUSE' ]; then
-                os_version_raw=$(\
-                    grep VERSION /etc/SuSE-release | cut -d' ' -f3)
-                check_os_version "SUSE Linux Enterprise Server" 10 \
-                    "$os_version_raw" os_version_chevah
-                OS="sles${os_version_chevah}"
-            fi
         elif [ -f /etc/os-release ]; then
             source /etc/os-release
             linux_distro="$ID"
             distro_fancy_name="$NAME"
             case "$linux_distro" in
+                "sles")
+                    os_version_raw="$VERSION_ID"
+                    check_os_version "SUSE Linux Enterprise Server" 11 \
+                        "$os_version_raw" os_version_chevah
+                    OS="sles${os_version_chevah}"
+                    ;;
                 "ubuntu"|"ubuntu-core")
                     os_version_raw="$VERSION_ID"
                     check_os_version "$distro_fancy_name" 14.04 \

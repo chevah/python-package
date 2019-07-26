@@ -427,11 +427,15 @@ case $OS in
         # SLES's libffi headers from SDK do not match default-available package.
         export BUILD_LIBFFI="yes"
         ;;
-    rhel5|sles11)
-        # OS'es with OpenSSL 0.9.8 libs, older cryptography would be needed,
-        # but upstream provides a Linux wheel that works, at least on SLES 11.
-        # Otherwise, just set PIP_LIBRARIES to PIP_LIBRARIES_OPENSSL_098.
-        # Use PyCryptodomex' wheel, as there are issues not solved upstream yet.
+    linux)
+        # Build as portable as possible, only glibc 2.x should be needed.
+        export BUILD_LIBFFI="yes"
+        export BUILD_ZLIB="yes"
+        export BUILD_LIBEDIT="no"
+        # Generic Linux might be an old distro with OpenSSL 0.9.8 libraries.
+        # Which would normally require an older "cryptography", but upstream
+        # provides a Linux wheel, working at least on SLES 11 / RHEL 6 / Arch.
+        # Use PyCryptodomex' wheel, some issue not solved upstream for SLES 11.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
             pycryptodomex==${PYCRYPTODOMEX_VERSION}upstream \
@@ -443,19 +447,6 @@ case $OS in
             subprocess32==${SUBPROCESS32_VERSION} \
             bcrypt==${BCRYPT_VERSION} \
             "
-        # SLES's libffi headers from SDK do not match default-available package.
-        export BUILD_LIBFFI="yes"
-        ;;
-    sles10)
-        export BUILD_CFFI="no"
-        add_ignored_safety_ids_for_pyopenssl_false_positives
-        PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
-        EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
-        ;;
-    debian*)
-        # Build as portable as possible, akin to the old generic Linux builds.
-        export BUILD_LIBFFI="yes"
-        export BUILD_LIBEDIT="no"
         ;;
     windows*)
         # On Windows, python executable is installed at a different path.

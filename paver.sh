@@ -534,6 +534,29 @@ check_os_version() {
     eval $version_chevah="'$version_constructed'"
 }
 
+#
+# For old unsupported Linux distros with no /etc/os-release and for exotic
+# unsupported Linux distros, we check if the system is glibc-based and use a
+# generic code path that links everything statically, only requiring glibc.
+#
+check_linux_glibc() {
+    echo "Unsupported Linux distribution!"
+    echo "To get you going, we'll try to treat it as generic Linux..."
+    set +o errexit
+    command -v ldd > /dev/null
+    if [ $? -ne 0 ]; then
+        echo "No ldd binary found, can't check for glibc!"
+        exit 18
+    fi
+    ldd --version | grep "GNU libc" > /dev/null
+    if [ $? -ne 0 ]; then
+        echo "No glibc reported by ldd... Unsupported Linux libc!"
+        exit 19
+    fi
+    set -o errexit
+    # glibc detected, we leave $OS as "linux" and hope for the best.
+    return
+}
 
 #
 # Update OS and ARCH variables with the current values.
@@ -597,35 +620,46 @@ detect_os() {
 
         ARCH=$(uname -m)
 
-        if [ -f /etc/redhat-release ]; then
-            # Avoid getting confused by Red Hat derivatives such as Fedora.
-            if egrep -q 'Red\ Hat|CentOS|Scientific' /etc/redhat-release; then
-                os_version_raw=$(\
-                    cat /etc/redhat-release | sed s/.*release// | cut -d' ' -f2)
-                check_os_version "Red Hat Enterprise Linux" 5 \
-                    "$os_version_raw" os_version_chevah
-                # RHEL 7.4 and newer have OpenSSL 1.0.2, while 7.3 and older
-                # have version 1.0.1. Thus for the older RHEL 7 versions we use
-                # a separate OS signature, to make use of a dedicated Python
-                # package.
-                if [ "$os_version_chevah" -eq 7 ]; then
-                    if openssl version | grep -F -q "1.0.1"; then
-                        # We are on 1.0.1 which is pre RHEL 7.4
-                        os_version_chevah=7openssl101
-                    fi
-                fi
-                OS="rhel${os_version_chevah}"
-            fi
-        elif [ -f /etc/os-release ]; then
+        if [ ! -f /etc/os-release ]; then
+            # No /etc/os-release file present, so we don't support this distro,
+            # but check for glibc, it could work with the generic build.
+            check_linux_glibc
+        else
             source /etc/os-release
             linux_distro="$ID"
             distro_fancy_name="$NAME"
+            # Some rolling-release distros (eg. Arch Linux) do not define here
+            # VERSION_ID, so don't count on it to be present unconditionally.
             case "$linux_distro" in
+                "rhel"|"centos")
+                    os_version_raw="$VERSION_ID"
+                    check_os_version "Red Hat Enterprise Linux" 7 \
+                        "$os_version_raw" os_version_chevah
+                    OS="rhel${os_version_chevah}"
+                    if [ "$os_version_chevah" -eq 7 ]; then
+                        if openssl version | grep -F -q "1.0.1"; then
+                            # RHEL 7.0-7.3 has OpenSSL 1.0.1. Use generic build.
+                            # As we don't support it, go to check_linux_glibc.
+                            check_linux_glibc
+                        fi
+                    fi
+                    ;;
+                "amzn")
+                    os_version_raw="$VERSION_ID"
+                    check_os_version "$distro_fancy_name" 2 \
+                        "$os_version_raw" os_version_chevah
+                    OS="amazon${os_version_chevah}"
+                    ;;
                 "sles")
                     os_version_raw="$VERSION_ID"
                     check_os_version "SUSE Linux Enterprise Server" 11 \
                         "$os_version_raw" os_version_chevah
-                    OS="sles${os_version_chevah}"
+                    # SLES 11 has OpenSSL 0.9.8, Security Module brings 1.0.1.
+                    # So use the generic builds with included OpenSSL for both.
+                    # As we support this, we don't go through check_linux_glibc.
+                    if [ "$os_version_chevah" -ne 11 ]; then
+                        OS="sles${os_version_chevah}"
+                    fi
                     ;;
                 "ubuntu"|"ubuntu-core")
                     os_version_raw="$VERSION_ID"
@@ -638,8 +672,10 @@ detect_os() {
                         $(( ${os_version_chevah%%04} % 2 )) -eq 0 ]; then
                         OS="ubuntu${os_version_chevah}"
                     else
+                        # We don't support this, but avoid check_linux_glibc
+                        # to give the suggestion of trying a LTS version.
                         echo "Unsupported Ubuntu, please try a LTS version!"
-                        exit 16
+                        echo "To get you going, we treat it as generic Linux."
                     fi
                     ;;
                 "debian")
@@ -660,19 +696,9 @@ detect_os() {
                         "$os_version_raw" os_version_chevah
                     OS="alpine${os_version_chevah}"
                     ;;
-                "arch")
-                    # Arch Linux is a rolling distro, no version info available.
-                    OS="archlinux"
-                    ;;
-                "amzn")
-                    os_version_raw="$VERSION_ID"
-                    check_os_version "$distro_fancy_name" 2 \
-                        "$os_version_raw" os_version_chevah
-                    OS="amazon${os_version_chevah}"
-                    ;;
                 *)
-                    echo "Unsupported Linux distribution: $distro_fancy_name."
-                    exit 15
+                    # For testing this code path, we use Arch.
+                    check_linux_glibc
                     ;;
             esac
         fi

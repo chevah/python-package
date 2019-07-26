@@ -161,10 +161,21 @@ def get_allowed_deps():
                 '/lib/x86_64-linux-gnu/libc.so.6',
                 '/lib/x86_64-linux-gnu/libdl.so.2',
                 '/lib/x86_64-linux-gnu/libm.so.6',
+                '/lib/x86_64-linux-gnu/libncurses.so.5',
                 '/lib/x86_64-linux-gnu/libpthread.so.0',
+                '/lib/x86_64-linux-gnu/libtinfo.so.5',
                 '/lib/x86_64-linux-gnu/libutil.so.1',
                 '/lib/x86_64-linux-gnu/libz.so.1',
                 ]
+            # libffi version was incremented in Debian 8.
+            if debian_version == "7":
+                allowed_deps.extend([
+                    '/usr/lib/x86_64-linux-gnu/libffi.so.5',
+                    ])
+            else:
+                allowed_deps.extend([
+                    '/usr/lib/x86_64-linux-gnu/libffi.so.6',
+                    ])
             if debian_version in [ "7", "8" ]:
                 # Additional OpenSSL 1.0.1 deps for Debian 7.x/8.x amd64.
                 allowed_deps.extend([
@@ -185,12 +196,23 @@ def get_allowed_deps():
                         '/lib/i386-linux-gnu/i686/cmov/libcrypt.so.1',
                         '/lib/i386-linux-gnu/i686/cmov/libdl.so.2',
                         '/lib/i386-linux-gnu/i686/cmov/libm.so.6',
+                        '/lib/i386-linux-gnu/i686/cmov/libncurses.so.5',
                         '/lib/i386-linux-gnu/i686/cmov/libpthread.so.0',
+                        '/lib/i386-linux-gnu/i686/cmov/libtinfo.so.5',
                         '/lib/i386-linux-gnu/i686/cmov/libutil.so.1',
                         '/lib/i386-linux-gnu/libz.so.1',
                         '/usr/lib/i386-linux-gnu/i686/cmov/libcrypto.so.1.0.0',
                         '/usr/lib/i386-linux-gnu/i686/cmov/libssl.so.1.0.0',
                         ]
+                    # libffi version was incremented in Debian 8.
+                    if debian_version == "7":
+                        allowed_deps.extend([
+                            '/usr/lib/x86_64-linux-gnu/libffi.so.5',
+                            ])
+                    else:
+                        allowed_deps.extend([
+                            '/usr/lib/x86_64-linux-gnu/libffi.so.6',
+                            ])
                 else:
                     # Full deps for Debian 9.x i386 (and possibly newer).
                     allowed_deps=[
@@ -198,10 +220,13 @@ def get_allowed_deps():
                         '/lib/i386-linux-gnu/libc.so.6',
                         '/lib/i386-linux-gnu/libdl.so.2',
                         '/lib/i386-linux-gnu/libm.so.6',
+                        '/lib/i386-linux-gnu/libncurses.so.5',
                         '/lib/i386-linux-gnu/libpthread.so.0',
+                        '/lib/i386-linux-gnu/libtinfo.so.5',
                         '/lib/i386-linux-gnu/libutil.so.1',
                         '/lib/i386-linux-gnu/libz.so.1',
                         '/usr/lib/i386-linux-gnu/libcrypto.so.1.1',
+                        '/usr/lib/i386-linux-gnu/libffi.so.6',
                         '/usr/lib/i386-linux-gnu/libssl.so.1.1',
                         ]
         elif ('raspbian' in chevah_os):
@@ -244,21 +269,15 @@ def get_allowed_deps():
                     '/lib/libcrypto.so.1',
                     '/lib/libssl.so.1',
                     ])
-        elif ('archlinux' in chevah_os):
-            # Full deps with paths for Arch Linux, as of March 2018.
+        elif (chevah_os == 'linux'):
+            # Deps without paths for generic Linux builds.
+            # Tested on SLES 11 / RHEL 6 / Arch Linux.
             allowed_deps=[
-                '/usr/lib/libcrypto.so.1.1',
-                '/usr/lib/libcrypt.so.1',
-                '/usr/lib/libc.so.6',
-                '/usr/lib/libdl.so.2',
-                '/usr/lib/libffi.so.6',
-                '/usr/lib/libm.so.6',
-                '/usr/lib/libncursesw.so.6',
-                '/usr/lib/libnsl.so.1',
-                '/usr/lib/libpthread.so.0',
-                '/usr/lib/libssl.so.1.1',
-                '/usr/lib/libutil.so.1',
-                '/usr/lib/libz.so.1',
+                'libc.so.6',
+                'libdl.so.2',
+                'libm.so.6',
+                'libpthread.so.0',
+                'libutil.so.1',
                 ]
     elif platform_system == 'aix':
         # List of deps with full paths for AIX 5.3 with OpenSSL 1.0.2k.

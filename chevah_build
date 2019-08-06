@@ -413,7 +413,7 @@ case $OS in
         export MACOSX_DEPLOYMENT_TARGET=10.13
         # 10.13 and newer come with LibreSSL instead of the old OpenSSL libs.
         # But the headers are missing, so we copy them ourselves when building.
-        LIBRESSL_VERSION=2.2.7
+        LIBRESSL_VERSION="2.2.7"
         # Beware that zlib headers are not present either on macOS 10.14.
         # We don't care here because we build on 10.13 only.
         ;;
@@ -433,8 +433,10 @@ case $OS in
         export BUILD_ZLIB="yes"
         export BUILD_LIBEDIT="no"
         # Generic Linux might be an old distro with OpenSSL 0.9.8 libraries.
-        # Which would normally require an older "cryptography", but upstream
-        # provides a Linux wheel, working at least on SLES 11 / RHEL 6 / Arch.
+        # For the "cryptography" module we use the upstream wheel, which
+        # includes OpenSSL libs, but for "ssl" we need OpenSSL as well.
+        # To avoid linking to local libs, we build our own OpenSSL libs.
+        OPENSSL_VERSION="1.1.1c"
         # Use PyCryptodomex' wheel, some issue not solved upstream for SLES 11.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
@@ -543,8 +545,18 @@ check_dependencies() {
             check_command='pacman -Qi'
             ;;
         # On remaining OS'es we just check for some of the needed commands.
+        hpux*)
+            # Included CFLAGS get in the way on HP-UX.
+            packages="/opt/aCC/bin/cc make m4 git patch"
+            check_command="command -v"
+            ;;
         macos*)
             packages="$CC make m4 libtool git patch"
+            check_command="command -v"
+            ;;
+        linux)
+            # Generic Linux builds need Perl 5.10.0+ for building OpenSSL.
+            packages="$CC make m4 git patch perl"
             check_command="command -v"
             ;;
         windows)
@@ -558,11 +570,6 @@ check_dependencies() {
                 packages="make git patch"
                 check_command="command -v"
             fi
-            ;;
-        hpux*)
-            # Included CFLAGS get in the way on HP-UX.
-            packages="/opt/aCC/bin/cc make m4 git patch"
-            check_command="command -v"
             ;;
         *)
             packages="$CC make m4 git patch"
@@ -651,6 +658,14 @@ command_build() {
             cp -r src/libressl/libressl-${LIBRESSL_VERSION}/include/openssl \
                 $INSTALL_FOLDER/include/
             export CFLAGS="$CFLAGS -I${INSTALL_FOLDER}/include"
+            build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
+            ;;
+        linux)
+            # Old and/or unsupported Linux distro, so we build our own OpenSSL.
+            build 'openssl' "openssl-$OPENSSL_VERSION" ${PYTHON_BUILD_FOLDER}
+            #export CFLAGS="$CFLAGS -I${INSTALL_FOLDER}/include"
+            export LDFLAGS="-L${INSTALL_FOLDER}/lib64/ ${LDFLAGS}"
+            export PKG_CONFIG_PATH="${INSTALL_FOLDER}/lib64/pkgconfig/:${PKG_CONFIG_PATH}"
             build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
         *)

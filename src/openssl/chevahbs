@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+#
+# Chevah Build Script for OpenSSL.
+
+# Import shared code.
+. ./functions.sh
+
+
+chevahbs_configure() {
+    # We want static builds only, so that we don't have to mess with LIBPATH.
+    CONF_OPTS="no-shared"
+    # OpenSSL's build requires an absolute path for --prefix.
+    execute ./config --prefix="$INSTALL_FOLDER" $CONF_OPTS
+}
+
+
+chevahbs_compile() {
+    execute $MAKE
+}
+
+
+chevahbs_install() {
+    install_folder=$1
+    execute $MAKE install
+}
+
+
+select_chevahbs_command $@
+

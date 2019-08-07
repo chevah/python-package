@@ -552,7 +552,7 @@ check_linux_glibc() {
         echo "No ldd binary found, can't check for glibc!"
         exit 18
     fi
-    ldd --version | egrep "GNU\ libc|EGLIBC" > /dev/null
+    ldd --version | egrep "GNU\ libc|GLIBC" > /dev/null
     if [ $? -ne 0 ]; then
         echo "No glibc reported by ldd... Unsupported Linux libc!"
         exit 19
@@ -661,6 +661,9 @@ detect_os() {
                     # SLES 11 has OpenSSL 0.9.8, Security Module brings 1.0.1.
                     # So use the generic builds with included OpenSSL for both.
                     # As we support this, we don't go through check_linux_glibc.
+                    # $OS is simply left as "linux" for SLES 11.
+                    # As SLES 11 has the oldest glibc version among our slaves,
+                    # we use it for building the generic "linux" runtime.
                     if [ "$os_version_chevah" -ne 11 ]; then
                         OS="sles${os_version_chevah}"
                     fi
@@ -684,15 +687,9 @@ detect_os() {
                     ;;
                 "debian")
                     os_version_raw="$VERSION_ID"
-                    check_os_version "$distro_fancy_name" 7 \
+                    check_os_version "$distro_fancy_name" 9 \
                         "$os_version_raw" os_version_chevah
                     OS="debian${os_version_chevah}"
-                    ;;
-                "raspbian")
-                    os_version_raw="$VERSION_ID"
-                    check_os_version "$distro_fancy_name" 7 \
-                        "$os_version_raw" os_version_chevah
-                    OS="raspbian${os_version_chevah}"
                     ;;
                 "alpine")
                     os_version_raw="$VERSION_ID"

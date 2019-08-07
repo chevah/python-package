@@ -527,7 +527,11 @@ check_os_version() {
     if [ "$flag_supported" = 'false' ]; then
         echo "The current version of ${name_fancy} is too old: ${version_raw}"
         echo "Oldest supported version of ${name_fancy} is: ${version_good}"
-        exit 13
+        if [ "${OS}" = "linux" ]; then
+            check_linux_glibc
+        else
+            exit 13
+        fi
     fi
 
     # The sane way to return fancy values with a bash function is to use eval.
@@ -548,7 +552,7 @@ check_linux_glibc() {
         echo "No ldd binary found, can't check for glibc!"
         exit 18
     fi
-    ldd --version | grep "GNU libc" > /dev/null
+    ldd --version | egrep "GNU\ libc|EGLIBC" > /dev/null
     if [ $? -ne 0 ]; then
         echo "No glibc reported by ldd... Unsupported Linux libc!"
         exit 19
@@ -663,7 +667,7 @@ detect_os() {
                     ;;
                 "ubuntu"|"ubuntu-core")
                     os_version_raw="$VERSION_ID"
-                    check_os_version "$distro_fancy_name" 14.04 \
+                    check_os_version "$distro_fancy_name" 16.04 \
                         "$os_version_raw" os_version_chevah
                     # Only Long-term Support versions are supported,
                     # thus $os_version_chevah should end in 04,

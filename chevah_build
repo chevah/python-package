@@ -663,7 +663,6 @@ command_build() {
         linux)
             # Old and/or unsupported Linux distro, so we build our own OpenSSL.
             build 'openssl' "openssl-$OPENSSL_VERSION" ${PYTHON_BUILD_FOLDER}
-            #export CFLAGS="$CFLAGS -I${INSTALL_FOLDER}/include"
             export LDFLAGS="-L${INSTALL_FOLDER}/lib64/ ${LDFLAGS}"
             export PKG_CONFIG_PATH="${INSTALL_FOLDER}/lib64/pkgconfig/:${PKG_CONFIG_PATH}"
             build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}

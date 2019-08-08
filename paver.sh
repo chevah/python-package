@@ -540,9 +540,10 @@ check_os_version() {
 }
 
 #
-# For old unsupported Linux distros with no /etc/os-release and for exotic
-# unsupported Linux distros, we check if the system is glibc-based and use a
-# generic code path that links everything statically, only requiring glibc.
+# For old unsupported Linux distros (with no /etc/os-release) and for exotic
+# unsupported Linux distros (eg. Arch), we check if the system is glibc-based.
+# If so, we use a generic code path that builds everything statically,
+# including OpenSSL, thus only requiring glibc 2.x.
 #
 check_linux_glibc() {
     echo "Unsupported Linux distribution detected!"
@@ -561,6 +562,20 @@ check_linux_glibc() {
     set -o errexit
     # glibc detected, we normalize $OS as "linux" and hope for the best...
     OS="linux"
+}
+
+#
+# For glibc-based Linux distros, after checking if current version is currently
+# supported with check_os_version(), $OS might already be set to "linux" if
+# current version is too old, through check_linux_glibc().
+#
+set_os_if_not_generic() {
+    local distro_name="$1"
+    local distro_version="$2"
+
+    if [ "$OS" != "linux" ]; then
+        OS="${distro_name}${distro_version}"
+    fi
 }
 
 #
@@ -593,7 +608,7 @@ detect_os() {
                         os_version_raw="$VERSION_ID"
                         check_os_version "Red Hat Enterprise Linux" 7 \
                             "$os_version_raw" os_version_chevah
-                        OS="rhel${os_version_chevah}"
+                        set_os_if_not_generic "rhel" $os_version_chevah
                         if [ "$os_version_chevah" -eq 7 ]; then
                             if openssl version | grep -F -q "1.0.1"; then
                                 # 7.0-7.3 has OpenSSL 1.0.1, use generic build.
@@ -605,7 +620,7 @@ detect_os() {
                         os_version_raw="$VERSION_ID"
                         check_os_version "$distro_fancy_name" 2 \
                             "$os_version_raw" os_version_chevah
-                        OS="amazon${os_version_chevah}"
+                        set_os_if_not_generic "amazon" $os_version_chevah
                         ;;
                     sles)
                         os_version_raw="$VERSION_ID"
@@ -619,7 +634,7 @@ detect_os() {
                             # we use it for building generic "linux" runtimes.
                             OS="linux"
                         else
-                            OS="sles${os_version_chevah}"
+                            set_os_if_not_generic "sles" $os_version_chevah
                         fi
                         ;;
                     ubuntu|ubuntu-core)
@@ -631,7 +646,7 @@ detect_os() {
                         # should end in 04 and first two digits should be even.
                         if [ ${os_version_chevah%%04} != ${os_version_chevah} \
                             -a $(( ${os_version_chevah%%04} % 2 )) -eq 0 ]; then
-                            OS="ubuntu${os_version_chevah}"
+                            set_os_if_not_generic "ubuntu" $os_version_chevah
                         else
                             check_linux_glibc
                         fi
@@ -641,13 +656,13 @@ detect_os() {
                         # Debian 7/8 have OpenSSL 1.0.1, use generic Linux.
                         check_os_version "$distro_fancy_name" 9 \
                             "$os_version_raw" os_version_chevah
-                        OS="debian${os_version_chevah}"
+                        set_os_if_not_generic "debian" $os_version_chevah
                         ;;
                     alpine)
                         os_version_raw="$VERSION_ID"
                         check_os_version "$distro_fancy_name" 3.6 \
                             "$os_version_raw" os_version_chevah
-                        OS="alpine${os_version_chevah}"
+                        set_os_if_not_generic "alpine" $os_version_chevah
                         ;;
                     *)
                         # Unsupported modern distros, such as Arch Linux.

@@ -546,21 +546,50 @@ check_os_version() {
 # including OpenSSL, thus only requiring glibc 2.x.
 #
 check_linux_glibc() {
+    local glibc_version
+    local glibc_version_array
+
     echo "Unsupported Linux distribution detected!"
     echo "To get you going, we'll try to treat it as generic Linux..."
+
     set +o errexit
+
     command -v ldd > /dev/null
     if [ $? -ne 0 ]; then
         echo "No ldd binary found, can't check for glibc!"
         exit 18
     fi
+
     ldd --version | egrep "GNU\ libc|GLIBC" > /dev/null
     if [ $? -ne 0 ]; then
         echo "No glibc reported by ldd... Unsupported Linux libc!"
         exit 19
     fi
+
+    # Parsing tested with glibc 2.11 - 2.29, eglibc 2.13 - 2.19.
+    glibc_version=$(ldd --version | head -n 1 | rev | cut -d\  -f1 | rev)
+
+    if [[ $glibc_version =~ [^[:digit:]\.] ]]; then
+        echo "Parsed glibc version should only have numbers and periods, but:"
+        echo "    \$glibc_version=$glibc_version"
+        exit 20
+    fi
+
+    IFS=. read -a glibc_version_array <<< "$glibc_version"
+
+    if [ ${glibc_version_array[0]} -ne 2 ]; then
+        echo "Only glibc 2 is supported! Detected version: $glibc_version"
+        exit 21
+    fi
+
+    if [ ${glibc_version_array[1]} -le 11 ]; then
+        echo "Beware, glibc versions older than 2.11 were not tested!"
+        echo "Detected glibc version: $glibc_version"
+    fi
+
     set -o errexit
-    # glibc detected, we normalize $OS as "linux" and hope for the best...
+
+    # glibc 2 detected, we normalize $OS as "linux".
     OS="linux"
 }
 

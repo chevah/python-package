@@ -134,7 +134,7 @@ BUILD_FOLDER='build'
 # Get default values from main paver script.
 ./paver.sh detect_os
 if [ "$?" -ne 0 ]; then
-    exit 1
+    exit 100
 fi
 
 PYTHON_VERSION=`cut -d' ' -f 2 DEFAULT_VALUES`

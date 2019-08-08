@@ -145,7 +145,7 @@ execute() {
     exit_code=$?
     set -e
     if [ $exit_code -ne 0 ]; then
-        echo "Fail:" $@
+        (>&2 echo "Fail:" $@)
         exit 1
     fi
 }
@@ -236,8 +236,8 @@ pip_install() {
     exit_code=$?
     set -e
     if [ $exit_code -ne 0 ]; then
-        echo "Failed to install brink."
-        exit 1
+        (>&2 echo "Failed to install brink.")
+        exit 2
     fi
 }
 
@@ -263,8 +263,8 @@ set_download_commands() {
         DOWNLOAD_CMD="curl --remote-name"
         return
     fi
-    echo "Missing wget and curl! One of them is needed for online operations."
-    exit 30
+    (>&2 echo "Missing wget/curl! One of them is needed for online operations.")
+    exit 3
 }
 
 #
@@ -325,8 +325,8 @@ get_python_dist() {
         get_binary_dist $python_distributable $remote_base_url/${OS}/${ARCH}
     else
         if [ $download_mode == "strict" ]; then
-            echo "The requested version was not found on the remote server."
-            exit 1
+            (>&2 echo "Requested version was not found on the remote server.")
+            exit 4
         fi
         # Fall back to the non-versioned distribution.
         echo "!!!Getting FALLBACK version!!!"
@@ -349,8 +349,8 @@ copy_python() {
     COPY_PYTHON_RECURSIONS=`expr $COPY_PYTHON_RECURSIONS + 1`
 
     if [ $COPY_PYTHON_RECURSIONS -gt 2 ]; then
-        echo "Too many calls to copy_python. ($COPY_PYTHON_RECURSIONS)"
-        exit 1
+        (>&2 echo "Too many calls to copy_python: $COPY_PYTHON_RECURSIONS")
+        exit 5
     fi
 
     # Check that python dist was installed
@@ -407,10 +407,10 @@ copy_python() {
                 local test_version=$?
                 set -o errexit
                 if [ $test_version -ne 0 ]; then
-                    echo "The build is now at $python_installed_version"
-                    echo "Failed to find the required $PYTHON_VERSION"
-                    echo "Check your configuration or the remote server."
-                    exit 1
+                    (>&2 echo "The build is now at $python_installed_version")
+                    (>&2 echo "Failed to find the required $PYTHON_VERSION")
+                    (>&2 echo "Check your configuration or the remote server.")
+                    exit 6
                 fi
 
                 # Remove it and try to install it again.
@@ -456,8 +456,8 @@ install_dependencies(){
     exit_code=$?
     set -e
     if [ $exit_code -ne 0 ]; then
-        echo 'Failed to run the initial "paver deps" command.'
-        exit 1
+        (>&2 echo 'Failed to run the initial "paver deps" command.')
+        exit 7
     fi
 }
 
@@ -470,9 +470,9 @@ install_dependencies(){
 check_source_folder() {
 
     if [ ! -e pavement.py ]; then
-        echo 'No pavement.py file found in current folder.'
-        echo 'Make sure you are running paver from a source folder.'
-        exit 1
+        (>&2 echo 'No pavement.py file found in current folder.')
+        (>&2 echo 'Make sure you are running paver from a source folder.')
+        exit 8
     fi
 }
 
@@ -502,8 +502,8 @@ check_os_version() {
     local version_good_array
 
     if [[ $version_raw =~ [^[:digit:]\.] ]]; then
-        echo "Unparsed OS version should only have numbers and periods, but:"
-        echo "    \$version_raw=$version_raw"
+        (>&2 echo "OS version should only have numbers and periods, but:")
+        (>&2 echo "    \$version_raw=$version_raw")
         exit 12
     fi
 
@@ -525,8 +525,8 @@ check_os_version() {
     done
 
     if [ "$flag_supported" = 'false' ]; then
-        echo "The current version of ${name_fancy} is too old: ${version_raw}"
-        echo "Oldest supported version of ${name_fancy} is: ${version_good}"
+        (>&2 echo "Current version of ${name_fancy} is too old: ${version_raw}")
+        (>&2 echo "Oldest supported ${name_fancy} version is: ${version_good}")
         if [ "$OS" = "Linux" ]; then
             # For old and/or unsupported Linux distros there's a second chance!
             check_linux_glibc
@@ -556,13 +556,13 @@ check_linux_glibc() {
 
     command -v ldd > /dev/null
     if [ $? -ne 0 ]; then
-        echo "No ldd binary found, can't check for glibc!"
+        (>&2 echo "No ldd binary found, can't check for glibc!")
         exit 18
     fi
 
     ldd --version | egrep "GNU\ libc|GLIBC" > /dev/null
     if [ $? -ne 0 ]; then
-        echo "No glibc reported by ldd... Unsupported Linux libc!"
+        (>&2 echo "No glibc reported by ldd... Unsupported Linux libc!")
         exit 19
     fi
 
@@ -570,21 +570,21 @@ check_linux_glibc() {
     glibc_version=$(ldd --version | head -n 1 | rev | cut -d\  -f1 | rev)
 
     if [[ $glibc_version =~ [^[:digit:]\.] ]]; then
-        echo "Parsed glibc version should only have numbers and periods, but:"
-        echo "    \$glibc_version=$glibc_version"
+        (>&2 echo "Glibc version should only have numbers and periods, but:")
+        (>&2 echo "    \$glibc_version=$glibc_version")
         exit 20
     fi
 
     IFS=. read -a glibc_version_array <<< "$glibc_version"
 
     if [ ${glibc_version_array[0]} -ne 2 ]; then
-        echo "Only glibc 2 is supported! Detected version: $glibc_version"
+        (>&2 echo "Only glibc 2 is supported! Detected version: $glibc_version")
         exit 21
     fi
 
     if [ ${glibc_version_array[1]} -le 11 ]; then
-        echo "Beware, glibc versions older than 2.11 were not tested!"
-        echo "Detected glibc version: $glibc_version"
+        (>&2 echo "Beware glibc versions older than 2.11 were NOT tested!")
+        (>&2 echo "Detected glibc version: $glibc_version")
     fi
 
     set -o errexit
@@ -713,7 +713,7 @@ detect_os() {
                 # For macOS 10.12 and OS X 10.8-10.11 we use 'osx'.
                 OS="osx"
             else
-                echo "Unsupported Mac OS X version: $os_version_raw."
+                (>&2 echo "Unsupported Mac OS X version: $os_version_raw.")
                 exit 17
             fi
             ;;
@@ -769,7 +769,7 @@ detect_os() {
             OS="hpux${os_version_chevah}"
             ;;
         *)
-            echo "Unsupported operating system: ${OS}."
+            (>&2 echo "Unsupported operating system: ${OS}.")
             exit 14
     esac
 

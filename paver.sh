@@ -456,7 +456,7 @@ install_dependencies(){
     exit_code=$?
     set -e
     if [ $exit_code -ne 0 ]; then
-        (>&2 echo 'Failed to run the initial "paver deps" command.')
+        (>&2 echo 'Failed to run the initial "./paver.sh deps" command.')
         exit 7
     fi
 }
@@ -470,7 +470,7 @@ install_dependencies(){
 check_source_folder() {
 
     if [ ! -e pavement.py ]; then
-        (>&2 echo 'No pavement.py file found in current folder.')
+        (>&2 echo 'No "pavement.py" file found in current folder.')
         (>&2 echo 'Make sure you are running paver from a source folder.')
         exit 8
     fi
@@ -582,7 +582,7 @@ check_linux_glibc() {
         exit 21
     fi
 
-    if [ ${glibc_version_array[1]} -le 11 ]; then
+    if [ ${glibc_version_array[1]} -lt 11 ]; then
         (>&2 echo "Beware glibc versions older than 2.11 were NOT tested!")
         (>&2 echo "Detected glibc version: $glibc_version")
     fi
@@ -616,8 +616,7 @@ detect_os() {
 
     case "$OS" in
         MINGW*|MSYS*)
-            # Only 32bit builds are currently supported under Windows.
-            ARCH="x86"
+            ARCH=$(uname -m)
             OS="windows"
             ;;
         Linux)
@@ -662,23 +661,21 @@ detect_os() {
                             # As it has oldest glibc version among our slaves,
                             # we use it for building generic "linux" runtimes.
                             OS="linux"
-                        else
-                            set_os_if_not_generic "sles" $os_version_chevah
                         fi
+                        set_os_if_not_generic "sles" $os_version_chevah
                         ;;
                     ubuntu|ubuntu-core)
                         os_version_raw="$VERSION_ID"
                         # 12.04/14.04 have OpenSSL 1.0.1, use generic Linux.
                         check_os_version "$distro_fancy_name" 16.04 \
                             "$os_version_raw" os_version_chevah
-                        # Only Ubuntu Long-term Support is supported, version
-                        # should end in 04 and first two digits should be even.
-                        if [ ${os_version_chevah%%04} != ${os_version_chevah} \
-                            -a $(( ${os_version_chevah%%04} % 2 )) -eq 0 ]; then
-                            set_os_if_not_generic "ubuntu" $os_version_chevah
-                        else
+                        # Only LTS versions are supported. If it doesn't end in
+                        # 04 or first two digits are uneven, use generic build.
+                        if [ ${os_version_chevah%%04} == ${os_version_chevah} \
+                            -o $(( ${os_version_chevah:0:2} % 2 )) -ne 0 ]; then
                             check_linux_glibc
                         fi
+                        set_os_if_not_generic "ubuntu" $os_version_chevah
                         ;;
                     debian)
                         os_version_raw="$VERSION_ID"
@@ -734,27 +731,30 @@ detect_os() {
             os_version_raw=$(uname -r | cut -d'.' -f2)
             check_os_version Solaris 10 "$os_version_raw" os_version_chevah
             OS="solaris${os_version_chevah}"
-            # Solaris 10u8 (from 10/09) updated the libc version, so for older
-            # releases we build on 10u3, and use that up to 10u7 (from 5/09).
-            # The "solaris10u3" code path also preserves the way to link to the
-            # OpenSSL 0.9.7 bundled in /usr/sfw/ with all Solaris 10 releases.
-            if [ "$OS" = "solaris10" ]; then
-                # We extract the update number from the first line.
-                update=$(head -1 /etc/release | cut -d_ -f2 | sed s/[^0-9]*//g)
-                if [ "$update" -lt 8 ]; then
-                    OS="solaris10u3"
-                fi
-            # Solaris 11 releases prior to 11.4 were bundled with OpenSSL libs
-            # missing support for Elliptic-curve crypto. From here on:
-            #     * Solaris 11.4 (or newer) with OpenSSL 1.0.2 is "solaris11".
-            #     * Solaris 11.2/11.3 with OpenSSL 1.0.1 is "solaris112".
-            #     * Solaris 11.0/11.1 with OpenSSL 1.0.0 is not supported.
-            elif [ "$OS" = "solaris11" ]; then
-                minor_version=$(uname -v | cut -d'.' -f2)
-                if [ "$minor_version" -lt 4 ]; then
-                    OS="solaris112"
-                fi
-            fi
+            case "$OS" in
+                solaris10)
+                    # Solaris 10u8 (from 10/09) updated libc version, so for
+                    # older releases up to 10u7 (from 5/09) we build on 10u3.
+                    # The "solaris10u3" code path also shows the way to link to
+                    # OpenSSL 0.9.7 libs bundled in /usr/sfw/ with Solaris 10.
+                    # Update number is taken from first line of /etc/release.
+                    un=$(head -1 /etc/release | cut -d_ -f2 | sed s/[^0-9]*//g)
+                    if [ "$un" -lt 8 ]; then
+                        OS="solaris10u3"
+                    fi
+                    ;;
+                solaris11)
+                    # Solaris 11 releases prior to 11.4 bundled OpenSSL libs
+                    # missing support for Elliptic-curve crypto. From here on,
+                    # Solaris 11.4 (or newer) with OpenSSL 1.0.2 is "solaris11",
+                    # Solaris 11.2/11.3 with OpenSSL 1.0.1 is "solaris112",
+                    # Solaris 11.0/11.1 with OpenSSL 1.0.0 is not supported.
+                    minor_version=$(uname -v | cut -d'.' -f2)
+                    if [ "$minor_version" -lt 4 ]; then
+                        OS="solaris112"
+                    fi
+                    ;;
+            esac
             ;;
         AIX)
             ARCH="ppc$(getconf HARDWARE_BITMODE)"
@@ -780,10 +780,13 @@ detect_os() {
             ;;
         "amd64"|"x86_64")
             ARCH="x64"
-            if [ "${OS}" = "solaris10" ]; then
-                # Prior to adding "bcrypt" we were fine with x64 on Solaris 10.
-                ARCH="x86"
-            fi
+            case "$OS" in
+                windows|solaris10)
+                    # On Windows, only 32bit builds are currently supported.
+                    # On Solaris 10, x64 built fine prior to adding "bcrypt".
+                    ARCH="x86"
+                    ;;
+            esac
             ;;
         "aarch64")
             ARCH="arm64"

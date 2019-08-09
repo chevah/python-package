@@ -27,4 +27,3 @@ chevahbs_install() {
 
 
 select_chevahbs_command $@
-

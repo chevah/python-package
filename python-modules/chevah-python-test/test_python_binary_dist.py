@@ -271,8 +271,8 @@ def get_allowed_deps():
                     ])
         elif (chevah_os == 'linux'):
             # Deps without paths for generic Linux builds.
-            # Only GLIBC libs are allowed.
-            # Tested on SLES 11.
+            # Only glibc 2.x libs are allowed.
+            # Tested on SLES 11 with glibc 2.11.3.
             allowed_deps=[
                 'libc.so.6',
                 'libcrypt.so.1',

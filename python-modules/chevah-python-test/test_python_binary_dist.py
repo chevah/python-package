@@ -19,7 +19,7 @@ def get_allowed_deps():
     """
     allowed_deps = []
     if platform_system == 'linux':
-        if ('rhel' in chevah_os):
+        if 'rhel' in chevah_os:
             # Common deps for RHEL 6 and 7 with full paths (x86_64 only).
             allowed_deps = [
                 '/lib64/libcom_err.so.2',
@@ -56,7 +56,7 @@ def get_allowed_deps():
                     '/lib64/libpcre.so.1',
                     '/lib64/libssl.so.10',
                     ])
-        elif ('amazon' in chevah_os):
+        elif 'amzn' in chevah_os:
             # Deps for Amazon Linux 2 (x86_64 only).
             allowed_deps=[
                 '/lib64/libcom_err.so.2',
@@ -81,7 +81,7 @@ def get_allowed_deps():
                 '/lib64/libutil.so.1',
                 '/lib64/libz.so.1',
                 ]
-        elif ('sles' in chevah_os):
+        elif 'sles' in chevah_os:
             sles_version = chevah_os[4:]
             # Common deps for SLES 11, 11SM and 12 w/ full paths (x86_64 only).
             allowed_deps=[
@@ -111,7 +111,7 @@ def get_allowed_deps():
                     '/lib64/libssl.so.1.0.0',
                     '/lib64/libtinfo.so.5',
                     ])
-        elif ('ubuntu' in chevah_os):
+        elif 'ubuntu' in chevah_os:
             ubuntu_version = chevah_os[6:]
             # Common deps for Ubuntu 14.04/16.04/18.04 with full paths (x86_64).
             allowed_deps=[
@@ -153,7 +153,7 @@ def get_allowed_deps():
                     '/lib/aarch64-linux-gnu/libz.so.1',
                     '/usr/lib/aarch64-linux-gnu/libffi.so.6',
                     ]
-        elif ('debian' in chevah_os):
+        elif 'debian' in chevah_os:
             debian_version = chevah_os[6:]
             # Common deps with full paths for Debian 7 amd64 and newer.
             allowed_deps=[
@@ -229,7 +229,7 @@ def get_allowed_deps():
                         '/usr/lib/i386-linux-gnu/libffi.so.6',
                         '/usr/lib/i386-linux-gnu/libssl.so.1.1',
                         ]
-        elif ('raspbian' in chevah_os):
+        elif 'raspbian' in chevah_os:
             # Common deps with full paths for Raspbian 7 and 8.
             allowed_deps=[
                 '/lib/arm-linux-gnueabihf/libcrypt.so.1',
@@ -247,7 +247,7 @@ def get_allowed_deps():
                 '/usr/lib/arm-linux-gnueabihf/libffi.so.5',
                 '/usr/lib/arm-linux-gnueabihf/libssl.so.1.0.0',
                 ]
-        elif ('alpine' in chevah_os):
+        elif 'alpine' in chevah_os:
             # Full deps with paths, but no minor versions, for Alpine 3.6+.
             alpine_version = chevah_os[6:]
             allowed_deps=[
@@ -269,7 +269,7 @@ def get_allowed_deps():
                     '/lib/libcrypto.so.1',
                     '/lib/libssl.so.1',
                     ])
-        elif (chevah_os == 'linux'):
+        elif chevah_os == 'lnx':
             # Deps without paths for generic Linux builds.
             # Only glibc 2.x libs are allowed.
             # Tested on SLES 11 with glibc 2.11.3.
@@ -415,7 +415,7 @@ def get_allowed_deps():
                     '/lib/librt.so.1',
                     '/usr/lib/libcrypt_i.so.1',
                     ])
-                if 'solaris10u3' in chevah_os:
+                if chevah_os == 'sol10u3':
                     # Specific deps for Solaris 10u3 up to 10u7.
                     allowed_deps.extend([
                         '/lib/libmd5.so.1',
@@ -500,14 +500,14 @@ def get_allowed_deps():
             '/usr/lib/libSystem.B.dylib',
             '/usr/lib/libz.1.dylib',
             ]
-        if ('osx' in chevah_os):
+        if chevah_os == 'osx':
             # Additional deps when using the OS-included OpenSSL 0.9.8.
             allowed_deps.extend([
                 '/usr/lib/libcrypto.0.9.8.dylib',
                 '/usr/lib/libssl.0.9.8.dylib',
                 '/usr/lib/libncurses.5.4.dylib',
                 ])
-        elif ('macos' in chevah_os):
+        if chevah_os == 'macos':
             # Additional deps for macOS 10.13 with OS-included LibreSSL 2.2.7.
             allowed_deps.extend([
                 '/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics',
@@ -625,7 +625,7 @@ def get_actual_deps(script_helper):
                     continue
             elif platform_system == 'linux':
                 # On Alpine we don't use regular ldd, the output is different.
-                if ('alpine' in chevah_os):
+                if 'alpine' in chevah_os:
                     dep = line.split()[0]
                 else:
                     if any(string in line for string in linux_ignored_strings):
@@ -744,7 +744,7 @@ def main():
             from cryptography.hazmat.backends.openssl.backend import backend
             import cryptography
             openssl_version = backend.openssl_version_text()
-            if chevah_os in [ "windows", "osx", "sles11", "rhel5" ]:
+            if chevah_os in [ "win", "osx", "sles11", "rhel5" ]:
                 # Check OpenSSL version from upstream wheels.
                 expecting = u'OpenSSL 1.1.1c  28 May 2019'
                 if openssl_version != expecting:
@@ -958,7 +958,7 @@ def main():
             exit_code = 18
 
     # Some OS'es are not supported by upstream psutil.
-    if not chevah_os in [ 'aix53', 'hpux1131', 'solaris10', 'solaris112' ]:
+    if not chevah_os in [ 'aix53', 'hpux1131', 'sol10', 'sol112' ]:
         try:
             import psutil
             cpu_percent = psutil.cpu_percent()
@@ -968,7 +968,7 @@ def main():
         else:
             print 'psutil %s' % (psutil.__version__,)
 
-    if ( platform_system == 'linux' ) or ( platform_system == 'sunos' ):
+    if platform_system in [ 'linux', 'sunos' ]:
         try:
             import spwd
             spwd

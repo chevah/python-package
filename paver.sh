@@ -122,7 +122,7 @@ delete_folder() {
     local target="$1"
     # On Windows, we use internal command prompt for maximum speed.
     # See: http://stackoverflow.com/a/6208144/539264
-    if [ $OS = "windows" -a -d $target ]; then
+    if [ $OS = "win" -a -d $target ]; then
         cmd //c "del /f/s/q $target > nul"
         cmd //c "rmdir /s/q $target"
     else
@@ -156,7 +156,7 @@ execute() {
 update_path_variables() {
     resolve_python_version
 
-    if [ "${OS}" = "windows" ] ; then
+    if [ "${OS}" = "win" ] ; then
         PYTHON_BIN="/lib/python.exe"
         PYTHON_LIB="/lib/Lib/"
     else
@@ -589,20 +589,20 @@ check_linux_glibc() {
 
     set -o errexit
 
-    # glibc 2 detected, we normalize $OS as "linux".
-    OS="linux"
+    # glibc 2 detected, we set $OS for a generic build.
+    OS="lnx"
 }
 
 #
-# For glibc-based Linux distros, after checking if current version is currently
-# supported with check_os_version(), $OS might already be set to "linux" if
-# current version is too old, through check_linux_glibc().
+# For glibc-based Linux distros, after checking if current version is
+# supported with check_os_version(), $OS might already be set to "lnx"
+# if current version is too old, through check_linux_glibc().
 #
 set_os_if_not_generic() {
     local distro_name="$1"
     local distro_version="$2"
 
-    if [ "$OS" != "linux" ]; then
+    if [ "$OS" != "lnx" ]; then
         OS="${distro_name}${distro_version}"
     fi
 }
@@ -617,7 +617,7 @@ detect_os() {
     case "$OS" in
         MINGW*|MSYS*)
             ARCH=$(uname -m)
-            OS="windows"
+            OS="win"
             ;;
         Linux)
             ARCH=$(uname -m)
@@ -648,7 +648,7 @@ detect_os() {
                         os_version_raw="$VERSION_ID"
                         check_os_version "$distro_fancy_name" 2 \
                             "$os_version_raw" os_version_chevah
-                        set_os_if_not_generic "amazon" $os_version_chevah
+                        set_os_if_not_generic "amzn" $os_version_chevah
                         ;;
                     sles)
                         os_version_raw="$VERSION_ID"
@@ -659,8 +659,8 @@ detect_os() {
                         if [ "$os_version_chevah" -eq 11 ]; then
                             # We support this, so no need for check_linux_glibc,
                             # As it has oldest glibc version among our slaves,
-                            # we use it for building generic "linux" runtimes.
-                            OS="linux"
+                            # we use it for building generic Linux runtimes.
+                            OS="lnx"
                         fi
                         set_os_if_not_generic "sles" $os_version_chevah
                         ;;
@@ -718,40 +718,40 @@ detect_os() {
             ARCH=$(uname -m)
             os_version_raw=$(uname -r | cut -d'.' -f1)
             check_os_version "FreeBSD" 11 "$os_version_raw" os_version_chevah
-            OS="freebsd${os_version_chevah}"
+            OS="fbsd${os_version_chevah}"
             ;;
         OpenBSD)
             ARCH=$(uname -m)
             os_version_raw=$(uname -r)
             check_os_version "OpenBSD" 6.5 "$os_version_raw" os_version_chevah
-            OS="openbsd${os_version_chevah}"
+            OS="obsd${os_version_chevah}"
             ;;
         SunOS)
             ARCH=$(isainfo -n)
             os_version_raw=$(uname -r | cut -d'.' -f2)
             check_os_version Solaris 10 "$os_version_raw" os_version_chevah
-            OS="solaris${os_version_chevah}"
+            OS="sol${os_version_chevah}"
             case "$OS" in
-                solaris10)
+                sol10)
                     # Solaris 10u8 (from 10/09) updated libc version, so for
                     # older releases up to 10u7 (from 5/09) we build on 10u3.
-                    # The "solaris10u3" code path also shows the way to link to
+                    # The "sol10u3" code path also shows the way to link to
                     # OpenSSL 0.9.7 libs bundled in /usr/sfw/ with Solaris 10.
                     # Update number is taken from first line of /etc/release.
                     un=$(head -1 /etc/release | cut -d_ -f2 | sed s/[^0-9]*//g)
                     if [ "$un" -lt 8 ]; then
-                        OS="solaris10u3"
+                        OS="sol10u3"
                     fi
                     ;;
-                solaris11)
+                sol11)
                     # Solaris 11 releases prior to 11.4 bundled OpenSSL libs
-                    # missing support for Elliptic-curve crypto. From here on,
-                    # Solaris 11.4 (or newer) with OpenSSL 1.0.2 is "solaris11",
-                    # Solaris 11.2/11.3 with OpenSSL 1.0.1 is "solaris112",
-                    # Solaris 11.0/11.1 with OpenSSL 1.0.0 is not supported.
+                    # missing support for Elliptic-curve crypto. From here on:
+                    #   * Solaris 11.4 (or newer) with OpenSSL 1.0.2 is "sol11",
+                    #   * Solaris 11.2/11.3 with OpenSSL 1.0.1 is "sol112",
+                    #   * Solaris 11.0/11.1 with OpenSSL 1.0.0 is not supported.
                     minor_version=$(uname -v | cut -d'.' -f2)
                     if [ "$minor_version" -lt 4 ]; then
-                        OS="solaris112"
+                        OS="sol112"
                     fi
                     ;;
             esac
@@ -781,7 +781,7 @@ detect_os() {
         "amd64"|"x86_64")
             ARCH="x64"
             case "$OS" in
-                windows|solaris10)
+                win|sol10)
                     # On Windows, only 32bit builds are currently supported.
                     # On Solaris 10, x64 built fine prior to adding "bcrypt".
                     ARCH="x86"

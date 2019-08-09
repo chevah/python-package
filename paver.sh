@@ -324,13 +324,8 @@ get_python_dist() {
         # We have the requested python version.
         get_binary_dist $python_distributable $remote_base_url/${OS}/${ARCH}
     else
-        if [ $download_mode == "strict" ]; then
-            (>&2 echo "Requested version was not found on the remote server.")
-            exit 4
-        fi
-        # Fall back to the non-versioned distribution.
-        echo "!!!Getting FALLBACK version!!!"
-        get_binary_dist $PYTHON_NAME-$OS-$ARCH $remote_base_url
+        (>&2 echo "Requested version was not found on the remote server.")
+        exit 4
     fi
 }
 

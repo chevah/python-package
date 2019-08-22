@@ -249,7 +249,7 @@ wipe_manifest() {
 #
 get_number_of_cpus() {
     case "$OS" in
-        win*)
+        win)
             # Logical CPUs (including hyper-threading) in Windows 2000 or newer.
             CPUS="$NUMBER_OF_PROCESSORS"
             ;;

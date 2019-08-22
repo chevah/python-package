@@ -466,7 +466,7 @@ check_source_folder() {
 
     if [ ! -e pavement.py ]; then
         (>&2 echo 'No "pavement.py" file found in current folder.')
-        (>&2 echo 'Make sure you are running paver from a source folder.')
+        (>&2 echo 'Make sure you are running "paver.sh" from a source folder.')
         exit 8
     fi
 }
@@ -557,7 +557,7 @@ check_linux_glibc() {
 
     ldd --version | egrep "GNU\ libc|GLIBC" > /dev/null
     if [ $? -ne 0 ]; then
-        (>&2 echo "No glibc reported by ldd... Unsupported Linux libc!")
+        (>&2 echo "No glibc reported by ldd... Unsupported Linux libc?")
         exit 19
     fi
 
@@ -603,7 +603,7 @@ set_os_if_not_generic() {
 }
 
 #
-# Update OS and ARCH variables with the current values.
+# Update OS and ARCH variables for current system.
 #
 detect_os() {
 

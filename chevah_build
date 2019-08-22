@@ -453,7 +453,7 @@ case $OS in
             bcrypt==${BCRYPT_VERSION} \
             "
         ;;
-    win*)
+    win)
         # On Windows, python executable is installed at a different path.
         LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
         PYTHON_BIN=$INSTALL_FOLDER/lib/python
@@ -553,7 +553,7 @@ check_dependencies() {
             packages="/opt/aCC/bin/cc make m4 git patch"
             check_command="command -v"
             ;;
-        macos*)
+        macos)
             packages="$CC make m4 libtool git patch"
             check_command="command -v"
             ;;
@@ -981,7 +981,7 @@ command_test_compat() {
 
     # compat is not suported on these platforms, so no need to test.
     case "$OS-$ARCH" in
-        fbsd11*|sol112-sparc)
+        fbsd11|sol112-sparc)
             (>&2 echo -e "\tCompat tests not supported on this platform.")
             return
             ;;

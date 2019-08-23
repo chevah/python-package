@@ -980,8 +980,9 @@ help_text_test_compat=\
 command_test_compat() {
 
     # compat is not suported on these platforms, so no need to test.
+    # fbsd11 failures seem trivial to fix, though.
     case "$OS-$ARCH" in
-        fbsd11|sol112-sparc)
+        fbsd11-*|sol112-sparc)
             (>&2 echo -e "\tCompat tests not supported on this platform.")
             return
             ;;

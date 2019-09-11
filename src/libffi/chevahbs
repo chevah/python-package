@@ -10,7 +10,7 @@
 
 chevahbs_configure() {
     case $OS in
-        hpux*|solaris10u3)
+        hpux*|sol10u3)
             # On some exotic platforms libffi only compiles with GCC.
             CC="gcc"
             CXX="g++"
@@ -37,7 +37,7 @@ chevahbs_install() {
         aix*)
             execute ln -s ../install-sh powerpc-ibm-aix"$(oslevel)"/install-sh
             ;;
-        solaris10*)
+        sol10*)
             case $ARCH in
                 sparc*)
                     execute ln -s ../install-sh sparc-sun-solaris2.10/install-sh

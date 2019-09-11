@@ -10,7 +10,7 @@
 #
 chevahbs_patch() {
     # First we apply the generic patches.
-    if [ "$OS" = "windows"  ]; then
+    if [ "$OS" = "win"  ]; then
         echo "No sources to patch in Windows."
         return
     fi
@@ -33,12 +33,12 @@ chevahbs_patch() {
             execute patch -p0 < aix_bldshared.patch
             ;;
         # Adds custom paths to find OpenSSL 0.9.7 in /usr/sfw/.
-        solaris10u3)
+        sol10u3)
             echo "Applying solaris10_openssl097.patch:"
             execute patch < solaris10_openssl097.patch
             ;;
         # Fix 64bit crypt builds as per http://bugs.python.org/issue1471934.
-        solaris10*)
+        sol10*)
             echo "Applying solaris10_libcrypt.patch:"
             execute patch < solaris10_libcrypt.patch
             ;;
@@ -53,7 +53,7 @@ chevahbs_patch() {
             echo "Applying crypto_threadid.patch:"
             execute patch -p0 < crypto_threadid.patch
             ;;
-        openbsd63)
+        obsd63)
             # Support for LibreSSL 2.7 in Python 2.7.14.
             if [ "$PYTHON_BUILD_VERSION" = "2.7.14" ]; then
                 execute patch -p1 < libressl27-support.patch
@@ -69,7 +69,7 @@ chevahbs_configure() {
     CONFIG_ARGS="--disable-shared"
     CONFIGURE_ENVIRONMENT=""
 
-    if [ "$OS" != "windows"  ]; then
+    if [ "$OS" != "win"  ]; then
         echo "Copying our header files among Python's ones..."
         execute cp -r "$INSTALL_FOLDER"/include/* ./Include/
     fi
@@ -101,7 +101,7 @@ chevahbs_configure() {
                 --without-computed-gotos \
                 "
             ;;
-        solaris10u3)
+        sol10u3)
             # In Solaris 10, the default OpenSSL is installed in /usr/sfw/.
             # Both include options are needed to match both the native Sun
             # Studio compiler and GCC.
@@ -129,10 +129,10 @@ chevahbs_configure() {
         archlinux)
             LDFLAGS="$LDFLAGS -ltinfo"
             ;;
-        freebsd*|solaris11*)
+        fbsd*|sol11*)
             LDFLAGS="$LDFLAGS -lncurses"
             ;;
-        openbsd*)
+        obsd*)
             # In OpenBSD 6.1 and newer we need to mark the Python binary as
             # "wxneeded" because it breaks the mandatory W^X protection.
             LDFLAGS="$LDFLAGS -Wl,-z,wxneeded"
@@ -145,7 +145,7 @@ chevahbs_configure() {
     fi
 
     case $OS in
-        windows)
+        win)
             echo "Skip configure on Windows."
             ;;
         *)
@@ -161,7 +161,7 @@ chevahbs_configure() {
 
 chevahbs_compile() {
     case $OS in
-        windows)
+        win)
             echo "Skip make on Windows."
             ;;
         *)
@@ -183,7 +183,7 @@ chevahbs_compile() {
 chevahbs_install() {
     install_folder=$1
     case $OS in
-        windows)
+        win)
             local destination=$INSTALL_FOLDER/lib
 
             # On Windows we don't build from source but rather create the

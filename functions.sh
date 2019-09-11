@@ -249,7 +249,7 @@ wipe_manifest() {
 #
 get_number_of_cpus() {
     case "$OS" in
-        windows*)
+        win)
             # Logical CPUs (including hyper-threading) in Windows 2000 or newer.
             CPUS="$NUMBER_OF_PROCESSORS"
             ;;
@@ -258,7 +258,7 @@ get_number_of_cpus() {
             # CPU threads don't help us on PPC64 with this workload.
             CPUS=$(lparstat -i | grep ^"Active Physical CPUs" | cut -d\: -f2)
             ;;
-        solaris*)
+        sol*)
             # Physical CPUs. SPARC has lots of threads lately, but they don't
             # help much here. Tested on Solaris 10/11 on X86/AMD64/SPARC.
             CPUS=$(/usr/sbin/psrinfo -p)
@@ -267,7 +267,7 @@ get_number_of_cpus() {
             # Logical CPUs. Tested on HP-UX 11.31 running on Itaniums.
             CPUS=$(/usr/sbin/ioscan -kFC processor | wc -l)
             ;;
-        osx*|macos*|freebsd*|openbsd*|netbsd*)
+        osx|macos|fbsd*|obsd*)
             # Logical CPUs.
             CPUS=$(sysctl -n hw.ncpu)
             ;;

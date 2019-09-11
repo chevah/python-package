@@ -21,7 +21,7 @@ chevahbs_configure() {
         archlinux)
             LDFLAGS="$LDFLAGS -ltinfo"
             ;;
-        solaris*)
+        sol*)
             # Required when linking to libedit, which has a simpler configure.
             CFLAGS="$CFLAGS -xcode=pic32"
     esac
@@ -34,7 +34,7 @@ chevahbs_configure() {
 
 chevahbs_compile() {
     case $OS in
-        solaris*)
+        sol*)
             # Path to newer awk.
             PATH="/usr/xpg4/bin:$PATH"
             ;;
@@ -50,4 +50,3 @@ chevahbs_install() {
 
 
 select_chevahbs_command $@
-

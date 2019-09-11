@@ -17,6 +17,7 @@ ZLIB_VERSION="1.2.11"
 LIBEDIT_VERSION="20170329-3.1"
 # PyCrypto needs GMP or MPIR for fast math. GMP has support for AIX/HP-UX/etc.
 GMP_VERSION="6.1.2"
+OPENSSL_VERSION="1.1.1c"
 SQLITE_VERSION="3.27.1"
 PYSQLITE_VERSION="2.8.3"
 # These are used by get-pip.py.
@@ -64,6 +65,7 @@ export BUILD_LIBEDIT="yes"
 export BUILD_GMP="yes"
 export BUILD_LIBFFI="no"
 export BUILD_CFFI="yes"
+export BUILD_OPENSSL="no"
 
 # Patches for EXTRA_LIBRARIES modules should reside in a sub-directory named
 #"python-modules/lib-${LIB_VERSION}-patches", to be applied when needed
@@ -134,7 +136,7 @@ BUILD_FOLDER='build'
 # Get default values from main paver script.
 ./paver.sh detect_os
 if [ "$?" -ne 0 ]; then
-    exit 1
+    exit 100
 fi
 
 PYTHON_VERSION=`cut -d' ' -f 2 DEFAULT_VALUES`
@@ -247,7 +249,7 @@ case $OS in
                 "
         fi
         ;;
-    solaris*)
+    sol*)
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
         export CC="cc"
         export CXX="CC"
@@ -267,9 +269,9 @@ case $OS in
             export CFLAGS="$CFLAGS -m64"
             export LDFLAGS="$LDFLAGS -m64 -L/usr/lib/64 -R/usr/lib/64"
         fi
-        if [ "${OS%solaris10*}" = "" ]; then
-            # "solaris10" code path requires OpenSSL 1.0.x patches from Oracle.
-            # Check "solaris10u3" divergent code path to link to OpenSSL 0.9.7.
+        if [ "${OS%sol10*}" = "" ]; then
+            # "sol10" code path requires OpenSSL 1.0.x patches from Oracle.
+            # Check "sol10u3" divergent code path to link to OpenSSL 0.9.7.
             # These are the default-included GNU make and makeinfo.
             export MAKE=/usr/sfw/bin/gmake
             export MAKEINFO=/usr/sfw/bin/makeinfo
@@ -325,7 +327,7 @@ case $OS in
                 EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
             fi
         fi
-        if [ "$OS" = "solaris10u3" ]; then
+        if [ "$OS" = "sol10u3" ]; then
             # This code path also covers linking to OpenSSL 0.9.7 on all Solaris
             # 10 versions, including releases u7 and newer, with updated libc.
             # Paths for OpenSSL 0.9.7 and SQLite libs on Solaris 10.
@@ -384,11 +386,11 @@ case $OS in
             python-modules/pycryptodomex-${PYCRYPTODOMEX_VERSION} \
             "
         ;;
-    osx*)
-        # The extra params needed to set the minimum target version to 10.8
-        # have the important benefit of getting rid of the libgcc dependency.
+    osx)
         export CC="clang"
         export CXX="clang++"
+        # The extra params needed to set the minimum target version to 10.8
+        # have the important benefit of getting rid of the libgcc dependency.
         export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
         export MACOSX_DEPLOYMENT_TARGET=10.8
         # OS X 10.8 not supported by cryptography 1.9, so you'll normally use
@@ -405,7 +407,7 @@ case $OS in
             bcrypt==${BCRYPT_VERSION} \
             "
         ;;
-    macos*)
+    macos)
         export CC="clang"
         export CXX="clang++"
         # setup.py skips building readline by default, as it sets this to
@@ -413,11 +415,11 @@ case $OS in
         export MACOSX_DEPLOYMENT_TARGET=10.13
         # 10.13 and newer come with LibreSSL instead of the old OpenSSL libs.
         # But the headers are missing, so we copy them ourselves when building.
-        LIBRESSL_VERSION=2.2.7
+        LIBRESSL_VERSION="2.2.7"
         # Beware that zlib headers are not present either on macOS 10.14.
         # We don't care here because we build on 10.13 only.
         ;;
-    freebsd*|openbsd*)
+    fbsd*|obsd*)
         export CC="clang"
         export CXX="clang++"
         # libffi not available in the base systems, only as port/package.
@@ -427,11 +429,17 @@ case $OS in
         # SLES's libffi headers from SDK do not match default-available package.
         export BUILD_LIBFFI="yes"
         ;;
-    rhel5|sles11)
-        # OS'es with OpenSSL 0.9.8 libs, older cryptography would be needed,
-        # but upstream provides a Linux wheel that works, at least on SLES 11.
-        # Otherwise, just set PIP_LIBRARIES to PIP_LIBRARIES_OPENSSL_098.
-        # Use PyCryptodomex' wheel, as there are issues not solved upstream yet.
+    lnx)
+        # Build as portable as possible, only glibc 2.x should be needed.
+        export BUILD_LIBFFI="yes"
+        export BUILD_ZLIB="yes"
+        export BUILD_LIBEDIT="no"
+        # Generic Linux might be an old distro with OpenSSL 0.9.8 libraries.
+        # For the "cryptography" module we use the upstream wheel, which
+        # includes OpenSSL libs, but for "ssl" we need OpenSSL as well.
+        # To avoid linking to local libs, we build our own OpenSSL libs.
+        export BUILD_OPENSSL="yes"
+        # Use PyCryptodomex' wheel, some issue not solved upstream for SLES 11.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
             pycryptodomex==${PYCRYPTODOMEX_VERSION}upstream \
@@ -443,21 +451,8 @@ case $OS in
             subprocess32==${SUBPROCESS32_VERSION} \
             bcrypt==${BCRYPT_VERSION} \
             "
-        # SLES's libffi headers from SDK do not match default-available package.
-        export BUILD_LIBFFI="yes"
         ;;
-    sles10)
-        export BUILD_CFFI="no"
-        add_ignored_safety_ids_for_pyopenssl_false_positives
-        PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
-        EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
-        ;;
-    debian*)
-        # Build as portable as possible, akin to the old generic Linux builds.
-        export BUILD_LIBFFI="yes"
-        export BUILD_LIBEDIT="no"
-        ;;
-    windows*)
+    win)
         # On Windows, python executable is installed at a different path.
         LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
         PYTHON_BIN=$INSTALL_FOLDER/lib/python
@@ -479,15 +474,15 @@ case $OS in
 esac
 
 # Compiler-dependent flags. At this moment we should know what compiler is used.
-if [ "${OS%solaris*}" = "" ]; then
+if [ "${OS%sol*}" = "" ]; then
     if [ ${ARCH} = "sparc64" ]; then
         # Required for compiling GMP on Solaris for SPARC with Sun Studio.
         export CFLAGS="$CFLAGS -xcode=abs64"
-    elif [ ${ARCH} = "x64" -a "${OS%solaris11*}" = "" ]; then
+    elif [ ${ARCH} = "x64" -a "${OS%sol11*}" = "" ]; then
         # Not all packages enable PIC, we force it to avoid relocation issues.
         export CFLAGS="$CFLAGS -Kpic"
     fi
-elif [ "${OS%freebsd*}" = "" -o "${OS%openbsd*}" = "" ]; then
+elif [ "${OS%fbsd*}" = "" -o "${OS%obsd*}" = "" ]; then
     # Use PIC (Position Independent Code) on FreeBSD and OpenBSD with Clang.
     export CFLAGS="${CFLAGS} -fPIC"
 elif [ "$CC" = "gcc" -a ${ARCH%%64} != "$ARCH" ]; then
@@ -529,7 +524,7 @@ check_dependencies() {
             packages=$DEBIAN_PKGS
             check_command='dpkg --status'
             ;;
-        rhel*|amazon*)
+        rhel*|amzn*)
             packages=$RHEL_PKGS
             check_command='rpm --query'
             ;;
@@ -552,11 +547,22 @@ check_dependencies() {
             check_command='pacman -Qi'
             ;;
         # On remaining OS'es we just check for some of the needed commands.
-        macos*)
+        hpux*)
+            # Included CFLAGS get in the way on HP-UX.
+            packages="/opt/aCC/bin/cc make m4 git patch"
+            check_command="command -v"
+            ;;
+        macos)
             packages="$CC make m4 libtool git patch"
             check_command="command -v"
             ;;
-        windows)
+        lnx)
+            # Generic Linux builds need Perl 5.10.0+ for building OpenSSL.
+            # For testing OpenSSL, Test::More 0.96 or newer is needed.
+            packages="$CC make m4 git patch perl"
+            check_command="command -v"
+            ;;
+        win)
             # The windows build is special.
             command -v choco
             if [ $? -eq 0 ]; then
@@ -567,11 +573,6 @@ check_dependencies() {
                 packages="make git patch"
                 check_command="command -v"
             fi
-            ;;
-        hpux*)
-            # Included CFLAGS get in the way on HP-UX.
-            packages="/opt/aCC/bin/cc make m4 git patch"
-            check_command="command -v"
             ;;
         *)
             packages="$CC make m4 git patch"
@@ -649,12 +650,21 @@ command_build() {
         (>&2 echo "Skipping building GMP!")
     fi
 
+    if [ "$BUILD_OPENSSL" = "yes" ]; then
+        build 'openssl' "openssl-$OPENSSL_VERSION" ${PYTHON_BUILD_FOLDER}
+        export LDFLAGS="-L${INSTALL_FOLDER}/lib64/ ${LDFLAGS}"
+        export PKG_CONFIG_PATH="\
+            ${INSTALL_FOLDER}/lib64/pkgconfig/:${PKG_CONFIG_PATH}"
+    else
+        (>&2 echo "Skipping building OpenSSL!")
+    fi
+
     case $OS in
-        windows*)
+        win)
             build 'python' "Python-$PYTHON_BUILD_VERSION-windows" \
                 ${PYTHON_BUILD_FOLDER}
             ;;
-        macos*)
+        macos)
             # SSL headers are missing on macOS.
             echo "Copying LibreSSL $LIBRESSL_VERSION headers. Updating CFLAGS!"
             cp -r src/libressl/libressl-${LIBRESSL_VERSION}/include/openssl \
@@ -674,7 +684,7 @@ command_build() {
     aix_ld_hack cleanup
 
     case $OS in
-        windows*)
+        win)
             echo "Skipping cleaning install folder"
             ;;
         *)
@@ -706,7 +716,7 @@ command_build() {
 #
 command_build_sqlite() {
 
-    if [ $OS = 'windows' ]; then
+    if [ $OS = 'win' ]; then
         echo "Updating SQLite DLL on Windows..."
         execute cp src/sqlite/sqlite3-${SQLITE_VERSION}.dll \
             ${INSTALL_FOLDER}/lib/DLLs/sqlite3.dll
@@ -739,7 +749,7 @@ command_build_sqlite() {
 #
 command_build_gmpy() {
 
-    if [ $OS = 'windows' ]; then
+    if [ $OS = 'win' ]; then
         return
     fi
 
@@ -784,7 +794,7 @@ command_build_python_extra_libraries() {
     execute $PYTHON_BIN -m pip \
         install $PIP_ARGS -U pycparser==$PYCPARSER_VERSION
 
-    if [ $OS = 'windows' ]; then
+    if [ $OS = 'win' ]; then
         echo "Skipping makefile updating on Windows"
     else
         # Update Python config Makefile to use the python that we have just
@@ -823,7 +833,7 @@ command_build_python_extra_libraries() {
         execute $PYTHON_BIN -m pip install $PIP_ARGS $library
     done
 
-    if [ $OS == "windows" ]; then
+    if [ $OS == "win" ]; then
         echo "Patching pyWin32 manifests to use our redistributable version"
         wipe_manifest $INSTALL_FOLDER/lib/Lib/site-packages/win32/pythonservice.exe
         wipe_manifest $INSTALL_FOLDER/lib/Lib/site-packages/win32/perfmondata.dll
@@ -868,7 +878,7 @@ initialize_python_module(){
         fi
 
         case $OS in
-            solaris10u3*)
+            sol10u3*)
                 # Copy special link steps in local folder.
                 mkdir -p Modules
                 cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
@@ -942,10 +952,10 @@ command_test() {
     # Reported upstream at https://github.com/benhoyt/scandir/issues/78.
     SCANDIR_FOLDER="../python-modules/scandir-${SCANDIR_VERSION}"
     case "$OS-$ARCH" in
-        osx*|macos*|windows*)
+        macos|osx|win)
             execute $LOCAL_PYTHON_BINARY ${SCANDIR_FOLDER}/test/run_tests.py
             ;;
-        aix*|hpux*|solaris10-sparc)
+        aix*|hpux*|sol10-sparc)
             (>&2 echo -e "\tSkipping because of upstream issues.")
             ;;
         *)
@@ -969,8 +979,9 @@ help_text_test_compat=\
 command_test_compat() {
 
     # compat is not suported on these platforms, so no need to test.
+    # fbsd11 failures seem trivial to fix, though.
     case "$OS-$ARCH" in
-        freebsd11*|solaris112-sparc)
+        fbsd11-*|sol112-sparc)
             (>&2 echo -e "\tCompat tests not supported on this platform.")
             return
             ;;

@@ -145,7 +145,7 @@ execute() {
     exit_code=$?
     set -e
     if [ $exit_code -ne 0 ]; then
-        (>&2 echo "Fail:" $@)
+        (>&2 echo "Failed:" $@)
         exit 1
     fi
 }
@@ -402,8 +402,8 @@ copy_python() {
                 local test_version=$?
                 set -o errexit
                 if [ $test_version -ne 0 ]; then
-                    (>&2 echo "The build is now at $python_installed_version")
-                    (>&2 echo "Failed to find the required $PYTHON_VERSION")
+                    (>&2 echo "The build is now at $python_installed_version.")
+                    (>&2 echo "Failed to find the required $PYTHON_VERSION.")
                     (>&2 echo "Check your configuration or the remote server.")
                     exit 6
                 fi
@@ -535,7 +535,7 @@ check_os_version() {
 }
 
 #
-# For old unsupported Linux distros (with no /etc/os-release) and for exotic
+# For old unsupported Linux distros (some with no /etc/os-release) and for other
 # unsupported Linux distros (eg. Arch), we check if the system is glibc-based.
 # If so, we use a generic code path that builds everything statically,
 # including OpenSSL, thus only requiring glibc 2.x.
@@ -561,7 +561,7 @@ check_linux_glibc() {
         exit 19
     fi
 
-    # Parsing tested with glibc 2.11 - 2.29, eglibc 2.13 - 2.19.
+    # Parsing tested with glibc 2.11.x and 2.29, eglibc 2.13 and 2.19.
     glibc_version=$(ldd --version | head -n 1 | rev | cut -d\  -f1 | rev)
 
     if [[ $glibc_version =~ [^[:digit:]\.] ]]; then
@@ -577,6 +577,9 @@ check_linux_glibc() {
         exit 21
     fi
 
+    # We pass here because:
+    #   1. In python-package building should work with older glibc version.
+    #   2. Our generic "lnx" runtime might work with a slightly older glibc 2.
     if [ ${glibc_version_array[1]} -lt 11 ]; then
         (>&2 echo "Beware glibc versions older than 2.11 were NOT tested!")
         (>&2 echo "Detected glibc version: $glibc_version")
@@ -603,7 +606,8 @@ set_os_if_not_generic() {
 }
 
 #
-# Update OS and ARCH variables for current system.
+# Detect OS and ARCH for the current system.
+# In some cases we normalize or even override ARCH at the end of this function.
 #
 detect_os() {
 
@@ -649,8 +653,8 @@ detect_os() {
                         os_version_raw="$VERSION_ID"
                         check_os_version "SUSE Linux Enterprise Server" 11 \
                             "$os_version_raw" os_version_chevah
-                        # SLES 11 has OpenSSL 0.9.8, Security Module adds 1.0.1,
-                        # so we use generic builds with included OpenSSL libs.
+                        # SLES 11 has OpenSSL 0.9.8, Security Module only adds
+                        # 1.0.1, so we use generic builds with included OpenSSL.
                         if [ "$os_version_chevah" -eq 11 ]; then
                             # We support this, so no need for check_linux_glibc,
                             # As it has oldest glibc version among our slaves,

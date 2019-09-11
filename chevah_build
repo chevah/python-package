@@ -389,8 +389,8 @@ case $OS in
     osx)
         export CC="clang"
         export CXX="clang++"
-        # The extra param needed to set the minimum target version to 10.8
-        # has the important benefit of getting rid of the libgcc dependency.
+        # The extra params needed to set the minimum target version to 10.8
+        # have the important benefit of getting rid of the libgcc dependency.
         export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
         export MACOSX_DEPLOYMENT_TARGET=10.8
         # OS X 10.8 not supported by cryptography 1.9, so you'll normally use
@@ -439,7 +439,6 @@ case $OS in
         # includes OpenSSL libs, but for "ssl" we need OpenSSL as well.
         # To avoid linking to local libs, we build our own OpenSSL libs.
         export BUILD_OPENSSL="yes"
-
         # Use PyCryptodomex' wheel, some issue not solved upstream for SLES 11.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \

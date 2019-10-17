@@ -666,10 +666,21 @@ command_build() {
             ;;
         macos)
             # SSL headers are missing on macOS.
-            echo "Copying LibreSSL $LIBRESSL_VERSION headers. Updating CFLAGS!"
-            cp -r src/libressl/libressl-${LIBRESSL_VERSION}/include/openssl \
+            echo "Copying LibreSSL $LIBRESSL_VERSION headers..."
+            execute cp -r \
+                src/libressl/libressl-${LIBRESSL_VERSION}/include/openssl \
                 $INSTALL_FOLDER/include/
+            # zlib headers are missing on macOS 10.14+.
+            echo "Copying zlib $ZLIB_VERSION headers..."
+            execute cp src/zlib/zlib-${ZLIB_VERSION}/*.h \
+                $INSTALL_FOLDER/include/
+            echo "Updating CFLAGS accordingly!"
             export CFLAGS="$CFLAGS -I${INSTALL_FOLDER}/include"
+            # Hack to link to LibreSSL 2.2.x libs on every macOS version.
+            execute ln -s /usr/lib/libssl.35.dylib \
+                ${INSTALL_FOLDER}/lib/libssl.dylib
+            execute ln -s /usr/lib/libcrypto.35.dylib \
+                ${INSTALL_FOLDER}/lib/libcrypto.dylib
             build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
         *)

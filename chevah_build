@@ -415,9 +415,10 @@ case $OS in
         export MACOSX_DEPLOYMENT_TARGET=10.13
         # 10.13 and newer come with LibreSSL instead of the old OpenSSL libs.
         # But the headers are missing, so we copy them ourselves when building.
+        # For building on 10.14 you can try the hack at
+        # https://github.com/chevah/python-package/pull/136.
+        # However, this won't work on 10.15, as 2.2.7 is no longer the default.
         LIBRESSL_VERSION="2.2.7"
-        # Beware that zlib headers are not present either on macOS 10.14.
-        # We don't care here because we build on 10.13 only.
         ;;
     fbsd*|obsd*)
         export CC="clang"

@@ -922,8 +922,14 @@ command_test() {
     echo '##### Testing for outdated packages and security issues... #####'
     execute $PYTHON_BIN -m pip list --outdated --format=columns
     execute $PYTHON_BIN -m pip install $PIP_ARGS safety
-    execute $PYTHON_BIN -m safety check --full-report \
-        $SAFETY_FALSE_POSITIVES_OPTS $SAFETY_IGNORED_OPTS
+    # FIXME:5330:
+    # safety 1.8.5 fails on OpenBSD 6.6.
+    if [ "$OS" = "obsd66" ]; then
+        echo "OpenBSD 6.6 detected, not running Safety tests!"
+    else
+        execute $PYTHON_BIN -m safety check --full-report \
+            $SAFETY_FALSE_POSITIVES_OPTS $SAFETY_IGNORED_OPTS
+    fi
     if [ -n "$SAFETY_FALSE_POSITIVES_OPTS" ]; then
         SAFETY_FALSE_POSITIVES_IDS="\
             $(echo $SAFETY_FALSE_POSITIVES_OPTS | sed s/\-i\ //g)"

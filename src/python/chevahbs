@@ -59,6 +59,10 @@ chevahbs_patch() {
                 execute patch -p1 < libressl27-support.patch
             fi
             ;;
+        obsd66)
+            # Without this, build fails with MemoryError even with 8GB of RAM.
+            execute patch -p1 < obsd66_memoryerror_fix.patch
+            ;;
     esac
 }
 

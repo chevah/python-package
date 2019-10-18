@@ -33,12 +33,10 @@ def get_allowed_deps():
                 '/lib64/libkrb5.so.3',
                 '/lib64/libkrb5support.so.0',
                 '/lib64/libm.so.6',
-                '/lib64/libncursesw.so.5',
                 '/lib64/libnsl.so.1',
                 '/lib64/libpthread.so.0',
                 '/lib64/libresolv.so.2',
                 '/lib64/libselinux.so.1',
-                '/lib64/libtinfo.so.5',
                 '/lib64/libutil.so.1',
                 '/lib64/libz.so.1',
                 ]
@@ -47,14 +45,26 @@ def get_allowed_deps():
                 allowed_deps.extend([
                     '/usr/lib64/libcrypto.so.10',
                     '/usr/lib64/libffi.so.5',
+                    '/lib64/libncursesw.so.5',
                     '/usr/lib64/libssl.so.10',
+                    '/lib64/libtinfo.so.5',
                     ])
             if rhel_version.startswith("7"):
                 allowed_deps.extend([
                     '/lib64/libcrypto.so.10',
                     '/lib64/libffi.so.6',
+                    '/lib64/libncursesw.so.5',
                     '/lib64/libpcre.so.1',
                     '/lib64/libssl.so.10',
+                    '/lib64/libtinfo.so.5',
+                    ])
+            if rhel_version.startswith("8"):
+                allowed_deps.extend([
+                    '/lib64/libcrypto.so.1.1',
+                    '/lib64/libffi.so.6',
+                    '/lib64/libncursesw.so.6',
+                    '/lib64/libssl.so.1.1',
+                    '/lib64/libtinfo.so.6',
                     ])
         elif 'amzn' in chevah_os:
             # Deps for Amazon Linux 2 (x86_64 only).

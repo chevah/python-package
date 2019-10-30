@@ -213,7 +213,7 @@ case $OS in
         export CXX="xlC_r"
         export MAKE=gmake
         export PATH=/usr/vac/bin:$PATH
-        export CFLAGS="$CFLAGS -O2"
+        export CFLAGS="$CFLAGS -O2 -D_LARGE_FILES=1"
         # IBM's OpenSSL libs are mixed 32/64bit binaries in AIX, so we need to
         # be specific about what kind of build we want, because otherwise we
         # might get 64bit libraries (eg. when building GMP).

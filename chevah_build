@@ -213,7 +213,7 @@ case $OS in
         export CXX="xlC_r"
         export MAKE=gmake
         export PATH=/usr/vac/bin:$PATH
-        export CFLAGS="$CFLAGS -O2"
+        export CFLAGS="$CFLAGS -O2 -D_LARGE_FILES=1"
         # IBM's OpenSSL libs are mixed 32/64bit binaries in AIX, so we need to
         # be specific about what kind of build we want, because otherwise we
         # might get 64bit libraries (eg. when building GMP).
@@ -415,9 +415,10 @@ case $OS in
         export MACOSX_DEPLOYMENT_TARGET=10.13
         # 10.13 and newer come with LibreSSL instead of the old OpenSSL libs.
         # But the headers are missing, so we copy them ourselves when building.
+        # For building on 10.14 you can try the hack at
+        # https://github.com/chevah/python-package/pull/136.
+        # However, this won't work on 10.15, as 2.2.7 is no longer the default.
         LIBRESSL_VERSION="2.2.7"
-        # Beware that zlib headers are not present either on macOS 10.14.
-        # We don't care here because we build on 10.13 only.
         ;;
     fbsd*|obsd*)
         export CC="clang"
@@ -666,9 +667,15 @@ command_build() {
             ;;
         macos)
             # SSL headers are missing on macOS.
-            echo "Copying LibreSSL $LIBRESSL_VERSION headers. Updating CFLAGS!"
-            cp -r src/libressl/libressl-${LIBRESSL_VERSION}/include/openssl \
+            echo "Copying LibreSSL $LIBRESSL_VERSION headers..."
+            execute cp -r \
+                src/libressl/libressl-${LIBRESSL_VERSION}/include/openssl \
                 $INSTALL_FOLDER/include/
+            # zlib headers are missing on macOS 10.14+.
+            echo "Copying zlib $ZLIB_VERSION headers..."
+            execute cp src/zlib/zlib-${ZLIB_VERSION}/*.h \
+                $INSTALL_FOLDER/include/
+            echo "Updating CFLAGS accordingly!"
             export CFLAGS="$CFLAGS -I${INSTALL_FOLDER}/include"
             build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
@@ -915,8 +922,14 @@ command_test() {
     echo '##### Testing for outdated packages and security issues... #####'
     execute $PYTHON_BIN -m pip list --outdated --format=columns
     execute $PYTHON_BIN -m pip install $PIP_ARGS safety
-    execute $PYTHON_BIN -m safety check --full-report \
-        $SAFETY_FALSE_POSITIVES_OPTS $SAFETY_IGNORED_OPTS
+    # FIXME:5330:
+    # safety 1.8.5 fails on OpenBSD 6.6.
+    if [ "$OS" = "obsd66" ]; then
+        echo "OpenBSD 6.6 detected, not running Safety tests!"
+    else
+        execute $PYTHON_BIN -m safety check --full-report \
+            $SAFETY_FALSE_POSITIVES_OPTS $SAFETY_IGNORED_OPTS
+    fi
     if [ -n "$SAFETY_FALSE_POSITIVES_OPTS" ]; then
         SAFETY_FALSE_POSITIVES_IDS="\
             $(echo $SAFETY_FALSE_POSITIVES_OPTS | sed s/\-i\ //g)"

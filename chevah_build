@@ -18,14 +18,14 @@ LIBEDIT_VERSION="20170329-3.1"
 # PyCrypto needs GMP or MPIR for fast math. GMP has support for AIX/HP-UX/etc.
 GMP_VERSION="6.1.2"
 OPENSSL_VERSION="1.1.1d"
-SQLITE_VERSION="3.27.1"
+SQLITE_VERSION="3.30.1"
 PYSQLITE_VERSION="2.8.3"
 # These are used by get-pip.py.
 PIP_VERSION="9.0.3"
-SETUPTOOLS_VERSION="39.0.1"
+SETUPTOOLS_VERSION="41.6.0"
 
 # Python modules versions to be used everywhere possible.
-CFFI_VERSION="1.12.2"
+CFFI_VERSION="1.13.2"
 PYCRYPTO_VERSION="2.6.1"
 # PyCrypto 2.6.1 is vulnerable to CVE-2013-7459 and CVE-2018-6594, but we patch
 # these vulnerabilities, and mark correspondent Safety IDs as false positives.
@@ -35,22 +35,24 @@ PYCRYPTO_VERSION="2.6.1"
 #     to execute arbitrary code as demonstrated by a crafted iv parameter to
 #     cryptmsg.py."
 SAFETY_FALSE_POSITIVES_OPTS="-i 35015"
-PYCRYPTODOMEX_VERSION="3.6.6"
+# We haven't replaced PyCrypto with PyCryptodome, but we build and test it
+# because it has a very comprehensive and demanding test suite.
+PYCRYPTODOMEX_VERSION="3.9.1"
 PYOPENSSL_VERSION="19.0.0"
 CRYPTOGRAPHY_VERSION="2.8"
 SETPROCTITLE_VERSION="1.1.10"
 SCANDIR_VERSION="1.10.0"
-PSUTIL_VERSION="5.6.1"
-CYTHON_VERSION="0.29.5"
-SUBPROCESS32_VERSION="3.5.3"
-PYWIN32_VERSION="223"
+PSUTIL_VERSION="5.6.5"
+CYTHON_VERSION="0.29.14"
+SUBPROCESS32_VERSION="3.5.4"
+PYWIN32_VERSION="225"
 GMPY2_VERSION="2.0.8"
 GMPY_VERSION="1.17"
 BCRYPT_VERSION="3.1.7"
 
 # pycparser needs to be explicitly installed to work around setuptools auto
 # dependencies.
-PYCPARSER_VERSION="2.14"
+PYCPARSER_VERSION="2.19"
 
 # The ID of the redistributable version used on Windows.
 REDISTRIBUTABLE_VERSION="9.00.30729.6161"
@@ -425,6 +427,17 @@ case $OS in
         export CXX="clang++"
         # libffi not available in the base systems, only as port/package.
         export BUILD_LIBFFI="yes"
+        # psutil is problematic on the BSDs, we don't build it.
+        PIP_LIBRARIES="\
+            setproctitle==${SETPROCTITLE_VERSION} \
+            pycryptodomex==${PYCRYPTODOMEX_VERSION} \
+            cryptography==${CRYPTOGRAPHY_VERSION} \
+            pyOpenSSL==${PYOPENSSL_VERSION} \
+            scandir==${SCANDIR_VERSION} \
+            Cython==${CYTHON_VERSION} \
+            subprocess32==${SUBPROCESS32_VERSION} \
+            bcrypt==${BCRYPT_VERSION} \
+            "
         ;;
     sles12)
         # SLES's libffi headers from SDK do not match default-available package.

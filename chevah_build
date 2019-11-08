@@ -8,8 +8,8 @@
 # publish_staging
 #
 
-# Beware that older versions might be used for selected platforms below.
-PYTHON_BUILD_VERSION="2.7.16"
+# Beware that version 2.7.8 is used for Solaris 10.
+PYTHON_BUILD_VERSION="2.7.17"
 LIBFFI_VERSION="3.2.1"
 ZLIB_VERSION="1.2.11"
 # We statically build the BSD libedit on selected platforms to get the

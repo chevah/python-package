@@ -197,7 +197,7 @@ chevahbs_install() {
 
             echo "Extracting MSI to $install_win_path"
             execute msiexec \
-                //a $current_win_path\\python-installer.msi \
+                //a $current_win_path\\python-"$PYTHON_BUILD_VERSION".msi \
                 //qn TARGETDIR=$install_win_path\\lib
 
             # Copy Windows redistributables

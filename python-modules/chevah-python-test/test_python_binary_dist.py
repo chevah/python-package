@@ -754,9 +754,9 @@ def main():
             from cryptography.hazmat.backends.openssl.backend import backend
             import cryptography
             openssl_version = backend.openssl_version_text()
-            if chevah_os in [ "win", "osx", "sles11", "rhel5" ]:
+            if chevah_os in [ "win", "osx", "lnx" ]:
                 # Check OpenSSL version from upstream wheels.
-                expecting = u'OpenSSL 1.1.1c  28 May 2019'
+                expecting = u'OpenSSL 1.1.1d  10 Sep 2019'
                 if openssl_version != expecting:
                     sys.stderr.write('Expecting %s, got %s.\n' % (
                         expecting, openssl_version))
@@ -967,8 +967,9 @@ def main():
             sys.stderr.write('"_scandir" missing.\n')
             exit_code = 18
 
-    # Some OS'es are not supported by upstream psutil.
-    if not chevah_os in [ 'aix53', 'hpux1131', 'sol10', 'sol112' ]:
+    # Some OS'es are not supported by upstream psutil (or not really working).
+    if not chevah_os in [ 'aix53', 'hpux1131', 'sol10', 'sol112',
+            'fbsd11', 'obsd66' ]:
         try:
             import psutil
             cpu_percent = psutil.cpu_percent()

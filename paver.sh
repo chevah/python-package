@@ -676,13 +676,6 @@ detect_os() {
                         fi
                         set_os_if_not_generic "ubuntu" $os_version_chevah
                         ;;
-                    debian)
-                        os_version_raw="$VERSION_ID"
-                        # Debian 7/8 have OpenSSL 1.0.1, use generic Linux.
-                        check_os_version "$distro_fancy_name" 9 \
-                            "$os_version_raw" os_version_chevah
-                        set_os_if_not_generic "debian" $os_version_chevah
-                        ;;
                     alpine)
                         os_version_raw="$VERSION_ID"
                         check_os_version "$distro_fancy_name" 3.6 \
@@ -690,7 +683,7 @@ detect_os() {
                         set_os_if_not_generic "alpine" $os_version_chevah
                         ;;
                     *)
-                        # Unsupported modern distros, such as Arch Linux.
+                        # Unsupported modern distros such as Debian, Arch, etc.
                         check_linux_glibc
                         ;;
                 esac

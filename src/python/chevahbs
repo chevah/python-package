@@ -210,9 +210,11 @@ chevahbs_install() {
             echo "Copying redistributables for Windows"
             execute cp $redistributables/$REDISTRIBUTABLE_VERSION/* $destination
 
-            wipe_manifest $destination/python.exe
-            wipe_manifest $destination/pythonw.exe
-            wipe_manifest $destination/python27.dll
+            if [ "$ARCH" = "x86" ]; then
+                wipe_manifest $destination/python.exe
+                wipe_manifest $destination/pythonw.exe
+                wipe_manifest $destination/python27.dll
+            fi
 
             # Remove Python MSI installer.
             echo "Removing: $destination/python-installer.msi"

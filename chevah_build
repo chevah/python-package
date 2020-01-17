@@ -738,7 +738,7 @@ command_build_sqlite() {
 
     if [ $OS = 'win' ]; then
         echo "Updating SQLite DLL on Windows..."
-        execute cp src/sqlite/sqlite3-${SQLITE_VERSION}.dll \
+        execute cp src/sqlite/sqlite3-${SQLITE_VERSION}-${ARCH}.dll \
             ${INSTALL_FOLDER}/lib/DLLs/sqlite3.dll
         return
     fi
@@ -853,7 +853,7 @@ command_build_python_extra_libraries() {
         execute $PYTHON_BIN -m pip install $PIP_ARGS $library
     done
 
-    if [ $OS == "win" ]; then
+    if [ "$OS" = "win" -a "$ARCH" = "x86" ]; then
         echo "Patching pyWin32 manifests to use our redistributable version"
         wipe_manifest $INSTALL_FOLDER/lib/Lib/site-packages/win32/pythonservice.exe
         wipe_manifest $INSTALL_FOLDER/lib/Lib/site-packages/win32/perfmondata.dll

@@ -773,10 +773,16 @@ detect_os() {
         "amd64"|"x86_64")
             ARCH="x64"
             case "$OS" in
-                win|sol10)
-                    # On Windows, only 32bit builds are currently supported.
+                sol10*)
                     # On Solaris 10, x64 built fine prior to adding "bcrypt".
                     ARCH="x86"
+                    ;;
+                win)
+                    # 32bit build on Windows 2016, 64bit otherwise.
+                    win_ver=$(systeminfo.exe | grep "OS Name" | cut -b 28-56)
+                    if [ "$win_ver" = "Microsoft Windows Server 2016" ]; then
+                        ARCH="x86"
+                    fi
                     ;;
             esac
             ;;

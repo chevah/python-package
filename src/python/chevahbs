@@ -196,8 +196,13 @@ chevahbs_install() {
             install_win_path=`cd $INSTALL_FOLDER && pwd -W | sed 's|\/|\\\\|g'`
 
             echo "Extracting MSI to $install_win_path"
-            execute msiexec \
-                //a $current_win_path\\python-"$PYTHON_BUILD_VERSION".msi \
+            # Upstream installer filename ends in ".msi" or ".amd64.msi".
+            INST_EXT="msi"
+            if [ "$ARCH" = "x64" ]; then
+                INST_EXT="amd64.msi"
+            fi
+            execute msiexec //a \
+                $current_win_path\\python-"$PYTHON_BUILD_VERSION"."$INST_EXT" \
                 //qn TARGETDIR=$install_win_path\\lib
 
             # Copy Windows redistributables

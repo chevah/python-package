@@ -853,7 +853,7 @@ command_build_python_extra_libraries() {
         execute $PYTHON_BIN -m pip install $PIP_ARGS $library
     done
 
-    if [ "$OS" = "win" -a "$ARCH" = "x86" ]; then
+    if [ "$OS" = "win" ]; then
         echo "Patching pyWin32 manifests to use our redistributable version"
         wipe_manifest $INSTALL_FOLDER/lib/Lib/site-packages/win32/pythonservice.exe
         wipe_manifest $INSTALL_FOLDER/lib/Lib/site-packages/win32/perfmondata.dll

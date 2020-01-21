@@ -55,7 +55,7 @@ BCRYPT_VERSION="3.1.7"
 PYCPARSER_VERSION="2.19"
 
 # The ID of the redistributable version used on Windows.
-REDISTRIBUTABLE_VERSION="9.00.30729.6161"
+REDISTRIBUTABLE_VERSION="9.0.30729.9518"
 
 # Git revision to inject into Python's sys.version string through chevahbs.
 PYTHON_PACKAGE_VERSION=$(git rev-parse --short=8 HEAD)

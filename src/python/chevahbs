@@ -189,6 +189,15 @@ chevahbs_install() {
     case $OS in
         win)
             local destination=$INSTALL_FOLDER/lib
+            local inst_ext="msi"
+            local arch_dir=$ARCH
+            ARCH_DIR=$ARCH
+            if [ "$ARCH" = "x64" ]; then
+                # Upstream installer filename ends in ".msi" or ".amd64.msi".
+                inst_ext="amd64.msi"
+                # VC redist x64 DLLs actually use "amd64" for filenames.
+                arch_dir="amd64"
+            fi
 
             # On Windows we don't build from source but rather create the
             # distribution from pre-compiled binaries.
@@ -196,19 +205,15 @@ chevahbs_install() {
             install_win_path=`cd $INSTALL_FOLDER && pwd -W | sed 's|\/|\\\\|g'`
 
             echo "Extracting MSI to $install_win_path"
-            # Upstream installer filename ends in ".msi" or ".amd64.msi".
-            INST_EXT="msi"
-            if [ "$ARCH" = "x64" ]; then
-                INST_EXT="amd64.msi"
-            fi
             execute msiexec //a \
-                $current_win_path\\python-"$PYTHON_BUILD_VERSION"."$INST_EXT" \
+                $current_win_path\\python-"$PYTHON_BUILD_VERSION"."$inst_ext" \
                 //qn TARGETDIR=$install_win_path\\lib
 
             # Copy Windows redistributables
             local redistributables=../../win-tools/redistributables/
             echo "Copying redistributables for Windows"
-            execute cp $redistributables/$REDISTRIBUTABLE_VERSION/* $destination
+            execute cp $redistributables/$REDISTRIBUTABLE_VERSION/$arch_dir/* \
+				$destination
 
             wipe_manifest $destination/python.exe
             wipe_manifest $destination/pythonw.exe

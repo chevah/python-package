@@ -236,7 +236,6 @@ wipe_manifest() {
     # Use $REDISTRIBUTABLE_VERSION for version matching here.
     execute sed -e \
         's|version="9.0.21022.8"|version="9.0.30729.9518"|' \
-        -e 's|publicKeyToken="1fc8b3b9a1e18e3b"||' \
         < ${source}.embedded \
         > ${source}.manifest
 

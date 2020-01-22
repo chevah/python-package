@@ -54,7 +54,7 @@ BCRYPT_VERSION="3.1.7"
 # dependencies.
 PYCPARSER_VERSION="2.19"
 
-# The ID of the redistributable version used on Windows.
+# Current revision for the VC++ 9.0 redistributable version used on Windows.
 REDISTRIBUTABLE_VERSION="9.0.30729.9518"
 
 # Git revision to inject into Python's sys.version string through chevahbs.

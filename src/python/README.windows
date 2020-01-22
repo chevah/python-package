@@ -1,10 +1,10 @@
 We don't build the Python from source yet, but we do compile some modules.
 
-The system on which this Python distribution is created needs to have:
+The system on which this Python distribution is built needs to have:
 
-* Microsoft Visual C++ Redistributable for Visual Studio 2008 (VC+ 9.00)
+* Microsoft Visual C++ Redistributable for Visual Studio 2008 (VC+ 9.0) from
   https://support.microsoft.com/en-us/kb/2977003
-* Microsoft Visual C++ Compiler for Python 2.7
+* Microsoft Visual C++ Compiler for Python 2.7 from
   https://www.microsoft.com/en-us/download/details.aspx?id=44266
 
 Alternatively, install the `vcredist2008` and `vcpython2` Chocolatey packages.
@@ -14,9 +14,9 @@ running this Python package, the needed DLLs and their manifests are copied
 over from the `win-tools/redistributables` sub-directory of this repository
 at build time. To update them, follow the instructions in `win-tools/README`.
 
-MSI installers for both x86 and amd64 are copied from the official Python
-website to the `src/python/Python-$VERSION-windows/` sub-directory, where
-$VERSION is the latest Python 2.7 version.
+MSI installers for both x86 and amd64, downloaded from the official Python
+website, should be present in the `src/python/Python-$VERSION-windows/`
+sub-directory (where $VERSION is the latest Python 2.7 version.)
 
 For pip, copy latest `get-pip.py` to `python-modules/get-pip.py`.
 

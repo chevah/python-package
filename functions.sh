@@ -232,15 +232,12 @@ wipe_manifest() {
     execute $manifest_wiper --verbose --extract ${source}.embedded $source
 
     echo "Patching manifests to use our redistributable version"
-    # FIXME:
-    # Use $REDISTRIBUTABLE_VERSION for version matching here.
     execute sed -e \
-        's|version="9.0.21022.8"|version="9.0.30729.9518"|' \
+        "s|version=\"9.0.21022.8\"|version=\"${REDISTRIBUTABLE_VERSION}\"|" \
         < ${source}.embedded \
         > ${source}.manifest
 
     execute rm -f --verbose ${source}.embedded
-
 }
 
 #

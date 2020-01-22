@@ -61,4 +61,3 @@ to the VC++ 9.0 DLLs we distribute alongside them.
 
 When updating the redistributable version, update the REDISTRIBUTABLE_VERSION
 variable in `chevah_build` accordingly.
-Also change the version for the manifest patching with `sed` in `functions.sh`.

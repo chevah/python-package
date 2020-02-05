@@ -676,13 +676,6 @@ detect_os() {
                         fi
                         set_os_if_not_generic "ubuntu" $os_version_chevah
                         ;;
-                    debian)
-                        os_version_raw="$VERSION_ID"
-                        # Debian 7/8 have OpenSSL 1.0.1, use generic Linux.
-                        check_os_version "$distro_fancy_name" 9 \
-                            "$os_version_raw" os_version_chevah
-                        set_os_if_not_generic "debian" $os_version_chevah
-                        ;;
                     alpine)
                         os_version_raw="$VERSION_ID"
                         check_os_version "$distro_fancy_name" 3.6 \
@@ -690,7 +683,7 @@ detect_os() {
                         set_os_if_not_generic "alpine" $os_version_chevah
                         ;;
                     *)
-                        # Unsupported modern distros, such as Arch Linux.
+                        # Unsupported modern distros such as Debian, Arch, etc.
                         check_linux_glibc
                         ;;
                 esac
@@ -780,10 +773,16 @@ detect_os() {
         "amd64"|"x86_64")
             ARCH="x64"
             case "$OS" in
-                win|sol10)
-                    # On Windows, only 32bit builds are currently supported.
+                sol10*)
                     # On Solaris 10, x64 built fine prior to adding "bcrypt".
                     ARCH="x86"
+                    ;;
+                win)
+                    # 32bit build on Windows 2016, 64bit otherwise.
+                    win_ver=$(systeminfo.exe | grep "OS Name" | cut -b 28-56)
+                    if [ "$win_ver" = "Microsoft Windows Server 2016" ]; then
+                        ARCH="x86"
+                    fi
                     ;;
             esac
             ;;

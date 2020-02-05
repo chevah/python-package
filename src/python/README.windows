@@ -1,42 +1,27 @@
-We don't build the Python from source, yet but we do compile some modules.
+We don't build Python from source on Windows, but we do compile some modules.
 
-The system on which Python distribution is created needs to have:
+Systems on which this Python distribution is built need to have at least:
 
-* Microsoft Visual C++ Redistributables for Visual Studio 2008 (VC+ 9.00)
+* Microsoft Visual C++ Redistributable for Visual Studio 2008 (VC+ 9.0) from
   https://support.microsoft.com/en-us/kb/2977003
-* Microsoft Visual C++ Compiler for Python 2.7 installed
-  http://www.microsoft.com/en-us/download/details.aspx?id=44266
+* Microsoft Visual C++ Compiler for Python 2.7 from
+  https://www.microsoft.com/en-us/download/details.aspx?id=44266
 
-Steps for preparing the distributables:
+Alternatively, install the `vcredist2008` and `vcpython2` Chocolatey packages.
 
-* Get Visual C++ nonSxS redistributables and copy them in the `redistributables'
-folder.
-* Use an archive manager (7Zip) to extract the following dll files from the
-redistributable arhive: nosxs_msvcr90.dll, nosxs_msvcp90.dll, nosxs_msvcm90.dll
-* Rename them to msvcr90.dll, msvcp90.dll, msvcm90.dll
-* Create an assembly file named Microsoft.VC90.CRT.manifest with the following
-content:
+To not require the Visual Studio 2008 (VC++ 9.0) redistributable on the systems
+running this Python package, the needed DLLs and their manifests are copied
+over from the `win-tools/redistributables` sub-directory of this repository
+at build time. To update them, follow the instructions in `win-tools/README`.
 
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-    <noInheritable></noInheritable>
-    <assemblyIdentity type="win32" name="Microsoft.VC90.CRT" version="9.00.30729.6161" processorArchitecture="x86"></assemblyIdentity>
-    <file name="msvcr90.dll"></file>
-    <file name="msvcp90.dll"></file>
-    <file name="msvcm90.dll"></file>
-</assembly>
+MSI installers for both x86 and amd64, downloaded from the official Python
+website, should be present in the `src/python/Python-$VERSION-windows/`
+sub-directory (where $VERSION is the latest Python 2.7 version.)
 
-* You will need to replace the version tag with the redistributable version
-you are using. The example is for the latest available version.
-* Get the SxS Manifest Wiper from: https://bitbucket.org/alibotean/sxs-manifest-wiper
-* Edit chevahbs and update the `redistributable_version` value accordingly,
-change the version for sed manifest generation section as well.
+For pip, copy latest `get-pip.py` to `python-modules/get-pip.py`.
 
-Get MSI installer from official Python website and copy + rename it here.
-
-For pip get latest get-pip.py in copy it in /python-modules/get-pip.py
-
-Make sure you have sources and wheels on the private PyPi server.
+All needed sources and wheels should be present on the custom PyPI server at
+https://pypi.chevah.com.
 
 Please note that VC compiler is used by default by pip. To manually enable
 it, make sure you have latest setuptools:

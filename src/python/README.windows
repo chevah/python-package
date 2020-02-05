@@ -1,6 +1,6 @@
-We don't build the Python from source yet, but we do compile some modules.
+We don't build Python from source on Windows, but we do compile some modules.
 
-The system on which this Python distribution is built needs to have:
+Systems on which this Python distribution is built need to have at least:
 
 * Microsoft Visual C++ Redistributable for Visual Studio 2008 (VC+ 9.0) from
   https://support.microsoft.com/en-us/kb/2977003

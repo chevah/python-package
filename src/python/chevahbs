@@ -191,11 +191,10 @@ chevahbs_install() {
             local destination=$INSTALL_FOLDER/lib
             local inst_ext="msi"
             local arch_dir=$ARCH
-            ARCH_DIR=$ARCH
             if [ "$ARCH" = "x64" ]; then
                 # Upstream installer filename ends in ".msi" or ".amd64.msi".
                 inst_ext="amd64.msi"
-                # VC redist x64 DLLs actually use "amd64" for filenames.
+                # VC redist x64 DLLs actually use "amd64" in filenames.
                 arch_dir="amd64"
             fi
 

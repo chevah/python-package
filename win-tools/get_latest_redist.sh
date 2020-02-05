@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Microsoft Visual C++ 2008 version/revision to collect.
-export REDISTRIBUTABLE_VERSION=9.0.30729.9518
+REDISTRIBUTABLE_VERSION=9.0.30729.9518
 
 for ARCH in x86 amd64; do
     echo "Creating $REDISTRIBUTABLE_VERSION/$ARCH sub-dir..."

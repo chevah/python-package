@@ -6,10 +6,10 @@ Build script for Python binary distribution.
 
 RUN_PACKAGES = [
     'zope.interface==3.8.0',
-    'twisted==15.5.0.chevah4',
+    'twisted==15.5.0.chevah7',
 
     # Buildbot is used for try scheduler
-    'buildbot==0.8.11.c7',
+    'buildbot==0.8.11.chevah11',
 
     # Required for some unicode handling.
     'unidecode',

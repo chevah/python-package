@@ -248,22 +248,28 @@ set_download_commands() {
     set +o errexit
     command -v wget > /dev/null
     if [ $? -eq 0 ]; then
-        set -o errexit
         # Using WGET for downloading Python package.
+        wget --version > /dev/null 2>&1
+        if [ $? -ne 0 ]; then
+            # This is not GNU Wget, could be the more frugal wget from Busybox.
+            DOWNLOAD_CMD="wget"
+        else
+            # Use 1MB dots to reduce output and avoid polluting Buildbot pages.
+            DOWNLOAD_CMD="wget --progress=dot --execute dot_bytes=1m"
+        fi
         ONLINETEST_CMD="wget --spider --quiet"
-        # Use 1MB dots to reduce output, avoiding polluting Buildbot's pages.
-        DOWNLOAD_CMD="wget --progress=dot --execute dot_bytes=1m"
+        set -o errexit
         return
     fi
     command -v curl > /dev/null
     if [ $? -eq 0 ]; then
-        set -o errexit
         # Using CURL for downloading Python package.
-        ONLINETEST_CMD="curl --fail --silent --head --output /dev/null"
         DOWNLOAD_CMD="curl --remote-name"
+        ONLINETEST_CMD="curl --fail --silent --head --output /dev/null"
+        set -o errexit
         return
     fi
-    (>&2 echo "Missing wget/curl! One of them is needed for online operations.")
+    (>&2 echo "Missing wget and curl! One is needed for online operations.")
     exit 3
 }
 
@@ -502,7 +508,7 @@ check_os_version() {
         exit 12
     fi
 
-    # Using '.' as a delimiter, populate the version_raw_* arrays.
+    # Using '.' as a delimiter, populate the version_* arrays.
     IFS=. read -a version_raw_array <<< "$version_raw"
     IFS=. read -a version_good_array <<< "$version_good"
 

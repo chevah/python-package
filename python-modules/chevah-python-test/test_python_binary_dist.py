@@ -134,17 +134,25 @@ def get_allowed_deps():
                 '/lib/x86_64-linux-gnu/libtinfo.so.5',
                 '/lib/x86_64-linux-gnu/libutil.so.1',
                 '/lib/x86_64-linux-gnu/libz.so.1',
-                '/usr/lib/x86_64-linux-gnu/libffi.so.6',
                 ]
             if ubuntu_version in [ "1404", "1604" ]:
                 allowed_deps.extend([
                     '/lib/x86_64-linux-gnu/libcrypto.so.1.0.0',
                     '/lib/x86_64-linux-gnu/libssl.so.1.0.0',
+                    '/usr/lib/x86_64-linux-gnu/libffi.so.6',
                 ])
-            else:
+            elif ubuntu_version == "1804":
                 allowed_deps.extend([
                     '/usr/lib/x86_64-linux-gnu/libcrypto.so.1.1',
                     '/usr/lib/x86_64-linux-gnu/libssl.so.1.1',
+                    '/usr/lib/x86_64-linux-gnu/libffi.so.6',
+                ])
+            else:
+                allowed_deps.extend([
+                    '/lib/x86_64-linux-gnu/libcrypto.so.1.1',
+                    '/lib/x86_64-linux-gnu/libtinfo.so.6',
+                    '/lib/x86_64-linux-gnu/libssl.so.1.1',
+                    '/lib/x86_64-linux-gnu/libffi.so.7',
                 ])
             if 'arm64' in chevah_arch:
                 # Deps with full paths for Ubuntu 16.04 on a Pine64 board.

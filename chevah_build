@@ -284,6 +284,9 @@ case $OS in
             export PATH=/usr/ccs/bin/:$PATH
             # Latest libedit sources do not build on Solaris 10 any more.
             export BUILD_LIBEDIT="no"
+            # setuptools 42.0.0 breaks allow-hosts set globally.
+            # More at https://github.com/pypa/setuptools/issues/1916.
+            SETUPTOOLS_VERSION="41.6.0"
             # bcrypt build fails with the system libffi.
             export BUILD_LIBFFI="yes"
             # NPN functions missing from Oracle's OpenSSL patches, as of version

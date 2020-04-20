@@ -20,17 +20,19 @@ def get_allowed_deps():
     allowed_deps = []
     if platform_system == 'linux':
         if 'lnx' in chevah_os:
-            # GLIBC 2.x Linux deps, as collected on SLES 11 SP4 (x86_64 only).
+            # Deps without paths for generic Linux builds.
+            # Only glibc 2.x libs are allowed.
+            # Tested on SLES 11 with glibc 2.11.3.
             allowed_deps=[
-                '/lib64/libcrypt.so.1',
-                '/lib64/libc.so.6',
-                '/lib64/libdl.so.2',
-                '/lib64/libm.so.6',
-                '/lib64/libpthread.so.0',
-                '/lib64/libutil.so.1',
+                'libc.so.6',
+                'libcrypt.so.1',
+                'libdl.so.2',
+                'libm.so.6',
+                'libpthread.so.0',
+                'libutil.so.1',
                 ]
         elif 'rhel' in chevah_os:
-            # Common deps for RHEL 6 and 7 with full paths (x86_64 only).
+            # Common deps for supported RHEL with full paths (x86_64 only).
             allowed_deps = [
                 '/lib64/libcom_err.so.2',
                 '/lib64/libcrypt.so.1',
@@ -51,14 +53,6 @@ def get_allowed_deps():
                 '/lib64/libz.so.1',
                 ]
             rhel_version = chevah_os[4:]
-            if rhel_version.startswith("6"):
-                allowed_deps.extend([
-                    '/usr/lib64/libcrypto.so.10',
-                    '/usr/lib64/libffi.so.5',
-                    '/lib64/libncursesw.so.5',
-                    '/usr/lib64/libssl.so.10',
-                    '/lib64/libtinfo.so.5',
-                    ])
             if rhel_version.startswith("7"):
                 allowed_deps.extend([
                     '/lib64/libcrypto.so.10',
@@ -111,18 +105,19 @@ def get_allowed_deps():
                 '/lib/x86_64-linux-gnu/libm.so.6',
                 '/lib/x86_64-linux-gnu/libnsl.so.1',
                 '/lib/x86_64-linux-gnu/libpthread.so.0',
-                '/lib/x86_64-linux-gnu/libtinfo.so.5',
                 '/lib/x86_64-linux-gnu/libutil.so.1',
                 '/lib/x86_64-linux-gnu/libz.so.1',
                 ]
-            if ubuntu_version in [ "1404", "1604" ]:
+            if ubuntu_version == "1604":
                 allowed_deps.extend([
                     '/lib/x86_64-linux-gnu/libcrypto.so.1.0.0',
                     '/lib/x86_64-linux-gnu/libssl.so.1.0.0',
+                    '/lib/x86_64-linux-gnu/libtinfo.so.5',
                     '/usr/lib/x86_64-linux-gnu/libffi.so.6',
                 ])
             elif ubuntu_version == "1804":
                 allowed_deps.extend([
+                    '/lib/x86_64-linux-gnu/libtinfo.so.5',
                     '/usr/lib/x86_64-linux-gnu/libcrypto.so.1.1',
                     '/usr/lib/x86_64-linux-gnu/libssl.so.1.1',
                     '/usr/lib/x86_64-linux-gnu/libffi.so.6',
@@ -130,8 +125,8 @@ def get_allowed_deps():
             else:
                 allowed_deps.extend([
                     '/lib/x86_64-linux-gnu/libcrypto.so.1.1',
-                    '/lib/x86_64-linux-gnu/libtinfo.so.6',
                     '/lib/x86_64-linux-gnu/libssl.so.1.1',
+                    '/lib/x86_64-linux-gnu/libtinfo.so.6',
                     '/lib/x86_64-linux-gnu/libffi.so.7',
                 ])
             if 'arm64' in chevah_arch:
@@ -151,100 +146,6 @@ def get_allowed_deps():
                     '/lib/aarch64-linux-gnu/libz.so.1',
                     '/usr/lib/aarch64-linux-gnu/libffi.so.6',
                     ]
-        elif 'debian' in chevah_os:
-            debian_version = chevah_os[6:]
-            # Common deps with full paths for Debian 7 amd64 and newer.
-            allowed_deps=[
-                '/lib/x86_64-linux-gnu/libcrypt.so.1',
-                '/lib/x86_64-linux-gnu/libc.so.6',
-                '/lib/x86_64-linux-gnu/libdl.so.2',
-                '/lib/x86_64-linux-gnu/libm.so.6',
-                '/lib/x86_64-linux-gnu/libncurses.so.5',
-                '/lib/x86_64-linux-gnu/libpthread.so.0',
-                '/lib/x86_64-linux-gnu/libtinfo.so.5',
-                '/lib/x86_64-linux-gnu/libutil.so.1',
-                '/lib/x86_64-linux-gnu/libz.so.1',
-                ]
-            # libffi version was incremented in Debian 8.
-            if debian_version == "7":
-                allowed_deps.extend([
-                    '/usr/lib/x86_64-linux-gnu/libffi.so.5',
-                    ])
-            else:
-                allowed_deps.extend([
-                    '/usr/lib/x86_64-linux-gnu/libffi.so.6',
-                    ])
-            if debian_version in [ "7", "8" ]:
-                # Additional OpenSSL 1.0.1 deps for Debian 7.x/8.x amd64.
-                allowed_deps.extend([
-                    '/usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.0',
-                    '/usr/lib/x86_64-linux-gnu/libssl.so.1.0.0',
-                    ])
-            else:
-                # Additional OpenSSL 1.1.x deps for Debian 9.x+ amd64.
-                allowed_deps.extend([
-                    '/usr/lib/x86_64-linux-gnu/libcrypto.so.1.1',
-                    '/usr/lib/x86_64-linux-gnu/libssl.so.1.1',
-                    ])
-            if 'x86' in chevah_arch:
-                if debian_version in [ "7", "8" ]:
-                    # Full deps for Debian 7.x/8.x i386.
-                    allowed_deps=[
-                        '/lib/i386-linux-gnu/i686/cmov/libc.so.6',
-                        '/lib/i386-linux-gnu/i686/cmov/libcrypt.so.1',
-                        '/lib/i386-linux-gnu/i686/cmov/libdl.so.2',
-                        '/lib/i386-linux-gnu/i686/cmov/libm.so.6',
-                        '/lib/i386-linux-gnu/i686/cmov/libncurses.so.5',
-                        '/lib/i386-linux-gnu/i686/cmov/libpthread.so.0',
-                        '/lib/i386-linux-gnu/i686/cmov/libtinfo.so.5',
-                        '/lib/i386-linux-gnu/i686/cmov/libutil.so.1',
-                        '/lib/i386-linux-gnu/libz.so.1',
-                        '/usr/lib/i386-linux-gnu/i686/cmov/libcrypto.so.1.0.0',
-                        '/usr/lib/i386-linux-gnu/i686/cmov/libssl.so.1.0.0',
-                        ]
-                    # libffi version was incremented in Debian 8.
-                    if debian_version == "7":
-                        allowed_deps.extend([
-                            '/usr/lib/x86_64-linux-gnu/libffi.so.5',
-                            ])
-                    else:
-                        allowed_deps.extend([
-                            '/usr/lib/x86_64-linux-gnu/libffi.so.6',
-                            ])
-                else:
-                    # Full deps for Debian 9.x i386 (and possibly newer).
-                    allowed_deps=[
-                        '/lib/i386-linux-gnu/libcrypt.so.1',
-                        '/lib/i386-linux-gnu/libc.so.6',
-                        '/lib/i386-linux-gnu/libdl.so.2',
-                        '/lib/i386-linux-gnu/libm.so.6',
-                        '/lib/i386-linux-gnu/libncurses.so.5',
-                        '/lib/i386-linux-gnu/libpthread.so.0',
-                        '/lib/i386-linux-gnu/libtinfo.so.5',
-                        '/lib/i386-linux-gnu/libutil.so.1',
-                        '/lib/i386-linux-gnu/libz.so.1',
-                        '/usr/lib/i386-linux-gnu/libcrypto.so.1.1',
-                        '/usr/lib/i386-linux-gnu/libffi.so.6',
-                        '/usr/lib/i386-linux-gnu/libssl.so.1.1',
-                        ]
-        elif 'raspbian' in chevah_os:
-            # Common deps with full paths for Raspbian 7 and 8.
-            allowed_deps=[
-                '/lib/arm-linux-gnueabihf/libcrypt.so.1',
-                '/lib/arm-linux-gnueabihf/libc.so.6',
-                '/lib/arm-linux-gnueabihf/libdl.so.2',
-                '/lib/arm-linux-gnueabihf/libgcc_s.so.1',
-                '/lib/arm-linux-gnueabihf/libm.so.6',
-                '/lib/arm-linux-gnueabihf/libncurses.so.5',
-                '/lib/arm-linux-gnueabihf/libnsl.so.1',
-                '/lib/arm-linux-gnueabihf/libpthread.so.0',
-                '/lib/arm-linux-gnueabihf/libtinfo.so.5',
-                '/lib/arm-linux-gnueabihf/libutil.so.1',
-                '/lib/arm-linux-gnueabihf/libz.so.1',
-                '/usr/lib/arm-linux-gnueabihf/libcrypto.so.1.0.0',
-                '/usr/lib/arm-linux-gnueabihf/libffi.so.5',
-                '/usr/lib/arm-linux-gnueabihf/libssl.so.1.0.0',
-                ]
         elif 'alpine' in chevah_os:
             # Full deps with paths, but no minor versions, for Alpine 3.6+.
             alpine_version = chevah_os[6:]
@@ -267,18 +168,6 @@ def get_allowed_deps():
                     '/lib/libcrypto.so.1',
                     '/lib/libssl.so.1',
                     ])
-        elif chevah_os == 'lnx':
-            # Deps without paths for generic Linux builds.
-            # Only glibc 2.x libs are allowed.
-            # Tested on SLES 11 with glibc 2.11.3.
-            allowed_deps=[
-                'libc.so.6',
-                'libcrypt.so.1',
-                'libdl.so.2',
-                'libm.so.6',
-                'libpthread.so.0',
-                'libutil.so.1',
-                ]
     elif platform_system == 'aix':
         # List of deps with full paths for AIX 5.3 with OpenSSL 1.0.2k.
         # These deps are common to AIX 6.1 and 7.1 as well.

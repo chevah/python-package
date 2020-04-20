@@ -169,11 +169,6 @@ ARCH_PKGS="$COMMON_PKGS git libffi ncurses"
 # Windows is special, but package management is possible through Chocolatey.
 # Chocolatey's git package comes with patch included through bundling MINGW4.
 CHOCO_PKGS="vcpython27 make git"
-case "$OS" in
-    rhel5)
-        RHEL_PKGS="$RHEL_PKGS automake15"
-        ;;
-esac
 
 # In Solaris and AIX we use $ARCH to choose if we build a 32bit or 64bit
 # package. This way we are able to force a 32bit build on a 64bit machine,
@@ -528,7 +523,7 @@ check_dependencies() {
 
     case $OS in
         # Debian-derived distros are similar in this regard.
-        ubuntu*|debian*|raspbian*)
+        ubuntu*)
             packages=$DEBIAN_PKGS
             check_command='dpkg --status'
             ;;

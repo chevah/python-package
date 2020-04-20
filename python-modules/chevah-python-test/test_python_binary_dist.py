@@ -19,7 +19,17 @@ def get_allowed_deps():
     """
     allowed_deps = []
     if platform_system == 'linux':
-        if 'rhel' in chevah_os:
+        if 'lnx' in chevah_os:
+            # GLIBC 2.x Linux deps, as collected on SLES 11 SP4 (x86_64 only).
+            allowed_deps=[
+                '/lib64/libcrypt.so.1',
+                '/lib64/libc.so.6',
+                '/lib64/libdl.so.2',
+                '/lib64/libm.so.6',
+                '/lib64/libpthread.so.0',
+                '/lib64/libutil.so.1',
+                ]
+        elif 'rhel' in chevah_os:
             # Common deps for RHEL 6 and 7 with full paths (x86_64 only).
             allowed_deps = [
                 '/lib64/libcom_err.so.2',
@@ -91,36 +101,6 @@ def get_allowed_deps():
                 '/lib64/libutil.so.1',
                 '/lib64/libz.so.1',
                 ]
-        elif 'sles' in chevah_os:
-            sles_version = chevah_os[4:]
-            # Common deps for SLES 11, 11SM and 12 w/ full paths (x86_64 only).
-            allowed_deps=[
-                '/lib64/libcrypt.so.1',
-                '/lib64/libc.so.6',
-                '/lib64/libdl.so.2',
-                '/lib64/libm.so.6',
-                '/lib64/libncursesw.so.5',
-                '/lib64/libnsl.so.1',
-                '/lib64/libpthread.so.0',
-                '/lib64/libutil.so.1',
-                '/lib64/libz.so.1',
-                ]
-            if sles_version == "11":
-                allowed_deps.extend([
-                    '/usr/lib64/libcrypto.so.0.9.8',
-                    '/usr/lib64/libssl.so.0.9.8',
-                ])
-            if sles_version == "11sm":
-                allowed_deps.extend([
-                    '/usr/lib64/libcrypto.so.1.0.0',
-                    '/usr/lib64/libssl.so.1.0.0',
-                ])
-            if sles_version == "12":
-                allowed_deps.extend([
-                    '/lib64/libcrypto.so.1.0.0',
-                    '/lib64/libssl.so.1.0.0',
-                    '/lib64/libtinfo.so.5',
-                    ])
         elif 'ubuntu' in chevah_os:
             ubuntu_version = chevah_os[6:]
             # Common deps for Ubuntu 14.04/16.04/18.04 with full paths (x86_64).

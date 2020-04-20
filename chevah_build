@@ -159,7 +159,6 @@ ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 # On platforms with a choice of C compilers, you may choose among the
 # available compilers by setting CC and CXX further down in this script.
 COMMON_PKGS="gcc make m4 automake libtool texinfo patch"
-COMMON_SLES_PKGS="$COMMON_PKGS git-core zlib-devel ncurses-devel"
 DEBIAN_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
 RHEL_PKGS="$COMMON_PKGS git openssl-devel zlib-devel libffi-devel ncurses-devel"
 ALPINE_COMMON_PKGS="$COMMON_PKGS\
@@ -173,12 +172,6 @@ CHOCO_PKGS="vcpython27 make git"
 case "$OS" in
     rhel5)
         RHEL_PKGS="$RHEL_PKGS automake15"
-        ;;
-    sles10)
-        SLES_PKGS="$COMMON_SLES_PKGS openssl-devel"
-        ;;
-    sles11|sles12)
-        SLES_PKGS="$COMMON_SLES_PKGS libopenssl-devel"
         ;;
 esac
 
@@ -444,10 +437,6 @@ case $OS in
             bcrypt==${BCRYPT_VERSION} \
             "
         ;;
-    sles12)
-        # SLES's libffi headers from SDK do not match default-available package.
-        export BUILD_LIBFFI="yes"
-        ;;
     lnx)
         # Build as portable as possible, only glibc 2.x should be needed.
         export BUILD_LIBFFI="yes"
@@ -545,10 +534,6 @@ check_dependencies() {
             ;;
         rhel*|amzn*)
             packages=$RHEL_PKGS
-            check_command='rpm --query'
-            ;;
-        sles*)
-            packages=$SLES_PKGS
             check_command='rpm --query'
             ;;
         alpine*)

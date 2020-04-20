@@ -655,20 +655,6 @@ detect_os() {
                             "$os_version_raw" os_version_chevah
                         set_os_if_not_generic "amzn" $os_version_chevah
                         ;;
-                    sles)
-                        os_version_raw="$VERSION_ID"
-                        check_os_version "SUSE Linux Enterprise Server" 11 \
-                            "$os_version_raw" os_version_chevah
-                        # SLES 11 has OpenSSL 0.9.8, Security Module only adds
-                        # 1.0.1, so we use generic builds with included OpenSSL.
-                        if [ "$os_version_chevah" -eq 11 ]; then
-                            # We support this, so no need for check_linux_glibc,
-                            # As it has oldest glibc version among our slaves,
-                            # we use it for building generic Linux runtimes.
-                            OS="lnx"
-                        fi
-                        set_os_if_not_generic "sles" $os_version_chevah
-                        ;;
                     ubuntu|ubuntu-core)
                         os_version_raw="$VERSION_ID"
                         # 12.04/14.04 have OpenSSL 1.0.1, use generic Linux.
@@ -689,7 +675,7 @@ detect_os() {
                         set_os_if_not_generic "alpine" $os_version_chevah
                         ;;
                     *)
-                        # Unsupported modern distros such as Debian, Arch, etc.
+                        # Unsupported modern distros such as SLES, Debian, etc.
                         check_linux_glibc
                         ;;
                 esac

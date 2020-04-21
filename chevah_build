@@ -12,6 +12,7 @@
 PYTHON_BUILD_VERSION="2.7.17"
 LIBFFI_VERSION="3.2.1"
 ZLIB_VERSION="1.2.11"
+BZIP2_VERSION="1.0.8"
 # We statically build the BSD libedit on selected platforms to get the
 # readline module available without linking to the GPL-only readline libs.
 LIBEDIT_VERSION="20170329-3.1"
@@ -65,6 +66,7 @@ PYTHON_PACKAGE_VERSION=$(git rev-parse --short=8 HEAD)
 # Export the variables needed by the chevahbs scripts and the test phase.
 export PYTHON_BUILD_VERSION PYTHON_PACKAGE_VERSION REDISTRIBUTABLE_VERSION
 export BUILD_ZLIB="no"
+export BUILD_BZIP2="yes"
 export BUILD_LIBEDIT="yes"
 export BUILD_GMP="yes"
 export BUILD_LIBFFI="no"
@@ -261,6 +263,8 @@ case $OS in
             export CFLAGS="$CFLAGS -m64"
             export LDFLAGS="$LDFLAGS -m64 -L/usr/lib/64 -R/usr/lib/64"
         fi
+        # System includes bzip2 libs by default.
+        export BUILD_BZIP2="no"
         if [ "${OS%sol10*}" = "" ]; then
             # "sol10" code path requires OpenSSL 1.0.x patches from Oracle.
             # Check "sol10u3" divergent code path to link to OpenSSL 0.9.7.
@@ -309,6 +313,9 @@ case $OS in
                 add_ignored_safety_ids_for_pyopenssl_false_positives
                 PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
                 EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
+                # setuptools 42.0.0 breaks allow-hosts set globally.
+                # More at https://github.com/pypa/setuptools/issues/1916.
+                SETUPTOOLS_VERSION="41.6.0"
             fi
             if [ ! -f /usr/include/openssl/cmac.h ]; then
                 # Solaris 11.0/11.1 have OpenSSL 1.0.0 libraries.
@@ -388,6 +395,8 @@ case $OS in
         # have the important benefit of getting rid of the libgcc dependency.
         export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
         export MACOSX_DEPLOYMENT_TARGET=10.8
+        # System includes bzip2 libs by default.
+        export BUILD_BZIP2="no"
         # OS X 10.8 not supported by cryptography 1.9, so you'll normally use
         # 1.8.2, but cryptography still has a working wheel for MacOS 10.6+.
         PIP_LIBRARIES="\
@@ -408,6 +417,8 @@ case $OS in
         # setup.py skips building readline by default, as it sets this to
         # "10.4", and then tries to avoid the broken readline in OS X 10.4.
         export MACOSX_DEPLOYMENT_TARGET=10.13
+        # System includes bzip2 libs by default.
+        export BUILD_BZIP2="no"
         # 10.13 and newer come with LibreSSL instead of the old OpenSSL libs.
         # But the headers are missing, so we copy them ourselves when building.
         # For building on 10.14 you can try the hack at
@@ -415,7 +426,26 @@ case $OS in
         # However, this won't work on 10.15, as 2.2.7 is no longer the default.
         LIBRESSL_VERSION="2.2.7"
         ;;
-    fbsd*|obsd*)
+    fbsd*)
+        export CC="clang"
+        export CXX="clang++"
+        # libffi not available in the base systems, only as port/package.
+        export BUILD_LIBFFI="yes"
+        # System includes bzip2 libs by default.
+        export BUILD_BZIP2="no"
+        # psutil is problematic on the BSDs, we don't build it.
+        PIP_LIBRARIES="\
+            setproctitle==${SETPROCTITLE_VERSION} \
+            pycryptodomex==${PYCRYPTODOMEX_VERSION} \
+            cryptography==${CRYPTOGRAPHY_VERSION} \
+            pyOpenSSL==${PYOPENSSL_VERSION} \
+            scandir==${SCANDIR_VERSION} \
+            Cython==${CYTHON_VERSION} \
+            subprocess32==${SUBPROCESS32_VERSION} \
+            bcrypt==${BCRYPT_VERSION} \
+            "
+        ;;
+    obsd*)
         export CC="clang"
         export CXX="clang++"
         # libffi not available in the base systems, only as port/package.
@@ -462,6 +492,7 @@ case $OS in
         # For Windows we don't build everything from source yet.
         export BUILD_LIBEDIT="no"
         export BUILD_GMP="no"
+        export BUILD_BZIP2="no"
         # Extra libraries are installed only using PIP.
         EXTRA_LIBRARIES=""
         # And the patched PyCrypto is packed and uploaded to our PyPI server.
@@ -635,6 +666,12 @@ command_build() {
         build 'zlib' "zlib-$ZLIB_VERSION" ${PYTHON_BUILD_FOLDER}
     else
         (>&2 echo "Skipping building ZLIB!")
+    fi
+
+    if [ "$BUILD_BZIP2" = "yes" ]; then
+        build 'bzip2' "bzip2-$BZIP2_VERSION" ${PYTHON_BUILD_FOLDER}
+    else
+        (>&2 echo "Skipping building BZIP2!")
     fi
 
     if [ "$BUILD_LIBEDIT" = "yes" ]; then

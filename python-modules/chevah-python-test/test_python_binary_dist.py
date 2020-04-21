@@ -221,6 +221,7 @@ def get_allowed_deps():
                 '/lib/64/libm.so.2',
                 '/lib/64/libnsl.so.1',
                 '/lib/64/libsocket.so.1',
+                '/usr/lib/64/libbz2.so.1',
                 ]
             if solaris_version == '10':
                 # Specific deps to add for Solaris 10.
@@ -293,6 +294,7 @@ def get_allowed_deps():
                 '/lib/libm.so.2',
                 '/lib/libnsl.so.1',
                 '/lib/libsocket.so.1',
+                '/usr/lib/libbz2.so.1',
                 ]
             if solaris_version == '10':
                 # Specific deps to add for all Solaris 10 versions.
@@ -386,6 +388,7 @@ def get_allowed_deps():
             '/usr/lib/libffi.dylib',
             '/usr/lib/libSystem.B.dylib',
             '/usr/lib/libz.1.dylib',
+            '/usr/lib/libbz2.1.0.dylib',
             ]
         if chevah_os == 'osx':
             # Additional deps when using the OS-included OpenSSL 0.9.8.
@@ -413,6 +416,7 @@ def get_allowed_deps():
             '/lib/libthr.so.3',
             '/lib/libutil.so.9',
             '/lib/libz.so.6',
+            '/usr/lib/libbz2.so.4',
             ]
         # On FreeBSD this can be: '10.3-RELEASE-p20', '11.0-RELEASE', etc.
         freebsd_version = platform.release().split('.')[0]
@@ -765,6 +769,19 @@ def main():
         except:
             sys.stderr.write('"bcrypt" missing.\n')
             exit_code = 26
+
+    try:
+        import bz2
+        test_string = b"just a random string to quickly test bz2"
+        test_string_bzipped = bz2.compress(test_string)
+        if bz2.decompress(test_string_bzipped) == test_string:
+            print '"bz2" is present.'
+        else:
+            sys.stderr.write('"bzip" present, but broken.\n')
+            exit_code = 29
+    except:
+        sys.stderr.write('"bz2" missing.\n')
+        exit_code = 28
 
     # Windows specific modules.
     if os.name == 'nt':

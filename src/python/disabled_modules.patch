@@ -1,7 +1,7 @@
 diff -ur setup.py setup.py
 --- setup.py
 +++ setup.py
-@@ -33,7 +33,20 @@
+@@ -33,7 +33,19 @@
  COMPILED_WITH_PYDEBUG = ('--with-pydebug' in sysconfig.get_config_var("CONFIG_ARGS"))
  
  # This global variable is used to hold the list of modules to be disabled.
@@ -13,7 +13,6 @@ diff -ur setup.py setup.py
 +    '_locale',
 +    '_sqlite3',
 +    '_tkinter',
-+    'bz2',
 +    'dbm',
 +    'gdbm',
 +    'nis',

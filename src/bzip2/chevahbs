@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+#
+# Chevah Build Script for bzip2.
+
+# Import shared code.
+. ./functions.sh
+
+chevahbs_patch() {
+    # Patch to support compilers other than GCC and PIC.
+    echo "Applying cc_fpic.patch:"
+    execute patch -p0 < cc_fpic.patch
+}
+
+chevahbs_configure() {
+    # Just a stub, bzip2's build doesn't need this.
+    execute true
+}
+
+
+chevahbs_compile() {
+    execute $MAKE
+}
+
+
+chevahbs_install() {
+    install_folder=$1
+    execute $MAKE install PREFIX=$INSTALL_FOLDER
+}
+
+
+select_chevahbs_command $@

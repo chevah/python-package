@@ -862,8 +862,7 @@ def main():
             exit_code = 18
 
     # Some OS'es are not supported by upstream psutil (or not really working).
-    if not chevah_os in [ 'aix53', 'hpux1131', 'sol10', 'sol112',
-            'fbsd11', 'obsd66' ]:
+    if not chevah_os in [ 'aix53', 'hpux1131', 'sol10', 'sol112' ]:
         try:
             import psutil
             cpu_percent = psutil.cpu_percent()

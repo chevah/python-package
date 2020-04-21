@@ -9,7 +9,7 @@
 #
 
 # Beware that version 2.7.8 is used for Solaris 10.
-PYTHON_BUILD_VERSION="2.7.17"
+PYTHON_BUILD_VERSION="2.7.18"
 LIBFFI_VERSION="3.2.1"
 ZLIB_VERSION="1.2.11"
 BZIP2_VERSION="1.0.8"

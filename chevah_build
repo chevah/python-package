@@ -428,10 +428,12 @@ case $OS in
         # To avoid linking to local libs, we build our own OpenSSL libs.
         export BUILD_OPENSSL="yes"
         # Use PyCryptodomex' wheel, some issue not solved upstream for SLES 11.
+        # Also, cryptography builds on SLES 11, but fails to load _openssl.so
+        # with error "undefined symbol: __builtin_unreachable".
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
             pycryptodomex==${PYCRYPTODOMEX_VERSION}upstream \
-            cryptography==${CRYPTOGRAPHY_VERSION} \
+            cryptography==${CRYPTOGRAPHY_VERSION}upstream \
             pyOpenSSL==${PYOPENSSL_VERSION} \
             scandir==${SCANDIR_VERSION} \
             psutil==${PSUTIL_VERSION} \

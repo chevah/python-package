@@ -192,6 +192,7 @@ def get_allowed_deps():
             '/usr/lib/libcrypto.a(libcrypto.so.1.0.0)',
             '/usr/lib/libcrypto.so',
             '/usr/lib/libdl.a(shr.o)',
+            '/usr/lib/libpthread.a(shr_xpg5.o)',
             '/usr/lib/libpthreads.a(shr_comm.o)',
             '/usr/lib/libpthreads.a(shr_xpg5.o)',
             '/usr/lib/libssl.so',
@@ -280,6 +281,7 @@ def get_allowed_deps():
                     allowed_deps.extend([
                         '/usr/lib/64/libkstat.so.1',
                         '/usr/lib/64/libncursesw.so.5',
+                        '/usr/lib/64/libpthread.so.1',
                         ])
                 else:
                     # Solaris deps for 11.0-11.3.
@@ -355,6 +357,7 @@ def get_allowed_deps():
                     allowed_deps.extend([
                         '/lib/libkstat.so.1',
                         '/usr/lib/libncursesw.so.5',
+                        '/usr/lib/libpthread.so.1',
                         ])
                 else:
                     # Solaris deps for 11.0-11.3.
@@ -635,8 +638,15 @@ def main():
             from cryptography.hazmat.backends.openssl.backend import backend
             import cryptography
             openssl_version = backend.openssl_version_text()
-            if chevah_os in [ "win", "osx", "lnx" ]:
+            if chevah_os in [ "win", "lnx" ]:
                 # Check OpenSSL version from upstream wheels.
+                expecting = u'OpenSSL 1.1.1g  21 Apr 2020'
+                if openssl_version != expecting:
+                    sys.stderr.write('Expecting %s, got %s.\n' % (
+                        expecting, openssl_version))
+                    exit_code = 13
+            elif chevah_os == "osx":
+                # cryptography 1.9 requires OS X 10.9, our slave only has 10.8.
                 expecting = u'OpenSSL 1.1.1d  10 Sep 2019'
                 if openssl_version != expecting:
                     sys.stderr.write('Expecting %s, got %s.\n' % (

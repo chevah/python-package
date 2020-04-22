@@ -379,35 +379,22 @@ def get_allowed_deps():
             '/usr/lib/hpux32/libxti.so.1',
             ]
     elif platform_system == 'darwin':
-        # Common deps for OS X 10.8 and macOS 10.12+, with full path.
+        # Deps for macOS 10.13, with full path.
         allowed_deps = [
             '/System/Library/Frameworks/ApplicationServices.framework/Versions/A/ApplicationServices',
             '/System/Library/Frameworks/Carbon.framework/Versions/A/Carbon',
             '/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation',
+            '/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics',
             '/System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices',
             '/System/Library/Frameworks/IOKit.framework/Versions/A/IOKit',
             '/System/Library/Frameworks/Security.framework/Versions/A/Security',
             '/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/SystemConfiguration',
+            '/usr/lib/libbz2.1.0.dylib',
             '/usr/lib/libffi.dylib',
+            '/usr/lib/libncurses.5.4.dylib',
             '/usr/lib/libSystem.B.dylib',
             '/usr/lib/libz.1.dylib',
-            '/usr/lib/libbz2.1.0.dylib',
             ]
-        if chevah_os == 'osx':
-            # Additional deps when using the OS-included OpenSSL 0.9.8.
-            allowed_deps.extend([
-                '/usr/lib/libcrypto.0.9.8.dylib',
-                '/usr/lib/libssl.0.9.8.dylib',
-                '/usr/lib/libncurses.5.4.dylib',
-                ])
-        if chevah_os == 'macos':
-            # Additional deps for macOS 10.13 with OS-included LibreSSL 2.2.7.
-            allowed_deps.extend([
-                '/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics',
-                '/usr/lib/libcrypto.35.dylib',
-                '/usr/lib/libncurses.5.4.dylib',
-                '/usr/lib/libssl.35.dylib',
-                ])
     elif platform_system == 'freebsd':
         # This is the common list of deps for FreeBSD 10 and newer, with paths.
         allowed_deps = [
@@ -638,16 +625,9 @@ def main():
             from cryptography.hazmat.backends.openssl.backend import backend
             import cryptography
             openssl_version = backend.openssl_version_text()
-            if chevah_os in [ "win", "lnx" ]:
+            if chevah_os in [ "win", "lnx", "macos" ]:
                 # Check OpenSSL version from upstream wheels.
                 expecting = u'OpenSSL 1.1.1g  21 Apr 2020'
-                if openssl_version != expecting:
-                    sys.stderr.write('Expecting %s, got %s.\n' % (
-                        expecting, openssl_version))
-                    exit_code = 13
-            elif chevah_os == "osx":
-                # cryptography 1.9 requires OS X 10.9, our slave only has 10.8.
-                expecting = u'OpenSSL 1.1.1d  10 Sep 2019'
                 if openssl_version != expecting:
                     sys.stderr.write('Expecting %s, got %s.\n' % (
                         expecting, openssl_version))

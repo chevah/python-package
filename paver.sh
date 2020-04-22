@@ -684,19 +684,10 @@ detect_os() {
         Darwin)
             ARCH=$(uname -m)
             os_version_raw=$(sw_vers -productVersion)
-            check_os_version "Mac OS X" 10.8 "$os_version_raw" os_version_chevah
-            if [ ${os_version_chevah:0:2} -eq 10 -a \
-                ${os_version_chevah:2:2} -ge 13 ]; then
-                # For macOS 10.13 or newer we use 'macos'.
-                OS="macos"
-            elif [ ${os_version_chevah:0:2} -eq 10 -a \
-                ${os_version_chevah:2:2} -ge 8 ]; then
-                # For macOS 10.12 and OS X 10.8-10.11 we use 'osx'.
-                OS="osx"
-            else
-                (>&2 echo "Unsupported Mac OS X version: $os_version_raw.")
-                exit 17
-            fi
+            # Build requires 10.13+, but the package should run on 10.8+.
+            check_os_version "macOS" 10.13 "$os_version_raw" os_version_chevah
+            # Build a generic package to cover all supported versions.
+            OS="macos"
             ;;
         FreeBSD)
             ARCH=$(uname -m)

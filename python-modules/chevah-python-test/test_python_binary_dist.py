@@ -626,7 +626,7 @@ def main():
             import cryptography
             openssl_version = backend.openssl_version_text()
             if chevah_os in [ "win", "lnx", "macos" ]:
-                # Check OpenSSL version from upstream wheels.
+                # Check OpenSSL version on OS'es with static OpenSSL libs.
                 expecting = u'OpenSSL 1.1.1g  21 Apr 2020'
                 if openssl_version != expecting:
                     sys.stderr.write('Expecting %s, got %s.\n' % (

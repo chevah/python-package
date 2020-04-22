@@ -431,7 +431,7 @@ case $OS in
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
             pycryptodomex==${PYCRYPTODOMEX_VERSION}upstream \
-            cryptography==${CRYPTOGRAPHY_VERSION}upstream \
+            cryptography==${CRYPTOGRAPHY_VERSION} \
             pyOpenSSL==${PYOPENSSL_VERSION} \
             scandir==${SCANDIR_VERSION} \
             psutil==${PSUTIL_VERSION} \
@@ -646,6 +646,13 @@ command_build() {
         export LDFLAGS="-L${INSTALL_FOLDER}/lib64/ ${LDFLAGS}"
         export PKG_CONFIG_PATH="\
             ${INSTALL_FOLDER}/lib64/pkgconfig/:${PKG_CONFIG_PATH}"
+        # Place SSL headers where they can be picked up.
+        echo "Copying OpenSSL $OPENSSL_VERSION headers..."
+        execute cp -r \
+            src/openssl/openssl-${OPENSSL_VERSION}/include/openssl \
+            ${INSTALL_FOLDER}/include/
+        # Nothing else worked on SLES 11, so we're back to using CPPFLAGS.
+        export CPPFLAGS="$CPPFLAGS -I${INSTALL_FOLDER}/include"
     else
         (>&2 echo "Skipping building OpenSSL!")
     fi

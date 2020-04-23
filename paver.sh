@@ -248,22 +248,28 @@ set_download_commands() {
     set +o errexit
     command -v wget > /dev/null
     if [ $? -eq 0 ]; then
-        set -o errexit
         # Using WGET for downloading Python package.
+        wget --version > /dev/null 2>&1
+        if [ $? -ne 0 ]; then
+            # This is not GNU Wget, could be the more frugal wget from Busybox.
+            DOWNLOAD_CMD="wget"
+        else
+            # Use 1MB dots to reduce output and avoid polluting Buildbot pages.
+            DOWNLOAD_CMD="wget --progress=dot --execute dot_bytes=1m"
+        fi
         ONLINETEST_CMD="wget --spider --quiet"
-        # Use 1MB dots to reduce output, avoiding polluting Buildbot's pages.
-        DOWNLOAD_CMD="wget --progress=dot --execute dot_bytes=1m"
+        set -o errexit
         return
     fi
     command -v curl > /dev/null
     if [ $? -eq 0 ]; then
-        set -o errexit
         # Using CURL for downloading Python package.
-        ONLINETEST_CMD="curl --fail --silent --head --output /dev/null"
         DOWNLOAD_CMD="curl --remote-name"
+        ONLINETEST_CMD="curl --fail --silent --head --output /dev/null"
+        set -o errexit
         return
     fi
-    (>&2 echo "Missing wget/curl! One of them is needed for online operations.")
+    (>&2 echo "Missing wget and curl! One is needed for online operations.")
     exit 3
 }
 
@@ -502,7 +508,7 @@ check_os_version() {
         exit 12
     fi
 
-    # Using '.' as a delimiter, populate the version_raw_* arrays.
+    # Using '.' as a delimiter, populate the version_* arrays.
     IFS=. read -a version_raw_array <<< "$version_raw"
     IFS=. read -a version_good_array <<< "$version_good"
 
@@ -649,20 +655,6 @@ detect_os() {
                             "$os_version_raw" os_version_chevah
                         set_os_if_not_generic "amzn" $os_version_chevah
                         ;;
-                    sles)
-                        os_version_raw="$VERSION_ID"
-                        check_os_version "SUSE Linux Enterprise Server" 11 \
-                            "$os_version_raw" os_version_chevah
-                        # SLES 11 has OpenSSL 0.9.8, Security Module only adds
-                        # 1.0.1, so we use generic builds with included OpenSSL.
-                        if [ "$os_version_chevah" -eq 11 ]; then
-                            # We support this, so no need for check_linux_glibc,
-                            # As it has oldest glibc version among our slaves,
-                            # we use it for building generic Linux runtimes.
-                            OS="lnx"
-                        fi
-                        set_os_if_not_generic "sles" $os_version_chevah
-                        ;;
                     ubuntu|ubuntu-core)
                         os_version_raw="$VERSION_ID"
                         # 12.04/14.04 have OpenSSL 1.0.1, use generic Linux.
@@ -683,7 +675,7 @@ detect_os() {
                         set_os_if_not_generic "alpine" $os_version_chevah
                         ;;
                     *)
-                        # Unsupported modern distros such as Debian, Arch, etc.
+                        # Unsupported modern distros such as SLES, Debian, etc.
                         check_linux_glibc
                         ;;
                 esac
@@ -692,19 +684,10 @@ detect_os() {
         Darwin)
             ARCH=$(uname -m)
             os_version_raw=$(sw_vers -productVersion)
-            check_os_version "Mac OS X" 10.8 "$os_version_raw" os_version_chevah
-            if [ ${os_version_chevah:0:2} -eq 10 -a \
-                ${os_version_chevah:2:2} -ge 13 ]; then
-                # For macOS 10.13 or newer we use 'macos'.
-                OS="macos"
-            elif [ ${os_version_chevah:0:2} -eq 10 -a \
-                ${os_version_chevah:2:2} -ge 8 ]; then
-                # For macOS 10.12 and OS X 10.8-10.11 we use 'osx'.
-                OS="osx"
-            else
-                (>&2 echo "Unsupported Mac OS X version: $os_version_raw.")
-                exit 17
-            fi
+            # Tested on 10.13, but this might build on slightly older versions.
+            check_os_version "macOS" 10.13 "$os_version_raw" os_version_chevah
+            # Build a generic package to cover all supported versions.
+            OS="macos"
             ;;
         FreeBSD)
             ARCH=$(uname -m)

@@ -127,7 +127,7 @@ chevahbs_configure() {
                 --with-system-ffi \
                 "
             ;;
-        osx*|macos*)
+        macos*)
             CONFIG_ARGS="${CONFIG_ARGS} --without-gcc"
             ;;
         archlinux)

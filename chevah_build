@@ -9,23 +9,26 @@
 #
 
 # Beware that version 2.7.8 is used for Solaris 10.
-PYTHON_BUILD_VERSION="2.7.17"
+PYTHON_BUILD_VERSION="2.7.18"
 LIBFFI_VERSION="3.2.1"
 ZLIB_VERSION="1.2.11"
+BZIP2_VERSION="1.0.8"
 # We statically build the BSD libedit on selected platforms to get the
 # readline module available without linking to the GPL-only readline libs.
 LIBEDIT_VERSION="20170329-3.1"
 # PyCrypto needs GMP or MPIR for fast math. GMP has support for AIX/HP-UX/etc.
 GMP_VERSION="6.2.0"
-OPENSSL_VERSION="1.1.1d"
+OPENSSL_VERSION="1.1.1g"
 SQLITE_VERSION="3.30.1"
 PYSQLITE_VERSION="2.8.3"
 # These are used by get-pip.py.
 PIP_VERSION="9.0.3"
-SETUPTOOLS_VERSION="41.6.0"
+# Version 44.x is the last one to support Python 2.7.
+# More at https://github.com/pypa/setuptools/pull/1955.
+SETUPTOOLS_VERSION="44.1.0"
 
 # Python modules versions to be used everywhere possible.
-CFFI_VERSION="1.13.2"
+CFFI_VERSION="1.14.0"
 PYCRYPTO_VERSION="2.6.1"
 # PyCrypto 2.6.1 is vulnerable to CVE-2013-7459 and CVE-2018-6594, but we patch
 # these vulnerabilities, and mark correspondent Safety IDs as false positives.
@@ -37,12 +40,12 @@ PYCRYPTO_VERSION="2.6.1"
 SAFETY_FALSE_POSITIVES_OPTS="-i 35015"
 # We haven't replaced PyCrypto with PyCryptodome, but we build and test it
 # because it has a very comprehensive and demanding test suite.
-PYCRYPTODOMEX_VERSION="3.9.1"
+PYCRYPTODOMEX_VERSION="3.9.7"
 PYOPENSSL_VERSION="19.1.0"
-CRYPTOGRAPHY_VERSION="2.8"
+CRYPTOGRAPHY_VERSION="2.9.1"
 SETPROCTITLE_VERSION="1.1.10"
 SCANDIR_VERSION="1.10.0"
-PSUTIL_VERSION="5.6.5"
+PSUTIL_VERSION="5.7.0"
 CYTHON_VERSION="0.29.14"
 SUBPROCESS32_VERSION="3.5.4"
 PYWIN32_VERSION="227"
@@ -52,7 +55,7 @@ BCRYPT_VERSION="3.1.7"
 
 # pycparser needs to be explicitly installed to work around setuptools auto
 # dependencies.
-PYCPARSER_VERSION="2.19"
+PYCPARSER_VERSION="2.20"
 
 # Current revision for the VC++ 9.0 redistributable version used on Windows.
 REDISTRIBUTABLE_VERSION="9.0.30729.9518"
@@ -63,6 +66,7 @@ PYTHON_PACKAGE_VERSION=$(git rev-parse --short=8 HEAD)
 # Export the variables needed by the chevahbs scripts and the test phase.
 export PYTHON_BUILD_VERSION PYTHON_PACKAGE_VERSION REDISTRIBUTABLE_VERSION
 export BUILD_ZLIB="no"
+export BUILD_BZIP2="yes"
 export BUILD_LIBEDIT="yes"
 export BUILD_GMP="yes"
 export BUILD_LIBFFI="no"
@@ -157,7 +161,6 @@ ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
 # On platforms with a choice of C compilers, you may choose among the
 # available compilers by setting CC and CXX further down in this script.
 COMMON_PKGS="gcc make m4 automake libtool texinfo patch"
-COMMON_SLES_PKGS="$COMMON_PKGS git-core zlib-devel ncurses-devel"
 DEBIAN_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
 RHEL_PKGS="$COMMON_PKGS git openssl-devel zlib-devel libffi-devel ncurses-devel"
 ALPINE_COMMON_PKGS="$COMMON_PKGS\
@@ -168,17 +171,6 @@ ARCH_PKGS="$COMMON_PKGS git libffi ncurses"
 # Windows is special, but package management is possible through Chocolatey.
 # Chocolatey's git package comes with patch included through bundling MINGW4.
 CHOCO_PKGS="vcpython27 make git"
-case "$OS" in
-    rhel5)
-        RHEL_PKGS="$RHEL_PKGS automake15"
-        ;;
-    sles10)
-        SLES_PKGS="$COMMON_SLES_PKGS openssl-devel"
-        ;;
-    sles11|sles12)
-        SLES_PKGS="$COMMON_SLES_PKGS libopenssl-devel"
-        ;;
-esac
 
 # In Solaris and AIX we use $ARCH to choose if we build a 32bit or 64bit
 # package. This way we are able to force a 32bit build on a 64bit machine,
@@ -271,6 +263,8 @@ case $OS in
             export CFLAGS="$CFLAGS -m64"
             export LDFLAGS="$LDFLAGS -m64 -L/usr/lib/64 -R/usr/lib/64"
         fi
+        # System includes bzip2 libs by default.
+        export BUILD_BZIP2="no"
         if [ "${OS%sol10*}" = "" ]; then
             # "sol10" code path requires OpenSSL 1.0.x patches from Oracle.
             # Check "sol10u3" divergent code path to link to OpenSSL 0.9.7.
@@ -282,6 +276,9 @@ case $OS in
             export PATH=/usr/ccs/bin/:$PATH
             # Latest libedit sources do not build on Solaris 10 any more.
             export BUILD_LIBEDIT="no"
+            # setuptools 42.0.0 breaks allow-hosts set globally.
+            # More at https://github.com/pypa/setuptools/issues/1916.
+            SETUPTOOLS_VERSION="41.6.0"
             # bcrypt build fails with the system libffi.
             export BUILD_LIBFFI="yes"
             # NPN functions missing from Oracle's OpenSSL patches, as of version
@@ -316,6 +313,9 @@ case $OS in
                 add_ignored_safety_ids_for_pyopenssl_false_positives
                 PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
                 EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
+                # setuptools 42.0.0 breaks allow-hosts set globally.
+                # More at https://github.com/pypa/setuptools/issues/1916.
+                SETUPTOOLS_VERSION="41.6.0"
             fi
             if [ ! -f /usr/include/openssl/cmac.h ]; then
                 # Solaris 11.0/11.1 have OpenSSL 1.0.0 libraries.
@@ -388,59 +388,33 @@ case $OS in
             python-modules/pycryptodomex-${PYCRYPTODOMEX_VERSION} \
             "
         ;;
-    osx)
-        export CC="clang"
-        export CXX="clang++"
-        # The extra params needed to set the minimum target version to 10.8
-        # have the important benefit of getting rid of the libgcc dependency.
-        export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
-        export MACOSX_DEPLOYMENT_TARGET=10.8
-        # OS X 10.8 not supported by cryptography 1.9, so you'll normally use
-        # 1.8.2, but cryptography still has a working wheel for MacOS 10.6+.
-        PIP_LIBRARIES="\
-            setproctitle==${SETPROCTITLE_VERSION} \
-            pycryptodomex==${PYCRYPTODOMEX_VERSION} \
-            cryptography==${CRYPTOGRAPHY_VERSION}upstream \
-            pyOpenSSL==${PYOPENSSL_VERSION} \
-            scandir==${SCANDIR_VERSION} \
-            psutil==${PSUTIL_VERSION} \
-            Cython==${CYTHON_VERSION} \
-            subprocess32==${SUBPROCESS32_VERSION} \
-            bcrypt==${BCRYPT_VERSION} \
-            "
-        ;;
     macos)
         export CC="clang"
         export CXX="clang++"
+        # Try to build as compatible as possible.
+        export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
         # setup.py skips building readline by default, as it sets this to
         # "10.4", and then tries to avoid the broken readline in OS X 10.4.
-        export MACOSX_DEPLOYMENT_TARGET=10.13
+        export MACOSX_DEPLOYMENT_TARGET=10.8
+        # System includes bzip2 libs by default.
+        export BUILD_BZIP2="no"
         # 10.13 and newer come with LibreSSL instead of the old OpenSSL libs.
-        # But the headers are missing, so we copy them ourselves when building.
-        # For building on 10.14 you can try the hack at
-        # https://github.com/chevah/python-package/pull/136.
-        # However, this won't work on 10.15, as 2.2.7 is no longer the default.
-        LIBRESSL_VERSION="2.2.7"
+        # But 10.13 has version 2.2.7, while cryptography 2.9 requires 2.7.
+        # Therefore, we build OpenSSL for both stdlib and cryptography.
+        export BUILD_OPENSSL="yes"
         ;;
-    fbsd*|obsd*)
+    fbsd*)
         export CC="clang"
         export CXX="clang++"
-        # libffi not available in the base systems, only as port/package.
+        # libffi not available in the base system, only as port/package.
         export BUILD_LIBFFI="yes"
-        # psutil is problematic on the BSDs, we don't build it.
-        PIP_LIBRARIES="\
-            setproctitle==${SETPROCTITLE_VERSION} \
-            pycryptodomex==${PYCRYPTODOMEX_VERSION} \
-            cryptography==${CRYPTOGRAPHY_VERSION} \
-            pyOpenSSL==${PYOPENSSL_VERSION} \
-            scandir==${SCANDIR_VERSION} \
-            Cython==${CYTHON_VERSION} \
-            subprocess32==${SUBPROCESS32_VERSION} \
-            bcrypt==${BCRYPT_VERSION} \
-            "
+        # System includes bzip2 libs by default.
+        export BUILD_BZIP2="no"
         ;;
-    sles12)
-        # SLES's libffi headers from SDK do not match default-available package.
+    obsd*)
+        export CC="clang"
+        export CXX="clang++"
+        # libffi not available in the base system, only as port/package.
         export BUILD_LIBFFI="yes"
         ;;
     lnx)
@@ -453,10 +427,13 @@ case $OS in
         # includes OpenSSL libs, but for "ssl" we need OpenSSL as well.
         # To avoid linking to local libs, we build our own OpenSSL libs.
         export BUILD_OPENSSL="yes"
-        # Use PyCryptodomex' wheel, some issue not solved upstream for SLES 11.
+        # Cryptography builds on SLES 11, but fails to load _openssl.so
+        # with error "undefined symbol: __builtin_unreachable".
+        # We append "upstream" to the wheel's name to avoid it being used on
+        # Linux distros where cryptography must link to system OpenSSL libs.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
-            pycryptodomex==${PYCRYPTODOMEX_VERSION}upstream \
+            pycryptodomex==${PYCRYPTODOMEX_VERSION} \
             cryptography==${CRYPTOGRAPHY_VERSION}upstream \
             pyOpenSSL==${PYOPENSSL_VERSION} \
             scandir==${SCANDIR_VERSION} \
@@ -473,9 +450,10 @@ case $OS in
         # For Windows we don't build everything from source yet.
         export BUILD_LIBEDIT="no"
         export BUILD_GMP="no"
+        export BUILD_BZIP2="no"
         # Extra libraries are installed only using PIP.
         EXTRA_LIBRARIES=""
-        # And the patched PyCrypto is packed and uploaded to our PyPI server.
+        # A patched PyCrypto is packed and uploaded to our PyPI server.
         PIP_LIBRARIES="$PIP_LIBRARIES \
             pycrypto==${PYCRYPTO_VERSION}chevah1 \
             pywin32==${PYWIN32_VERSION} \
@@ -534,16 +512,12 @@ check_dependencies() {
 
     case $OS in
         # Debian-derived distros are similar in this regard.
-        ubuntu*|debian*|raspbian*)
+        ubuntu*)
             packages=$DEBIAN_PKGS
             check_command='dpkg --status'
             ;;
         rhel*|amzn*)
             packages=$RHEL_PKGS
-            check_command='rpm --query'
-            ;;
-        sles*)
-            packages=$SLES_PKGS
             check_command='rpm --query'
             ;;
         alpine*)
@@ -652,6 +626,12 @@ command_build() {
         (>&2 echo "Skipping building ZLIB!")
     fi
 
+    if [ "$BUILD_BZIP2" = "yes" ]; then
+        build 'bzip2' "bzip2-$BZIP2_VERSION" ${PYTHON_BUILD_FOLDER}
+    else
+        (>&2 echo "Skipping building BZIP2!")
+    fi
+
     if [ "$BUILD_LIBEDIT" = "yes" ]; then
         build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
     else
@@ -669,6 +649,13 @@ command_build() {
         export LDFLAGS="-L${INSTALL_FOLDER}/lib64/ ${LDFLAGS}"
         export PKG_CONFIG_PATH="\
             ${INSTALL_FOLDER}/lib64/pkgconfig/:${PKG_CONFIG_PATH}"
+        # Place SSL headers where they can be picked up.
+        echo "Copying OpenSSL $OPENSSL_VERSION headers..."
+        execute cp -r \
+            src/openssl/openssl-${OPENSSL_VERSION}/include/openssl \
+            ${INSTALL_FOLDER}/include/
+        # To make sure they're found, we're back to using CPPFLAGS.
+        export CPPFLAGS="$CPPFLAGS -I${INSTALL_FOLDER}/include"
     else
         (>&2 echo "Skipping building OpenSSL!")
     fi
@@ -679,17 +666,11 @@ command_build() {
                 ${PYTHON_BUILD_FOLDER}
             ;;
         macos)
-            # SSL headers are missing on macOS.
-            echo "Copying LibreSSL $LIBRESSL_VERSION headers..."
-            execute cp -r \
-                src/libressl/libressl-${LIBRESSL_VERSION}/include/openssl \
-                $INSTALL_FOLDER/include/
-            # zlib headers are missing on macOS 10.14+.
+            # The headers for zlib are missing on macOS 10.14+.
+            # Required CPPFLAGS are already set after building OpenSSL.
             echo "Copying zlib $ZLIB_VERSION headers..."
             execute cp src/zlib/zlib-${ZLIB_VERSION}/*.h \
                 $INSTALL_FOLDER/include/
-            echo "Updating CFLAGS accordingly!"
-            export CFLAGS="$CFLAGS -I${INSTALL_FOLDER}/include"
             build 'python' "Python-$PYTHON_BUILD_VERSION" ${PYTHON_BUILD_FOLDER}
             ;;
         *)

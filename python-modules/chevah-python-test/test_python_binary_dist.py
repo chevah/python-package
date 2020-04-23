@@ -97,7 +97,7 @@ def get_allowed_deps():
                 ]
         elif 'ubuntu' in chevah_os:
             ubuntu_version = chevah_os[6:]
-            # Common deps for Ubuntu 14.04/16.04/18.04 with full paths (x86_64).
+            # Common deps for supported Ubuntu LTS with full paths (x86_64).
             allowed_deps=[
                 '/lib/x86_64-linux-gnu/libc.so.6',
                 '/lib/x86_64-linux-gnu/libcrypt.so.1',
@@ -123,6 +123,7 @@ def get_allowed_deps():
                     '/usr/lib/x86_64-linux-gnu/libffi.so.6',
                 ])
             else:
+                # Tested on 20.04, might cover future releases as well.
                 allowed_deps.extend([
                     '/lib/x86_64-linux-gnu/libcrypto.so.1.1',
                     '/lib/x86_64-linux-gnu/libssl.so.1.1',

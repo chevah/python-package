@@ -684,7 +684,7 @@ detect_os() {
         Darwin)
             ARCH=$(uname -m)
             os_version_raw=$(sw_vers -productVersion)
-            # Build requires 10.13+, but the package should run on 10.8+.
+            # Tested on 10.13, but this might build on slightly older versions.
             check_os_version "macOS" 10.13 "$os_version_raw" os_version_chevah
             # Build a generic package to cover all supported versions.
             OS="macos"

@@ -6,7 +6,7 @@
 . ./functions.sh
 
 chevahbs_patch() {
-    # Patch to support compilers other than GCC and PIC.
+    # Patch to support PIC and compilers other than GCC.
     echo "Applying cc_fpic.patch:"
     execute patch -p0 < cc_fpic.patch
     case $OS in

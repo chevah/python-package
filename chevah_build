@@ -164,9 +164,9 @@ COMMON_PKGS="gcc make m4 automake libtool texinfo patch"
 DEBIAN_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
 RHEL_PKGS="$COMMON_PKGS git openssl-devel zlib-devel libffi-devel ncurses-devel"
 ALPINE_COMMON_PKGS="$COMMON_PKGS\
-    git libc-dev zlib-dev libffi-dev ncurses-dev linux-headers"
-ALPINE_LIBRESSL_PKGS="$COMMON_PKGS libressl-dev"
-ALPINE_OPENSSL_PKGS="$COMMON_PKGS openssl-dev"
+    git zlib-dev libffi-dev ncurses-dev linux-headers"
+ALPINE_LIBRESSL_PKGS="$ALPINE_COMMON_PKGS libc-dev libressl-dev"
+ALPINE_OPENSSL_PKGS="$ALPINE_COMMON_PKGS musl-dev openssl-dev"
 ARCH_PKGS="$COMMON_PKGS git libffi ncurses"
 # Windows is special, but package management is possible through Chocolatey.
 # Chocolatey's git package comes with patch included through bundling MINGW4.

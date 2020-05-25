@@ -233,7 +233,8 @@ chevahbs_install() {
             if [ "${OS%alpine*}" = "" ]; then
                 # EMUTRAMP required for full functionality under a grsec kernel.
                 # Don't use "paxmark", file attributes will be lost when tar'ed.
-                # Needed in 3.11 too, compat tests crash w/ signal 11 otherwise.
+                # Needed with non-grsec kernels as well, otherwise PAM-related
+                # compat tests crash with signal 11 (tested on Alpine 3.11).
                 execute paxctl -cE python
             fi
             execute $MAKE install DESTDIR=$INSTALL_FOLDER

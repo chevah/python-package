@@ -230,9 +230,10 @@ chevahbs_install() {
                 sed "s|# utf_8 codec|# utf_8 codec\n    'cp65001'            : 'utf_8',|" < $destination/lib/encodings/aliases.old > $destination/lib/encodings/aliases.py
             ;;
         *)
-            if [ "${OS%alpine37}" = "" ]; then
+            if [ "${OS%alpine*}" = "" ]; then
                 # EMUTRAMP required for full functionality under a grsec kernel.
                 # Don't use "paxmark", file attributes will be lost when tar'ed.
+                # Needed in 3.11 too, compat tests crash w/ signal 11 otherwise.
                 execute paxctl -cE python
             fi
             execute $MAKE install DESTDIR=$INSTALL_FOLDER

@@ -154,7 +154,6 @@ def get_allowed_deps():
                 '/lib/ld-musl-x86_64.so.1',
                 '/lib/libc.musl-x86_64.so.1',
                 '/lib/libz.so.1',
-                '/usr/lib/libffi.so.6',
                 '/usr/lib/libncursesw.so.6',
                 ]
             if alpine_version in [ "36", "37", "38" ]:
@@ -162,12 +161,21 @@ def get_allowed_deps():
                 allowed_deps.extend([
                     '/lib/libcrypto.so.42',
                     '/lib/libssl.so.44',
+                    '/usr/lib/libffi.so.6',
                     ])
-            else:
+            elif alpine_version in [ "39", "310", "311" ]:
                 # Alpine Linux 3.9 reverted to OpenSSL by default.
                 allowed_deps.extend([
                     '/lib/libcrypto.so.1',
                     '/lib/libssl.so.1',
+                    '/usr/lib/libffi.so.6',
+                    ])
+            else:
+                # Alpine Linux 3.12+ has FFI 3.3.
+                allowed_deps.extend([
+                    '/lib/libcrypto.so.1',
+                    '/lib/libssl.so.1',
+                    '/usr/lib/libffi.so.7',
                     ])
     elif platform_system == 'aix':
         # List of deps with full paths for AIX 5.3 with OpenSSL 1.0.2k.

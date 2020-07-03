@@ -22,11 +22,18 @@ chevahbs_configure() {
     fi
     case $OS in
         raspbian*)
-            CONF_OPTS="$CONF_OPTS --build=armcortexa8neon-unknown-linux-gnueabihf --with-pic"
+            CONF_OPTS="$CONF_OPTS --build=armcortexa8neon-unknown-linux-gnueabihf"
             ;;
         hpux*)
             # Parallel builds frequently fail for GMP, so we use gmake here.
             MAKE="gmake"
+            ;;
+    esac
+    case $ARCH in
+        arm64)
+            # For static builds, --with-pic should always be enabled.
+            # More at https://bugs.gentoo.org/show_bug.cgi?id=707332.
+            CONF_OPTS="$CONF_OPTS --with-pic"
             ;;
     esac
     execute ./configure --prefix="" $CONF_OPTS

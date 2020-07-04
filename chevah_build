@@ -441,20 +441,21 @@ case $OS in
                 # Latest cryptography builds on SLES 11, but fails to load
                 # _openssl.so: "undefined symbol: __builtin_unreachable".
                 # More at https://github.com/pyca/cryptography/issues/3812.
-                # GCC 5.2 from SLE11 SP4 SDK repos might solve this,
-                # but for now we use the upstream wheel.
+                # GCC 5.2 from SLE11 SP4 SDK repos might solve this, but
+                # for now we use the upstream wheel with a custom name, so
+                # that it doesn't get picked up on the other Linux distros.
                 PIP_LIBRARIES="\
                     $PIP_LIBRARIES \
                     cryptography==${CRYPTOGRAPHY_VERSION}upstream \
                     "
                 ;;
             arm64)
-                # Our OpenSSL libs are not found on arm64 when built with pip.
-                # As a workaround, we build it from EXTRA_LIBRARIES.
-                EXTRA_LIBRARIES="\
-                    python-modules/cffi-${CFFI_VERSION} \
-                    python-modules/pycrypto-${PYCRYPTO_VERSION} \
-                    python-modules/cryptography-${CRYPTOGRAPHY_VERSION} \
+                # On arm64, we use a more recent distro, with a decent gcc.
+                # Beware building this through pip against own OpenSSL libs
+                # requires the "-Wl,-rpath' voodoo when augmenting $LD_FLAGS.
+                PIP_LIBRARIES="\
+                    $PIP_LIBRARIES \
+                    cryptography==${CRYPTOGRAPHY_VERSION} \
                     "
                 ;;
         esac
@@ -662,7 +663,9 @@ command_build() {
 
     if [ "$BUILD_OPENSSL" = "yes" ]; then
         build 'openssl' "openssl-$OPENSSL_VERSION" ${PYTHON_BUILD_FOLDER}
-        export LDFLAGS="-L${INSTALL_FOLDER}/lib64/ ${LDFLAGS}"
+        # The '-Wl,-rpath' voodoo is needed when building cryptography w/ pip.
+        export LDFLAGS="-L${INSTALL_FOLDER}/lib64/ \
+            -Wl,-rpath,${INSTALL_FOLDER}/lib64/ ${LDFLAGS}"
         export PKG_CONFIG_PATH="\
             ${INSTALL_FOLDER}/lib64/pkgconfig/:${PKG_CONFIG_PATH}"
         # Place SSL headers where they can be picked up.

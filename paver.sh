@@ -556,10 +556,10 @@ check_linux_glibc() {
     # Beware we haven't normalized arches yet.
     case "$ARCH" in
         "amd64"|"x86_64"|"x64")
-            local supported_glibc_version=11
+            local supported_glibc2_version=11
             ;;
         "aarch64"|"arm64")
-            local supported_glibc_version=23
+            local supported_glibc2_version=23
             ;;
     esac
 
@@ -599,9 +599,9 @@ check_linux_glibc() {
     # We pass here because:
     #   1. Building python-package should work with an older glibc version.
     #   2. Our generic "lnx" runtime might work with a slightly older glibc 2.
-    if [ ${glibc_version_array[1]} -lt ${supported_glibc_version} ]; then
+    if [ ${glibc_version_array[1]} -lt ${supported_glibc2_version} ]; then
         (>&2 echo -n "Detected glibc version: ${glibc_version}. Versions older")
-        (>&2 echo " than 2.${supported_glibc_version} were NOT tested!")
+        (>&2 echo " than 2.${supported_glibc2_version} were NOT tested!")
 
     fi
 
@@ -671,7 +671,7 @@ detect_os() {
                         ;;
                     ubuntu|ubuntu-core)
                         os_version_raw="$VERSION_ID"
-                        # Versions with older OpenSSL libs, use generic build.
+                        # Versions with older OpenSSL libs use generic build.
                         check_os_version "$distro_fancy_name" 18.04 \
                             "$os_version_raw" os_version_chevah
                         # Only LTS versions are supported. If it doesn't end in

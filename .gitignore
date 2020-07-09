@@ -1,5 +1,4 @@
+/build-python-package
+/cache
 /build/
 /dist/
-/DEFAULT_VALUES
-/build-*
-/cache

@@ -139,15 +139,20 @@ BUILD_FOLDER='build'
 # Import shared code.
 . ./functions.sh
 
-# Get default values from main paver script.
-./paver.sh detect_os
+# Get Chevah variables from main brink script.
+# Error output is not interesting as long as exit code is 0,
+# as there might be warnings related to running the generic Linux build.
+CHEVAH_VARS=$(./brink.sh output_chevah_vars 2>/dev/null)
 if [ "$?" -ne 0 ]; then
+    (>&2 echo 'Could not get CHEVAH_* variables from ./brink.sh!')
     exit 100
 fi
 
-PYTHON_VERSION=`cut -d' ' -f 2 DEFAULT_VALUES`
-OS=`cut -d' ' -f 3 DEFAULT_VALUES`
-ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
+IFS=' ' read -a chevah_vars_array <<< "$CHEVAH_VARS"
+
+PYTHON_VERSION=${chevah_vars_array[0]}
+OS=${chevah_vars_array[1]}
+ARCH=${chevah_vars_array[2]}
 
 # List of OS packages required for building Python/pyOpenSSL/cryptography etc.
 # Lately we don't install anything automatically, we just check for the

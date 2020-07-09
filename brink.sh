@@ -613,8 +613,8 @@ check_linux_glibc() {
     local glibc_version
     local glibc_version_array
 
-    echo "Unsupported Linux distribution detected!"
-    echo "To get you going, we'll try to treat it as generic Linux..."
+    (>&2 echo -n "Couldn't detect a supported distribution. ")
+    (>&2 echo "Trying to treat it as generic Linux...")
 
     set +o errexit
 
@@ -876,6 +876,11 @@ fi
 
 if [ "$COMMAND" = "get_agent" ] ; then
     get_binary_dist $2 "$BINARY_DIST_URI/agent"
+    exit 0
+fi
+
+if [ "$COMMAND" = "output_chevah_vars" ] ; then
+    echo "$CHEVAH_PYTHON $CHEVAH_OS $CHEVAH_ARCH"
     exit 0
 fi
 

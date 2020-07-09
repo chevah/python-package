@@ -22,7 +22,7 @@ OPENSSL_VERSION="1.1.1g"
 SQLITE_VERSION="3.30.1"
 PYSQLITE_VERSION="2.8.3"
 # These are used by get-pip.py.
-PIP_VERSION="9.0.3"
+PIP_VERSION="20.1.1"
 # Version 44.x is the last one to support Python 2.7.
 # More at https://github.com/pypa/setuptools/pull/1955.
 SETUPTOOLS_VERSION="44.1.0"

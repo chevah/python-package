@@ -443,7 +443,7 @@ case $OS in
         EXTRA_LIBRARIES=""
         # A patched PyCrypto is packed and uploaded to our PyPI server.
         PIP_LIBRARIES="$PIP_LIBRARIES \
-            pycrypto==${PYCRYPTO_VERSION}chevah1 \
+            pycrypto==${PYCRYPTO_VERSION} \
             pywin32==${PYWIN32_VERSION} \
             gmpy2==${GMPY2_VERSION} \
             "

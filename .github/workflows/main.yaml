@@ -101,7 +101,7 @@ jobs:
 
     - name: Create build env
       run: |
-        ./brink.sh detect_os
+        sh ./brink.sh detect_os
 
     - name: Build Python
       run: |

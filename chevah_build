@@ -142,7 +142,7 @@ BUILD_FOLDER='build'
 # Get Chevah variables from main brink script.
 # Error output is not interesting as long as exit code is 0, because
 # there might be warnings related to running the generic Linux build.
-CHEVAH_VARS=$(./brink.sh output_chevah_vars 2>/dev/null)
+CHEVAH_VARS=$(bash ./brink.sh output_chevah_vars 2>/dev/null)
 if [ "$?" -ne 0 ]; then
     (>&2 echo 'Could not get CHEVAH_* variables from ./brink.sh!')
     exit 100

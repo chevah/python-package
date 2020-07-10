@@ -879,11 +879,6 @@ if [ "$COMMAND" = "get_agent" ] ; then
     exit 0
 fi
 
-if [ "$COMMAND" = "output_chevah_vars" ] ; then
-    echo "$CHEVAH_PYTHON $CHEVAH_OS $CHEVAH_ARCH"
-    exit 0
-fi
-
 check_source_folder
 copy_python
 install_dependencies

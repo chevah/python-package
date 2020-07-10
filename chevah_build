@@ -139,7 +139,7 @@ BUILD_FOLDER='build'
 # Import shared code.
 . ./functions.sh
 # Import build environmet variables.
-. ./build/BUILD_ENV_VARS
+. ./build-python-package/BUILD_ENV_VARS
 
 # List of OS packages required for building Python/pyOpenSSL/cryptography etc.
 # Lately we don't install anything automatically, we just check for the

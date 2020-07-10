@@ -46,7 +46,7 @@ CRYPTOGRAPHY_VERSION="2.9.1"
 SETPROCTITLE_VERSION="1.1.10"
 SCANDIR_VERSION="1.10.0"
 PSUTIL_VERSION="5.7.0"
-CYTHON_VERSION="0.29.14"
+CYTHON_VERSION="0.29.21"
 SUBPROCESS32_VERSION="3.5.4"
 PYWIN32_VERSION="227"
 GMPY2_VERSION="2.0.8"
@@ -446,9 +446,12 @@ case $OS in
             pycrypto==${PYCRYPTO_VERSION}chevah1 \
             pywin32==${PYWIN32_VERSION} \
             gmpy2==${GMPY2_VERSION} \
-            Cython==${CYTHON_VERSION} \
-            subprocess32==${SUBPROCESS32_VERSION} \
-            bcrypt==${BCRYPT_VERSION} \
+            "
+        ;;
+    *)
+        PIP_LIBRARIES="${PIP_LIBRARIES} \
+            setproctitle==${SETPROCTITLE_VERSION} \
+            psutil==${PSUTIL_VERSION}
             "
         ;;
 esac

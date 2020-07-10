@@ -5,6 +5,7 @@ Build script for Python binary distribution.
 """
 import compileall
 import os
+import py_compile
 
 from brink.pavement_commons import (
     buildbot_list,

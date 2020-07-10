@@ -39,7 +39,11 @@ jobs:
       run: |
         sudo apt-get install libncurses5-dev
 
-    - name: Build
+    - name: Create build env
+      run: |
+        ./brink.sh detect_os
+
+    - name: Build Python
       run: |
         ./chevah_build build
 
@@ -65,7 +69,11 @@ jobs:
     - name: Fail on skip gha
       run: git log -1 --pretty=format:"%s" ${{ toJSON(github.event.after) }} | grep -v 'skip-gha'
 
-    - name: Build
+    - name: Create build env
+      run: |
+        ./brink.sh detect_os
+
+    - name: Build Python
       run: |
         ./chevah_build build
 
@@ -91,7 +99,11 @@ jobs:
     - name: Fail on skip gha
       run: git log -1 --pretty=format:"%s" ${{ toJSON(github.event.after) }} | grep -v 'skip-gha'
 
-    - name: Build
+    - name: Create build env
+      run: |
+        ./brink.sh detect_os
+
+    - name: Build Python
       run: |
         sh ./chevah_build build
 

@@ -140,8 +140,8 @@ BUILD_FOLDER='build'
 . ./functions.sh
 
 # Get Chevah variables from main brink script.
-# Error output is not interesting as long as exit code is 0,
-# as there might be warnings related to running the generic Linux build.
+# Error output is not interesting as long as exit code is 0, because
+# there might be warnings related to running the generic Linux build.
 CHEVAH_VARS=$(./brink.sh output_chevah_vars 2>/dev/null)
 if [ "$?" -ne 0 ]; then
     (>&2 echo 'Could not get CHEVAH_* variables from ./brink.sh!')
@@ -1008,18 +1008,18 @@ command_test_compat() {
     execute rm -rf compat
     execute git clone https://github.com/chevah/compat.git --depth=1 -b master
     execute pushd compat
-    # Copy over the latest paver.sh, as some changes might require it.
-    execute cp ../../paver.sh ./
+    # Copy over the latest brink stuff, as some changes might require it.
+    execute cp -v ../../brink.{conf,sh} ./
     # We patch the Python version to match the one that we have just built
     # and copy it in cache so that it will be picked up by the new build.
-    execute echo -e "\nPYTHON_CONFIGURATION=default@${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" >> paver.conf
+    execute echo -e "\nPYTHON_CONFIGURATION=default@${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" >> brink.conf
     # Populate the cache with the latest version so that we don't have to
     # download it.
     execute mkdir cache
     execute cp -r ../$LOCAL_PYTHON_BINARY_DIST cache/
     # Some tests might fail due to causes which are not related to python.
-    execute ./paver.sh deps
-    execute ./paver.sh test_ci
+    execute ./brink.sh deps
+    execute ./brink.sh test_ci
     execute popd
 
     execute popd

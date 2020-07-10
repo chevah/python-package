@@ -991,9 +991,8 @@ help_text_test_compat=\
 command_test_compat() {
 
     # compat is not suported on these platforms, so no need to test.
-    # fbsd11 failures seem trivial to fix, though.
     case "$OS-$ARCH" in
-        fbsd11-*|sol112-sparc)
+        sol112-sparc)
             (>&2 echo -e "\tCompat tests not supported on this platform.")
             return
             ;;
@@ -1009,7 +1008,7 @@ command_test_compat() {
     execute git clone https://github.com/chevah/compat.git --depth=1 -b master
     execute pushd compat
     # Copy over the latest brink stuff, as some changes might require it.
-    execute cp -v ../../brink.{conf,sh} ./
+    execute cp ../../brink.{conf,sh} ./
     # We patch the Python version to match the one that we have just built
     # and copy it in cache so that it will be picked up by the new build.
     execute echo -e "\nPYTHON_CONFIGURATION=default@${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" >> brink.conf

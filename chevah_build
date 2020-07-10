@@ -1017,6 +1017,7 @@ command_test_compat() {
     # download it.
     execute mkdir cache
     execute cp -r ../$LOCAL_PYTHON_BINARY_DIST cache/
+    unset CHEVAH_CACHE
     # Some tests might fail due to causes which are not related to python.
     execute ./brink.sh deps
     execute ./brink.sh test_ci

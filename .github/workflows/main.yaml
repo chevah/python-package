@@ -22,7 +22,7 @@ jobs:
   ubuntu-20-04:
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Make sure we don't have multiple job
@@ -53,15 +53,12 @@ jobs:
     - name: Test Compat
       run: ./chevah_build test_compat
 
+
   macos-10-15:
     runs-on: macos-10.15
-    timeout-minutes: 15
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    timeout-minutes: 50
     steps:
-    # Make sure we don't have multiple job
     - uses: chevah/auto-cancel-redundant-job@v1
-
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
       with:
         fetch-depth: 2
@@ -81,3 +78,29 @@ jobs:
 
     - name: Test Compat
       run: ./chevah_build test_compat
+
+
+  windows-2019:
+    runs-on: windows-2019
+    timeout-minutes: 50
+    steps:
+    - uses: chevah/auto-cancel-redundant-job@v1
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 2
+
+    - name: Fail on skip ci
+      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.event.after) }} | grep -v 'skip-ci'
+
+    - name: Fail on skip gha
+      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.event.after) }} | grep -v 'skip-gha'
+
+    - name: Build
+      run: |
+        sh ./chevah_build build
+
+    - name: Test Python
+      run: sh ./chevah_build test
+
+    - name: Test Compat
+      run: sh ./chevah_build test_compat

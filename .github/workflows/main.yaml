@@ -39,6 +39,10 @@ jobs:
     - name: Fail on skip gha
       run: git log -1 --pretty=format:"%s" ${{ toJSON(github.event.after) }} | grep -v 'skip-gha'
 
+    - name: Deps
+      run: |
+        sudo apt-get install libncurses5-dev
+
     - name: Build
       run: |
         ./chevah_build build

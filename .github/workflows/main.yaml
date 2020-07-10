@@ -72,6 +72,7 @@ jobs:
     - name: Create build env
       run: |
         ./brink.sh detect_os
+        brew uninstall readline
 
     - name: Build Python
       run: |

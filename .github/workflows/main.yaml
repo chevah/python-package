@@ -72,7 +72,7 @@ jobs:
     - name: Create build env
       run: |
         # There are many packages depending on readline.
-        brew uninstall --ignore-dependencies readline
+        brew uninstall --ignore-dependencies readline gettext
         ./brink.sh detect_os
 
     - name: Build Python

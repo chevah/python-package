@@ -1,0 +1,20 @@
+#
+# Experimental Travis-CI
+#
+# For now, the build matrix has a single member: linux-arm64
+#
+
+language: c
+
+arch:
+  - arm64
+
+os:
+  - linux
+
+install: skip
+
+script:
+  - ./chevah_build build
+  - ./chevah_build test
+  - ./chevah_build test_compat

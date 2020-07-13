@@ -71,8 +71,8 @@ jobs:
 
     - name: Create build env
       run: |
-        # There are many packages depending on readline.
-        brew uninstall --ignore-dependencies readline
+        # Uninstall Homebrew before building.
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
         ./brink.sh detect_os
 
     - name: Build Python

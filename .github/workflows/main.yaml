@@ -41,7 +41,7 @@ jobs:
 
     - name: Create build env
       run: |
-        ./brink.sh detect_os
+        ./.sh detect_os
 
     - name: Build Python
       run: |
@@ -53,6 +53,9 @@ jobs:
     - name: Test Compat
       run: ./chevah_build test_compat
 
+    - name: Tmate debug on failure
+      if: ${{ failure() }}
+      uses: mxschmitt/action-tmate@v2
 
   macos-10-15:
     runs-on: macos-10.15
@@ -85,6 +88,9 @@ jobs:
     - name: Test Compat
       run: ./chevah_build test_compat
 
+    - name: Tmate debug on failure
+      if: ${{ failure() }}
+      uses: mxschmitt/action-tmate@v2
 
   windows-2019:
     runs-on: windows-2019

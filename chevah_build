@@ -87,7 +87,7 @@ EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/bcrypt-${BCRYPT_VERSION} \
     "
 
-# List of python modules installed using pip on all platforms
+# List of Python modules installed using pip on all platforms.
 PIP_LIBRARIES="\
     pycryptodomex==${PYCRYPTODOMEX_VERSION} \
     cryptography==${CRYPTOGRAPHY_VERSION} \
@@ -222,6 +222,19 @@ case $OS in
         export BUILD_LIBFFI="yes"
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
+        if [ "${OS%aix53}" = "" ]; then
+            # psutil doesn't build on AIX 5.3, so we do without it.
+            PIP_LIBRARIES="\
+                setproctitle==${SETPROCTITLE_VERSION} \
+                pycryptodomex==${PYCRYPTODOMEX_VERSION} \
+                cryptography==${CRYPTOGRAPHY_VERSION} \
+                pyOpenSSL==${PYOPENSSL_VERSION} \
+                scandir==${SCANDIR_VERSION} \
+                Cython==${CYTHON_VERSION} \
+                subprocess32==${SUBPROCESS32_VERSION} \
+                bcrypt==${BCRYPT_VERSION} \
+                "
+        fi
         ;;
     sol*)
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
@@ -407,6 +420,21 @@ case $OS in
         # includes OpenSSL libs, but for "ssl" we need OpenSSL as well.
         # To avoid linking to local libs, we build our own OpenSSL libs.
         export BUILD_OPENSSL="yes"
+        # Cryptography builds on SLES 11, but fails to load _openssl.so
+        # with error "undefined symbol: __builtin_unreachable".
+        # We append "upstream" to the wheel's name to avoid it being used on
+        # Linux distros where cryptography must link to system OpenSSL libs.
+        PIP_LIBRARIES="\
+            setproctitle==${SETPROCTITLE_VERSION} \
+            pycryptodomex==${PYCRYPTODOMEX_VERSION} \
+            cryptography==${CRYPTOGRAPHY_VERSION}upstream \
+            pyOpenSSL==${PYOPENSSL_VERSION} \
+            scandir==${SCANDIR_VERSION} \
+            psutil==${PSUTIL_VERSION} \
+            Cython==${CYTHON_VERSION} \
+            subprocess32==${SUBPROCESS32_VERSION} \
+            bcrypt==${BCRYPT_VERSION} \
+            "
         ;;
     win)
         # On Windows, python executable is installed at a different path.
@@ -420,7 +448,7 @@ case $OS in
         EXTRA_LIBRARIES=""
         # A patched PyCrypto is packed and uploaded to our PyPI server.
         PIP_LIBRARIES="$PIP_LIBRARIES \
-            pycrypto==${PYCRYPTO_VERSION} \
+            pycrypto==${PYCRYPTO_VERSION}chevah1 \
             pywin32==${PYWIN32_VERSION} \
             gmpy2==${GMPY2_VERSION} \
             "
@@ -973,7 +1001,8 @@ command_test_compat() {
     # download it.
     execute mkdir cache
     execute cp -r ../$LOCAL_PYTHON_BINARY_DIST cache/
-    unset CHEVAH_CACHE
+    # Make sure everything happens from scratch in the current dir.
+    unset CHEVAH_CACHE CHEVAH_BUILD
     # Some tests might fail due to causes which are not related to python.
     execute ./brink.sh deps
     execute ./brink.sh test_ci

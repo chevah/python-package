@@ -93,14 +93,6 @@ jobs:
 
     # Make the OS as close as possible to a standard one.
     # But make sure we have the required dev libraries.
-    - name: Remove Homebrew
-      run: |
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-
-    - name: Remove libintl leftover
-      run: |
-        /bin/rm /usr/local/opt/gettext/lib/libintl.8.dylib
-
     - name: Create build env
       run: |
         ./brink.sh detect_os

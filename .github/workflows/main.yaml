@@ -4,6 +4,8 @@
 # Available VMs. Don't use `-latest` as we want to pin an OS version.
 # https://help.github.com/en/actions/reference/virtual-environments-for-github-hosted-runners
 #
+# When running a tmate debug session you might need to increase the
+# timeout-minutes for each build.
 name: GitHub-CI
 
 on:
@@ -12,6 +14,8 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  TMATE_DEBUG: 'no'
 
 jobs:
 
@@ -29,11 +33,18 @@ jobs:
       with:
         fetch-depth: 2
 
+    - name: Cache build
+      uses: actions/cache@v2
+      with:
+        path: |
+          build-python-package
+        key: ${{ runner.os }}-${{ hashFiles('pavement.py') }}
+
     - name: Fail on skip ci
-      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.event.after) }} | grep -v 'skip-ci'
+      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-ci'
 
     - name: Fail on skip gha
-      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.event.after) }} | grep -v 'skip-gha'
+      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-gha'
 
     - name: Deps
       run: |
@@ -41,7 +52,7 @@ jobs:
 
     - name: Create build env
       run: |
-        ./.sh detect_os
+        ./brink.sh detect_os
 
     - name: Build Python
       run: |
@@ -54,23 +65,30 @@ jobs:
       run: ./chevah_build test_compat
 
     - name: Tmate debug on failure
-      if: ${{ failure() }}
+      if: failure() && env.TMATE_DEBUG == 'yes'
       uses: mxschmitt/action-tmate@v2
 
   macos-10-15:
     runs-on: macos-10.15
-    timeout-minutes: 50
+    timeout-minutes: 30
     steps:
     - uses: chevah/auto-cancel-redundant-job@v1
     - uses: actions/checkout@v2
       with:
         fetch-depth: 2
 
+    - name: Cache build
+      uses: actions/cache@v2
+      with:
+        path: |
+          build-python-package
+        key: ${{ runner.os }}-${{ hashFiles('pavement.py') }}
+
     - name: Fail on skip ci
-      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.event.after) }} | grep -v 'skip-ci'
+      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-ci'
 
     - name: Fail on skip gha
-      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.event.after) }} | grep -v 'skip-gha'
+      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-gha'
 
     - name: Create build env
       run: |
@@ -89,23 +107,31 @@ jobs:
       run: ./chevah_build test_compat
 
     - name: Tmate debug on failure
-      if: ${{ failure() }}
+      if: failure() && env.TMATE_DEBUG == 'yes'
       uses: mxschmitt/action-tmate@v2
+
 
   windows-2019:
     runs-on: windows-2019
-    timeout-minutes: 50
+    timeout-minutes: 20
     steps:
     - uses: chevah/auto-cancel-redundant-job@v1
     - uses: actions/checkout@v2
       with:
         fetch-depth: 2
 
+    - name: Cache build
+      uses: actions/cache@v2
+      with:
+        path: |
+          build-python-package
+        key: ${{ runner.os }}-${{ hashFiles('pavement.py') }}
+
     - name: Fail on skip ci
-      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.event.after) }} | grep -v 'skip-ci'
+      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-ci'
 
     - name: Fail on skip gha
-      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.event.after) }} | grep -v 'skip-gha'
+      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-gha'
 
     - name: Create build env
       run: |

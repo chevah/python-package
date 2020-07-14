@@ -46,7 +46,7 @@ jobs:
     - name: Fail on skip gha
       run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-gha'
 
-    - name: Deps
+    - name: Prepare OS
       run: |
         sudo apt-get install libncurses5-dev
 
@@ -67,6 +67,7 @@ jobs:
     - name: Tmate debug on failure
       if: failure() && env.TMATE_DEBUG == 'yes'
       uses: mxschmitt/action-tmate@v2
+
 
   macos-10-15:
     runs-on: macos-10.15
@@ -90,10 +91,14 @@ jobs:
     - name: Fail on skip gha
       run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-gha'
 
+    # Make the OS as close as possible to a standard one.
+    # But make sure we have the required dev libraries.
+    - name: Prepare OS
+      run: |
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+
     - name: Create build env
       run: |
-        # Uninstall Homebrew before building.
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
         ./brink.sh detect_os
 
     - name: Build Python

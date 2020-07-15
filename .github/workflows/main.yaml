@@ -137,6 +137,11 @@ jobs:
     - name: Fail on skip gha
       run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-gha'
 
+    # Add packages needed to build our patched pycrypto.
+    - name: Prepare OS
+      run: |
+        chocolatey install -y make vcpython27
+
     - name: Create build env
       run: |
         sh ./brink.sh detect_os

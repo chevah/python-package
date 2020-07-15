@@ -91,8 +91,11 @@ jobs:
     - name: Fail on skip gha
       run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-gha'
 
-    # Make the OS as close as possible to a standard one.
-    # But make sure we have the required dev libraries.
+    # Avoid linking to Homebrew's libintl.
+    - name: Prepare OS
+      run: |
+        sudo rm -f /usr//local/include/libintl.h
+
     - name: Create build env
       run: |
         ./brink.sh detect_os

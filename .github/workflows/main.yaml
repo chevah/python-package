@@ -91,10 +91,10 @@ jobs:
     - name: Fail on skip gha
       run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-gha'
 
-    # Avoid linking to Homebrew's libintl by uninstalling Homebrew first.
+    # Avoid linking to Homebrew's libintl.
     - name: Prepare OS
       run: |
-        /bin/bash -c "$(/usr/bin/curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall.sh)"
+        find /usr/local -iname 'libintl.h' -exec sudo rm -f {} +
 
     - name: Create build env
       run: |

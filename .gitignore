@@ -2,4 +2,4 @@
 /cache
 /build/
 /dist/
-BUILD_ENV_VARS
+/BUILD_ENV_VARS

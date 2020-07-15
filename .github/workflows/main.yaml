@@ -94,7 +94,8 @@ jobs:
     # Avoid linking to Homebrew's libintl.
     - name: Prepare OS
       run: |
-        find /usr/local -iname 'libintl.h' -exec sudo rm -f {} +
+        sudo find /usr/local -iname 'libintl*' -exec rm -f {} +
+        sudo rm -f /usr/local/bin/{wget,curl,git}
 
     - name: Create build env
       run: |

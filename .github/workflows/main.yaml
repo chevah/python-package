@@ -15,7 +15,7 @@ on:
     branches: [ master ]
 
 env:
-  TMATE_DEBUG: 'yes'
+  TMATE_DEBUG: 'no'
 
 jobs:
 
@@ -71,7 +71,7 @@ jobs:
 
   macos-10-15:
     runs-on: macos-10.15
-    timeout-minutes: 60
+    timeout-minutes: 30
     steps:
     - uses: chevah/auto-cancel-redundant-job@v1
     - uses: actions/checkout@v2
@@ -91,7 +91,7 @@ jobs:
     - name: Fail on skip gha
       run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-gha'
 
-    # Avoid linking to Homebrew's libintl.
+    # Avoid linking to Homebrew's libintl. We can use needed tools from /usr/bin too.
     - name: Prepare OS
       run: |
         sudo find /usr/local -iname 'libintl*' -exec rm -f {} +
@@ -118,7 +118,7 @@ jobs:
 
   windows-2019:
     runs-on: windows-2019
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
     - uses: chevah/auto-cancel-redundant-job@v1
     - uses: actions/checkout@v2

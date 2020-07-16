@@ -15,6 +15,7 @@ os:
 install: skip
 
 script:
+  - ./brink.sh detect_os
   - ./chevah_build build
   - ./chevah_build test
   - ./chevah_build test_compat

@@ -1,11 +1,12 @@
 #
-# GitHub actions to build python and test the result.
+# GitHub actions to build and test python-package.
 #
-# Available VMs. Don't use `-latest` as we want to pin an OS version.
+# Don't use `-latest` for targeted VMs, pin specific OS versions instead.
 # https://help.github.com/en/actions/reference/virtual-environments-for-github-hosted-runners
 #
-# When running a tmate debug session you might need to increase the
-# timeout-minutes for each build.
+# When setting up for a tmate debug session, you might need to increase the
+# timeout-minutes for each build. Else you get kicked out after the timeout.
+
 name: GitHub-CI
 
 on:
@@ -25,14 +26,15 @@ jobs:
     timeout-minutes: 20
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Make sure we don't have multiple job
+    # Make sure there are no concurrent jobs
     - uses: chevah/auto-cancel-redundant-job@v1
 
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    # Checks-out the repository under $GITHUB_WORKSPACE, so the job can access it
     - uses: actions/checkout@v2
       with:
         fetch-depth: 2
 
+    # Caches needed files for a faster deps phase.
     - name: Cache build
       uses: actions/cache@v2
       with:
@@ -40,6 +42,7 @@ jobs:
           build-python-package
         key: ${{ runner.os }}-${{ hashFiles('pavement.py') }}
 
+    # Do not run when the following strings are used in the commit message.
     - name: Fail on skip ci
       run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-ci'
 
@@ -47,16 +50,13 @@ jobs:
       run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-gha'
 
     - name: Prepare OS
-      run: |
-        sudo apt-get install libncurses5-dev
+      run: sudo apt-get install libncurses5-dev
 
-    - name: Create build env
-      run: |
-        ./brink.sh detect_os
+    - name: Download needed deps for the detected OS
+      run: ./brink.sh detect_os
 
     - name: Build Python
-      run: |
-        ./chevah_build build
+      run: ./chevah_build build
 
     - name: Test Python
       run: ./chevah_build test
@@ -64,6 +64,7 @@ jobs:
     - name: Test Compat
       run: ./chevah_build test_compat
 
+    # If one of the above steps fails, fire up tmate for remote debugging.
     - name: Tmate debug on failure
       if: failure() && env.TMATE_DEBUG == 'yes'
       uses: mxschmitt/action-tmate@v2
@@ -91,19 +92,17 @@ jobs:
     - name: Fail on skip gha
       run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-gha'
 
-    # Avoid linking to Homebrew's libintl. We can use needed tools from /usr/bin too.
+    # Avoid linking to Homebrew's libintl. We can use needed tools from /usr/bin.
     - name: Prepare OS
       run: |
         sudo find /usr/local -iname 'libintl*' -exec rm -f {} +
         sudo rm -f /usr/local/bin/{wget,curl,git}
 
-    - name: Create build env
-      run: |
-        ./brink.sh detect_os
+    - name: Download needed deps for the detected OS
+      run: ./brink.sh detect_os
 
     - name: Build Python
-      run: |
-        ./chevah_build build
+      run: ./chevah_build build
 
     - name: Test Python
       run: ./chevah_build test
@@ -143,16 +142,14 @@ jobs:
       run: |
         chocolatey install -y make vcpython27
 
-    - name: Create build env
-      run: |
-        sh ./brink.sh detect_os
+    - name: Download needed deps for the detected OS
+      run: ./brink.sh detect_os
 
     - name: Build Python
-      run: |
-        sh ./chevah_build build
+      run: ./chevah_build build
 
     - name: Test Python
-      run: sh ./chevah_build test
+      run: ./chevah_build test
 
     - name: Test Compat
-      run: sh ./chevah_build test_compat
+      run: ./chevah_build test_compat

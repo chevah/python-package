@@ -87,7 +87,7 @@ EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/bcrypt-${BCRYPT_VERSION} \
     "
 
-# List of Python modules installed using pip on all platforms.
+# List of default Python modules installed using pip.
 PIP_LIBRARIES="\
     pycryptodomex==${PYCRYPTODOMEX_VERSION} \
     cryptography==${CRYPTOGRAPHY_VERSION} \
@@ -139,7 +139,7 @@ BUILD_FOLDER='build'
 # Import shared code.
 . ./functions.sh
 
-# Import build environment variables.
+# Import build environment variables found through "detect_os" command option.
 . ./BUILD_ENV_VARS
 
 # List of OS packages required for building Python/pyOpenSSL/cryptography etc.
@@ -167,9 +167,9 @@ CHOCO_PKGS="vcpython27 make git"
 
 # In Solaris and AIX we use $ARCH to choose if we build a 32bit or 64bit
 # package. This way we are able to force a 32bit build on a 64bit machine,
-# for example by exporting ARCH in paver.sh as "x86" instead of "x64" or
+# for example by exporting ARCH in brink.sh as "x86" instead of "x64" or
 # "ppc" instead of "ppc64". Except on HP-UX, where we always do 32bit builds.
-# We also use $ARCH when building the statically compiled libffi and GMP.
+# $ARCH is also used when statically building libffi/GMP and for testing.
 # $OS is used when patching/configuring/building/testing.
 export ARCH
 export OS
@@ -384,7 +384,7 @@ case $OS in
     macos)
         export CC="clang"
         export CXX="clang++"
-        # Try to build as compatible as it makes sense.
+        # Build as compatible as it makes sense. See brink.sh for the reason.
         export CFLAGS="$CFLAGS -mmacosx-version-min=10.12"
         # setup.py skips building readline by default, as it sets this to
         # "10.4", and then tries to avoid the broken readline in OS X 10.4.
@@ -992,7 +992,7 @@ command_test_compat() {
     execute rm -rf compat
     execute git clone https://github.com/chevah/compat.git --depth=1 -b master
     execute pushd compat
-    # Copy over the latest brink stuff, as some changes might require it.
+    # Copy over current brink stuff, as some changes might require it.
     execute cp ../../brink.{conf,sh} ./
     # We patch the Python version to match the one that we have just built
     # and copy it in cache so that it will be picked up by the new build.
@@ -1001,7 +1001,7 @@ command_test_compat() {
     # download it.
     execute mkdir cache
     execute cp -r ../$LOCAL_PYTHON_BINARY_DIST cache/
-    # Make sure everything happens from scratch in the current dir.
+    # Make sure everything is done from scratch in the current dir.
     unset CHEVAH_CACHE CHEVAH_BUILD
     # Some tests might fail due to causes which are not related to python.
     execute ./brink.sh deps

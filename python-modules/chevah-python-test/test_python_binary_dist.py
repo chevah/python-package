@@ -7,8 +7,14 @@ import subprocess
 
 script_helper = './get_binaries_deps.sh'
 platform_system = platform.system().lower()
-with open('../DEFAULT_VALUES') as default_values_file:
-    [ chevah_os, chevah_arch ] = default_values_file.read().strip('\n').split(' ')[2:4]
+
+try:
+    CHEVAH_OS = os.environ.get('OS')
+    CHEVAH_ARCH = os.environ.get('ARCH')
+except:
+    print 'Coult not get $OS/$ARCH Chevah env vars.'
+    sys.exit(101)
+
 BUILD_CFFI = os.environ.get('BUILD_CFFI', 'no').lower() == 'yes'
 BUILD_LIBEDIT = os.environ.get('BUILD_LIBEDIT', 'no').lower() == 'yes'
 
@@ -19,7 +25,7 @@ def get_allowed_deps():
     """
     allowed_deps = []
     if platform_system == 'linux':
-        if 'lnx' in chevah_os:
+        if 'lnx' in CHEVAH_OS:
             # Deps without paths for generic Linux builds.
             # Only glibc 2.x libs are allowed.
             # Tested on SLES 11 with glibc 2.11.3.
@@ -31,13 +37,7 @@ def get_allowed_deps():
                 'libpthread.so.0',
                 'libutil.so.1',
                 ]
-            if 'arm64' in chevah_arch:
-                # Additional deps without paths for arm64 generic Linux builds.
-                # Tested on Pine64 with Ubuntu 16.04 (Armbian) and glibc 2.23.
-                allowed_deps.extend([
-                    'libgcc_s.so.1',
-                    ])
-        elif 'rhel' in chevah_os:
+        elif 'rhel' in CHEVAH_OS:
             # Common deps for supported RHEL with full paths (x86_64 only).
             allowed_deps = [
                 '/lib64/libcom_err.so.2',
@@ -58,7 +58,7 @@ def get_allowed_deps():
                 '/lib64/libutil.so.1',
                 '/lib64/libz.so.1',
                 ]
-            rhel_version = chevah_os[4:]
+            rhel_version = CHEVAH_OS[4:]
             if rhel_version.startswith("7"):
                 allowed_deps.extend([
                     '/lib64/libcrypto.so.10',
@@ -76,7 +76,7 @@ def get_allowed_deps():
                     '/lib64/libssl.so.1.1',
                     '/lib64/libtinfo.so.6',
                     ])
-        elif 'amzn' in chevah_os:
+        elif 'amzn' in CHEVAH_OS:
             # Deps for Amazon Linux 2 (x86_64 only).
             allowed_deps=[
                 '/lib64/libcom_err.so.2',
@@ -101,8 +101,8 @@ def get_allowed_deps():
                 '/lib64/libutil.so.1',
                 '/lib64/libz.so.1',
                 ]
-        elif 'ubuntu' in chevah_os:
-            ubuntu_version = chevah_os[6:]
+        elif 'ubuntu' in CHEVAH_OS:
+            ubuntu_version = CHEVAH_OS[6:]
             # Common deps for supported Ubuntu LTS with full paths (x86_64).
             allowed_deps=[
                 '/lib/x86_64-linux-gnu/libc.so.6',
@@ -136,7 +136,7 @@ def get_allowed_deps():
                     '/lib/x86_64-linux-gnu/libtinfo.so.6',
                     '/lib/x86_64-linux-gnu/libffi.so.7',
                 ])
-            if 'arm64' in chevah_arch:
+            if 'arm64' in CHEVAH_ARCH:
                 # Deps with full paths for Ubuntu 16.04 on a Pine64 board.
                 allowed_deps=[
                     '/lib/aarch64-linux-gnu/libc.so.6',
@@ -153,9 +153,9 @@ def get_allowed_deps():
                     '/lib/aarch64-linux-gnu/libz.so.1',
                     '/usr/lib/aarch64-linux-gnu/libffi.so.6',
                     ]
-        elif 'alpine' in chevah_os:
+        elif 'alpine' in CHEVAH_OS:
             # Full deps with paths, but no minor versions, for Alpine 3.6+.
-            alpine_version = chevah_os[6:]
+            alpine_version = CHEVAH_OS[6:]
             allowed_deps=[
                 '/lib/ld-musl-x86_64.so.1',
                 '/lib/libc.musl-x86_64.so.1',
@@ -229,7 +229,7 @@ def get_allowed_deps():
     elif platform_system == 'sunos':
         # On Solaris, platform.release() can be: '5.9'. '5.10', '5.11' etc.
         solaris_version = platform.release().split('.')[1]
-        if '64' in chevah_arch:
+        if '64' in CHEVAH_ARCH:
             # This is the common list of deps for Solaris 10 & 11 64bit builds.
             allowed_deps = [
                 '/lib/64/libc.so.1',
@@ -281,7 +281,7 @@ def get_allowed_deps():
                     '/usr/lib/64/libcrypt.so.1',
                     '/usr/lib/64/libsqlite3.so.0',
                     ])
-                if 'sparc' in chevah_arch:
+                if 'sparc' in CHEVAH_ARCH:
                     allowed_deps.extend([
                         '/usr/lib/sparcv9/libc.so.1',
                         ])
@@ -321,7 +321,7 @@ def get_allowed_deps():
                     '/lib/librt.so.1',
                     '/usr/lib/libcrypt_i.so.1',
                     ])
-                if chevah_os == 'sol10u3':
+                if CHEVAH_OS == 'sol10u3':
                     # Specific deps for Solaris 10u3 up to 10u7.
                     allowed_deps.extend([
                         '/lib/libmd5.so.1',
@@ -521,7 +521,7 @@ def get_actual_deps(script_helper):
                     continue
             elif platform_system == 'linux':
                 # On Alpine we don't use regular ldd, the output is different.
-                if 'alpine' in chevah_os:
+                if 'alpine' in CHEVAH_OS:
                     dep = line.split()[0]
                 else:
                     if any(string in line for string in linux_ignored_strings):
@@ -640,7 +640,7 @@ def main():
             from cryptography.hazmat.backends.openssl.backend import backend
             import cryptography
             openssl_version = backend.openssl_version_text()
-            if chevah_os in [ "win", "lnx", "macos" ]:
+            if CHEVAH_OS in [ "win", "lnx", "macos" ]:
                 # Check OpenSSL version on OS'es with static OpenSSL libs.
                 expecting = u'OpenSSL 1.1.1g  21 Apr 2020'
                 if openssl_version != expecting:
@@ -867,7 +867,7 @@ def main():
             exit_code = 18
 
     # Some OS'es are not supported by upstream psutil (or not really working).
-    if not chevah_os in [ 'aix53', 'hpux1131', 'sol10', 'sol112' ]:
+    if not CHEVAH_OS in [ 'aix53', 'hpux1131', 'sol10', 'sol112' ]:
         try:
             import psutil
             cpu_percent = psutil.cpu_percent()

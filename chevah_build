@@ -22,7 +22,7 @@ OPENSSL_VERSION="1.1.1g"
 SQLITE_VERSION="3.30.1"
 PYSQLITE_VERSION="2.8.3"
 # These are used by get-pip.py.
-PIP_VERSION="9.0.3"
+PIP_VERSION="20.1.1"
 # Version 44.x is the last one to support Python 2.7.
 # More at https://github.com/pypa/setuptools/pull/1955.
 SETUPTOOLS_VERSION="44.1.0"
@@ -46,7 +46,7 @@ CRYPTOGRAPHY_VERSION="2.9.1"
 SETPROCTITLE_VERSION="1.1.10"
 SCANDIR_VERSION="1.10.0"
 PSUTIL_VERSION="5.7.0"
-CYTHON_VERSION="0.29.14"
+CYTHON_VERSION="0.29.21"
 SUBPROCESS32_VERSION="3.5.4"
 PYWIN32_VERSION="227"
 GMPY2_VERSION="2.0.8"
@@ -87,17 +87,17 @@ EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/bcrypt-${BCRYPT_VERSION} \
     "
 
-# List of python modules installed using pip
+# List of default Python modules installed using pip.
 PIP_LIBRARIES="\
-    setproctitle==${SETPROCTITLE_VERSION} \
     pycryptodomex==${PYCRYPTODOMEX_VERSION} \
     cryptography==${CRYPTOGRAPHY_VERSION} \
     pyOpenSSL==${PYOPENSSL_VERSION} \
     scandir==${SCANDIR_VERSION} \
-    psutil==${PSUTIL_VERSION} \
     Cython==${CYTHON_VERSION} \
     subprocess32==${SUBPROCESS32_VERSION} \
     bcrypt==${BCRYPT_VERSION} \
+    psutil==${PSUTIL_VERSION} \
+    setproctitle==${SETPROCTITLE_VERSION}
     "
 # cryptography 1.3.4 was last upstream version to support OpenSSL 0.9.8.
 # pyOpenSSL 16.0.0 was last upstream version to support OpenSSL 0.9.8.
@@ -139,15 +139,8 @@ BUILD_FOLDER='build'
 # Import shared code.
 . ./functions.sh
 
-# Get default values from main paver script.
-./paver.sh detect_os
-if [ "$?" -ne 0 ]; then
-    exit 100
-fi
-
-PYTHON_VERSION=`cut -d' ' -f 2 DEFAULT_VALUES`
-OS=`cut -d' ' -f 3 DEFAULT_VALUES`
-ARCH=`cut -d' ' -f 4 DEFAULT_VALUES`
+# Import build environment variables found through "detect_os" command option.
+. ./BUILD_ENV_VARS
 
 # List of OS packages required for building Python/pyOpenSSL/cryptography etc.
 # Lately we don't install anything automatically, we just check for the
@@ -174,9 +167,9 @@ CHOCO_PKGS="vcpython27 make git"
 
 # In Solaris and AIX we use $ARCH to choose if we build a 32bit or 64bit
 # package. This way we are able to force a 32bit build on a 64bit machine,
-# for example by exporting ARCH in paver.sh as "x86" instead of "x64" or
+# for example by exporting ARCH in brink.sh as "x86" instead of "x64" or
 # "ppc" instead of "ppc64". Except on HP-UX, where we always do 32bit builds.
-# We also use $ARCH when building the statically compiled libffi and GMP.
+# $ARCH is also used when statically building libffi/GMP and for testing.
 # $OS is used when patching/configuring/building/testing.
 export ARCH
 export OS
@@ -391,11 +384,11 @@ case $OS in
     macos)
         export CC="clang"
         export CXX="clang++"
-        # Try to build as compatible as possible.
-        export CFLAGS="$CFLAGS -mmacosx-version-min=10.8"
+        # Build as compatible as it makes sense. See brink.sh for the reason.
+        export CFLAGS="$CFLAGS -mmacosx-version-min=10.12"
         # setup.py skips building readline by default, as it sets this to
         # "10.4", and then tries to avoid the broken readline in OS X 10.4.
-        export MACOSX_DEPLOYMENT_TARGET=10.8
+        export MACOSX_DEPLOYMENT_TARGET=10.12
         # System includes bzip2 libs by default.
         export BUILD_BZIP2="no"
         # 10.13 and newer come with LibreSSL instead of the old OpenSSL libs.
@@ -458,9 +451,6 @@ case $OS in
             pycrypto==${PYCRYPTO_VERSION}chevah1 \
             pywin32==${PYWIN32_VERSION} \
             gmpy2==${GMPY2_VERSION} \
-            Cython==${CYTHON_VERSION} \
-            subprocess32==${SUBPROCESS32_VERSION} \
-            bcrypt==${BCRYPT_VERSION} \
             "
         ;;
 esac
@@ -986,9 +976,8 @@ help_text_test_compat=\
 command_test_compat() {
 
     # compat is not suported on these platforms, so no need to test.
-    # fbsd11 failures seem trivial to fix, though.
     case "$OS-$ARCH" in
-        fbsd11-*|sol112-sparc)
+        sol112-sparc)
             (>&2 echo -e "\tCompat tests not supported on this platform.")
             return
             ;;
@@ -1003,18 +992,20 @@ command_test_compat() {
     execute rm -rf compat
     execute git clone https://github.com/chevah/compat.git --depth=1 -b master
     execute pushd compat
-    # Copy over the latest paver.sh, as some changes might require it.
-    execute cp ../../paver.sh ./
+    # Copy over current brink stuff, as some changes might require it.
+    execute cp ../../brink.{conf,sh} ./
     # We patch the Python version to match the one that we have just built
     # and copy it in cache so that it will be picked up by the new build.
-    execute echo -e "\nPYTHON_CONFIGURATION=default@${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" >> paver.conf
+    execute echo -e "\nPYTHON_CONFIGURATION=default@${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" >> brink.conf
     # Populate the cache with the latest version so that we don't have to
     # download it.
     execute mkdir cache
     execute cp -r ../$LOCAL_PYTHON_BINARY_DIST cache/
+    # Make sure everything is done from scratch in the current dir.
+    unset CHEVAH_CACHE CHEVAH_BUILD
     # Some tests might fail due to causes which are not related to python.
-    execute ./paver.sh deps
-    execute ./paver.sh test_ci
+    execute ./brink.sh deps
+    execute ./brink.sh test_ci
     execute popd
 
     execute popd

@@ -93,9 +93,9 @@ jobs:
       run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-gha'
 
     # Avoid linking to Homebrew's libintl. We can use needed tools from /usr/bin.
-    - name: Prepare OS
+    - name: Hack Homebrew
       run: |
-        sudo find /usr/local -iname 'libintl*' -exec rm -f {} +
+        sudo find /usr/local -name 'libintl*' -exec chmod a-r {} +
         sudo rm -f /usr/local/bin/{wget,curl,git}
 
     - name: Download needed deps for the detected OS
@@ -103,6 +103,11 @@ jobs:
 
     - name: Build Python
       run: ./chevah_build build
+
+    # Restore read rights for Homebrew's libintl.
+    - name: Unhack Homebrew
+      run: |
+        sudo find /usr/local -name 'libintl*' -exec chmod a+r {} +
 
     - name: Test Python
       run: ./chevah_build test

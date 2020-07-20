@@ -37,6 +37,12 @@ def get_allowed_deps():
                 'libpthread.so.0',
                 'libutil.so.1',
                 ]
+            if 'arm64' in chevah_arch:
+                # Additional deps without paths for arm64 generic Linux builds.
+                # Tested on Pine64 with Ubuntu 16.04 (Armbian) and glibc 2.23.
+                allowed_deps.extend([
+                    'libgcc_s.so.1',
+                    ])
         elif 'rhel' in CHEVAH_OS:
             # Common deps for supported RHEL with full paths (x86_64 only).
             allowed_deps = [

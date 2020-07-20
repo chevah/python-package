@@ -607,11 +607,25 @@ check_os_version() {
 # For old unsupported Linux distros (some with no /etc/os-release) and for other
 # unsupported Linux distros (eg. Arch), we check if the system is glibc-based.
 # If so, we use a generic code path that builds everything statically,
-# including OpenSSL, thus only requiring glibc 2.x.
+# including OpenSSL, thus only requiring glibc 2.X, where X differs by arch.
 #
 check_linux_glibc() {
     local glibc_version
     local glibc_version_array
+    local supported_glibc2_version
+
+    # Supported minimum minor glibc 2.X versions for various arches.
+    # For x64, we build on SLES 11 with glibc 2.11.3.
+    # For arm64, we build on Ubuntu 16.04 with glibc 2.23.
+    # Beware we haven't normalized arch names yet.
+    case "$ARCH" in
+        "amd64"|"x86_64"|"x64")
+            supported_glibc2_version=11
+            ;;
+        "aarch64"|"arm64")
+            supported_glibc2_version=23
+            ;;
+    esac
 
     (>&2 echo -n "Couldn't detect a supported distribution. ")
     (>&2 echo "Trying to treat it as generic Linux...")
@@ -630,7 +644,7 @@ check_linux_glibc() {
         exit 19
     fi
 
-    # Parsing tested with glibc 2.11.x and 2.29, eglibc 2.13 and 2.19.
+    # Tested with glibc 2.5/2.11.3/2.12/2.23/2.28-30 and eglibc 2.13/2.19.
     glibc_version=$(ldd --version | head -n 1 | rev | cut -d\  -f1 | rev)
 
     if [[ $glibc_version =~ [^[:digit:]\.] ]]; then
@@ -647,16 +661,17 @@ check_linux_glibc() {
     fi
 
     # We pass here because:
-    #   1. In python-package building should work with older glibc version.
+    #   1. Building python-package should work with an older glibc version.
     #   2. Our generic "lnx" runtime might work with a slightly older glibc 2.
-    if [ ${glibc_version_array[1]} -lt 11 ]; then
-        (>&2 echo "Beware glibc versions older than 2.11 were NOT tested!")
-        (>&2 echo "Detected glibc version: $glibc_version")
+    if [ ${glibc_version_array[1]} -lt ${supported_glibc2_version} ]; then
+        (>&2 echo -n "Detected glibc version: ${glibc_version}. Versions older")
+        (>&2 echo " than 2.${supported_glibc2_version} were NOT tested!")
+
     fi
 
     set -o errexit
 
-    # glibc 2 detected, we set $OS for a generic build.
+    # glibc 2 detected, we set $OS for a generic Linux build.
     OS="lnx"
 }
 
@@ -720,8 +735,8 @@ detect_os() {
                         ;;
                     ubuntu|ubuntu-core)
                         os_version_raw="$VERSION_ID"
-                        # 12.04/14.04 have OpenSSL 1.0.1, use generic Linux.
-                        check_os_version "$distro_fancy_name" 16.04 \
+                        # For versions with older OpenSSL, use generic build.
+                        check_os_version "$distro_fancy_name" 18.04 \
                             "$os_version_raw" os_version_chevah
                         # Only LTS versions are supported. If it doesn't end in
                         # 04 or first two digits are uneven, use generic build.

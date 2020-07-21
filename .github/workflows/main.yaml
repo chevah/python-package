@@ -23,6 +23,8 @@ jobs:
   ubuntu-20-04:
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
+    # Do not run when the following string is used in the commit message.
+    if: "!contains(github.event.head_commit.message, 'skip-ci')"
     timeout-minutes: 30
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -41,13 +43,6 @@ jobs:
         path: |
           build-python-package
         key: ${{ runner.os }}-${{ hashFiles('pavement.py') }}
-
-    # Do not run when the following strings are used in the commit message.
-    - name: Fail on skip ci
-      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-ci'
-
-    - name: Fail on skip gha
-      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-gha'
 
     - name: Prepare OS
       run: sudo apt-get install libncurses5-dev
@@ -72,6 +67,7 @@ jobs:
 
   macos-10-15:
     runs-on: macos-10.15
+    if: "!contains(github.event.head_commit.message, 'skip-ci')"
     timeout-minutes: 60
     steps:
     - uses: chevah/auto-cancel-redundant-job@v1
@@ -86,25 +82,20 @@ jobs:
           build-python-package
         key: ${{ runner.os }}-${{ hashFiles('pavement.py') }}
 
-    - name: Fail on skip ci
-      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-ci'
+    - name: Download needed deps for the detected OS
+      run: ./brink.sh detect_os
 
-    - name: Fail on skip gha
-      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-gha'
-
-    # Avoid linking to Homebrew's libintl. We can use needed tools from /usr/bin.
+    # Avoid linking to Homebrew's libintl during build.
+    # We can use needed tools from /usr/bin.
     - name: Hack Homebrew
       run: |
         sudo find /usr/local -name 'libintl*' -exec chmod a-r {} +
         sudo rm -f /usr/local/bin/{wget,curl,git}
 
-    - name: Download needed deps for the detected OS
-      run: ./brink.sh detect_os
-
     - name: Build Python
       run: ./chevah_build build
 
-    # Restore read rights for Homebrew's libintl.
+    # Fix back Homebrew, to make everything functional.
     - name: Unhack Homebrew
       run: |
         sudo find /usr/local -name 'libintl*' -exec chmod a+r {} +
@@ -122,6 +113,7 @@ jobs:
 
   windows-2019:
     runs-on: windows-2019
+    if: "!contains(github.event.head_commit.message, 'skip-ci')"
     timeout-minutes: 30
     steps:
     - uses: chevah/auto-cancel-redundant-job@v1
@@ -135,12 +127,6 @@ jobs:
         path: |
           build-python-package
         key: ${{ runner.os }}-${{ hashFiles('pavement.py') }}
-
-    - name: Fail on skip ci
-      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-ci'
-
-    - name: Fail on skip gha
-      run: git log -1 --pretty=format:"%s" ${{ toJSON(github.sha) }} | grep -v 'skip-gha'
 
     # Add packages needed to build our patched pycrypto.
     - name: Prepare OS

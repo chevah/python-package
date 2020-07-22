@@ -595,6 +595,12 @@ check_dependencies() {
         echo "All required dependencies are present: $packages"
     fi
 
+    # Many systems don't have this installed and we don't really need it.
+    command -v makeinfo
+    if [ $? -ne 0 ]; then
+        (>&2 echo "Missing makeinfo, aliasing it to /bin/true.")
+        alias makeinfo="/bin/true"
+    fi
 }
 
 

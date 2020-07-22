@@ -598,8 +598,10 @@ check_dependencies() {
     # Many systems don't have this installed and we don't really need it.
     command -v makeinfo
     if [ $? -ne 0 ]; then
-        (>&2 echo "Missing makeinfo, aliasing it to /bin/true.")
-        alias makeinfo="/bin/true"
+        (>&2 echo "Missing makeinfo, trying to link it to /bin/true in ~/bin.")
+        mkdir -p ~/bin
+        ln -s /bin/true ~/bin/makeinfo
+        export PATH=$PATH:~/bin/
     fi
 }
 

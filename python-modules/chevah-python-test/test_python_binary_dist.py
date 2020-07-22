@@ -37,7 +37,7 @@ def get_allowed_deps():
                 'libpthread.so.0',
                 'libutil.so.1',
                 ]
-            if 'arm64' in chevah_arch:
+            if 'arm64' in CHEVAH_ARCH:
                 # Additional deps without paths for arm64 generic Linux builds.
                 # Tested on Pine64 with Ubuntu 16.04 (Armbian) and glibc 2.23.
                 allowed_deps.extend([

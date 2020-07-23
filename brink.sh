@@ -644,7 +644,7 @@ check_linux_glibc() {
         exit 19
     fi
 
-    # Tested with glibc 2.5/2.11.3/2.12/2.23/2.28-30 and eglibc 2.13/2.19.
+    # Tested with glibc 2.5/2.11.3/2.12/2.23/2.28-31 and eglibc 2.13/2.19.
     glibc_version=$(ldd --version | head -n 1 | rev | cut -d\  -f1 | rev)
 
     if [[ $glibc_version =~ [^[:digit:]\.] ]]; then

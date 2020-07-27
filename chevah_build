@@ -25,7 +25,7 @@ PYSQLITE_VERSION="2.8.3"
 PIP_VERSION="20.1.1"
 # Version 44.x is the last one to support Python 2.7.
 # More at https://github.com/pypa/setuptools/pull/1955.
-SETUPTOOLS_VERSION="44.1.0"
+SETUPTOOLS_VERSION="44.1.1"
 
 # Python modules versions to be used everywhere possible.
 CFFI_VERSION="1.14.0"
@@ -42,7 +42,7 @@ SAFETY_FALSE_POSITIVES_OPTS="-i 35015"
 # because it has a very comprehensive and demanding test suite.
 PYCRYPTODOMEX_VERSION="3.9.7"
 PYOPENSSL_VERSION="19.1.0"
-CRYPTOGRAPHY_VERSION="2.9.1"
+CRYPTOGRAPHY_VERSION="2.9.2"
 SETPROCTITLE_VERSION="1.1.10"
 SCANDIR_VERSION="1.10.0"
 PSUTIL_VERSION="5.7.0"
@@ -416,18 +416,12 @@ case $OS in
         export BUILD_ZLIB="yes"
         export BUILD_LIBEDIT="no"
         # Generic Linux might be an old distro with OpenSSL 0.9.8 libraries.
-        # For the "cryptography" module we use the upstream wheel, which
-        # includes OpenSSL libs, but for "ssl" we need OpenSSL as well.
         # To avoid linking to local libs, we build our own OpenSSL libs.
         export BUILD_OPENSSL="yes"
-        # Cryptography builds on SLES 11, but fails to load _openssl.so
-        # with error "undefined symbol: __builtin_unreachable".
-        # We append "upstream" to the wheel's name to avoid it being used on
-        # Linux distros where cryptography must link to system OpenSSL libs.
+        # Redefine PIP_LIBRARIES without cryptography, see below for details.
         PIP_LIBRARIES="\
             setproctitle==${SETPROCTITLE_VERSION} \
             pycryptodomex==${PYCRYPTODOMEX_VERSION} \
-            cryptography==${CRYPTOGRAPHY_VERSION}upstream \
             pyOpenSSL==${PYOPENSSL_VERSION} \
             scandir==${SCANDIR_VERSION} \
             psutil==${PSUTIL_VERSION} \
@@ -435,6 +429,29 @@ case $OS in
             subprocess32==${SUBPROCESS32_VERSION} \
             bcrypt==${BCRYPT_VERSION} \
             "
+        case $ARCH in
+            x64)
+                # Latest cryptography builds on SLES 11, but fails to load
+                # _openssl.so: "undefined symbol: __builtin_unreachable".
+                # More at https://github.com/pyca/cryptography/issues/3812.
+                # GCC 5.2 from SLE11 SP4 SDK repos might solve this, but
+                # for now we use the upstream wheel with a custom name, so
+                # that it doesn't get picked up on the other Linux distros.
+                PIP_LIBRARIES="\
+                    $PIP_LIBRARIES \
+                    cryptography==${CRYPTOGRAPHY_VERSION}upstream \
+                    "
+                ;;
+            arm64)
+                # On arm64, we use a more recent distro, with a decent gcc.
+                # Beware building this through pip against own OpenSSL libs
+                # requires the "-Wl,-rpath' voodoo when augmenting $LD_FLAGS.
+                PIP_LIBRARIES="\
+                    $PIP_LIBRARIES \
+                    cryptography==${CRYPTOGRAPHY_VERSION} \
+                    "
+                ;;
+        esac
         ;;
     win)
         # On Windows, python executable is installed at a different path.
@@ -578,6 +595,14 @@ check_dependencies() {
         echo "All required dependencies are present: $packages"
     fi
 
+    # Many systems don't have this installed and we don't really need it.
+    command -v makeinfo
+    if [ $? -ne 0 ]; then
+        (>&2 echo "Missing makeinfo, trying to link it to /bin/true in ~/bin.")
+        mkdir -p ~/bin
+        ln -s /bin/true ~/bin/makeinfo
+        export PATH=$PATH:~/bin/
+    fi
 }
 
 
@@ -636,7 +661,9 @@ command_build() {
 
     if [ "$BUILD_OPENSSL" = "yes" ]; then
         build 'openssl' "openssl-$OPENSSL_VERSION" ${PYTHON_BUILD_FOLDER}
-        export LDFLAGS="-L${INSTALL_FOLDER}/lib64/ ${LDFLAGS}"
+        # The '-Wl,-rpath' voodoo is needed when building cryptography w/ pip.
+        export LDFLAGS="-L${INSTALL_FOLDER}/lib64/ \
+            -Wl,-rpath,${INSTALL_FOLDER}/lib64/ ${LDFLAGS}"
         export PKG_CONFIG_PATH="\
             ${INSTALL_FOLDER}/lib64/pkgconfig/:${PKG_CONFIG_PATH}"
         # Place SSL headers where they can be picked up.

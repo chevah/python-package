@@ -125,6 +125,9 @@ update_venv() {
     fi
 }
 
+# Load repo specific configuration.
+source brink.conf
+
 
 clean_build() {
     # Shortcut for clear since otherwise it will depend on python

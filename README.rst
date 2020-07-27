@@ -14,6 +14,7 @@ Building steps as used by Buildbot:
 
 * Login to a system running on the desired platform (e.g. Ubuntu Server 20.04).
 * Get the code for this repository from GitHub.
+* ``./brink.sh detect_os``
 * ``./chevah_build build``
 * ``./chevah_build test``
 * ``./chevah_build test_compat``
@@ -23,7 +24,6 @@ You can try the above steps on your own to build and test a new Python package.
 To have new Python packages uploaded (typically for all supported platforms),
 you should try the following, after securing access to Chevah infrastructure:
 
-* ``./brink.sh detect_os``
 * ``./brink.sh test_remote group-all --properties=force_upload_production=yes
 
 Use ``./chevah_build help`` to discover all available commands.

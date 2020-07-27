@@ -125,9 +125,6 @@ update_venv() {
     fi
 }
 
-# Load repo specific configuration.
-source brink.conf
-
 
 clean_build() {
     # Shortcut for clear since otherwise it will depend on python
@@ -880,6 +877,12 @@ if [ "$COMMAND" = "purge" ] ; then
     exit 0
 fi
 
+if [ "$COMMAND" == "detect_os" ]; then
+    echo "PYTHON_VERSION=$PYTHON_NAME" > BUILD_ENV_VARS
+    echo "OS=$OS" >> BUILD_ENV_VARS
+    echo "ARCH=$ARCH" >> BUILD_ENV_VARS
+    exit 0
+fi
 
 if [ "$COMMAND" = "get_python" ] ; then
     OS=$2

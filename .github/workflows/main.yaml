@@ -133,14 +133,15 @@ jobs:
       run: |
         chocolatey install -y make vcpython27
 
+    # Explicitly run our scripts with Bash, not PowerShell (GitHub's default).
     - name: Download needed deps for the detected OS
-      run: ./brink.sh detect_os
+      run: bash ./brink.sh detect_os
 
     - name: Build Python
-      run: ./chevah_build build
+      run: bash ./chevah_build build
 
     - name: Test Python
-      run: ./chevah_build test
+      run: bash ./chevah_build test
 
     - name: Test Compat
-      run: ./chevah_build test_compat
+      run: bash ./chevah_build test_compat

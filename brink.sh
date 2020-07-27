@@ -880,6 +880,7 @@ if [ "$COMMAND" = "purge" ] ; then
     exit 0
 fi
 
+# Initialize BUILD_ENV_VARS file when building python-package from scratch.
 if [ "$COMMAND" == "detect_os" ]; then
     echo "PYTHON_VERSION=$PYTHON_NAME" > BUILD_ENV_VARS
     echo "OS=$OS" >> BUILD_ENV_VARS

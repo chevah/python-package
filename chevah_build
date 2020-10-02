@@ -112,7 +112,13 @@ BUILD_FOLDER='build'
 . ./functions.sh
 
 # Import build environment variables found through "detect_os" command option.
-. ./BUILD_ENV_VARS
+if [ -f ./BUILD_ENV_VARS ]; then
+    . ./BUILD_ENV_VARS
+else
+    (>&2 echo "Missing BUILD_ENV_VARS file!")
+    echo "Run './brink.sh detect_os' first, as per the README file..."
+    exit 100
+fi
 
 # List of OS packages required for building Python/pyOpenSSL/cryptography etc.
 # Lately we don't install anything automatically, we just check for the

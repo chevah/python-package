@@ -25,7 +25,7 @@ install:
     case $TRAVIS_OS_NAME in
       osx)
         # Some Homebrew libs pollute the build.
-        sudo chmod a-r /usr/local/opt/libffi/lib/libffi.6.dylib
+        sudo find /usr/local -name 'libffi*' -exec chmod a-r {} +
         ;;
     esac
 

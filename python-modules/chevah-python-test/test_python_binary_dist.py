@@ -438,14 +438,23 @@ def get_allowed_deps():
                 '/lib/libkvm.so.6',
                 '/usr/lib/libssl.so.7',
             ])
-        else:
-            # Additional deps, specific for FreeBSD 11 and maybe newer.
+        elif freebsd_version == '11':
+            # Additional deps, specific for FreeBSD 11.
             allowed_deps.extend([
                 '/lib/libcrypto.so.8',
                 '/lib/libelf.so.2',
                 '/lib/libkvm.so.7',
                 '/usr/lib/libdl.so.1',
                 '/usr/lib/libssl.so.8',
+            ])
+        else:
+            # Additional deps, specific for FreeBSD 12.
+            allowed_deps.extend([
+                '/lib/libcrypto.so.111',
+                '/lib/libelf.so.2',
+                '/lib/libkvm.so.7',
+                '/usr/lib/libdl.so.1',
+                '/usr/lib/libssl.so.111',
             ])
     elif platform_system == 'openbsd':
         # This is the list of deps for OpenBSD 5.8 or newer, sans versions.

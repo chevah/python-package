@@ -17,8 +17,12 @@ dist:
 
 install: skip
 
-script:
+before_script:
   - ./brink.sh detect_os
-  - ./chevah_build build
-  - ./chevah_build test
-  - ./chevah_build test_compat
+
+script:
+  - ./chevah_build build && ./chevah_build test && ./chevah_build test_compat
+
+notifications:
+  email:
+    - dumol@gmx.co.uk

@@ -418,40 +418,8 @@ case $OS in
         # Generic Linux might be an old distro with OpenSSL 0.9.8 libraries.
         # To avoid linking to local libs, we build our own OpenSSL libs.
         export BUILD_OPENSSL="yes"
-        # Redefine PIP_LIBRARIES without cryptography, see below for details.
-        PIP_LIBRARIES="\
-            setproctitle==${SETPROCTITLE_VERSION} \
-            pycryptodomex==${PYCRYPTODOMEX_VERSION} \
-            pyOpenSSL==${PYOPENSSL_VERSION} \
-            scandir==${SCANDIR_VERSION} \
-            psutil==${PSUTIL_VERSION} \
-            Cython==${CYTHON_VERSION} \
-            subprocess32==${SUBPROCESS32_VERSION} \
-            bcrypt==${BCRYPT_VERSION} \
-            "
-        case $ARCH in
-            x64)
-                # Latest cryptography builds on SLES 11, but fails to load
-                # _openssl.so: "undefined symbol: __builtin_unreachable".
-                # More at https://github.com/pyca/cryptography/issues/3812.
-                # GCC 5.2 from SLE11 SP4 SDK repos might solve this, but
-                # for now we use the upstream wheel with a custom name, so
-                # that it doesn't get picked up on the other Linux distros.
-                PIP_LIBRARIES="\
-                    $PIP_LIBRARIES \
-                    cryptography==${CRYPTOGRAPHY_VERSION}upstream \
-                    "
-                ;;
-            arm64)
-                # On arm64, we use a more recent distro, with a decent gcc.
-                # Beware building this through pip against own OpenSSL libs
-                # requires the "-Wl,-rpath' voodoo when augmenting $LD_FLAGS.
-                PIP_LIBRARIES="\
-                    $PIP_LIBRARIES \
-                    cryptography==${CRYPTOGRAPHY_VERSION} \
-                    "
-                ;;
-        esac
+        # OpenSSL tests on CentOS 5 require an updated Perl 5.10 in /usr/local.
+        export PATH="/usr/local/bin:$PATH"
         ;;
     win)
         # On Windows, python executable is installed at a different path.

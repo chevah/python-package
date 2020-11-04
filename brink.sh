@@ -773,13 +773,13 @@ detect_os() {
         FreeBSD)
             ARCH=$(uname -m)
             os_version_raw=$(uname -r | cut -d'.' -f1)
-            check_os_version "FreeBSD" 11 "$os_version_raw" os_version_chevah
+            check_os_version "FreeBSD" 12 "$os_version_raw" os_version_chevah
             OS="fbsd${os_version_chevah}"
             ;;
         OpenBSD)
             ARCH=$(uname -m)
             os_version_raw=$(uname -r)
-            check_os_version "OpenBSD" 6.5 "$os_version_raw" os_version_chevah
+            check_os_version "OpenBSD" 6.7 "$os_version_raw" os_version_chevah
             OS="obsd${os_version_chevah}"
             ;;
         SunOS)

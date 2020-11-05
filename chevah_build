@@ -941,6 +941,10 @@ command_test() {
     # There are a series of issues with the scandir tests in Linux/Unix.
     # Reported upstream at https://github.com/benhoyt/scandir/issues/78.
     SCANDIR_FOLDER="../python-modules/scandir-${SCANDIR_VERSION}"
+    # One of the above issues is still unpatched in latest version.
+    execute patch -d ${SCANDIR_FOLDER} -p 0 \
+        < ${SCANDIR_FOLDER}-patches/0001-freebsd-fix.patch
+    execute cd -
     case "$OS-$ARCH" in
         macos|osx|win)
             execute $LOCAL_PYTHON_BINARY ${SCANDIR_FOLDER}/test/run_tests.py

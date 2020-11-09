@@ -998,7 +998,7 @@ command_test_compat() {
     # the local version.
     echo '##### Running chevah.compat tests... #####'
     execute rm -rf compat
-    execute git clone https://github.com/chevah/compat.git --depth=1 -b master
+    execute git clone https://github.com/chevah/compat.git --depth=1 -b 5509-cryptography32-openssl102
     execute pushd compat
     # Copy over current brink stuff, as some changes might require it.
     execute cp ../../brink.{conf,sh} ./

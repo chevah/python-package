@@ -234,6 +234,8 @@ case $OS in
                 bcrypt==${BCRYPT_VERSION} \
                 "
         fi
+        # As of November 2020, OpenSSL 1.0.2r is the latest version from IBM.
+        export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
         ;;
     sol*)
         # By default, we use Sun's Studio compiler. Comment these two for GCC.

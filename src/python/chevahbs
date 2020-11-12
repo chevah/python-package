@@ -242,6 +242,9 @@ chevahbs_install() {
                 $destination/lib/encodings/aliases.old
             execute \
                 sed "s|# utf_8 codec|# utf_8 codec\n    'cp65001'            : 'utf_8',|" < $destination/lib/encodings/aliases.old > $destination/lib/encodings/aliases.py
+
+            echo "Applying crypto_silence_warnings.patch:"
+            execute patch -d $destination -p0 < crypto_silence_warnings.patch
             ;;
         *)
             if [ "${OS%alpine*}" = "" ]; then

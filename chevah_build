@@ -910,18 +910,22 @@ initialize_python_module(){
 help_text_test=\
 "Run a quick test for the Python from build."
 command_test() {
-    test_file='test_python_binary_dist.py'
+    local test_file='test_python_binary_dist.py'
+    local errors_log='stderr.log'
     execute mkdir -p build/
     execute cp python-modules/chevah-python-test/${test_file} build/
     execute cp python-modules/chevah-python-test/get_binaries_deps.sh build/
     execute pushd build
 
     echo '##### Executing Chevah tests with redirected stderr... #####'
-    execute $LOCAL_PYTHON_BINARY ${test_file} 2>stderr.log
-    if [ -s stderr.log ]; then
-        (>&2 echo "There were errors logged to stderr!")
-        execute cat stderr.log
-        exit 102
+    execute $LOCAL_PYTHON_BINARY ${test_file} 2>${errors_log}
+    if [ -s "$errors_log" ]; then
+        grep -v "enable-meta-key" $errors_log > unexpected_errors.log
+        if [ -s unexpected_errors.log ]; then
+            (>&2 echo "There were unexpected errors logged to stderr!")
+            execute cat unexpected_errors.log
+            exit 102
+        fi
     fi
 
     echo '##### Testing for outdated packages and security issues... #####'

@@ -19,6 +19,10 @@ chevahbs_patch() {
     echo "Applying disabled_modules.patch:"
     execute patch < disabled_modules.patch
 
+    # Patch to disable Python 2 warnings from cryptography.
+    echo "Applying cryptography_silent_warnings.patch:"
+    execute patch -p0 < cryptography_silent_warnings.patch
+
     # Then we apply features-specific patches.
     if [ "$BUILD_LIBEDIT" = "yes" ]; then
         # Adapted from the v4 patch at https://bugs.python.org/issue13501.

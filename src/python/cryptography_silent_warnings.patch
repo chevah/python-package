@@ -1,0 +1,21 @@
+--- Lib/site.py.orig    2020-11-12 09:59:21.576077736 +0000
++++ Lib/site.py 2020-11-12 10:00:01.732005931 +0000
+@@ -63,6 +63,18 @@
+ import __builtin__
+ import traceback
+
++import warnings
++warnings.filterwarnings(
++    'ignore',
++    category=UserWarning,
++    module='OpenSSL.crypto',
++    )
++warnings.filterwarnings(
++    'ignore',
++    category=UserWarning,
++    module='cryptography.hazmat.bindings.openssl.binding',
++    )
++
+ # Prefixes for site-packages; add additional prefixes like /usr/local here
+ PREFIXES = [sys.prefix, sys.exec_prefix]
+ # Enable per user site-packages directory

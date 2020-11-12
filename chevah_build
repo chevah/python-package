@@ -918,6 +918,8 @@ command_test() {
     execute pushd build
 
     echo '##### Executing Chevah tests with redirected stderr... #####'
+    # Avoid 'No entry for terminal type "unknown"' warnings on stderr.
+    export TERM="dumb"
     execute $LOCAL_PYTHON_BINARY ${test_file} 2>${errors_log}
     if [ -s "$errors_log" ]; then
         grep -v "enable-meta-key" $errors_log > unexpected_errors.log

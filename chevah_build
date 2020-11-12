@@ -916,8 +916,13 @@ command_test() {
     execute cp python-modules/chevah-python-test/get_binaries_deps.sh build/
     execute pushd build
 
-    echo '##### Executing Chevah tests... #####'
-    execute $LOCAL_PYTHON_BINARY ${test_file}
+    echo '##### Executing Chevah tests with redirected stderr... #####'
+    execute $LOCAL_PYTHON_BINARY ${test_file} 2>stderr.log
+    if [ -s stderr.log ]; then
+        (>&2 echo "There were errors logged to stderr!")
+        execute cat stderr.log
+        exit 102
+    fi
 
     echo '##### Testing for outdated packages and security issues... #####'
     execute $PYTHON_BIN -m pip list --outdated --format=columns

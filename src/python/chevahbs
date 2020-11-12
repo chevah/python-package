@@ -20,8 +20,8 @@ chevahbs_patch() {
     execute patch < disabled_modules.patch
 
     # Patch to disable Python 2 warnings from cryptography.
-    echo "Applying cryptography_silent_warnings.patch:"
-    execute patch -p0 < cryptography_silent_warnings.patch
+    echo "Applying crypto_silence_warnings.patch:"
+    execute patch -p0 < crypto_silence_warnings.patch
 
     # Then we apply features-specific patches.
     if [ "$BUILD_LIBEDIT" = "yes" ]; then
@@ -31,8 +31,14 @@ chevahbs_patch() {
     fi
     # And finally we apply the OS-specific patches.
     case $OS in
+        rhel7|amzn2)
+            echo "Applying openssl102_allow.patch:"
+            execute patch -p0 < openssl102_allow.patch
+            ;;
         # BLDSHARED fixes from https://bugs.python.org/issue18235.
         aix*)
+            echo "Applying openssl102_allow.patch:"
+            execute patch -p0 < openssl102_allow.patch
             echo "Applying aix_bldshared.patch:"
             execute patch -p0 < aix_bldshared.patch
             ;;
@@ -45,6 +51,10 @@ chevahbs_patch() {
         sol10*)
             echo "Applying solaris10_libcrypt.patch:"
             execute patch < solaris10_libcrypt.patch
+            ;;
+        sol11)
+            echo "Applying openssl102_allow.patch:"
+            execute patch -p0 < openssl102_allow.patch
             ;;
         hpux*)
             # Our patch to use -fPIC extra argument for linking only with GCC.

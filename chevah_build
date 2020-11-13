@@ -916,6 +916,11 @@ command_test() {
     # Regexp to match messages allowed on stderr during our Python tests.
     local errors_allowed='enable-meta-key'
 
+    # For error 'RuntimeWarning: The _posixsubprocess module is not being used'.
+    if [ "${OS%sol10*}" = "" ]; then
+        # This error actually has two lines, but both contain the added exp.
+        local errors_allowed='enable-meta-key|program uses threads'
+    fi
     execute mkdir -p build/
     execute cp python-modules/chevah-python-test/${test_file} build/
     execute cp python-modules/chevah-python-test/get_binaries_deps.sh build/

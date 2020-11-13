@@ -648,21 +648,6 @@ def main():
     else:
         print 'stdlib ssl %s' % (OPENSSL_VERSION,)
 
-    try:
-        # Import OpenSSL first to suppress cryptography warnings effectively.
-        import OpenSSL
-        from OpenSSL import SSL, crypto, rand, __version__ as pyopenssl_version
-        crypto
-        rand
-    except Exception as error:
-        sys.stderr.write('"OpenSSL" missing. %s\n' % (error,))
-        exit_code = 3
-    else:
-        print 'pyOpenSSL %s - %s' % (
-            pyopenssl_version,
-            SSL.SSLeay_version(SSL.SSLEAY_VERSION),
-            )
-
     # cryptography module and latest pyOpenSSL are only available on
     # systems with cffi.
     if BUILD_CFFI:
@@ -683,6 +668,19 @@ def main():
         else:
             print 'cryptography %s - %s' % (
                 cryptography.__version__, openssl_version)
+
+    try:
+        from OpenSSL import SSL, crypto, rand, __version__ as pyopenssl_version
+        crypto
+        rand
+    except Exception as error:
+        sys.stderr.write('"OpenSSL" missing. %s\n' % (error,))
+        exit_code = 3
+    else:
+        print 'pyOpenSSL %s - %s' % (
+            pyopenssl_version,
+            SSL.SSLeay_version(SSL.SSLEAY_VERSION),
+            )
 
     try:
         import Crypto

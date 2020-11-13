@@ -912,20 +912,24 @@ help_text_test=\
 command_test() {
     local test_file='test_python_binary_dist.py'
     local errors_log='stderr.log'
+    local errors_unexpected='errors_unexpected.log'
+    # Regexp to match messages allowed on stderr during our Python tests.
+    local errors_allowed='enable-meta-key'
+
     execute mkdir -p build/
     execute cp python-modules/chevah-python-test/${test_file} build/
     execute cp python-modules/chevah-python-test/get_binaries_deps.sh build/
     execute pushd build
 
-    echo '##### Executing Chevah tests with redirected stderr... #####'
+    echo '##### Executing Chevah tests (with redirected stderr)... #####'
     # Avoid 'No entry for terminal type "unknown"' warnings on stderr.
     export TERM="dumb"
     execute $LOCAL_PYTHON_BINARY ${test_file} 2>${errors_log}
     if [ -s "$errors_log" ]; then
-        grep -v "enable-meta-key" $errors_log > unexpected_errors.log
-        if [ -s unexpected_errors.log ]; then
-            (>&2 echo "There were unexpected errors logged to stderr!")
-            execute cat unexpected_errors.log
+        egrep -v "$errors_allowed" $errors_log > $errors_unexpected
+        if [ -s $errors_unexpected ]; then
+            (>&2 echo "There were unexpected errors logged to stderr:")
+            execute cat $errors_unexpected
             exit 102
         fi
     fi

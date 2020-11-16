@@ -30,7 +30,7 @@
 # and then read from brink.conf as CHEVAH_CACHE_DIR,
 # and will use a default value if not defined.
 #
-# You can define your own `execute_venv` function in paver.conf with the
+# You can define your own `execute_venv` function in brink.conf with the
 # command used to execute Python inside the newly virtual environment.
 #
 
@@ -92,15 +92,14 @@ PIP_INDEX='http://pypi.chevah.com'
 BASE_REQUIREMENTS=''
 
 #
-# Check that we have a pavement.py in the current dir.
-# otherwise it means we are out of the source folder and paver can not be
-# used there.
+# Check that we have a pavement.py file in the current dir.
+# If not, we are out of the source's root dir and brink.sh won't work.
 #
 check_source_folder() {
 
     if [ ! -e pavement.py ]; then
         (>&2 echo 'No "pavement.py" file found in current folder.')
-        (>&2 echo 'Make sure you are running "paver.sh" from a source folder.')
+        (>&2 echo 'Make sure you are running "brink.sh" from a source folder.')
         exit 8
     fi
 }
@@ -120,7 +119,7 @@ update_venv() {
     exit_code=$?
     set -e
     if [ $exit_code -ne 0 ]; then
-        (>&2 echo 'Failed to run the initial "./paver.sh deps" command.')
+        (>&2 echo 'Failed to run the initial "./brink.sh deps" command.')
         exit 7
     fi
 }
@@ -253,6 +252,7 @@ update_path_variables() {
     export CHEVAH_PYTHON=${PYTHON_NAME}
     export CHEVAH_OS=${OS}
     export CHEVAH_ARCH=${ARCH}
+    export CHEVAH_CACHE=${CACHE_FOLDER}
 
 }
 
@@ -373,7 +373,7 @@ get_binary_dist() {
         rm -f $tar_gz_file
         rm -f $tar_file
         execute $DOWNLOAD_CMD $remote_base_url/${tar_gz_file}
-        execute gunzip $tar_gz_file
+        execute gunzip -f $tar_gz_file
         execute tar -xf $tar_file
         rm -f $tar_gz_file
         rm -f $tar_file
@@ -411,6 +411,7 @@ get_python_dist() {
         get_binary_dist $python_distributable $remote_base_url/${OS}/${ARCH}
     else
         (>&2 echo "Requested version was not found on the remote server.")
+        (>&2 echo "$remote_base_url $python_distributable")
         exit 4
     fi
 }
@@ -545,12 +546,12 @@ install_dependencies(){
 # Check version of current OS to see if it is supported.
 # If it's too old, exit with a nice informative message.
 # If it's supported, return through eval the version numbers to be used for
-# naming the package, for example '5' for RHEL 5.x, '1204' for Ubuntu 12.04',
-# '53' for AIX 5.3.x.x , '10' for Solaris 10 or '1010' for OS X 10.10.1.
+# naming the package, for example: '7' for RHEL 7.7, '2' for Amazon 2,
+# '2004' for Ubuntu 20.04', '312' for Alpine Linux 3.12, '11' for Solaris 11.
 #
 check_os_version() {
     # First parameter should be the human-readable name for the current OS.
-    # For example: "Red Hat Enterprise Linux" for RHEL, "OS X" for Darwin etc.
+    # For example: "Red Hat Enterprise Linux" for RHEL, "macOS" for Darwin etc.
     # Second and third parameters must be strings composed of integers
     # delimited with dots, representing, in order, the oldest version
     # supported for the current OS and the current detected version.
@@ -615,12 +616,12 @@ check_linux_glibc() {
     local supported_glibc2_version
 
     # Supported minimum minor glibc 2.X versions for various arches.
-    # For x64, we build on SLES 11 with glibc 2.11.3.
+    # For x64, we build on CentOS 5.11 (Final) with glibc 2.5.
     # For arm64, we build on Ubuntu 16.04 with glibc 2.23.
     # Beware we haven't normalized arch names yet.
     case "$ARCH" in
         "amd64"|"x86_64"|"x64")
-            supported_glibc2_version=11
+            supported_glibc2_version=5
             ;;
         "aarch64"|"arm64")
             supported_glibc2_version=23
@@ -661,7 +662,7 @@ check_linux_glibc() {
     fi
 
     # We pass here because:
-    #   1. Building python-package should work with an older glibc version.
+    #   1. Building Python should work with an older glibc version.
     #   2. Our generic "lnx" runtime might work with a slightly older glibc 2.
     if [ ${glibc_version_array[1]} -lt ${supported_glibc2_version} ]; then
         (>&2 echo -n "Detected glibc version: ${glibc_version}. Versions older")
@@ -772,19 +773,19 @@ detect_os() {
         FreeBSD)
             ARCH=$(uname -m)
             os_version_raw=$(uname -r | cut -d'.' -f1)
-            check_os_version "FreeBSD" 11 "$os_version_raw" os_version_chevah
+            check_os_version "FreeBSD" 12 "$os_version_raw" os_version_chevah
             OS="fbsd${os_version_chevah}"
             ;;
         OpenBSD)
             ARCH=$(uname -m)
             os_version_raw=$(uname -r)
-            check_os_version "OpenBSD" 6.5 "$os_version_raw" os_version_chevah
+            check_os_version "OpenBSD" 6.7 "$os_version_raw" os_version_chevah
             OS="obsd${os_version_chevah}"
             ;;
         SunOS)
             ARCH=$(isainfo -n)
             os_version_raw=$(uname -r | cut -d'.' -f2)
-            check_os_version Solaris 10 "$os_version_raw" os_version_chevah
+            check_os_version "Solaris" 10 "$os_version_raw" os_version_chevah
             OS="sol${os_version_chevah}"
             case "$OS" in
                 sol10)
@@ -826,6 +827,7 @@ detect_os() {
         *)
             (>&2 echo "Unsupported operating system: ${OS}.")
             exit 14
+            ;;
     esac
 
     # Normalize arch names. Force 32bit builds on some OS'es.
@@ -844,8 +846,8 @@ detect_os() {
                     # 32bit build on Windows 2016, 64bit otherwise.
                     # Should work with a l10n pack too (tested with French).
                     win_ver=$(systeminfo.exe | head -n 3 | tail -n 1 \
-                        | cut -d ":" -f 2 | cut -b 15-43)
-                    if [ "$win_ver" = "Microsoft Windows Server 2016" ]; then
+                        | cut -d ":" -f 2)
+                    if [[ "$win_ver" =~ "Microsoft Windows Server 2016" ]]; then
                         ARCH="x86"
                     fi
                     ;;
@@ -880,7 +882,7 @@ if [ "$COMMAND" = "purge" ] ; then
     exit 0
 fi
 
-# Initialize BUILD_ENV_VARS file when building python-package from scratch.
+# Initialize BUILD_ENV_VARS file when building Python from scratch.
 if [ "$COMMAND" == "detect_os" ]; then
     echo "PYTHON_VERSION=$PYTHON_NAME" > BUILD_ENV_VARS
     echo "OS=$OS" >> BUILD_ENV_VARS

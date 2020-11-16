@@ -438,14 +438,23 @@ def get_allowed_deps():
                 '/lib/libkvm.so.6',
                 '/usr/lib/libssl.so.7',
             ])
-        else:
-            # Additional deps, specific for FreeBSD 11 and maybe newer.
+        elif freebsd_version == '11':
+            # Additional deps, specific for FreeBSD 11.
             allowed_deps.extend([
                 '/lib/libcrypto.so.8',
                 '/lib/libelf.so.2',
                 '/lib/libkvm.so.7',
                 '/usr/lib/libdl.so.1',
                 '/usr/lib/libssl.so.8',
+            ])
+        else:
+            # Additional deps, specific for FreeBSD 12.
+            allowed_deps.extend([
+                '/lib/libcrypto.so.111',
+                '/lib/libelf.so.2',
+                '/lib/libkvm.so.7',
+                '/usr/lib/libdl.so.1',
+                '/usr/lib/libssl.so.111',
             ])
     elif platform_system == 'openbsd':
         # This is the list of deps for OpenBSD 5.8 or newer, sans versions.
@@ -648,7 +657,7 @@ def main():
             openssl_version = backend.openssl_version_text()
             if CHEVAH_OS in [ "win", "lnx", "macos" ]:
                 # Check OpenSSL version on OS'es with static OpenSSL libs.
-                expecting = u'OpenSSL 1.1.1g  21 Apr 2020'
+                expecting = u'OpenSSL 1.1.1h  22 Sep 2020'
                 if openssl_version != expecting:
                     sys.stderr.write('Expecting %s, got %s.\n' % (
                         expecting, openssl_version))

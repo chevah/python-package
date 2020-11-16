@@ -18,17 +18,17 @@ BZIP2_VERSION="1.0.8"
 LIBEDIT_VERSION="20170329-3.1"
 # PyCrypto needs GMP or MPIR for fast math. GMP has support for AIX/HP-UX/etc.
 GMP_VERSION="6.2.0"
-OPENSSL_VERSION="1.1.1g"
+OPENSSL_VERSION="1.1.1h"
 SQLITE_VERSION="3.30.1"
 PYSQLITE_VERSION="2.8.3"
 # These are used by get-pip.py.
-PIP_VERSION="20.1.1"
+PIP_VERSION="20.2.4"
 # Version 44.x is the last one to support Python 2.7.
 # More at https://github.com/pypa/setuptools/pull/1955.
 SETUPTOOLS_VERSION="44.1.1"
 
 # Python modules versions to be used everywhere possible.
-CFFI_VERSION="1.14.0"
+CFFI_VERSION="1.14.3"
 PYCRYPTO_VERSION="2.6.1"
 # PyCrypto 2.6.1 is vulnerable to CVE-2013-7459 and CVE-2018-6594, but we patch
 # these vulnerabilities, and mark correspondent Safety IDs as false positives.
@@ -42,13 +42,13 @@ SAFETY_FALSE_POSITIVES_OPTS="-i 35015"
 # because it has a very comprehensive and demanding test suite.
 PYCRYPTODOMEX_VERSION="3.9.7"
 PYOPENSSL_VERSION="19.1.0"
-CRYPTOGRAPHY_VERSION="2.9.2"
+CRYPTOGRAPHY_VERSION="3.2.1"
 SETPROCTITLE_VERSION="1.1.10"
 SCANDIR_VERSION="1.10.0"
-PSUTIL_VERSION="5.7.0"
+PSUTIL_VERSION="5.7.3"
 CYTHON_VERSION="0.29.21"
 SUBPROCESS32_VERSION="3.5.4"
-PYWIN32_VERSION="227"
+PYWIN32_VERSION="228"
 GMPY2_VERSION="2.0.8"
 GMPY_VERSION="1.17"
 BCRYPT_VERSION="3.1.7"
@@ -86,7 +86,6 @@ EXTRA_LIBRARIES_NO_CFFI="\
     python-modules/pycryptodomex-${PYCRYPTODOMEX_VERSION} \
     python-modules/bcrypt-${BCRYPT_VERSION} \
     "
-
 # List of default Python modules installed using pip.
 PIP_LIBRARIES="\
     pycryptodomex==${PYCRYPTODOMEX_VERSION} \
@@ -235,6 +234,8 @@ case $OS in
                 bcrypt==${BCRYPT_VERSION} \
                 "
         fi
+        # As of November 2020, OpenSSL 1.0.2r is the latest version from IBM.
+        export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
         ;;
     sol*)
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
@@ -292,6 +293,8 @@ case $OS in
             # Solaris 11 is much more modern, but still has some quirks.
             # Multiple system libffi libs present, this is a problem in 11.4.
             export BUILD_LIBFFI="yes"
+            # Build cryptography 3.2.1 against OpenSSL 1.0.2.
+            export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
             # Only cryptography 2.4+ builds unpatched with Studio's CC.
             # If there are errors related to "-Wconversion" on older versions,
             # use the diff from https://github.com/pyca/cryptography/pull/4545.
@@ -403,6 +406,20 @@ case $OS in
         export BUILD_LIBFFI="yes"
         # System includes bzip2 libs by default.
         export BUILD_BZIP2="no"
+        # Build scandir through EXTRA_LIBRARIES, to apply a needed patch.
+        PIP_LIBRARIES="\
+            pycryptodomex==${PYCRYPTODOMEX_VERSION} \
+            cryptography==${CRYPTOGRAPHY_VERSION} \
+            pyOpenSSL==${PYOPENSSL_VERSION} \
+            Cython==${CYTHON_VERSION} \
+            subprocess32==${SUBPROCESS32_VERSION} \
+            bcrypt==${BCRYPT_VERSION} \
+            psutil==${PSUTIL_VERSION} \
+            setproctitle==${SETPROCTITLE_VERSION}
+            "
+        EXTRA_LIBRARIES="$EXTRA_LIBRARIES \
+            python-modules/scandir-${SCANDIR_VERSION} \
+            "
         ;;
     obsd*)
         export CC="clang"
@@ -418,40 +435,12 @@ case $OS in
         # Generic Linux might be an old distro with OpenSSL 0.9.8 libraries.
         # To avoid linking to local libs, we build our own OpenSSL libs.
         export BUILD_OPENSSL="yes"
-        # Redefine PIP_LIBRARIES without cryptography, see below for details.
-        PIP_LIBRARIES="\
-            setproctitle==${SETPROCTITLE_VERSION} \
-            pycryptodomex==${PYCRYPTODOMEX_VERSION} \
-            pyOpenSSL==${PYOPENSSL_VERSION} \
-            scandir==${SCANDIR_VERSION} \
-            psutil==${PSUTIL_VERSION} \
-            Cython==${CYTHON_VERSION} \
-            subprocess32==${SUBPROCESS32_VERSION} \
-            bcrypt==${BCRYPT_VERSION} \
-            "
-        case $ARCH in
-            x64)
-                # Latest cryptography builds on SLES 11, but fails to load
-                # _openssl.so: "undefined symbol: __builtin_unreachable".
-                # More at https://github.com/pyca/cryptography/issues/3812.
-                # GCC 5.2 from SLE11 SP4 SDK repos might solve this, but
-                # for now we use the upstream wheel with a custom name, so
-                # that it doesn't get picked up on the other Linux distros.
-                PIP_LIBRARIES="\
-                    $PIP_LIBRARIES \
-                    cryptography==${CRYPTOGRAPHY_VERSION}upstream \
-                    "
-                ;;
-            arm64)
-                # On arm64, we use a more recent distro, with a decent gcc.
-                # Beware building this through pip against own OpenSSL libs
-                # requires the "-Wl,-rpath' voodoo when augmenting $LD_FLAGS.
-                PIP_LIBRARIES="\
-                    $PIP_LIBRARIES \
-                    cryptography==${CRYPTOGRAPHY_VERSION} \
-                    "
-                ;;
-        esac
+        # OpenSSL tests on CentOS 5 require an updated Perl 5.10 in /usr/local.
+        export PATH="/usr/local/bin:$PATH"
+        ;;
+    amzn2|rhel7)
+        # Build cryptography 3.2.1 against OpenSSL 1.0.2.
+        export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
         ;;
     win)
         # On Windows, python executable is installed at a different path.
@@ -921,26 +910,40 @@ initialize_python_module(){
 help_text_test=\
 "Run a quick test for the Python from build."
 command_test() {
-    test_file='test_python_binary_dist.py'
+    local test_file='test_python_binary_dist.py'
+    local errors_log='stderr.log'
+    local errors_unexpected='errors_unexpected.log'
+    # Regexp to match messages allowed on stderr during our Python tests.
+    local errors_allowed='enable-meta-key'
+
+    # For error 'RuntimeWarning: The _posixsubprocess module is not being used'.
+    if [ "${OS%sol10*}" = "" ]; then
+        # This error actually has two lines, but both contain the added exp.
+        local errors_allowed='enable-meta-key|program uses threads'
+    fi
     execute mkdir -p build/
     execute cp python-modules/chevah-python-test/${test_file} build/
     execute cp python-modules/chevah-python-test/get_binaries_deps.sh build/
     execute pushd build
 
-    echo '##### Executing Chevah tests... #####'
-    execute $LOCAL_PYTHON_BINARY ${test_file}
+    echo '##### Executing Chevah tests (with redirected stderr)... #####'
+    # Avoid 'No entry for terminal type "unknown"' warnings on stderr.
+    export TERM="dumb"
+    execute $LOCAL_PYTHON_BINARY ${test_file} 2>${errors_log}
+    if [ -s "$errors_log" ]; then
+        egrep -v "$errors_allowed" $errors_log > $errors_unexpected
+        if [ -s $errors_unexpected ]; then
+            (>&2 echo "There were unexpected errors logged to stderr:")
+            execute cat $errors_unexpected
+            exit 102
+        fi
+    fi
 
     echo '##### Testing for outdated packages and security issues... #####'
     execute $PYTHON_BIN -m pip list --outdated --format=columns
-    execute $PYTHON_BIN -m pip install $PIP_ARGS safety
-    # FIXME:5330:
-    # safety 1.8.5 fails on OpenBSD 6.6.
-    if [ "$OS" = "obsd66" ]; then
-        echo "OpenBSD 6.6 detected, not running Safety tests!"
-    else
-        execute $PYTHON_BIN -m safety check --full-report \
-            $SAFETY_FALSE_POSITIVES_OPTS $SAFETY_IGNORED_OPTS
-    fi
+    execute $PYTHON_BIN -m pip install $PIP_ARGS safety==1.8.7
+    execute $PYTHON_BIN -m safety check --full-report \
+        $SAFETY_FALSE_POSITIVES_OPTS $SAFETY_IGNORED_OPTS
     if [ -n "$SAFETY_FALSE_POSITIVES_OPTS" ]; then
         SAFETY_FALSE_POSITIVES_IDS="\
             $(echo $SAFETY_FALSE_POSITIVES_OPTS | sed s/\-i\ //g)"

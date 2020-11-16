@@ -1,24 +1,36 @@
 #
-# Experimental Travis-CI
-# For now, the build matrix has a single member: linux-arm64
+# Experimental Travis CI.
 #
-# Pinned on the oldest available distribution, to get a generic Linux build.
+# Linux ARM64 target is pinned on the oldest distribution available on Travis,
+# thus matching a generic ARM64 Linux build.
 
-language: c
+language: shell
 
-arch:
-  - arm64
+git:
+  depth: false
 
-os:
-  - linux
+jobs:
+  include:
+    # Ubuntu Server 16.04 on ARM64
+    - os: linux
+      dist: xenial
+      arch: arm64
 
-dist:
-  - xenial
+install:
+  - |
+    case $TRAVIS_OS_NAME in
+      osx)
+        # Some Homebrew libs pollute the build.
+        sudo find /usr/local -name 'libffi*' -exec chmod a-r {} +
+        ;;
+    esac
 
-install: skip
+before_script:
+  - ./brink.sh detect_os
 
 script:
-  - ./brink.sh detect_os
-  - ./chevah_build build
-  - ./chevah_build test
-  - ./chevah_build test_compat
+  - ./chevah_build build && ./chevah_build test && ./chevah_build test_compat
+
+notifications:
+  email:
+    - dumol@gmx.co.uk

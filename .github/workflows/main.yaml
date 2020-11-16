@@ -86,6 +86,7 @@ jobs:
     # We can use needed tools from /usr/bin.
     - name: Hack Homebrew
       run: |
+        sudo find /usr/local -name 'libffi*' -exec chmod a-r {} +
         sudo find /usr/local -name 'libintl*' -exec chmod a-r {} +
         sudo rm -f /usr/local/bin/{wget,curl,git}
 
@@ -96,6 +97,7 @@ jobs:
     - name: Unhack Homebrew
       run: |
         sudo find /usr/local -name 'libintl*' -exec chmod a+r {} +
+        sudo find /usr/local -name 'libffi*' -exec chmod a+r {} +
 
     - name: Test Python
       run: ./chevah_build test

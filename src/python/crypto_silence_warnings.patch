@@ -8,7 +8,7 @@
 +warnings.filterwarnings(
 +    'ignore',
 +    category=UserWarning,
-+    message='Python 2 is no longer supported by the Python core team. Support for it is now deprecated in cryptography, and will be removed in a future release.',
++    message='Python 2 is no longer supported by the Python core team. Support for it is now deprecated in cryptography, and will be removed in the next release.',
 +    )
 +warnings.filterwarnings(
 +    'ignore',

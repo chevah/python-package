@@ -31,10 +31,6 @@ chevahbs_patch() {
     fi
     # And finally we apply the OS-specific patches.
     case $OS in
-        rhel7|amzn2)
-            echo "Applying openssl102_allow.patch:"
-            execute patch -p0 < openssl102_allow.patch
-            ;;
         # BLDSHARED fixes from https://bugs.python.org/issue18235.
         aix*)
             echo "Applying openssl102_allow.patch:"

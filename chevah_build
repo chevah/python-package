@@ -438,10 +438,6 @@ case $OS in
         # OpenSSL tests on CentOS 5 require an updated Perl 5.10 in /usr/local.
         export PATH="/usr/local/bin:$PATH"
         ;;
-    amzn2|rhel7)
-        # Build cryptography 3.2.1 against OpenSSL 1.0.2.
-        export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
-        ;;
     win)
         # On Windows, python executable is installed at a different path.
         LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python

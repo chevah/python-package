@@ -727,21 +727,9 @@ detect_os() {
                 case "$linux_distro" in
                     rhel|centos)
                         os_version_raw="$VERSION_ID"
-                        check_os_version "Red Hat Enterprise Linux" 7 \
+                        check_os_version "Red Hat Enterprise Linux" 8 \
                             "$os_version_raw" os_version_chevah
                         set_os_if_not_generic "rhel" $os_version_chevah
-                        if [ "$os_version_chevah" -eq 7 ]; then
-                            if openssl version | grep -F -q "1.0.1"; then
-                                # 7.0-7.3 has OpenSSL 1.0.1, use generic build.
-                                check_linux_glibc
-                            fi
-                        fi
-                        ;;
-                    amzn)
-                        os_version_raw="$VERSION_ID"
-                        check_os_version "$distro_fancy_name" 2 \
-                            "$os_version_raw" os_version_chevah
-                        set_os_if_not_generic "amzn" $os_version_chevah
                         ;;
                     ubuntu|ubuntu-core)
                         os_version_raw="$VERSION_ID"
@@ -763,7 +751,8 @@ detect_os() {
                         set_os_if_not_generic "alpine" $os_version_chevah
                         ;;
                     *)
-                        # Unsupported modern distros such as SLES, Debian, etc.
+                        # Supported distros with unsupported OpenSSL versions or
+                        # distros not specifically supported: SLES, Debian, etc.
                         check_linux_glibc
                         ;;
                 esac

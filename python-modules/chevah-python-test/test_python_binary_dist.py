@@ -308,6 +308,7 @@ def get_allowed_deps():
                     # Solaris deps for 11.0-11.3.
                     allowed_deps.extend([
                         '/usr/lib/64/libncurses.so.5',
+                        '/usr/lib/64/libffi.so.5',
                         ])
         else:
             # This is the common list of deps for Solaris 10 & 11 32bit builds.
@@ -384,6 +385,7 @@ def get_allowed_deps():
                     # Solaris deps for 11.0-11.3.
                     allowed_deps.extend([
                         '/usr/lib/libncurses.so.5',
+                        '/usr/lib/libffi.so.5',
                         ])
     elif platform_system == 'hp-ux':
         # Specific deps for HP-UX 11.31, with full path.

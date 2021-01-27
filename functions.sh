@@ -173,6 +173,8 @@ build() {
             execute cp 'Makefile' ${lib_config_folder}/${makefile_name}
         fi
     execute popd
+    # Clean up after a successful build.
+    execute rm -rf ${build_folder}
 }
 
 

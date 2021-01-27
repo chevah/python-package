@@ -33,8 +33,6 @@ chevahbs_patch() {
     case $OS in
         # BLDSHARED fixes from https://bugs.python.org/issue18235.
         aix*)
-            echo "Applying openssl102_allow.patch:"
-            execute patch -p0 < openssl102_allow.patch
             echo "Applying aix_bldshared.patch:"
             execute patch -p0 < aix_bldshared.patch
             ;;
@@ -47,10 +45,6 @@ chevahbs_patch() {
         sol10*)
             echo "Applying solaris10_libcrypt.patch:"
             execute patch < solaris10_libcrypt.patch
-            ;;
-        sol11)
-            echo "Applying openssl102_allow.patch:"
-            execute patch -p0 < openssl102_allow.patch
             ;;
         hpux*)
             # Our patch to use -fPIC extra argument for linking only with GCC.

@@ -235,7 +235,7 @@ case $OS in
                 "
         fi
         # As of November 2020, OpenSSL 1.0.2r is the latest version from IBM.
-        export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
+        export BUILD_OPENSSL="yes"
         ;;
     sol*)
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
@@ -293,8 +293,8 @@ case $OS in
             # Solaris 11 is much more modern, but still has some quirks.
             # Multiple system libffi libs present, this is a problem in 11.4.
             export BUILD_LIBFFI="yes"
-            # Build cryptography 3.2.1 against OpenSSL 1.0.2.
-            export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
+            # cryptography 3.3 no longer supports OpenSSL 1.0.2.
+            export BUILD_OPENSSL="yes"
             # Only cryptography 2.4+ builds unpatched with Studio's CC.
             # If there are errors related to "-Wconversion" on older versions,
             # use the diff from https://github.com/pyca/cryptography/pull/4545.

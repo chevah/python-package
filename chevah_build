@@ -250,6 +250,7 @@ case $OS in
         # cryptography 3.2.x, last version to support OpenSSL 1.0.2.
         export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
         PIP_LIBRARIES=$PIP_LIBRARIES_OPENSSL_102
+        SAFETY_FALSE_POSITIVES_OPTS="$SAFETY_FALSE_POSITIVES_OPTS -i 39252"
         ;;
     sol*)
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
@@ -336,11 +337,12 @@ case $OS in
                 export BUILD_LIBFFI="yes"
                 # cryptography 1.9+ needs EC crypto, enabled in 11.3 SRU19+.
                 # Only cryptography 2.4+ builds unpatched with Studio's CC.
-                # If there are errors related to "-Wconversion" on older versions,
-                # use the diff from https://github.com/pyca/cryptography/pull/4545.
+                # See https://github.com/pyca/cryptography/pull/4545 for more.
                 # cryptography 3.2.x, last version to support OpenSSL 1.0.2.
                 export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
                 PIP_LIBRARIES=$PIP_LIBRARIES_OPENSSL_102
+                SAFETY_FALSE_POSITIVES_OPTS="\
+                    $SAFETY_FALSE_POSITIVES_OPTS -i 39252"
             fi
         fi
         if [ "$OS" = "sol10u3" ]; then

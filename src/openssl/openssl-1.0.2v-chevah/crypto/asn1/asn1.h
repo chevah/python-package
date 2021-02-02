@@ -1203,6 +1203,7 @@ void ERR_load_ASN1_strings(void);
 # define ASN1_F_ASN1_ITEM_DUP                             191
 # define ASN1_F_ASN1_ITEM_EX_COMBINE_NEW                  121
 # define ASN1_F_ASN1_ITEM_EX_D2I                          120
+# define ASN1_F_ASN1_ITEM_EX_I2D                          144
 # define ASN1_F_ASN1_ITEM_I2D_BIO                         192
 # define ASN1_F_ASN1_ITEM_I2D_FP                          193
 # define ASN1_F_ASN1_ITEM_PACK                            198
@@ -1302,6 +1303,7 @@ void ERR_load_ASN1_strings(void);
 # define ASN1_R_AUX_ERROR                                 100
 # define ASN1_R_BAD_CLASS                                 101
 # define ASN1_R_BAD_OBJECT_HEADER                         102
+# define ASN1_R_BAD_TEMPLATE                              230
 # define ASN1_R_BAD_PASSWORD_READ                         103
 # define ASN1_R_BAD_TAG                                   104
 # define ASN1_R_BMPSTRING_IS_WRONG_LENGTH                 214

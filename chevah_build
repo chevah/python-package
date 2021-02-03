@@ -220,14 +220,14 @@ case $OS in
             export ABI="32"
             export AR="ar -X32"
             if [ "${CC}" != "gcc" ]; then
-                export CFLAGS="$CFLAGS -qmaxmem=-1 -q32"
+                export CFLAGS="$CFLAGS -qmaxmem=16384 -q32"
             fi
         else
             export OBJECT_MODE="64"
             export ABI="mode64"
             export AR="ar -X64"
             if [ "${CC}" != "gcc" ]; then
-                export CFLAGS="$CFLAGS -qmaxmem=-1 -q64"
+                export CFLAGS="$CFLAGS -qmaxmem=16384 -q64"
             fi
         fi
         export BUILD_LIBFFI="yes"

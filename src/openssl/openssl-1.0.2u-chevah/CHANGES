@@ -7,7 +7,7 @@
  https://github.com/openssl/openssl/commits/ and pick the appropriate
  release branch.
 
- Changes between 1.0.2u and 1.0.2u-chevah [02 Feb 2021]
+ Changes between 1.0.2u and 1.0.2v-chevah [03 Feb 2021]
 
   *) Fixed Raccoon Attack (CVE-2020-1968). More at
      https://www.openssl.org/news/secadv/20200909.txt.

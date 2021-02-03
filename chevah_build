@@ -233,24 +233,27 @@ case $OS in
         export BUILD_LIBFFI="yes"
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
+        # As of January 2021, OpenSSL 1.0.2r is the latest version from IBM.
+        export BUILD_ZLIB="yes"
+        export BUILD_OPENSSL="yes"
+        OPENSSL_VERSION="1.0.2v-chevah"
+        # cryptography 3.2.x, last version to support OpenSSL 1.0.2.
+        export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
+        SAFETY_FALSE_POSITIVES_OPTS="$SAFETY_FALSE_POSITIVES_OPTS -i 39252"
+        PIP_LIBRARIES=$PIP_LIBRARIES_OPENSSL_102
         if [ "${OS%aix53}" = "" ]; then
             # psutil doesn't build on AIX 5.3, so we do without it.
             PIP_LIBRARIES="\
-                setproctitle==${SETPROCTITLE_VERSION} \
                 pycryptodomex==${PYCRYPTODOMEX_VERSION} \
-                cryptography==${CRYPTOGRAPHY_VERSION} \
+                cryptography==3.2.1 \
                 pyOpenSSL==${PYOPENSSL_VERSION} \
                 scandir==${SCANDIR_VERSION} \
                 Cython==${CYTHON_VERSION} \
                 subprocess32==${SUBPROCESS32_VERSION} \
                 bcrypt==${BCRYPT_VERSION} \
+                setproctitle==${SETPROCTITLE_VERSION}
                 "
         fi
-        # As of January 2021, OpenSSL 1.0.2r is the latest version from IBM.
-        # cryptography 3.2.x, last version to support OpenSSL 1.0.2.
-        export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
-        PIP_LIBRARIES=$PIP_LIBRARIES_OPENSSL_102
-        SAFETY_FALSE_POSITIVES_OPTS="$SAFETY_FALSE_POSITIVES_OPTS -i 39252"
         ;;
     sol*)
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
@@ -667,14 +670,22 @@ command_build() {
     if [ "$BUILD_OPENSSL" = "yes" ]; then
         build 'openssl' "openssl-$OPENSSL_VERSION" ${PYTHON_BUILD_FOLDER}
         # The '-Wl,-rpath' voodoo is needed when building cryptography w/ pip.
-        export LDFLAGS="-L${INSTALL_FOLDER}/lib64/ \
-            -Wl,-rpath,${INSTALL_FOLDER}/lib64/ ${LDFLAGS}"
-        export PKG_CONFIG_PATH="\
-            ${INSTALL_FOLDER}/lib64/pkgconfig/:${PKG_CONFIG_PATH}"
+        if [ "${ARCH%64}" = "$ARCH" ]; then
+            # AIX builds follow this branch.
+            export LDFLAGS="-L${INSTALL_FOLDER}/lib/ ${LDFLAGS}"
+            export PKG_CONFIG_PATH="\
+                ${INSTALL_FOLDER}/lib/pkgconfig/:${PKG_CONFIG_PATH}"
+        else
+            # Generic Linux and macOS builds follow this branch.
+            export LDFLAGS="-L${INSTALL_FOLDER}/lib64/ \
+                -Wl,-rpath,${INSTALL_FOLDER}/lib64/ ${LDFLAGS}"
+            export PKG_CONFIG_PATH="\
+                ${INSTALL_FOLDER}/lib64/pkgconfig/:${PKG_CONFIG_PATH}"
+        fi
         # Place SSL headers where they can be picked up.
         echo "Copying OpenSSL $OPENSSL_VERSION headers..."
         execute cp -r \
-            src/openssl/openssl-${OPENSSL_VERSION}/include/openssl \
+            build/openssl-${OPENSSL_VERSION}/include/openssl \
             ${INSTALL_FOLDER}/include/
         # To make sure they're found, we're back to using CPPFLAGS.
         export CPPFLAGS="$CPPFLAGS -I${INSTALL_FOLDER}/include"

@@ -233,9 +233,9 @@ case $OS in
         export BUILD_LIBFFI="yes"
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
-        # As of January 2021, OpenSSL 1.0.2r is the latest version from IBM.
-        export BUILD_ZLIB="yes"
+        # As of January 2021, OpenSSL 1.0.2u is the latest version from IBM.
         export BUILD_OPENSSL="yes"
+        # 1.1.1 tests fail on AIX, use 1.0.2 with patches from Ubuntu 16.04 LTS.
         OPENSSL_VERSION="1.0.2v-chevah"
         # cryptography 3.2.x, last version to support OpenSSL 1.0.2.
         export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
@@ -669,7 +669,6 @@ command_build() {
 
     if [ "$BUILD_OPENSSL" = "yes" ]; then
         build 'openssl' "openssl-$OPENSSL_VERSION" ${PYTHON_BUILD_FOLDER}
-        # The '-Wl,-rpath' voodoo is needed when building cryptography w/ pip.
         if [ "${ARCH%64}" = "$ARCH" ]; then
             # AIX builds follow this branch.
             export LDFLAGS="-L${INSTALL_FOLDER}/lib/ ${LDFLAGS}"
@@ -677,6 +676,7 @@ command_build() {
                 ${INSTALL_FOLDER}/lib/pkgconfig/:${PKG_CONFIG_PATH}"
         else
             # Generic Linux and macOS builds follow this branch.
+            # Passing -rpath to ldd is needed for building cryptography w/ pip.
             export LDFLAGS="-L${INSTALL_FOLDER}/lib64/ \
                 -Wl,-rpath,${INSTALL_FOLDER}/lib64/ ${LDFLAGS}"
             export PKG_CONFIG_PATH="\

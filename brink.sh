@@ -392,6 +392,7 @@ test_version_exists() {
     local remote_base_url=$1
     local target_file=python-${PYTHON_VERSION}-${OS}-${ARCH}.tar.gz
 
+    echo "Checking $remote_base_url/${OS}/${ARCH}/$target_file"
     $ONLINETEST_CMD $remote_base_url/${OS}/${ARCH}/$target_file
     return $?
 }
@@ -623,6 +624,8 @@ check_linux_glibc() {
     local glibc_version
     local glibc_version_array
     local supported_glibc2_version
+    # Output to a file to avoid "write error: Broken pipe" with grep/head.
+    local ldd_output_file="/tmp/.chevah_glibc_version"
 
     # Supported minimum minor glibc 2.X versions for various arches.
     # For x64, we build on CentOS 5.11 (Final) with glibc 2.5.
@@ -648,14 +651,15 @@ check_linux_glibc() {
         exit 18
     fi
 
-    ldd --version | egrep "GNU\ libc|GLIBC" > /dev/null
+    ldd --version > $ldd_output_file
+    egrep "GNU\ libc|GLIBC" $ldd_output_file > /dev/null
     if [ $? -ne 0 ]; then
         (>&2 echo "No glibc reported by ldd... Unsupported Linux libc?")
         exit 19
     fi
 
     # Tested with glibc 2.5/2.11.3/2.12/2.23/2.28-31 and eglibc 2.13/2.19.
-    glibc_version=$(ldd --version | head -n 1 | rev | cut -d\  -f1 | rev)
+    glibc_version=$(head -n 1 $ldd_output_file | rev | cut -d\  -f1 | rev)
 
     if [[ $glibc_version =~ [^[:digit:]\.] ]]; then
         (>&2 echo "Glibc version should only have numbers and periods, but:")

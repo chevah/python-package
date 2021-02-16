@@ -23,7 +23,7 @@ SQLITE_VERSION="3.34.1"
 PYSQLITE_VERSION="2.8.3"
 
 # Python modules versions to be used everywhere possible.
-CFFI_VERSION="1.14.3"
+CFFI_VERSION="1.14.5"
 PYCRYPTO_VERSION="2.6.1"
 # PyCrypto 2.6.1 is vulnerable to CVE-2013-7459 and CVE-2018-6594, but we patch
 # these vulnerabilities, and mark correspondent Safety IDs as false positives.

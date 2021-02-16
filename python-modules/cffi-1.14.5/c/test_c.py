@@ -17,7 +17,7 @@ from _cffi_backend import __version__
 # ____________________________________________________________
 
 import sys
-assert __version__ == "1.14.3", ("This test_c.py file is for testing a version"
+assert __version__ == "1.14.5", ("This test_c.py file is for testing a version"
                                  " of cffi that differs from the one that we"
                                  " get from 'import _cffi_backend'")
 if sys.version_info < (3,):
@@ -1470,7 +1470,7 @@ def test_a_lot_of_callbacks():
     def make_callback(m):
         def cb(n):
             return n + m
-        return callback(BFunc, cb, 42)    # 'cb' and 'BFunc' go out of scope
+        return callback(BFunc, cb, 42)    # 'cb' goes out of scope
     #
     flist = [make_callback(i) for i in range(BIGNUM)]
     for i, f in enumerate(flist):
@@ -3974,6 +3974,20 @@ def test_from_buffer_types():
     with pytest.raises(ValueError):
         release(pv[0])
 
+def test_issue483():
+    BInt = new_primitive_type("int")
+    BIntP = new_pointer_type(BInt)
+    BIntA = new_array_type(BIntP, None)
+    lst = list(range(25))
+    bytestring = bytearray(buffer(newp(BIntA, lst))[:] + b'XYZ')
+    p1 = from_buffer(BIntA, bytestring)      # int[]
+    assert len(buffer(p1)) == 25 * size_of_int()
+    assert sizeof(p1) == 25 * size_of_int()
+    #
+    p2 = from_buffer(BIntP, bytestring)
+    assert sizeof(p2) == size_of_ptr()
+    assert len(buffer(p2)) == size_of_int()  # first element only, by default
+
 def test_memmove():
     Short = new_primitive_type("short")
     ShortA = new_array_type(new_pointer_type(Short), None)
@@ -4496,3 +4510,24 @@ def test_type_available_with_correct_names():
         tp = getattr(_cffi_backend, name)
         assert isinstance(tp, type)
         assert (tp.__module__, tp.__name__) == ('_cffi_backend', name)
+
+def test_unaligned_types():
+    BByteArray = new_array_type(
+        new_pointer_type(new_primitive_type("unsigned char")), None)
+    pbuf = newp(BByteArray, 40)
+    buf = buffer(pbuf)
+    #
+    for name in ['short', 'int', 'long', 'long long', 'float', 'double',
+                 'float _Complex', 'double _Complex']:
+        p = new_primitive_type(name)
+        if name.endswith(' _Complex'):
+            num = cast(p, 1.23 - 4.56j)
+        else:
+            num = cast(p, 0x0123456789abcdef)
+        size = sizeof(p)
+        buf[0:40] = b"\x00" * 40
+        pbuf1 = cast(new_pointer_type(p), pbuf + 1)
+        pbuf1[0] = num
+        assert pbuf1[0] == num
+        assert buf[0] == b'\x00'
+        assert buf[1 + size] == b'\x00'

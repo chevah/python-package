@@ -71,10 +71,6 @@ def get_config():
     config = Distribution().get_command_obj('config')
     return config
 
-def macosx_deployment_target():
-    from distutils.sysconfig import get_config_var
-    return tuple(map(int, get_config_var("MACOSX_DEPLOYMENT_TARGET").split('.')))
-
 def ask_supports_thread():
     config = get_config()
     ok = (sys.platform != 'win32' and
@@ -149,38 +145,17 @@ if COMPILE_LIBFFI:
     sources.extend(os.path.join(COMPILE_LIBFFI, filename)
                    for filename in _filenames)
 else:
-    if 'darwin' in sys.platform and macosx_deployment_target() >= (10, 15):
-        # use libffi from Mac OS SDK if we're targetting 10.15 (including
-        # on arm64).  This libffi is safe against the crash-after-fork
-        # issue described in _cffi_backend.c.  Also, arm64 uses a different
-        # ABI for calls to vararg functions as opposed to regular functions.
-        extra_compile_args += ['-iwithsysroot/usr/include/ffi']
-        define_macros += [('CFFI_TRUST_LIBFFI', '1'),
-                          ('HAVE_FFI_PREP_CIF_VAR', '1')]
-        libraries += ['ffi']
-    else:
-        use_pkg_config()
+    use_pkg_config()
     ask_supports_thread()
     ask_supports_sync_synchronize()
+
+if 'darwin' in sys.platform:
+    # priority is given to `pkg_config`, but always fall back on SDK's libffi.
+    extra_compile_args += ['-iwithsysroot/usr/include/ffi']
 
 if 'freebsd' in sys.platform:
     include_dirs.append('/usr/local/include')
     library_dirs.append('/usr/local/lib')
-
-if 'darwin' in sys.platform:
-    try:
-        p = subprocess.Popen(['xcrun', '--show-sdk-path'],
-                             stdout=subprocess.PIPE)
-    except OSError as e:
-        if e.errno not in [errno.ENOENT, errno.EACCES]:
-            raise
-    else:
-        t = p.stdout.read().decode().strip()
-        p.stdout.close()
-        if p.wait() == 0:
-            include_dirs.append(t + '/usr/include/ffi')
-
-
 
 if __name__ == '__main__':
     from setuptools import setup, Distribution, Extension
@@ -212,7 +187,7 @@ Contact
 
 `Mailing list <https://groups.google.com/forum/#!forum/python-cffi>`_
 """,
-        version='1.14.3',
+        version='1.14.5',
         packages=['cffi'] if cpython else [],
         package_data={'cffi': ['_cffi_include.h', 'parse_c_type.h', 
                                '_embedding.h', '_cffi_errors.h']}

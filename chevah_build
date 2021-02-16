@@ -21,11 +21,6 @@ GMP_VERSION="6.2.1"
 OPENSSL_VERSION="1.1.1i"
 SQLITE_VERSION="3.34.1"
 PYSQLITE_VERSION="2.8.3"
-# These are used by get-pip.py.
-PIP_VERSION="20.2.4"
-# Version 44.x is the last one to support Python 2.7.
-# More at https://github.com/pypa/setuptools/pull/1955.
-SETUPTOOLS_VERSION="44.1.1"
 
 # Python modules versions to be used everywhere possible.
 CFFI_VERSION="1.14.3"
@@ -38,23 +33,32 @@ PYCRYPTO_VERSION="2.6.1"
 #     to execute arbitrary code as demonstrated by a crafted iv parameter to
 #     cryptmsg.py."
 SAFETY_FALSE_POSITIVES_OPTS="-i 35015"
-# We haven't replaced PyCrypto with PyCryptodome, but we build and test it
-# because it has a very comprehensive and demanding test suite.
-PYCRYPTODOMEX_VERSION="3.9.7"
-PYOPENSSL_VERSION="19.1.0"
-CRYPTOGRAPHY_VERSION="3.3.1"
-SETPROCTITLE_VERSION="1.1.10"
+# Haven't replaced PyCrypto w/ PyCryptodome, but we build it for its test suite.
+PYCRYPTODOMEX_VERSION="3.10.1"
+# 19.0.1 is used with OpenSSL 1.0.2 libs.
+PYOPENSSL_VERSION="20.0.1"
+# 3.2.1 is used with OpenSSL 1.0.2 libs.
+CRYPTOGRAPHY_VERSION="3.3.2"
 SCANDIR_VERSION="1.10.0"
-PSUTIL_VERSION="5.7.3"
+PSUTIL_VERSION="5.8.0"
 CYTHON_VERSION="0.29.21"
 SUBPROCESS32_VERSION="3.5.4"
-PYWIN32_VERSION="228"
 GMPY2_VERSION="2.0.8"
 GMPY_VERSION="1.17"
-BCRYPT_VERSION="3.1.7"
 
-# pycparser needs to be explicitly installed to work around setuptools auto
-# dependencies.
+# Versions no longer upgradable because of Python 2 deprecation.
+PIP_VERSION="20.3.4"
+# setuptools 44.x is the last series to support Python 2.7.
+# More at https://github.com/pypa/setuptools/pull/1955.
+SETUPTOOLS_VERSION="44.1.1"
+# bcrypt 3.2.0 requires at least Python 3.6.
+BCRYPT_VERSION="3.1.7"
+# setproctitle 1.2.x requires at least Python 3.6.
+SETPROCTITLE_VERSION="1.1.10"
+# pywin32 300 requires at least Python 3.5.
+PYWIN32_VERSION="228"
+
+# pycparser is explicitly installed to work around setuptools auto dependencies.
 PYCPARSER_VERSION="2.20"
 
 # Current revision for the VC++ 9.0 redistributable version used on Windows.
@@ -101,9 +105,10 @@ PIP_LIBRARIES="\
 # cryptography 3.2.1 was last upstream version to support OpenSSL 1.0.2.
 # Don't list cryptography here though. When building on AIX with its compiler,
 # it won't link correctly to non-system OpenSSL libs. Use EXTRA_LIBRARIES.
+# PyOpenSSL 19.1.0 was last upstream version to support OpenSSL 1.0.2.
 PIP_LIBRARIES_OPENSSL_102="\
     pycryptodomex==${PYCRYPTODOMEX_VERSION} \
-    pyOpenSSL==${PYOPENSSL_VERSION} \
+    pyOpenSSL==19.1.0 \
     scandir==${SCANDIR_VERSION} \
     Cython==${CYTHON_VERSION} \
     subprocess32==${SUBPROCESS32_VERSION} \
@@ -350,7 +355,7 @@ case $OS in
                 # See https://github.com/pyca/cryptography/pull/4545 for more.
                 # cryptography 3.2.x, last version to support OpenSSL 1.0.2.
                 export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
-                # Put cryptography back to build it against system OpenSSL libs.
+                # Put cryptography back, to build it against system OpenSSL.
                 PIP_LIBRARIES="cryptography==3.2.1 $PIP_LIBRARIES_OPENSSL_102"
                 SAFETY_FALSE_POSITIVES_OPTS="\
                     $SAFETY_FALSE_POSITIVES_OPTS -i 39252"

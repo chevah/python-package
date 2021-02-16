@@ -74,7 +74,7 @@ export BUILD_CFFI="yes"
 export BUILD_OPENSSL="no"
 
 # Patches for EXTRA_LIBRARIES modules should reside in a sub-directory named
-#"python-modules/lib-${LIB_VERSION}-patches", to be applied when needed
+# "python-modules/lib-${LIB_VERSION}-patches", to be applied when needed
 # during the build. See the patches for PyCrypto 2.6.1 for an example.
 EXTRA_LIBRARIES="\
     python-modules/cffi-${CFFI_VERSION} \
@@ -99,9 +99,10 @@ PIP_LIBRARIES="\
     setproctitle==${SETPROCTITLE_VERSION}
     "
 # cryptography 3.2.1 was last upstream version to support OpenSSL 1.0.2.
+# Don't list cryptography here though. When building on AIX with its compiler,
+# it won't link correctly to non-system OpenSSL libs. Use EXTRA_LIBRARIES.
 PIP_LIBRARIES_OPENSSL_102="\
     pycryptodomex==${PYCRYPTODOMEX_VERSION} \
-    cryptography==3.2.1 \
     pyOpenSSL==${PYOPENSSL_VERSION} \
     scandir==${SCANDIR_VERSION} \
     Cython==${CYTHON_VERSION} \
@@ -231,6 +232,8 @@ case $OS in
             fi
         fi
         export BUILD_LIBFFI="yes"
+        # There are zlib system libs, but we build as portable as possible now.
+        export BUILD_ZLIB="yes"
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
         # As of January 2021, OpenSSL 1.0.2u is the latest version from IBM.
@@ -239,13 +242,17 @@ case $OS in
         OPENSSL_VERSION="1.0.2v-chevah"
         # cryptography 3.2.x, last version to support OpenSSL 1.0.2.
         export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
-        SAFETY_FALSE_POSITIVES_OPTS="$SAFETY_FALSE_POSITIVES_OPTS -i 39252"
         PIP_LIBRARIES=$PIP_LIBRARIES_OPENSSL_102
+        # cryptography 3.2.1 builds fine against non-system OpenSSL 1.0.2 libs,
+        # but linking is not done right when building with xlc 12.1 under pip.
+        EXTRA_LIBRARIES="$EXTRA_LIBRARIES \
+            python-modules/cryptography-3.2.1 \
+        "
+        SAFETY_FALSE_POSITIVES_OPTS="$SAFETY_FALSE_POSITIVES_OPTS -i 39252"
         if [ "${OS%aix53}" = "" ]; then
             # psutil doesn't build on AIX 5.3, so we do without it.
             PIP_LIBRARIES="\
                 pycryptodomex==${PYCRYPTODOMEX_VERSION} \
-                cryptography==3.2.1 \
                 pyOpenSSL==${PYOPENSSL_VERSION} \
                 scandir==${SCANDIR_VERSION} \
                 Cython==${CYTHON_VERSION} \
@@ -343,7 +350,8 @@ case $OS in
                 # See https://github.com/pyca/cryptography/pull/4545 for more.
                 # cryptography 3.2.x, last version to support OpenSSL 1.0.2.
                 export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
-                PIP_LIBRARIES=$PIP_LIBRARIES_OPENSSL_102
+                # Put cryptography back to build it against system OpenSSL libs.
+                PIP_LIBRARIES="cryptography==3.2.1 $PIP_LIBRARIES_OPENSSL_102"
                 SAFETY_FALSE_POSITIVES_OPTS="\
                     $SAFETY_FALSE_POSITIVES_OPTS -i 39252"
             fi

@@ -190,33 +190,26 @@ def get_allowed_deps():
                     '/usr/lib/libffi.so.7',
                     ])
     elif platform_system == 'aix':
-        # List of deps with full paths for AIX 5.3 with OpenSSL 1.0.2k.
+        # List of deps with full paths for AIX 5.3.
         # These deps are common to AIX 6.1 and 7.1 as well.
         allowed_deps = [
             '/lib/libbsd.a(shr.o)',
             '/lib/libc.a(pse.o)',
             '/lib/libc.a(shr.o)',
             '/lib/libcrypt.a(shr.o)',
-            '/lib/libcrypto.a(libcrypto.so.1.0.0)',
-            '/lib/libcrypto.so',
             '/lib/libdl.a(shr.o)',
             '/lib/libnsl.a(shr.o)',
             '/lib/libpthreads.a(shr.o)',
             '/lib/libpthreads.a(shr_comm.o)',
             '/lib/libpthreads.a(shr_xpg5.o)',
             '/lib/libpthreads_compat.a(shr.o)',
-            '/lib/libssl.so',
             '/lib/libtli.a(shr.o)',
-            '/lib/libz.a(libz.so.1)',
             '/usr/lib/libc.a(shr.o)',
             '/usr/lib/libcrypt.a(shr.o)',
-            '/usr/lib/libcrypto.a(libcrypto.so.1.0.0)',
-            '/usr/lib/libcrypto.so',
             '/usr/lib/libdl.a(shr.o)',
             '/usr/lib/libpthread.a(shr_xpg5.o)',
             '/usr/lib/libpthreads.a(shr_comm.o)',
             '/usr/lib/libpthreads.a(shr_xpg5.o)',
-            '/usr/lib/libssl.so',
             '/unix',
             ]
         # sys.platform could be 'aix5', 'aix6' etc.

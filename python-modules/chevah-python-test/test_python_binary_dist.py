@@ -649,10 +649,17 @@ def main():
         try:
             from cryptography.hazmat.backends.openssl.backend import backend
             import cryptography
+            # Check OpenSSL version on OS'es with static OpenSSL libs.
             openssl_version = backend.openssl_version_text()
-            if CHEVAH_OS in [ "win", "lnx", "macos" ]:
-                # Check OpenSSL version on OS'es with static OpenSSL libs.
+            if CHEVAH_OS.startswith(("win", "lnx", "macos", "aix")):
+                # On some OS'es we build against our own OpenSSL.
                 expecting = u'OpenSSL 1.1.1j  16 Feb 2021'
+                if CHEVAH_OS.startswith("win"):
+                    # On Windows we are stuck with latest upstream wheels.
+                    expecting = u'OpenSSL 1.1.1i  8 Dec 2020'
+                if CHEVAH_OS.startswith("aix"):
+                    # On AIX we are stuck with a patched 1.0.2.
+                    expecting = u'OpenSSL 1.0.2v-chevah  03 Feb 2021'
                 if openssl_version != expecting:
                     sys.stderr.write('Expecting %s, got %s.\n' % (
                         expecting, openssl_version))

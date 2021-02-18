@@ -35,10 +35,8 @@ PYCRYPTO_VERSION="2.6.1"
 SAFETY_FALSE_POSITIVES_OPTS="-i 35015"
 # Haven't replaced PyCrypto w/ PyCryptodome, but we build it for its test suite.
 PYCRYPTODOMEX_VERSION="3.10.1"
-# 19.0.1 is used with OpenSSL 1.0.2 libs.
+# 19.1.0 is used with OpenSSL 1.0.2 libs.
 PYOPENSSL_VERSION="20.0.1"
-# 3.2.1 is used with OpenSSL 1.0.2 libs.
-CRYPTOGRAPHY_VERSION="3.3.2"
 SCANDIR_VERSION="1.10.0"
 PSUTIL_VERSION="5.8.0"
 CYTHON_VERSION="0.29.21"
@@ -51,6 +49,8 @@ PIP_VERSION="20.3.4"
 # setuptools 44.x is the last series to support Python 2.7.
 # More at https://github.com/pypa/setuptools/pull/1955.
 SETUPTOOLS_VERSION="44.1.1"
+# More so, 3.2.1 is used with OpenSSL 1.0.2 libs.
+CRYPTOGRAPHY_VERSION="3.3.2"
 # bcrypt 3.2.0 requires at least Python 3.6.
 BCRYPT_VERSION="3.1.7"
 # setproctitle 1.2.x requires at least Python 3.6.
@@ -258,7 +258,7 @@ case $OS in
             # psutil doesn't build on AIX 5.3, so we do without it.
             PIP_LIBRARIES="\
                 pycryptodomex==${PYCRYPTODOMEX_VERSION} \
-                pyOpenSSL==${PYOPENSSL_VERSION} \
+                pyOpenSSL==19.1.0 \
                 scandir==${SCANDIR_VERSION} \
                 Cython==${CYTHON_VERSION} \
                 subprocess32==${SUBPROCESS32_VERSION} \

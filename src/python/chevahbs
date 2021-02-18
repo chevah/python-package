@@ -53,6 +53,7 @@ chevahbs_patch() {
             execute patch < solaris10_libcrypt.patch
             ;;
         sol11)
+            # The "mmheap" package is required to build Python.
             echo "Applying openssl102_allow.patch:"
             execute patch -p0 < openssl102_allow.patch
             ;;

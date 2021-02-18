@@ -16,11 +16,27 @@ chevahbs_configure() {
 
 
 chevahbs_compile() {
-    execute $MAKE
-    # On AIX, OpenSSL's tests have a 50/50 chance of failing. FIXME
+    # On AIX, OpenSSL's tests have an ~1/6 chance of passing.
+    # Just repeating the tests is not enough, a whole rebuild is needed.
     if [ "${OS%aix*}" = "" ]; then
-        $MAKE test
+        for i in $(seq 1 20); do
+            echo "OpenSSL build ROUND ${i}..."
+            execute $MAKE
+            $MAKE test
+            tests_error_code=$?
+            if [ $tests_error_code -eq 0 ]; then
+                echo "OpenSSL tests were SUCCESSFUL in ROUND ${i}."
+                break
+            else
+                execute $MAKE clean
+            fi
+        done
+        if [ $tests_error_code -ne 0 ]; then
+            echo "OpenSSL tests failed $i times in a row."
+            exit 69
+        fi
     else
+        execute $MAKE
         execute $MAKE test
     fi
 }

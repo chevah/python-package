@@ -147,6 +147,7 @@ PIP_LIBRARIES_NO_CFFI="\
 PIP_ARGS="\
     --index-url=http://pypi.chevah.com/simple \
     --trusted-host=pypi.chevah.com \
+    --no-cache-dir \
     "
 
 PROG=$0

@@ -7,6 +7,14 @@
  https://github.com/openssl/openssl/commits/ and pick the appropriate
  release branch.
 
+ Changes between 1.0.2v-chevah and 1.0.2v-chevah2 [22 Feb 2021]
+
+  *) Fixed a NULL pointer deref in the X509_issuer_and_serial_hash()
+     function (CVE-2021-23841).
+
+  *) Fixed an overflow in the EVP_CipherUpdate, EVP_EncryptUpdate and
+     EVP_DecryptUpdate functions (CVE-2021-23840).
+
  Changes between 1.0.2u and 1.0.2v-chevah [03 Feb 2021]
 
   *) Fixed Raccoon Attack (CVE-2020-1968). More at

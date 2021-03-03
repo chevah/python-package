@@ -49,7 +49,7 @@ PIP_VERSION="20.3.4"
 # setuptools 44.x is the last series to support Python 2.7.
 # More at https://github.com/pypa/setuptools/pull/1955.
 SETUPTOOLS_VERSION="44.1.1"
-# More so, 3.2.1 is used with OpenSSL 1.0.2 libs.
+# Version 3.2.1 is used with OpenSSL 1.0.2 libs.
 CRYPTOGRAPHY_VERSION="3.3.2"
 # bcrypt 3.2.0 requires at least Python 3.6.
 BCRYPT_VERSION="3.1.7"
@@ -245,7 +245,7 @@ case $OS in
         # As of January 2021, OpenSSL 1.0.2u is the latest version from IBM.
         export BUILD_OPENSSL="yes"
         # 1.1.1 tests fail on AIX, use 1.0.2 with patches from Ubuntu 16.04 LTS.
-        OPENSSL_VERSION="1.0.2v-chevah"
+        OPENSSL_VERSION="1.0.2v-chevah2"
         # cryptography 3.2.x, last version to support OpenSSL 1.0.2.
         export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
         PIP_LIBRARIES=$PIP_LIBRARIES_OPENSSL_102

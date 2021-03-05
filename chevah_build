@@ -557,7 +557,7 @@ check_dependencies() {
                     packages=$ALPINE_LIBRESSL_PKGS
                     ;;
             esac
-            check_command=apk_shim
+            check_command='apk info -q -e'
             ;;
         archlinux)
             packages=$ARCH_PKGS

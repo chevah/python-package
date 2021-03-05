@@ -344,14 +344,6 @@ add_ignored_safety_ids_for_cryptography32() {
 }
 
 #
-# Alpine's apk doesn't seem to have a check for installed packages individually.
-#
-apk_shim() {
-    pkg="$1"
-    apk info | grep -q ^"$pkg"$
-}
-
-#
 # Construct a SFTP batch for uploading testing packages through GitHub actions.
 # Files are uploaded with a temporary name and then renamed to final name.
 #

@@ -780,6 +780,9 @@ command_build() {
         > ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}/lib/PYTHON_PACKAGE_VERSION
 
     make_dist 'python' ${PYTHON_BUILD_FOLDER}
+
+    # Generate a SFTP batch for uploading the package through GitHub actions.
+    build_publish_dist_sftp_batch
 }
 
 

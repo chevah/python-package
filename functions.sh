@@ -331,3 +331,26 @@ apk_shim() {
     pkg="$1"
     apk info | grep -q ^"$pkg"$
 }
+
+#
+# Construct a SFTP batch for uploading testing packages through GitHub actions.
+# Files are uploaded with a temporary name and then renamed to final name.
+#
+build_publish_dist_sftp_batch() {
+    local full_ver="${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}"
+    local local_dir="${DIST_FOLDER}/python/${OS}/${ARCH}/"
+    local upload_dir="testing/${full_ver}"
+    local pkg_file="python-${full_ver}-${OS}-${ARCH}.tar.gz"
+    local local_file="${local_dir}/${pkg_file}"
+    local dest_file="${upload_dir}/${pkg_file}"
+
+    # The mkdir command is prefixed with '-' to allow it to fail because
+    # $upload_dir exists if this is not the first upload for this version.
+    echo "-mkdir $upload_dir"                    > build/publish_dist_sftp_batch
+    echo "put $local_file ${dest_file}.part"    >> build/publish_dist_sftp_batch
+    echo "rename ${dest_file}.part $dest_file"  >> build/publish_dist_sftp_batch
+
+    # Add missing vars to the file to be sourced by the sftp upload script.
+    echo DIST_FOLDER="$DIST_FOLDER" >> BUILD_ENV_VARS
+    echo UPLOAD_FOLDER="$upload_dir" >> BUILD_ENV_VARS
+}

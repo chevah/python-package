@@ -250,23 +250,11 @@ case $OS in
         export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
         PIP_LIBRARIES=$PIP_LIBRARIES_OPENSSL_102
         # cryptography 3.2.1 builds fine against non-system OpenSSL 1.0.2 libs,
-        # but linking is not done right when building with xlc 12.1 under pip.
+        # but linking is not done right when building with xlc 12.1 through pip.
         EXTRA_LIBRARIES="$EXTRA_LIBRARIES \
             python-modules/cryptography-3.2.1 \
         "
-        # Safety ID 36252:
-        #     Cryptography 3.3 no longer allows loading of finite field
-        #     Diffie-Hellman parameters of less than 512 bits in length.
-        #     This change is to conform with an upcoming OpenSSL release
-        #     that no longer supports smaller sizes. These keys were
-        #     already wildly insecure and should not have been used in
-        #     any application outside of testing.
-        # Safety ID 36533 (CVE-2020-36242):
-        #     In the cryptography package before 3.3.2 for Python,
-        #     certain sequences of update calls to symmetrically encrypt
-        #     multi-GB values could result in an integer overflow and
-        #     buffer overflow, as demonstrated by the Fernet class.
-        SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 39252 -i 39606"
+        add_ignored_safety_ids_for_cryptography32
         if [ "${OS%aix53}" = "" ]; then
             # psutil doesn't build on AIX 5.3, so we do without it.
             PIP_LIBRARIES="\
@@ -371,19 +359,7 @@ case $OS in
                 # Put cryptography back, to build it against system OpenSSL.
                 # cryptography 3.2.1, last version working with OpenSSL 1.0.2.
                 PIP_LIBRARIES="cryptography==3.2.1 $PIP_LIBRARIES_OPENSSL_102"
-                # Safety ID 36252:
-                #     Cryptography 3.3 no longer allows loading of finite field
-                #     Diffie-Hellman parameters of less than 512 bits in length.
-                #     This change is to conform with an upcoming OpenSSL release
-                #     that no longer supports smaller sizes. These keys were
-                #     already wildly insecure and should not have been used in
-                #     any application outside of testing.
-                # Safety ID 36533 (CVE-2020-36242):
-                #     In the cryptography package before 3.3.2 for Python,
-                #     certain sequences of update calls to symmetrically encrypt
-                #     multi-GB values could result in an integer overflow and
-                #     buffer overflow, as demonstrated by the Fernet class.
-                SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 39252 -i 39606"
+                add_ignored_safety_ids_for_cryptography32
             fi
         fi
         if [ "$OS" = "sol10u3" ]; then

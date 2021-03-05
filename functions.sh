@@ -325,6 +325,25 @@ add_ignored_safety_ids_for_pyopenssl_false_positives() {
 }
 
 #
+# Safety DB IDs to be ignored when using cryptography 3.2.
+#
+add_ignored_safety_ids_for_cryptography32() {
+    # Safety ID 36252:
+    #     Cryptography 3.3 no longer allows loading of finite field
+    #     Diffie-Hellman parameters of less than 512 bits in length.
+    #     This change is to conform with an upcoming OpenSSL release
+    #     that no longer supports smaller sizes. These keys were
+    #     already wildly insecure and should not have been used in
+    #     any application outside of testing.
+    # Safety ID 36533 (CVE-2020-36242):
+    #     In the cryptography package before 3.3.2 for Python,
+    #     certain sequences of update calls to symmetrically encrypt
+    #     multi-GB values could result in an integer overflow and
+    #     buffer overflow, as demonstrated by the Fernet class.
+    SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 39252 -i 39606"
+}
+
+#
 # Alpine's apk doesn't seem to have a check for installed packages individually.
 #
 apk_shim() {

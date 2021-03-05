@@ -60,7 +60,9 @@ jobs:
     # If one of the above steps fails, fire up tmate for remote debugging.
     - name: Tmate debug on failure
       if: failure() && env.TMATE_DEBUG == 'yes'
-      uses: mxschmitt/action-tmate@v2
+      uses: mxschmitt/action-tmate@v3
+      with:
+        limit-access-to-actor: true
 
 
   macos-10-15:
@@ -107,7 +109,9 @@ jobs:
 
     - name: Tmate debug on failure
       if: failure() && env.TMATE_DEBUG == 'yes'
-      uses: mxschmitt/action-tmate@v2
+      uses: mxschmitt/action-tmate@v3
+      with:
+        limit-access-to-actor: true
 
 
   windows-2019:
@@ -143,3 +147,9 @@ jobs:
 
     - name: Test Compat
       run: bash ./chevah_build test_compat
+
+    - name: Tmate debug on failure
+      if: failure() && env.TMATE_DEBUG == 'yes'
+      uses: mxschmitt/action-tmate@v3
+      with:
+        limit-access-to-actor: true

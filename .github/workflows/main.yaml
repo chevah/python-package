@@ -57,10 +57,23 @@ jobs:
     - name: Test Compat
       run: ./chevah_build test_compat
 
+    # Upload using a (per-OS selected) sftp command, then show final links.
+    - name: Upload testing package
+      run: |
+        mkdir -pv ~/.ssh/
+        touch priv_key
+        chmod 600 priv_key
+        echo "${{ secrets.SFTPPLUS_BIN_PRIV_KEY }}" > priv_key
+        echo "${{ secrets.SFTPPLUS_BIN_HOST_KEY }}" > ~/.ssh/known_hosts
+        ./publish_dist.sh
+        rm priv_key
+
     # If one of the above steps fails, fire up tmate for remote debugging.
     - name: Tmate debug on failure
       if: failure() && env.TMATE_DEBUG == 'yes'
-      uses: mxschmitt/action-tmate@v2
+      uses: mxschmitt/action-tmate@v3
+      with:
+        limit-access-to-actor: true
 
 
   macos-10-15:
@@ -105,9 +118,21 @@ jobs:
     - name: Test Compat
       run: ./chevah_build test_compat
 
+    - name: Upload testing package
+      run: |
+        mkdir -pv ~/.ssh/
+        touch priv_key
+        chmod 600 priv_key
+        echo "${{ secrets.SFTPPLUS_BIN_PRIV_KEY }}" > priv_key
+        echo "${{ secrets.SFTPPLUS_BIN_HOST_KEY }}" > ~/.ssh/known_hosts
+        ./publish_dist.sh
+        rm priv_key
+
     - name: Tmate debug on failure
       if: failure() && env.TMATE_DEBUG == 'yes'
-      uses: mxschmitt/action-tmate@v2
+      uses: mxschmitt/action-tmate@v3
+      with:
+        limit-access-to-actor: true
 
 
   windows-2019:
@@ -129,7 +154,7 @@ jobs:
     # Add packages needed to build our patched pycrypto.
     - name: Prepare OS
       run: |
-        chocolatey install -y make vcpython27
+        chocolatey install --yes --no-progress make vcpython27
 
     # Explicitly run our scripts with Bash, not PowerShell (GitHub's default).
     - name: Download needed deps for the detected OS
@@ -143,3 +168,28 @@ jobs:
 
     - name: Test Compat
       run: bash ./chevah_build test_compat
+
+    # To use an RSA key with SFTPPlus, install upstream OpenSSH package,
+    # which is more finicky in regards to file permissions.
+    # Beware the commands in this step run under PowerShell.
+    - name: Prepare SFTP upload
+      run: |
+        mkdir -p ~/.ssh/
+        touch priv_key
+        icacls .\priv_key /inheritance:r
+        icacls .\priv_key /grant:r runneradmin:"(F)"
+        echo "${{ secrets.SFTPPLUS_BIN_PRIV_KEY }}" > priv_key
+        echo "${{ secrets.SFTPPLUS_BIN_HOST_KEY }}" > ~/.ssh/known_hosts
+        choco install --yes --no-progress openssh
+
+    # Upload using a (per-OS selected) sftp command, then show final links.
+    - name: Upload testing package
+      run: |
+        bash ./publish_dist.sh
+        rm priv_key
+
+    - name: Tmate debug on failure
+      if: failure() && env.TMATE_DEBUG == 'yes'
+      uses: mxschmitt/action-tmate@v3
+      with:
+        limit-access-to-actor: true

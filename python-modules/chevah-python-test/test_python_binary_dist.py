@@ -190,33 +190,26 @@ def get_allowed_deps():
                     '/usr/lib/libffi.so.7',
                     ])
     elif platform_system == 'aix':
-        # List of deps with full paths for AIX 5.3 with OpenSSL 1.0.2k.
+        # List of deps with full paths for AIX 5.3.
         # These deps are common to AIX 6.1 and 7.1 as well.
         allowed_deps = [
             '/lib/libbsd.a(shr.o)',
             '/lib/libc.a(pse.o)',
             '/lib/libc.a(shr.o)',
             '/lib/libcrypt.a(shr.o)',
-            '/lib/libcrypto.a(libcrypto.so.1.0.0)',
-            '/lib/libcrypto.so',
             '/lib/libdl.a(shr.o)',
             '/lib/libnsl.a(shr.o)',
             '/lib/libpthreads.a(shr.o)',
             '/lib/libpthreads.a(shr_comm.o)',
             '/lib/libpthreads.a(shr_xpg5.o)',
             '/lib/libpthreads_compat.a(shr.o)',
-            '/lib/libssl.so',
             '/lib/libtli.a(shr.o)',
-            '/lib/libz.a(libz.so.1)',
             '/usr/lib/libc.a(shr.o)',
             '/usr/lib/libcrypt.a(shr.o)',
-            '/usr/lib/libcrypto.a(libcrypto.so.1.0.0)',
-            '/usr/lib/libcrypto.so',
             '/usr/lib/libdl.a(shr.o)',
             '/usr/lib/libpthread.a(shr_xpg5.o)',
             '/usr/lib/libpthreads.a(shr_comm.o)',
             '/usr/lib/libpthreads.a(shr_xpg5.o)',
-            '/usr/lib/libssl.so',
             '/unix',
             ]
         # sys.platform could be 'aix5', 'aix6' etc.
@@ -308,6 +301,7 @@ def get_allowed_deps():
                     # Solaris deps for 11.0-11.3.
                     allowed_deps.extend([
                         '/usr/lib/64/libncurses.so.5',
+                        '/usr/lib/64/libffi.so.5',
                         ])
         else:
             # This is the common list of deps for Solaris 10 & 11 32bit builds.
@@ -384,6 +378,7 @@ def get_allowed_deps():
                     # Solaris deps for 11.0-11.3.
                     allowed_deps.extend([
                         '/usr/lib/libncurses.so.5',
+                        '/usr/lib/libffi.so.5',
                         ])
     elif platform_system == 'hp-ux':
         # Specific deps for HP-UX 11.31, with full path.
@@ -654,10 +649,17 @@ def main():
         try:
             from cryptography.hazmat.backends.openssl.backend import backend
             import cryptography
+            # Check OpenSSL version on OS'es with static OpenSSL libs.
             openssl_version = backend.openssl_version_text()
-            if CHEVAH_OS in [ "win", "lnx", "macos" ]:
-                # Check OpenSSL version on OS'es with static OpenSSL libs.
-                expecting = u'OpenSSL 1.1.1h  22 Sep 2020'
+            if CHEVAH_OS.startswith(("win", "lnx", "macos", "aix")):
+                # On some OS'es we build against our own OpenSSL.
+                expecting = u'OpenSSL 1.1.1j  16 Feb 2021'
+                if CHEVAH_OS.startswith("win"):
+                    # On Windows we are stuck with latest upstream wheels.
+                    expecting = u'OpenSSL 1.1.1i  8 Dec 2020'
+                if CHEVAH_OS.startswith("aix"):
+                    # On AIX we are stuck with a patched 1.0.2.
+                    expecting = u'OpenSSL 1.0.2v-chevah2  22 Feb 2021'
                 if openssl_version != expecting:
                     sys.stderr.write('Expecting %s, got %s.\n' % (
                         expecting, openssl_version))

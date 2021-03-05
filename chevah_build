@@ -17,18 +17,13 @@ BZIP2_VERSION="1.0.8"
 # readline module available without linking to the GPL-only readline libs.
 LIBEDIT_VERSION="20170329-3.1"
 # PyCrypto needs GMP or MPIR for fast math. GMP has support for AIX/HP-UX/etc.
-GMP_VERSION="6.2.0"
-OPENSSL_VERSION="1.1.1h"
-SQLITE_VERSION="3.30.1"
-PYSQLITE_VERSION="2.8.3"
-# These are used by get-pip.py.
-PIP_VERSION="20.2.4"
-# Version 44.x is the last one to support Python 2.7.
-# More at https://github.com/pypa/setuptools/pull/1955.
-SETUPTOOLS_VERSION="44.1.1"
+GMP_VERSION="6.2.1"
+OPENSSL_VERSION="1.1.1j"
+SQLITE_VERSION="3.34.1"
 
 # Python modules versions to be used everywhere possible.
-CFFI_VERSION="1.14.3"
+PYSQLITE_VERSION="2.8.3"
+CFFI_VERSION="1.14.5"
 PYCRYPTO_VERSION="2.6.1"
 # PyCrypto 2.6.1 is vulnerable to CVE-2013-7459 and CVE-2018-6594, but we patch
 # these vulnerabilities, and mark correspondent Safety IDs as false positives.
@@ -38,23 +33,32 @@ PYCRYPTO_VERSION="2.6.1"
 #     to execute arbitrary code as demonstrated by a crafted iv parameter to
 #     cryptmsg.py."
 SAFETY_FALSE_POSITIVES_OPTS="-i 35015"
-# We haven't replaced PyCrypto with PyCryptodome, but we build and test it
-# because it has a very comprehensive and demanding test suite.
-PYCRYPTODOMEX_VERSION="3.9.7"
-PYOPENSSL_VERSION="19.1.0"
-CRYPTOGRAPHY_VERSION="3.2.1"
-SETPROCTITLE_VERSION="1.1.10"
+# Haven't replaced PyCrypto w/ PyCryptodome, but we build it for its test suite.
+PYCRYPTODOMEX_VERSION="3.10.1"
+# 19.1.0 is used with OpenSSL 1.0.2 libs.
+PYOPENSSL_VERSION="20.0.1"
 SCANDIR_VERSION="1.10.0"
-PSUTIL_VERSION="5.7.3"
+PSUTIL_VERSION="5.8.0"
 CYTHON_VERSION="0.29.21"
 SUBPROCESS32_VERSION="3.5.4"
-PYWIN32_VERSION="228"
 GMPY2_VERSION="2.0.8"
 GMPY_VERSION="1.17"
-BCRYPT_VERSION="3.1.7"
 
-# pycparser needs to be explicitly installed to work around setuptools auto
-# dependencies.
+# Versions no longer upgradable because of Python 2 deprecation.
+PIP_VERSION="20.3.4"
+# setuptools 44.x is the last series to support Python 2.7.
+# More at https://github.com/pypa/setuptools/pull/1955.
+SETUPTOOLS_VERSION="44.1.1"
+# Version 3.2.1 is used with OpenSSL 1.0.2 libs.
+CRYPTOGRAPHY_VERSION="3.3.2"
+# bcrypt 3.2.0 requires at least Python 3.6.
+BCRYPT_VERSION="3.1.7"
+# setproctitle 1.2.x requires at least Python 3.6.
+SETPROCTITLE_VERSION="1.1.10"
+# pywin32 300 requires at least Python 3.5.
+PYWIN32_VERSION="228"
+
+# pycparser is explicitly installed to work around setuptools auto dependencies.
 PYCPARSER_VERSION="2.20"
 
 # Current revision for the VC++ 9.0 redistributable version used on Windows.
@@ -74,7 +78,7 @@ export BUILD_CFFI="yes"
 export BUILD_OPENSSL="no"
 
 # Patches for EXTRA_LIBRARIES modules should reside in a sub-directory named
-#"python-modules/lib-${LIB_VERSION}-patches", to be applied when needed
+# "python-modules/lib-${LIB_VERSION}-patches", to be applied when needed
 # during the build. See the patches for PyCrypto 2.6.1 for an example.
 EXTRA_LIBRARIES="\
     python-modules/cffi-${CFFI_VERSION} \
@@ -98,18 +102,32 @@ PIP_LIBRARIES="\
     psutil==${PSUTIL_VERSION} \
     setproctitle==${SETPROCTITLE_VERSION}
     "
+# cryptography 3.2.1 was last upstream version to support OpenSSL 1.0.2.
+# Don't list cryptography here though. When building on AIX with its compiler,
+# it won't link correctly to non-system OpenSSL libs. Use EXTRA_LIBRARIES.
+# PyOpenSSL 19.1.0 was last upstream version to support OpenSSL 1.0.2.
+PIP_LIBRARIES_OPENSSL_102="\
+    pycryptodomex==${PYCRYPTODOMEX_VERSION} \
+    pyOpenSSL==19.1.0 \
+    scandir==${SCANDIR_VERSION} \
+    Cython==${CYTHON_VERSION} \
+    subprocess32==${SUBPROCESS32_VERSION} \
+    bcrypt==${BCRYPT_VERSION} \
+    psutil==${PSUTIL_VERSION} \
+    setproctitle==${SETPROCTITLE_VERSION}
+    "
 # cryptography 1.3.4 was last upstream version to support OpenSSL 0.9.8.
 # pyOpenSSL 16.0.0 was last upstream version to support OpenSSL 0.9.8.
 PIP_LIBRARIES_OPENSSL_098="\
-    setproctitle==${SETPROCTITLE_VERSION} \
     pycryptodomex==${PYCRYPTODOMEX_VERSION} \
     cryptography==1.3.4 \
     pyOpenSSL==16.0.0 \
     scandir==${SCANDIR_VERSION} \
-    psutil==${PSUTIL_VERSION} \
     Cython==${CYTHON_VERSION} \
     subprocess32==${SUBPROCESS32_VERSION} \
     bcrypt==${BCRYPT_VERSION} \
+    psutil==${PSUTIL_VERSION} \
+    setproctitle==${SETPROCTITLE_VERSION} \
     "
 # Python modules installed through pip on systems not built around cffi.
 # pyOpenSSL 0.13.1 was last upstream version before the port to
@@ -129,6 +147,7 @@ PIP_LIBRARIES_NO_CFFI="\
 PIP_ARGS="\
     --index-url=http://pypi.chevah.com/simple \
     --trusted-host=pypi.chevah.com \
+    --no-cache-dir \
     "
 
 PROG=$0
@@ -208,34 +227,46 @@ case $OS in
             export ABI="32"
             export AR="ar -X32"
             if [ "${CC}" != "gcc" ]; then
-                export CFLAGS="$CFLAGS -qmaxmem=-1 -q32"
+                export CFLAGS="$CFLAGS -qmaxmem=16384 -q32"
             fi
         else
             export OBJECT_MODE="64"
             export ABI="mode64"
             export AR="ar -X64"
             if [ "${CC}" != "gcc" ]; then
-                export CFLAGS="$CFLAGS -qmaxmem=-1 -q64"
+                export CFLAGS="$CFLAGS -qmaxmem=16384 -q64"
             fi
         fi
         export BUILD_LIBFFI="yes"
+        # There are zlib system libs, but we build as portable as possible now.
+        export BUILD_ZLIB="yes"
         # libedit requires __STDC_ISO_10646__.
         export BUILD_LIBEDIT="no"
+        # As of January 2021, OpenSSL 1.0.2u is the latest version from IBM.
+        export BUILD_OPENSSL="yes"
+        # 1.1.1 tests fail on AIX, use 1.0.2 with patches from Ubuntu 16.04 LTS.
+        OPENSSL_VERSION="1.0.2v-chevah2"
+        # cryptography 3.2.x, last version to support OpenSSL 1.0.2.
+        export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
+        PIP_LIBRARIES=$PIP_LIBRARIES_OPENSSL_102
+        # cryptography 3.2.1 builds fine against non-system OpenSSL 1.0.2 libs,
+        # but linking is not done right when building with xlc 12.1 through pip.
+        EXTRA_LIBRARIES="$EXTRA_LIBRARIES \
+            python-modules/cryptography-3.2.1 \
+        "
+        add_ignored_safety_ids_for_cryptography32
         if [ "${OS%aix53}" = "" ]; then
             # psutil doesn't build on AIX 5.3, so we do without it.
             PIP_LIBRARIES="\
-                setproctitle==${SETPROCTITLE_VERSION} \
                 pycryptodomex==${PYCRYPTODOMEX_VERSION} \
-                cryptography==${CRYPTOGRAPHY_VERSION} \
-                pyOpenSSL==${PYOPENSSL_VERSION} \
+                pyOpenSSL==19.1.0 \
                 scandir==${SCANDIR_VERSION} \
                 Cython==${CYTHON_VERSION} \
                 subprocess32==${SUBPROCESS32_VERSION} \
                 bcrypt==${BCRYPT_VERSION} \
+                setproctitle==${SETPROCTITLE_VERSION}
                 "
         fi
-        # As of November 2020, OpenSSL 1.0.2r is the latest version from IBM.
-        export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
         ;;
     sol*)
         # By default, we use Sun's Studio compiler. Comment these two for GCC.
@@ -291,15 +322,20 @@ case $OS in
             EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
         else
             # Solaris 11 is much more modern, but still has some quirks.
-            # Multiple system libffi libs present, this is a problem in 11.4.
-            export BUILD_LIBFFI="yes"
-            # Build cryptography 3.2.1 against OpenSSL 1.0.2.
-            export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
-            # Only cryptography 2.4+ builds unpatched with Studio's CC.
-            # If there are errors related to "-Wconversion" on older versions,
-            # use the diff from https://github.com/pyca/cryptography/pull/4545.
-            # cryptography 1.9+ needs EC crypto, enabled in 11.3 SRU19 or newer.
-            if [ ! -f /usr/include/openssl/ecdh.h ]; then
+            if [ ! -f /usr/include/openssl/cmac.h ]; then
+                # Solaris 11.0/11.1 have OpenSSL 1.0.0 libraries.
+                # cryptography 1.6 is the last version to support them.
+                # pyOpenSSL 17.0.0, last version to support cryptography 1.6.
+                # but it's vulnerable to CVE-2018-1000807 and CVE-2018-1000807.
+                # So we use the libraries not requiring CFFI here.
+                export BUILD_CFFI="no"
+                add_ignored_safety_ids_for_pyopenssl_false_positives
+                PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
+                EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
+                # setuptools 42.0.0 breaks allow-hosts set globally.
+                # More at https://github.com/pypa/setuptools/issues/1916.
+                SETUPTOOLS_VERSION="41.6.0"
+            elif [ ! -f /usr/include/openssl/ecdh.h ]; then
                 # Solaris 11.2 (or 11.3 up to SRU 18) has OpenSSL 1.0.1 without
                 # Elliptic-curve crypto, thus only cryptography 1.8.2 works.
                 # pyOpenSSL 17.0.0, last version to support cryptography 1.8.2,
@@ -312,17 +348,18 @@ case $OS in
                 # setuptools 42.0.0 breaks allow-hosts set globally.
                 # More at https://github.com/pypa/setuptools/issues/1916.
                 SETUPTOOLS_VERSION="41.6.0"
-            fi
-            if [ ! -f /usr/include/openssl/cmac.h ]; then
-                # Solaris 11.0/11.1 have OpenSSL 1.0.0 libraries.
-                # cryptography 1.6 is the last version to support them.
-                # pyOpenSSL 17.0.0, last version to support cryptography 1.6.
-                # but it's vulnerable to CVE-2018-1000807 and CVE-2018-1000807.
-                # So we use the libraries not requiring CFFI here.
-                export BUILD_CFFI="no"
-                add_ignored_safety_ids_for_pyopenssl_false_positives
-                PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
-                EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
+            else
+                # Solaris 11.4 has multiple system libffi libs present.
+                export BUILD_LIBFFI="yes"
+                # cryptography 1.9+ needs EC crypto, enabled in 11.3 SRU19+.
+                # Only cryptography 2.4+ builds unpatched with Studio's CC.
+                # See https://github.com/pyca/cryptography/pull/4545 for more.
+                # cryptography 3.2.x, last version to support OpenSSL 1.0.2.
+                export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
+                # Put cryptography back, to build it against system OpenSSL.
+                # cryptography 3.2.1, last version working with OpenSSL 1.0.2.
+                PIP_LIBRARIES="cryptography==3.2.1 $PIP_LIBRARIES_OPENSSL_102"
+                add_ignored_safety_ids_for_cryptography32
             fi
         fi
         if [ "$OS" = "sol10u3" ]; then
@@ -438,10 +475,6 @@ case $OS in
         # OpenSSL tests on CentOS 5 require an updated Perl 5.10 in /usr/local.
         export PATH="/usr/local/bin:$PATH"
         ;;
-    amzn2|rhel7)
-        # Build cryptography 3.2.1 against OpenSSL 1.0.2.
-        export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
-        ;;
     win)
         # On Windows, python executable is installed at a different path.
         LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
@@ -524,7 +557,7 @@ check_dependencies() {
                     packages=$ALPINE_LIBRESSL_PKGS
                     ;;
             esac
-            check_command=apk_shim
+            check_command='apk info -q -e'
             ;;
         archlinux)
             packages=$ARCH_PKGS
@@ -650,15 +683,23 @@ command_build() {
 
     if [ "$BUILD_OPENSSL" = "yes" ]; then
         build 'openssl' "openssl-$OPENSSL_VERSION" ${PYTHON_BUILD_FOLDER}
-        # The '-Wl,-rpath' voodoo is needed when building cryptography w/ pip.
-        export LDFLAGS="-L${INSTALL_FOLDER}/lib64/ \
-            -Wl,-rpath,${INSTALL_FOLDER}/lib64/ ${LDFLAGS}"
-        export PKG_CONFIG_PATH="\
-            ${INSTALL_FOLDER}/lib64/pkgconfig/:${PKG_CONFIG_PATH}"
+        if [ "${ARCH%64}" = "$ARCH" ]; then
+            # AIX builds follow this branch.
+            export LDFLAGS="-L${INSTALL_FOLDER}/lib/ ${LDFLAGS}"
+            export PKG_CONFIG_PATH="\
+                ${INSTALL_FOLDER}/lib/pkgconfig/:${PKG_CONFIG_PATH}"
+        else
+            # Generic Linux and macOS builds follow this branch.
+            # Passing -rpath to ldd is needed for building cryptography w/ pip.
+            export LDFLAGS="-L${INSTALL_FOLDER}/lib64/ \
+                -Wl,-rpath,${INSTALL_FOLDER}/lib64/ ${LDFLAGS}"
+            export PKG_CONFIG_PATH="\
+                ${INSTALL_FOLDER}/lib64/pkgconfig/:${PKG_CONFIG_PATH}"
+        fi
         # Place SSL headers where they can be picked up.
         echo "Copying OpenSSL $OPENSSL_VERSION headers..."
         execute cp -r \
-            src/openssl/openssl-${OPENSSL_VERSION}/include/openssl \
+            build/openssl-${OPENSSL_VERSION}/include/openssl \
             ${INSTALL_FOLDER}/include/
         # To make sure they're found, we're back to using CPPFLAGS.
         export CPPFLAGS="$CPPFLAGS -I${INSTALL_FOLDER}/include"
@@ -715,6 +756,9 @@ command_build() {
         > ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}/lib/PYTHON_PACKAGE_VERSION
 
     make_dist 'python' ${PYTHON_BUILD_FOLDER}
+
+    # Generate a SFTP batch for uploading the package through GitHub actions.
+    build_publish_dist_sftp_batch
 }
 
 

@@ -325,9 +325,43 @@ add_ignored_safety_ids_for_pyopenssl_false_positives() {
 }
 
 #
-# Alpine's apk doesn't seem to have a check for installed packages individually.
+# Safety DB IDs to be ignored when using cryptography 3.2.
 #
-apk_shim() {
-    pkg="$1"
-    apk info | grep -q ^"$pkg"$
+add_ignored_safety_ids_for_cryptography32() {
+    # Safety ID 36252:
+    #     Cryptography 3.3 no longer allows loading of finite field
+    #     Diffie-Hellman parameters of less than 512 bits in length.
+    #     This change is to conform with an upcoming OpenSSL release
+    #     that no longer supports smaller sizes. These keys were
+    #     already wildly insecure and should not have been used in
+    #     any application outside of testing.
+    # Safety ID 36533 (CVE-2020-36242):
+    #     In the cryptography package before 3.3.2 for Python,
+    #     certain sequences of update calls to symmetrically encrypt
+    #     multi-GB values could result in an integer overflow and
+    #     buffer overflow, as demonstrated by the Fernet class.
+    SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 39252 -i 39606"
+}
+
+#
+# Construct a SFTP batch for uploading testing packages through GitHub actions.
+# Files are uploaded with a temporary name and then renamed to final name.
+#
+build_publish_dist_sftp_batch() {
+    local full_ver="${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}"
+    local local_dir="${DIST_FOLDER}/python/${OS}/${ARCH}/"
+    local upload_dir="testing/${full_ver}"
+    local pkg_file="python-${full_ver}-${OS}-${ARCH}.tar.gz"
+    local local_file="${local_dir}/${pkg_file}"
+    local dest_file="${upload_dir}/${pkg_file}"
+
+    # The mkdir command is prefixed with '-' to allow it to fail because
+    # $upload_dir exists if this is not the first upload for this version.
+    echo "-mkdir $upload_dir"                    > build/publish_dist_sftp_batch
+    echo "put $local_file ${dest_file}.part"    >> build/publish_dist_sftp_batch
+    echo "rename ${dest_file}.part $dest_file"  >> build/publish_dist_sftp_batch
+
+    # Add missing vars to the file to be sourced by the sftp upload script.
+    echo DIST_FOLDER="$DIST_FOLDER" >> BUILD_ENV_VARS
+    echo UPLOAD_FOLDER="$upload_dir" >> BUILD_ENV_VARS
 }

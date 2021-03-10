@@ -796,6 +796,7 @@ detect_os() {
                     ver_minor=$(head -1 /etc/release | awk '{print $3}')
                     ;;
                 *)
+                    # Not sure if $ver_minor detection works on other versions.
                     (>&2 echo "Unsupported Solaris version: ${ver_major}.")
                     exit 15
                     ;;

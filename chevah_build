@@ -8,7 +8,6 @@
 # publish_staging
 #
 
-# Beware that version 2.7.8 is used for Solaris 10.
 PYTHON_BUILD_VERSION="2.7.18"
 LIBFFI_VERSION="3.2.1"
 ZLIB_VERSION="1.2.11"
@@ -148,16 +147,13 @@ ARCH_PKGS="$COMMON_PKGS git libffi ncurses"
 # Chocolatey's git package comes with patch included through bundling MINGW4.
 CHOCO_PKGS="vcpython27 make git"
 
-# In Solaris and AIX we use $ARCH to choose if we build a 32bit or 64bit
-# package. This way we are able to force a 32bit build on a 64bit machine,
-# for example by exporting ARCH in brink.sh as "x86" instead of "x64" or
-# "ppc" instead of "ppc64". Except on HP-UX, where we always do 32bit builds.
+# $ARCH can be used to force a 32bit build on a 64bit machine, e.g. by exporting
+# ARCH in brink.sh as "x86" instead of "x64", or "ppc" instead of "ppc64".
 # $ARCH is also used when statically building libffi/GMP and for testing.
 # $OS is used when patching/configuring/building/testing.
 export ARCH
 export OS
-# Explicitly choose the C compiler in order to make it possible to switch
-# between native compilers and GCC on platforms such as AIX and Solaris.
+# Explicitly choose the C compiler, as gcc is not used on all platforms.
 export CC='gcc'
 # CXX is not really needed, we export it so that g++ won't get picked up when
 # not using gcc, and thus silence the associated configure warning on stderr.
@@ -234,10 +230,7 @@ case $OS in
         export BUILD_BZIP2="no"
         # Solaris 11.4 has multiple system libffi libs present.
         export BUILD_LIBFFI="yes"
-        # cryptography 1.9+ needs EC crypto, enabled in 11.3 SRU19+.
-        # Only cryptography 2.4+ builds unpatched with Studio's CC.
-        # See https://github.com/pyca/cryptography/pull/4545 for more.
-        # cryptography 3.2.x, last version to support OpenSSL 1.0.2.
+        # OpenSSL 1.0.2 has extended support: https://tinyurl.com/2ck2sm6s.
         export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
         # Put cryptography back, to build it against system OpenSSL.
         # cryptography 3.2.1, last version working with OpenSSL 1.0.2.

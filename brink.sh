@@ -87,7 +87,7 @@ PYTHON_CONFIGURATION='NOT-YET-DEFINED'
 PYTHON_VERSION='not.defined.yet'
 PYTHON_PLATFORM='unknown-os-and-arch'
 PYTHON_NAME='python2.7'
-BINARY_DIST_URI='https://binary.chevah.com/production'
+BINARY_DIST_URI='http://binary.chevah.com/production'
 PIP_INDEX='http://pypi.chevah.com'
 BASE_REQUIREMENTS=''
 
@@ -556,8 +556,8 @@ install_dependencies(){
 # Check version of current OS to see if it is supported.
 # If it's too old, exit with a nice informative message.
 # If it's supported, return through eval the version numbers to be used for
-# naming the package, for example: '7' for RHEL 7.7, '2' for Amazon 2,
-# '2004' for Ubuntu 20.04', '312' for Alpine Linux 3.12, '11' for Solaris 11.
+# naming the package, for example: '8' for RHEL 8.2, '2004' for Ubuntu 20.04,
+# '312' for Alpine Linux 3.12, '71' for AIX 7.1, '11' for Solaris 11.4.
 #
 check_os_version() {
     # First parameter should be the human-readable name for the current OS.

@@ -131,13 +131,12 @@ BUILD_FOLDER='build'
 # presence of required packages. Or at least of the required commands...
 # This build of Python / pyOpenSSL / cryptography / etc.  requires:
 # a C compiler, make, m4, libs and headers for OpenSSL / zlib / libffi,
-# git (for patching Python's version), patch (for applying our own patches),
-# and optionally texinfo (link texinfo to `true` if missing on your platform).
+# git (for patching Python's version), patch (for applying our own patches).
 # To build libedit for the readline module, we need the headers of
 # a curses library, automake and libtool.
 # On platforms with a choice of C compilers, you may choose among the
 # available compilers by setting CC and CXX further down in this script.
-COMMON_PKGS="gcc make m4 automake libtool texinfo patch"
+COMMON_PKGS="gcc make m4 automake libtool patch"
 DEBIAN_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
 RHEL_PKGS="$COMMON_PKGS git openssl-devel zlib-devel libffi-devel ncurses-devel"
 ALPINE_COMMON_PKGS="$COMMON_PKGS\

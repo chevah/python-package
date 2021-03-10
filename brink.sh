@@ -786,8 +786,21 @@ detect_os() {
             ;;
         SunOS)
             ARCH=$(isainfo -n)
-            # This works with Solaris 11 and latest Solaris 10.
-            os_version_raw=$(head -1 /etc/release | awk '{print $3}')
+            ver_major=$(uname -r | cut -d'.' -f2)
+            case $ver_major in
+                10)
+                    ver_minor=$(\
+                        head -1 /etc/release | cut -d_ -f2 | sed s/[^0-9]*//g)
+                    ;;
+                11)
+                    ver_minor=$(head -1 /etc/release | awk '{print $3}')
+                    ;;
+                *)
+                    (>&2 echo "Unsupported Solaris version: ${ver_major}.")
+                    exit 15
+                    ;;
+            esac
+            os_version_raw="${ver_major}.${ver_minor}"
             check_os_version "Solaris" 11.4 "$os_version_raw" os_version_chevah
             OS="sol${os_version_chevah}"
             ;;

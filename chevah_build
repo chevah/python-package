@@ -490,27 +490,30 @@ command_build() {
     fi
 
     if [ "$BUILD_OPENSSL" = "yes" ]; then
+        # The Windows build needs it.
+        export OPENSSL_VERSION
         build 'openssl' "openssl-$OPENSSL_VERSION" ${PYTHON_BUILD_FOLDER}
-        if [ "${ARCH%64}" = "$ARCH" ]; then
-            # AIX builds follow this branch.
+        if [ "${OS%aix*}" = "" ]; then
             export LDFLAGS="-L${INSTALL_FOLDER}/lib/ ${LDFLAGS}"
             export PKG_CONFIG_PATH="\
                 ${INSTALL_FOLDER}/lib/pkgconfig/:${PKG_CONFIG_PATH}"
-        else
-            # Generic Linux and macOS builds follow this branch.
+        elif [ "${OS%lnx*}" = "" -o "${OS%macos*}" = "" ]; then
             # Passing -rpath to ldd is needed for building cryptography w/ pip.
             export LDFLAGS="-L${INSTALL_FOLDER}/lib64/ \
                 -Wl,-rpath,${INSTALL_FOLDER}/lib64/ ${LDFLAGS}"
             export PKG_CONFIG_PATH="\
                 ${INSTALL_FOLDER}/lib64/pkgconfig/:${PKG_CONFIG_PATH}"
         fi
-        # Place SSL headers where they can be picked up.
-        echo "Copying OpenSSL $OPENSSL_VERSION headers..."
-        execute cp -r \
-            build/openssl-${OPENSSL_VERSION}/include/openssl \
-            ${INSTALL_FOLDER}/include/
-        # To make sure they're found, we're back to using CPPFLAGS.
-        export CPPFLAGS="$CPPFLAGS -I${INSTALL_FOLDER}/include"
+        # On Windows, the BATs from pyca/infra do this.
+        if [ "${OS%win*}" != "" ]; then
+            # Place SSL headers where they can be picked up.
+            echo "Copying OpenSSL $OPENSSL_VERSION headers..."
+            execute cp -r \
+                build/openssl-${OPENSSL_VERSION}/include/openssl \
+                ${INSTALL_FOLDER}/include/
+            # To make sure they're found, we're back to using CPPFLAGS.
+            export CPPFLAGS="$CPPFLAGS -I${INSTALL_FOLDER}/include"
+        fi
     else
         (>&2 echo "Skipping building OpenSSL!")
     fi

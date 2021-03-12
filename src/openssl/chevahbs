@@ -29,6 +29,10 @@ chevahbs_compile() {
         win*)
             # The included Perl is not good enough.
             export PATH=/c/Strawberry/perl/bin/:$PATH
+            # We need a base set of flags because on Windows using MSVC
+            # enable-ec_nistp_64_gcc_128 doesn't work as there's no 128-bit type
+            export OPENSSL_BUILD_FLAGS_WINDOWS="no-ssl3 no-ssl3-method no-zlib no-shared no-comp no-dynamic-engine"
+            export OPENSSL_BUILD_FLAGS="${OPENSSL_BUILD_FLAGS_WINDOWS} enable-ec_nistp_64_gcc_128"
             # Build with VisualStudio 2010 using BATs from pyca/infra.
             ../../src/openssl/win_${ARCH}_2010.bat
             ;;
@@ -67,6 +71,7 @@ chevahbs_install() {
             install_folder=$1
             execute $MAKE install
             ;;
+    esac
 }
 
 

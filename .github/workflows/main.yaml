@@ -108,6 +108,7 @@ jobs:
 
     # Fix back Homebrew, to make everything functional.
     - name: Unhack Homebrew
+      if: failure() && env.TMATE_DEBUG == 'yes'
       run: |
         sudo find /usr/local -name 'libintl*' -exec chmod a+r {} +
         sudo find /usr/local -name 'libffi*' -exec chmod a+r {} +

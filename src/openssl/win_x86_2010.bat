@@ -6,11 +6,10 @@ SET LIB=%LIB%;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1\Lib\
 
 perl Configure %OPENSSL_BUILD_FLAGS_WINDOWS% VC-WIN32
 nmake
+nmake test
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-mkdir ..\build
-mkdir ..\build\lib
-move libcrypto.lib ..\build\lib\
-move libssl.lib ..\build\lib\
-move include ..\build\include
-
+SET INSTALL_DIR=..\python2.7-win-x86
+move libcrypto.lib %INSTALL_DIR%\lib\
+move libssl.lib %INSTALL_DIR%\lib\
+move include %INSTALL_DIR%\include

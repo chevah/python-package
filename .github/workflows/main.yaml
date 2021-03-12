@@ -16,7 +16,7 @@ on:
     branches: [ master ]
 
 env:
-  TMATE_DEBUG: 'no'
+  TMATE_DEBUG: 'yes'
 
 jobs:
 
@@ -154,7 +154,7 @@ jobs:
     # Add packages needed to build our patched pycrypto.
     - name: Prepare OS
       run: |
-        chocolatey install --yes --no-progress make vcpython27
+        chocolatey install --yes --no-progress make vcpython27 StrawberryPerl nasm windows-sdk-7.1
 
     # Explicitly run our scripts with Bash, not PowerShell (GitHub's default).
     - name: Download needed deps for the detected OS

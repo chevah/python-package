@@ -12,4 +12,4 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 SET INSTALL_DIR=..\python2.7-win-x86
 move libcrypto.lib %INSTALL_DIR%\lib\
 move libssl.lib %INSTALL_DIR%\lib\
-move include %INSTALL_DIR%\include
+move include\* %INSTALL_DIR%\include\

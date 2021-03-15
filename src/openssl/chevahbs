@@ -27,6 +27,11 @@ chevahbs_compile() {
     # Just repeating the tests is not enough, a whole rebuild is needed.
     case $OS in
         win*)
+            # VisualStudio 2010 is required but not installable through Chocolatey.
+            if [ ! -e '/c/Program Files (x86)/Microsoft SDKs/Windows/v7.1/Bin/SetEnv.Cmd' ]; then
+                echo "Visual Studio 2010 seems to be missing."
+                exit 201
+            fi
             # The included Perl is not good enough.
             export PATH=/c/Strawberry/perl/bin/:$PATH
             # We need a base set of flags because on Windows using MSVC
@@ -34,7 +39,7 @@ chevahbs_compile() {
             export OPENSSL_BUILD_FLAGS_WINDOWS="no-ssl3 no-ssl3-method no-zlib no-shared no-comp no-dynamic-engine"
             export OPENSSL_BUILD_FLAGS="${OPENSSL_BUILD_FLAGS_WINDOWS} enable-ec_nistp_64_gcc_128"
             # Build with VisualStudio 2010 using BATs from pyca/infra.
-            ../../src/openssl/win_${ARCH}_2010.bat
+            cmd < ../../src/openssl/win_${ARCH}_2010.bat
             ;;
         aix*)
             for i in $(seq 1 20); do
@@ -51,7 +56,7 @@ chevahbs_compile() {
             done
             if [ $tests_error_code -ne 0 ]; then
                 echo "OpenSSL tests failed $i times in a row."
-                exit 69
+                exit 202
             fi
             ;;
         *)

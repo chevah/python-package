@@ -13,4 +13,5 @@ SET INSTALL_DIR=..\python2.7-win-x64
 move libcrypto.lib %INSTALL_DIR%\lib\
 move libssl.lib %INSTALL_DIR%\lib\
 move include\crypto %INSTALL_DIR%\include\
+move include\internal %INSTALL_DIR%\include\
 move include\openssl %INSTALL_DIR%\include\

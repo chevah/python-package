@@ -39,7 +39,10 @@ chevahbs_compile() {
             export OPENSSL_BUILD_FLAGS_WINDOWS="no-ssl3 no-ssl3-method no-zlib no-shared no-comp no-dynamic-engine"
             export OPENSSL_BUILD_FLAGS="${OPENSSL_BUILD_FLAGS_WINDOWS} enable-ec_nistp_64_gcc_128"
             # Build with VisualStudio 2010 using BATs from pyca/infra.
-            execute ../../src/openssl/win_${ARCH}_2010.bat
+            #execute ../../src/openssl/win_${ARCH}_2010.bat
+            # XXX The above fails when not run from command line, for now we cheat here.
+            wget https://binary.chevah.com/third-party-stuff/openssl/openssl-$OPENSSL_VERSION-win-$ARCH.zip
+            unzip openssl-$OPENSSL_VERSION-win-$ARCH.zip -d ../python2.7-win-$ARCH/
             ;;
         aix*)
             for i in $(seq 1 20); do

@@ -39,7 +39,7 @@ chevahbs_compile() {
             export OPENSSL_BUILD_FLAGS_WINDOWS="no-ssl3 no-ssl3-method no-zlib no-shared no-comp no-dynamic-engine"
             export OPENSSL_BUILD_FLAGS="${OPENSSL_BUILD_FLAGS_WINDOWS} enable-ec_nistp_64_gcc_128"
             # Build with VisualStudio 2010 using BATs from pyca/infra.
-            cmd < ../../src/openssl/win_${ARCH}_2010.bat
+            execute ../../src/openssl/win_${ARCH}_2010.bat
             ;;
         aix*)
             for i in $(seq 1 20); do

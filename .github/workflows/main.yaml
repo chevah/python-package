@@ -155,7 +155,7 @@ jobs:
     # Add packages needed to build our patched pycrypto.
     - name: Prepare OS
       run: |
-        chocolatey install --yes --no-progress make vcpython27 StrawberryPerl nasm windows-sdk-7.1
+        chocolatey install --yes --no-progress make vcpython27 StrawberryPerl nasm
         src\openssl\win_install_tools.ps1 -InstallURI https://download.microsoft.com/download/F/1/0/F10113F5-B750-4969-A255-274341AC6BCE/GRMSDK_EN_DVD.iso
 
     # Explicitly run our scripts with Bash, not PowerShell (GitHub's default).

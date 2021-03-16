@@ -9,9 +9,8 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 nmake test
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-SET INSTALL_DIR=..\python2.7-win-x64
-move libcrypto.lib %INSTALL_DIR%\lib\
-move libssl.lib %INSTALL_DIR%\lib\
-move include\crypto %INSTALL_DIR%\include\
-move include\internal %INSTALL_DIR%\include\
-move include\openssl %INSTALL_DIR%\include\
+SET INSTALL_DIR=..\python2.7-win-x64\lib
+mkdir %INSTALL_DIR%\libs
+move libcrypto.lib %INSTALL_DIR%\libs\
+move libssl.lib %INSTALL_DIR%\libs\
+move include %INSTALL_DIR%\

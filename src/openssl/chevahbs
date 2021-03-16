@@ -9,7 +9,7 @@
 chevahbs_configure() {
     case $OS in
         win*)
-            echo "Nothing to configure on Windows."
+            echo "Configure is done later on Windows."
             ;;
         *)
             # Static builds only, so that we don't have to mess with LIBPATH.
@@ -28,21 +28,22 @@ chevahbs_compile() {
     case $OS in
         win*)
             # VisualStudio 2010 is required but not installable through Chocolatey.
-            if [ ! -e '/c/Program Files (x86)/Microsoft SDKs/Windows/v7.1/Bin/SetEnv.Cmd' ]; then
+            if [ ! -d '/c/Program Files (x86)/Microsoft SDKs/Windows/v7.1' ]; then
                 echo "Visual Studio 2010 seems to be missing."
                 exit 201
             fi
-            # The included Perl is not good enough.
+            # MSYS2's Perl is not good enough.
             export PATH=/c/Strawberry/perl/bin/:$PATH
             # We need a base set of flags because on Windows using MSVC
-            # enable-ec_nistp_64_gcc_128 doesn't work as there's no 128-bit type
-            export OPENSSL_BUILD_FLAGS_WINDOWS="no-ssl3 no-ssl3-method no-zlib no-shared no-comp no-dynamic-engine"
-            export OPENSSL_BUILD_FLAGS="${OPENSSL_BUILD_FLAGS_WINDOWS} enable-ec_nistp_64_gcc_128"
-            # Build with VisualStudio 2010 using BATs from pyca/infra.
-            #execute ../../src/openssl/win_${ARCH}_2010.bat
-            # XXX The above fails when not run from command line, for now we cheat here.
-            wget https://binary.chevah.com/third-party-stuff/openssl/openssl-$OPENSSL_VERSION-win-$ARCH.zip
-            unzip openssl-$OPENSSL_VERSION-win-$ARCH.zip -d ../python2.7-win-$ARCH/
+            # enable-ec_nistp_64_gcc_128 doesn't work as there's no 128-bit type.
+            export OPENSSL_BUILD_FLAGS_WINDOWS="\
+                no-ssl3 no-ssl3-method no-zlib no-shared no-comp no-dynamic-engine"
+            export OPENSSL_BUILD_FLAGS="\
+                ${OPENSSL_BUILD_FLAGS_WINDOWS} enable-ec_nistp_64_gcc_128"
+            # Build with VisualStudio 2010 using the BAT files from pyca/infra.
+            # These do all of configure / build / install at once.
+            # If $MAKE is present, even empty, builds fail with cryptic errors.
+            execute ../../src/openssl/win_${ARCH}_2010.bat
             ;;
         aix*)
             for i in $(seq 1 20); do

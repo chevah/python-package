@@ -153,11 +153,6 @@ CHOCO_PKGS="vcpython27 make git StrawberryPerl nasm"
 # $OS is used when patching/configuring/building/testing.
 export ARCH
 export OS
-# Explicitly choose the C compiler, as gcc is not used on all platforms.
-export CC='gcc'
-# CXX is not really needed, we export it so that g++ won't get picked up when
-# not using gcc, and thus silence the associated configure warning on stderr.
-export CXX='g++'
 
 LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
 LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/bin/python
@@ -165,18 +160,37 @@ INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST
 PYTHON_BIN=$INSTALL_FOLDER/bin/python
 PYTHON_BUILD_FOLDER="$PYTHON_VERSION-$OS-$ARCH"
 
-export MAKE=make
-
 # Used when building cffi.
 export CHEVAH_BUILD_PATH=$INSTALL_FOLDER
 
+# CXX is not really needed, we export it so that g++ won't get picked up when
+# not using gcc, and thus silence the associated configure warning on stderr.
 case $OS in
+    win)
+        # On Windows, python executable is installed at a different path.
+        LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
+        PYTHON_BIN=$INSTALL_FOLDER/lib/python
+        # For Windows we don't build everything from source yet.
+        export BUILD_LIBEDIT="no"
+        export BUILD_GMP="no"
+        export BUILD_BZIP2="no"
+        # But what we build is done in a very different way, no CC/MAKE/etc.
+        export BUILD_OPENSSL="yes"
+        # Extra libraries are installed only using PIP.
+        EXTRA_LIBRARIES=""
+        # A patched PyCrypto is packed and uploaded to our PyPI server.
+        PIP_LIBRARIES="$PIP_LIBRARIES \
+            pycrypto==${PYCRYPTO_VERSION}chevah1 \
+            pywin32==${PYWIN32_VERSION} \
+            gmpy2==${GMPY2_VERSION} \
+            "
+        ;;
     aix*)
         # Only IBM's XL C compiler is supported.
         export CC="xlc_r"
         export CXX="xlC_r"
-        export MAKE=gmake
-        export PATH=/usr/vac/bin:$PATH
+        export MAKE="gmake"
+        export PATH="/usr/vac/bin:$PATH"
         export CFLAGS="$CFLAGS -O2 -D_LARGE_FILES=1"
         # IBM's OpenSSL libs are mixed 32/64bit binaries in AIX, so we need to
         # be specific about what kind of build we want, because otherwise we
@@ -240,6 +254,7 @@ case $OS in
     macos)
         export CC="clang"
         export CXX="clang++"
+        export MAKE="make"
         # Build as compatible as it makes sense. See brink.sh for the reason.
         export CFLAGS="$CFLAGS -mmacosx-version-min=10.12"
         # setup.py skips building readline by default, as it sets this to
@@ -255,6 +270,7 @@ case $OS in
     fbsd*)
         export CC="clang"
         export CXX="clang++"
+        export MAKE="make"
         # libffi not available in the base system, only as port/package.
         export BUILD_LIBFFI="yes"
         # System includes bzip2 libs by default.
@@ -277,10 +293,14 @@ case $OS in
     obsd*)
         export CC="clang"
         export CXX="clang++"
+        export MAKE="make"
         # libffi not available in the base system, only as port/package.
         export BUILD_LIBFFI="yes"
         ;;
     lnx)
+        export CC="gcc"
+        export CXX="g++"
+        export MAKE="make"
         # Build as portable as possible, only glibc 2.x should be needed.
         export BUILD_LIBFFI="yes"
         export BUILD_ZLIB="yes"
@@ -291,25 +311,11 @@ case $OS in
         # OpenSSL tests on CentOS 5 require an updated Perl 5.10 in /usr/local.
         export PATH="/usr/local/bin:$PATH"
         ;;
-    win)
-        # On Windows, python executable is installed at a different path.
-        LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
-        PYTHON_BIN=$INSTALL_FOLDER/lib/python
-        # For Windows we don't build everything from source yet.
-        export BUILD_LIBEDIT="no"
-        export BUILD_GMP="no"
-        export BUILD_BZIP2="no"
-        # But what we build is done in a very different way.
-        export CC="" CXX="" CFLAGS="" LDFLAGS="" PKG_CONFIG_PATH=""
-        export BUILD_OPENSSL="yes"
-        # Extra libraries are installed only using PIP.
-        EXTRA_LIBRARIES=""
-        # A patched PyCrypto is packed and uploaded to our PyPI server.
-        PIP_LIBRARIES="$PIP_LIBRARIES \
-            pycrypto==${PYCRYPTO_VERSION}chevah1 \
-            pywin32==${PYWIN32_VERSION} \
-            gmpy2==${GMPY2_VERSION} \
-            "
+    *)
+        # Only supported Linux distributions should be left.
+        export CC="gcc"
+        export CXX="g++"
+        export MAKE="make"
         ;;
 esac
 
@@ -343,7 +349,9 @@ case "$ARCH" in
         let JOBS=CPUS
         ;;
 esac
-export MAKE="$MAKE -j${JOBS}"
+if [ -n "$MAKE" ]; then
+    export MAKE="$MAKE -j${JOBS}"
+fi
 
 
 #

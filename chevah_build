@@ -113,6 +113,7 @@ PIP_ARGS="\
     --index-url=http://pypi.chevah.com/simple \
     --trusted-host=pypi.chevah.com \
     --no-cache-dir \
+    --no-warn-script-location \
     "
 
 PROG=$0

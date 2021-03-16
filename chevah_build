@@ -138,14 +138,10 @@ BUILD_FOLDER='build'
 COMMON_PKGS="gcc make m4 automake libtool patch"
 DEBIAN_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
 RHEL_PKGS="$COMMON_PKGS git openssl-devel zlib-devel libffi-devel ncurses-devel"
-ALPINE_COMMON_PKGS="$COMMON_PKGS\
-    git zlib-dev libffi-dev ncurses-dev linux-headers"
-ALPINE_LIBRESSL_PKGS="$ALPINE_COMMON_PKGS libc-dev libressl-dev"
-ALPINE_OPENSSL_PKGS="$ALPINE_COMMON_PKGS musl-dev openssl-dev"
-ARCH_PKGS="$COMMON_PKGS git libffi ncurses"
-# Windows is special, but package management is possible through Chocolatey.
-# Chocolatey's git package comes with patch included through bundling MINGW4.
-CHOCO_PKGS="vcpython27 make git StrawberryPerl nasm"
+ALPINE_PKGS="$COMMON_PKGS \
+    git zlib-dev libffi-dev ncurses-dev linux-headers musl-dev openssl-dev"
+# No automated Windows package management, but here's what it's needed.
+CHOCO_PKGS="vcpython27 make git StrawberryPerl nasm 7zip"
 
 # $ARCH can be used to force a 32bit build on a 64bit machine, e.g. by exporting
 # ARCH in brink.sh as "x86" instead of "x64", or "ppc" instead of "ppc64".
@@ -171,10 +167,12 @@ case $OS in
         LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
         PYTHON_BIN=$INSTALL_FOLDER/lib/python
         # For Windows we don't build everything from source yet.
+        # But what we build is done in a very different way, no CC/MAKE/etc.
         export BUILD_LIBEDIT="no"
         export BUILD_GMP="no"
         export BUILD_BZIP2="no"
-        # But what we build is done in a very different way, no CC/MAKE/etc.
+        # MSYS2's Perl is not good enough for building OpenSSL.
+        export PATH="/c/Strawberry/perl/bin/:$PATH:/c/Program Files/NASM/"
         export BUILD_OPENSSL="yes"
         # Extra libraries are installed only using PIP.
         EXTRA_LIBRARIES=""
@@ -359,59 +357,40 @@ fi
 #
 check_dependencies() {
 
-    packages=''
-    missing_packages=''
+    packages=""
+    missing_packages=""
+    check_command="command -v"
 
     case $OS in
         # Debian-derived distros are similar in this regard.
         ubuntu*)
             packages=$DEBIAN_PKGS
-            check_command='dpkg --status'
+            check_command="dpkg --status"
             ;;
         rhel*|amzn*)
             packages=$RHEL_PKGS
-            check_command='rpm --query'
+            check_command="rpm --query"
             ;;
         alpine*)
             # Alpine 3.9 switched back to OpenSSL as default.
-            packages=$ALPINE_OPENSSL_PKGS
-            case $OS in
-                alpine36|alpine37|alpine38)
-                    packages=$ALPINE_LIBRESSL_PKGS
-                    ;;
-            esac
-            check_command='apk info -q -e'
-            ;;
-        archlinux)
-            packages=$ARCH_PKGS
-            check_command='pacman -Qi'
+            packages=$ALPINE_PKGS
+            check_command="apk info -q -e"
             ;;
         # On remaining OS'es we just check for some of the needed commands.
         macos)
             packages="$CC make m4 libtool git patch"
-            check_command="command -v"
             ;;
         lnx)
             # Generic Linux builds need Perl 5.10.0+ for building OpenSSL.
             # For testing OpenSSL, Test::More 0.96 or newer is needed.
             packages="$CC make m4 git patch perl"
-            check_command="command -v"
             ;;
         win)
-            # The windows build is special.
-            command -v choco
-            if [ $? -eq 0 ]; then
-                # Chocolatey is present, let's use it.
-                packages=$CHOCO_PKGS
-                check_command="choco info --local-only --limit-output"
-            else
-                packages="make git patch"
-                check_command="command -v"
-            fi
+            # To not get confused by MSYS2's perl, we check for wperl.
+            packages="git patch wperl nasm 7z"
             ;;
         *)
             packages="$CC make m4 git patch"
-            check_command="command -v"
             ;;
     esac
 

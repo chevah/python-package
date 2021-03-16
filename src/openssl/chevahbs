@@ -8,7 +8,7 @@
 
 chevahbs_configure() {
     case $OS in
-        win*)
+        win)
             echo "Configure is done later on Windows."
             ;;
         *)
@@ -26,22 +26,20 @@ chevahbs_compile() {
     # On AIX, OpenSSL's tests have an ~1/6 chance of passing.
     # Just repeating the tests is not enough, a whole rebuild is needed.
     case $OS in
-        win*)
+        win)
             # VisualStudio 2010 is required but not installable through Chocolatey.
             if [ ! -d '/c/Program Files (x86)/Microsoft SDKs/Windows/v7.1' ]; then
-                echo "Visual Studio 2010 seems to be missing."
-                exit 201
+                echo "Visual Studio 2010 not found, installing..."
+                execute powershell -Command ../../src/openssl/win_install_tools.ps1 \
+                    -InstallURI https://download.microsoft.com/download/F/1/0/F10113F5-B750-4969-A255-274341AC6BCE/GRMSDK_EN_DVD.iso
             fi
-            # MSYS2's Perl is not good enough.
-            export PATH=/c/Strawberry/perl/bin/:$PATH
             # We need a base set of flags because on Windows using MSVC
             # enable-ec_nistp_64_gcc_128 doesn't work as there's no 128-bit type.
             export OPENSSL_BUILD_FLAGS_WINDOWS="\
                 no-ssl3 no-ssl3-method no-zlib no-shared no-comp no-dynamic-engine"
             export OPENSSL_BUILD_FLAGS="\
                 ${OPENSSL_BUILD_FLAGS_WINDOWS} enable-ec_nistp_64_gcc_128"
-            # Build with VisualStudio 2010 using the BAT files from pyca/infra.
-            # These do all of configure / build / install at once.
+            # Use the BATs from pyca/infra which do configure / build / install.
             # If $MAKE is present, even empty, builds fail with cryptic errors.
             execute ../../src/openssl/win_${ARCH}_2010.bat
             ;;
@@ -73,7 +71,7 @@ chevahbs_compile() {
 
 chevahbs_install() {
     case $OS in
-        win*)
+        win)
             echo "Libs/headers installed through the build BAT file."
             ;;
         *)

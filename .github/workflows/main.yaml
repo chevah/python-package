@@ -136,9 +136,14 @@ jobs:
         limit-access-to-actor: true
 
 
-  windows-2019:
-    runs-on: windows-2019
-    timeout-minutes: 30
+  windows:
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      # Workflow won't be cancelled at the first failed job.
+      fail-fast: false
+      matrix:
+        runs-on: [ windows-2019, windows-2016 ]
+    timeout-minutes: 45
     steps:
     - uses: chevah/auto-cancel-redundant-job@v1
     - uses: actions/checkout@v2
@@ -154,9 +159,7 @@ jobs:
 
     # Add packages needed to build our patched pycrypto.
     - name: Prepare OS
-      run: |
-        chocolatey install --yes --no-progress make vcpython27 StrawberryPerl nasm
-        src\openssl\win_install_tools.ps1 -InstallURI https://download.microsoft.com/download/F/1/0/F10113F5-B750-4969-A255-274341AC6BCE/GRMSDK_EN_DVD.iso
+      run: chocolatey install --yes --no-progress make vcpython27 nasm 7zip
 
     # Explicitly run our scripts with Bash, not PowerShell (GitHub's default).
     - name: Download needed deps for the detected OS

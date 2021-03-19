@@ -58,22 +58,6 @@ chevahbs_configure() {
         execute cp -r "$INSTALL_FOLDER"/include/* ./Include/
     fi
     case $OS in
-        "ubuntu1004")
-            # On Ubuntu there are no libXXX.o, but rather linked against the
-            # full version number.
-            CONFIG_ARGS="${CONFIG_ARGS} \
-                --with-bz2-version=1 \
-                --with-crypt-version=1 \
-                --with-openssl-version=0.9.8 \
-                "
-            ;;
-        "ubuntu1204")
-            CONFIG_ARGS="${CONFIG_ARGS} \
-                --with-bz2-version=1 \
-                --with-crypt-version=1 \
-                --with-openssl-version=1.0.0 \
-                "
-            ;;
         aix*)
             # Workaround for http://bugs.python.org/issue21917
             echo "import os; os.__dict__.pop('O_NOFOLLOW', None)" \

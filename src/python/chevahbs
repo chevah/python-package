@@ -187,6 +187,10 @@ chevahbs_install() {
             # Patch to disable Python 2 / OpenSSL 1.0.2 warnings from cryptography.
             echo "Applying crypto_silence_warnings.patch:"
             execute patch -d $destination -p0 < crypto_silence_warnings.patch
+            for hotfix in *.diff; do
+                echo "Applying ${hotfix}:"
+                execute patch -d $destination -p1 < $hotfix
+            done
             ;;
         *)
             if [ "${OS%alpine*}" = "" ]; then

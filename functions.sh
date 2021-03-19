@@ -162,6 +162,11 @@ build() {
         ls -1 src/${project_folder}/*.patch
         execute cp src/${project_folder}/*.patch ${build_folder}/
     fi
+    if [ $(ls src/${project_folder}/*.diff 2>/dev/null | wc -l) -gt 0 ]; then
+        echo "The following hot fixes are to be copied:"
+        ls -1 src/${project_folder}/*.diff
+        execute cp src/${project_folder}/*.diff ${build_folder}/
+    fi
     execute cp 'functions.sh' ${build_folder}/
 
     execute pushd ${build_folder}

@@ -23,11 +23,10 @@ chevahbs_configure() {
 
 
 chevahbs_compile() {
-    # On AIX, OpenSSL's tests have an ~1/6 chance of passing.
-    # Just repeating the tests is not enough, a whole rebuild is needed.
     case $OS in
         win)
             # VisualStudio 2010 is required but not installable through Chocolatey.
+            # This ISO file is backed up on our first NFS server in /os/win/.
             if [ ! -d '/c/Program Files (x86)/Microsoft SDKs/Windows/v7.1' ]; then
                 echo "Visual Studio 2010 not found, installing..."
                 execute powershell -Command ../../src/openssl/win_install_tools.ps1 \
@@ -44,6 +43,8 @@ chevahbs_compile() {
             execute ../../src/openssl/win_${ARCH}_2010.bat
             ;;
         aix*)
+            # On AIX, OpenSSL's tests have an ~1/6 chance of passing.
+            # Just repeating the tests is not enough, a whole rebuild is needed.
             for i in $(seq 1 20); do
                 echo "OpenSSL build ROUND ${i}..."
                 execute $MAKE

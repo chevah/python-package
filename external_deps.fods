@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <office:document xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" xmlns:css3t="http://www.w3.org/TR/css3-text/" xmlns:grddl="http://www.w3.org/2003/g/data-view#" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:formx="urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:oooc="http://openoffice.org/2004/calc" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:ooow="http://openoffice.org/2004/writer" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rpt="http://openoffice.org/2005/report" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:ooo="http://openoffice.org/2004/office" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2" xmlns:calcext="urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" xmlns:tableooo="http://openoffice.org/2009/table" xmlns:drawooo="http://openoffice.org/2010/draw" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" xmlns:dom="http://www.w3.org/2001/xml-events" xmlns:field="urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0" xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0" xmlns:xforms="http://www.w3.org/2002/xforms" office:version="1.3" office:mimetype="application/vnd.oasis.opendocument.spreadsheet">
- <office:meta><meta:generator>LibreOffice/7.1.0.3$Linux_X86_64 LibreOffice_project/10$Build-3</meta:generator><meta:editing-cycles>91</meta:editing-cycles><meta:editing-duration>PT4H51M10S</meta:editing-duration><dc:title>python-package - external dependencies and associated vulnerabilities</dc:title><dc:date>2021-03-03T13:05:47.642948581</dc:date><meta:document-statistic meta:table-count="1" meta:cell-count="997" meta:object-count="0"/></office:meta>
+ <office:meta><meta:generator>LibreOffice/7.1.0.3$Linux_X86_64 LibreOffice_project/10$Build-3</meta:generator><meta:editing-cycles>92</meta:editing-cycles><meta:editing-duration>PT4H58M46S</meta:editing-duration><dc:title>python-package - external dependencies and associated vulnerabilities</dc:title><dc:date>2021-03-19T12:09:27.396526116</dc:date><meta:document-statistic meta:table-count="1" meta:cell-count="998" meta:object-count="0"/></office:meta>
  <office:settings>
   <config:config-item-set config:name="ooo:view-settings">
    <config:config-item config:name="VisibleAreaTop" config:type="int">0</config:config-item>
    <config:config-item config:name="VisibleAreaLeft" config:type="int">0</config:config-item>
    <config:config-item config:name="VisibleAreaWidth" config:type="int">48930</config:config-item>
-   <config:config-item config:name="VisibleAreaHeight" config:type="int">24507</config:config-item>
+   <config:config-item config:name="VisibleAreaHeight" config:type="int">23816</config:config-item>
    <config:config-item-map-indexed config:name="Views">
     <config:config-item-map-entry>
      <config:config-item config:name="ViewId" config:type="string">view1</config:config-item>
      <config:config-item-map-named config:name="Tables">
       <config:config-item-map-entry config:name="Sheet1">
-       <config:config-item config:name="CursorPositionX" config:type="int">20</config:config-item>
-       <config:config-item config:name="CursorPositionY" config:type="int">24</config:config-item>
+       <config:config-item config:name="CursorPositionX" config:type="int">1</config:config-item>
+       <config:config-item config:name="CursorPositionY" config:type="int">17</config:config-item>
        <config:config-item config:name="HorizontalSplitMode" config:type="short">2</config:config-item>
        <config:config-item config:name="VerticalSplitMode" config:type="short">2</config:config-item>
        <config:config-item config:name="HorizontalSplitPosition" config:type="int">1</config:config-item>
        <config:config-item config:name="VerticalSplitPosition" config:type="int">1</config:config-item>
        <config:config-item config:name="ActiveSplitRange" config:type="short">3</config:config-item>
        <config:config-item config:name="PositionLeft" config:type="int">0</config:config-item>
-       <config:config-item config:name="PositionRight" config:type="int">10</config:config-item>
+       <config:config-item config:name="PositionRight" config:type="int">1</config:config-item>
        <config:config-item config:name="PositionTop" config:type="int">0</config:config-item>
        <config:config-item config:name="PositionBottom" config:type="int">1</config:config-item>
        <config:config-item config:name="ZoomType" config:type="short">0</config:config-item>
@@ -32,7 +32,7 @@
       </config:config-item-map-entry>
      </config:config-item-map-named>
      <config:config-item config:name="ActiveTable" config:type="string">Sheet1</config:config-item>
-     <config:config-item config:name="HorizontalScrollbarWidth" config:type="int">957</config:config-item>
+     <config:config-item config:name="HorizontalScrollbarWidth" config:type="int">1006</config:config-item>
      <config:config-item config:name="ZoomType" config:type="short">0</config:config-item>
      <config:config-item config:name="ZoomValue" config:type="int">100</config:config-item>
      <config:config-item config:name="PageViewZoomValue" config:type="int">60</config:config-item>
@@ -69,7 +69,7 @@
    <config:config-item config:name="HasColumnRowHeaders" config:type="boolean">true</config:config-item>
    <config:config-item config:name="ShowNotes" config:type="boolean">true</config:config-item>
    <config:config-item config:name="HasSheetTabs" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="PrinterSetup" config:type="base64Binary">kQH+/0dlbmVyaWMgUHJpbnRlcgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU0dFTlBSVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWAAMAsgAAAAAAAAAEAAhSAAAEdAAASm9iRGF0YSAxCnByaW50ZXI9R2VuZXJpYyBQcmludGVyCm9yaWVudGF0aW9uPVBvcnRyYWl0CmNvcGllcz0xCm1hcmdpbmRhanVzdG1lbnQ9MCwwLDAsMApjb2xvcmRlcHRoPTI0CnBzbGV2ZWw9MApwZGZkZXZpY2U9MApjb2xvcmRldmljZT0wClBQRENvbnRleERhdGEKUGFnZVNpemU6QTQARHVwbGV4Ok5vbmUAABIAQ09NUEFUX0RVUExFWF9NT0RFDwBEdXBsZXhNb2RlOjpPZmY=</config:config-item>
+   <config:config-item config:name="PrinterSetup" config:type="base64Binary">kQH+/0dlbmVyaWMgUHJpbnRlcgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU0dFTlBSVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWAAMAsgAAAAAAAAAEAAhSAAAEdAAASm9iRGF0YSAxCnByaW50ZXI9R2VuZXJpYyBQcmludGVyCm9yaWVudGF0aW9uPVBvcnRyYWl0CmNvcGllcz0xCm1hcmdpbmRhanVzdG1lbnQ9MCwwLDAsMApjb2xvcmRlcHRoPTI0CnBzbGV2ZWw9MApwZGZkZXZpY2U9MApjb2xvcmRldmljZT0wClBQRENvbnRleERhdGEKRHVwbGV4Ok5vbmUAUGFnZVNpemU6QTQAABIAQ09NUEFUX0RVUExFWF9NT0RFDwBEdXBsZXhNb2RlOjpPZmY=</config:config-item>
    <config:config-item config:name="RasterResolutionX" config:type="int">1000</config:config-item>
    <config:config-item config:name="SyntaxStringRef" config:type="short">7</config:config-item>
    <config:config-item config:name="RasterIsVisible" config:type="boolean">false</config:config-item>
@@ -81,6 +81,13 @@
     <config:config-item-map-entry>
      <config:config-item config:name="Language" config:type="string">en</config:config-item>
      <config:config-item config:name="Country" config:type="string">US</config:config-item>
+     <config:config-item config:name="Variant" config:type="string"/>
+     <config:config-item config:name="BeginLine" config:type="string"/>
+     <config:config-item config:name="EndLine" config:type="string"/>
+    </config:config-item-map-entry>
+    <config:config-item-map-entry>
+     <config:config-item config:name="Language" config:type="string">en</config:config-item>
+     <config:config-item config:name="Country" config:type="string">GB</config:config-item>
      <config:config-item config:name="Variant" config:type="string"/>
      <config:config-item config:name="BeginLine" config:type="string"/>
      <config:config-item config:name="EndLine" config:type="string"/>
@@ -121,7 +128,6 @@
   <style:font-face style:name="Cambria" svg:font-family="Cambria"/>
   <style:font-face style:name="Sans" svg:font-family="Sans" style:font-family-generic="swiss"/>
   <style:font-face style:name="Liberation Sans" svg:font-family="&apos;Liberation Sans&apos;" style:font-family-generic="swiss" style:font-pitch="variable"/>
-  <style:font-face style:name="Chivo" svg:font-family="Chivo" style:font-family-generic="system" style:font-pitch="variable"/>
   <style:font-face style:name="Liberation Sans1" svg:font-family="&apos;Liberation Sans&apos;" style:font-family-generic="system" style:font-pitch="variable"/>
   <style:font-face style:name="Tahoma" svg:font-family="Tahoma" style:font-family-generic="system" style:font-pitch="variable"/>
  </office:font-face-decls>
@@ -507,18 +513,15 @@
    <style:table-row-properties style:row-height="0.487cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
   </style:style>
   <style:style style:name="ro2" style:family="table-row">
-   <style:table-row-properties style:row-height="0.552cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
-  </style:style>
-  <style:style style:name="ro3" style:family="table-row">
    <style:table-row-properties style:row-height="1.005cm" fo:break-before="auto" style:use-optimal-row-height="false"/>
   </style:style>
-  <style:style style:name="ro4" style:family="table-row">
-   <style:table-row-properties style:row-height="0.526cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
+  <style:style style:name="ro3" style:family="table-row">
+   <style:table-row-properties style:row-height="0.452cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
   </style:style>
-  <style:style style:name="ro5" style:family="table-row">
+  <style:style style:name="ro4" style:family="table-row">
    <style:table-row-properties style:row-height="0.556cm" fo:break-before="auto" style:use-optimal-row-height="false"/>
   </style:style>
-  <style:style style:name="ro6" style:family="table-row">
+  <style:style style:name="ro5" style:family="table-row">
    <style:table-row-properties style:row-height="0.452cm" fo:break-before="auto" style:use-optimal-row-height="false"/>
   </style:style>
   <style:style style:name="ta1" style:family="table" style:master-page-name="PageStyle_5f_Sheet1">
@@ -990,12 +993,17 @@
    <style:paragraph-properties fo:text-align="start" css3t:text-justify="auto" fo:margin-left="0cm" style:writing-mode="page"/>
    <style:text-properties style:use-window-font-color="true" style:text-outline="false" style:text-line-through-style="none" style:text-line-through-type="none" style:font-name="Sans" fo:font-size="11pt" fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none" fo:font-weight="bold" style:font-size-asian="11pt" style:font-style-asian="normal" style:font-weight-asian="bold" style:font-size-complex="11pt" style:font-style-complex="normal" style:font-weight-complex="bold"/>
   </style:style>
+  <style:style style:name="ce187" style:family="table-cell" style:parent-style-name="Default">
+   <style:table-cell-properties fo:border-bottom="none" style:text-align-source="fix" style:repeat-content="false" fo:wrap-option="no-wrap" fo:border-left="none" style:direction="ltr" fo:border-right="0.74pt solid #000000" style:rotation-angle="0" style:rotation-align="none" style:shrink-to-fit="false" fo:border-top="none" style:vertical-align="bottom" loext:vertical-justify="auto"/>
+   <style:paragraph-properties fo:text-align="start" css3t:text-justify="auto" fo:margin-left="0cm" style:writing-mode="page"/>
+   <style:text-properties fo:color="#ff9900" style:text-outline="false" style:text-line-through-style="none" style:text-line-through-type="none" style:font-name="Sans" fo:font-size="11pt" fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none" fo:font-weight="bold" style:font-name-asian="Liberation Sans" style:font-size-asian="11pt" style:font-style-asian="normal" style:font-weight-asian="bold" style:font-size-complex="11pt" style:font-style-complex="normal" style:font-weight-complex="bold"/>
+  </style:style>
   <style:style style:name="ce113" style:family="table-cell" style:parent-style-name="Default">
    <style:table-cell-properties fo:border-bottom="none" style:text-align-source="value-type" style:repeat-content="false" fo:wrap-option="no-wrap" fo:border-left="none" style:direction="ltr" fo:border-right="0.74pt solid #000000" style:rotation-angle="0" style:rotation-align="none" style:shrink-to-fit="false" fo:border-top="none" style:vertical-align="bottom" loext:vertical-justify="auto"/>
    <style:paragraph-properties css3t:text-justify="auto" fo:margin-left="0cm" style:writing-mode="page"/>
    <style:text-properties fo:color="#000000" style:text-outline="false" style:text-line-through-style="none" style:text-line-through-type="none" style:font-name="Sans" fo:font-size="11pt" fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none" fo:font-weight="normal" style:font-size-asian="11pt" style:font-style-asian="normal" style:font-weight-asian="normal" style:font-name-complex="Arial" style:font-size-complex="11pt" style:font-style-complex="normal" style:font-weight-complex="normal"/>
   </style:style>
-  <style:style style:name="ce125" style:family="table-cell" style:parent-style-name="Default">
+  <style:style style:name="ce189" style:family="table-cell" style:parent-style-name="Default">
    <style:table-cell-properties fo:border-bottom="none" style:text-align-source="fix" style:repeat-content="false" fo:wrap-option="no-wrap" fo:border-left="none" style:direction="ltr" fo:border-right="0.74pt solid #000000" style:rotation-angle="0" style:rotation-align="none" style:shrink-to-fit="false" fo:border-top="none" style:vertical-align="bottom" loext:vertical-justify="auto"/>
    <style:paragraph-properties fo:text-align="start" css3t:text-justify="auto" fo:margin-left="0cm" style:writing-mode="page"/>
    <style:text-properties fo:color="#6aa84f" style:text-outline="false" style:text-line-through-style="none" style:text-line-through-type="none" style:font-name="Sans" fo:font-size="11pt" fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none" fo:font-weight="bold" style:font-name-asian="Liberation Sans" style:font-size-asian="11pt" style:font-style-asian="normal" style:font-weight-asian="bold" style:font-size-complex="11pt" style:font-style-complex="normal" style:font-weight-complex="bold"/>
@@ -1121,49 +1129,43 @@
    <style:text-properties fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" style:font-name="Cambria" fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
   </style:style>
   <style:style style:name="T29" style:family="text">
-   <style:text-properties fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" fo:color="#cccccc"/>
+   <style:text-properties fo:color="#cccccc" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal"/>
   </style:style>
   <style:style style:name="T30" style:family="text">
    <style:text-properties fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" fo:color="#000000"/>
   </style:style>
   <style:style style:name="T31" style:family="text">
-   <style:text-properties style:text-outline="false" style:font-style-complex="normal" style:font-style-asian="normal" style:font-weight-complex="normal" style:font-weight-asian="normal" style:font-size-complex="11pt" style:font-size-asian="11pt" style:text-position="0% 100%" fo:text-shadow="none" fo:font-style="normal" style:text-line-through-type="none" style:text-underline-style="none" style:text-underline-color="font-color" fo:font-weight="normal" fo:font-size="11pt" style:font-name="Cambria" fo:color="#000000"/>
-  </style:style>
-  <style:style style:name="T32" style:family="text">
-   <style:text-properties style:font-name="Cambria" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" fo:color="#cccccc"/>
-  </style:style>
-  <style:style style:name="T33" style:family="text">
-   <style:text-properties style:font-style-complex="normal" fo:color="#cccccc" fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" fo:font-weight="bold"/>
-  </style:style>
-  <style:style style:name="T34" style:family="text">
-   <style:text-properties style:font-style-complex="normal" fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" fo:color="#000000" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
-  </style:style>
-  <style:style style:name="T35" style:family="text">
-   <style:text-properties fo:color="#cccccc" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal"/>
-  </style:style>
-  <style:style style:name="T36" style:family="text">
    <style:text-properties fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" style:font-style-complex="normal" fo:color="#000000" fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
   </style:style>
-  <style:style style:name="T37" style:family="text">
+  <style:style style:name="T32" style:family="text">
    <style:text-properties fo:color="#999999" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
   </style:style>
-  <style:style style:name="T38" style:family="text">
+  <style:style style:name="T33" style:family="text">
    <style:text-properties fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" fo:color="#000000" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
   </style:style>
-  <style:style style:name="T39" style:family="text">
+  <style:style style:name="T34" style:family="text">
    <style:text-properties style:font-name="Cambria" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" fo:color="#93c47d"/>
   </style:style>
-  <style:style style:name="T40" style:family="text">
-   <style:text-properties fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" style:font-style-complex="normal" fo:color="#000000" style:font-name="Cambria" fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
+  <style:style style:name="T35" style:family="text">
+   <style:text-properties fo:color="#cccccc" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
   </style:style>
-  <style:style style:name="T41" style:family="text">
+  <style:style style:name="T36" style:family="text">
+   <style:text-properties fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" fo:color="#000000"/>
+  </style:style>
+  <style:style style:name="T37" style:family="text">
+   <style:text-properties style:font-name="Sans" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" fo:color="#6aa84f"/>
+  </style:style>
+  <style:style style:name="T38" style:family="text">
    <style:text-properties fo:color="#6aa84f" style:font-name="Cambria" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
   </style:style>
-  <style:style style:name="T42" style:family="text">
+  <style:style style:name="T39" style:family="text">
    <style:text-properties fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" style:use-window-font-color="true" style:font-name="Sans" fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
   </style:style>
-  <style:style style:name="T43" style:family="text">
-   <style:text-properties fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" fo:color="#000000" style:font-name="Cambria" fo:font-weight="normal" style:text-position="0% 100%" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
+  <style:style style:name="T40" style:family="text">
+   <style:text-properties fo:color="#6aa84f" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
+  </style:style>
+  <style:style style:name="T41" style:family="text">
+   <style:text-properties fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" fo:color="#000000" fo:font-weight="normal" style:text-position="0% 100%" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
   </style:style>
  </office:automatic-styles>
  <office:master-styles>
@@ -1183,7 +1185,7 @@
      <text:p><text:sheet-name>???</text:sheet-name><text:s/>(<text:title>???</text:title>)</text:p>
     </style:region-left>
     <style:region-right>
-     <text:p><text:date style:data-style-name="N2" text:date-value="2021-03-03">00/00/0000</text:date>, <text:time style:data-style-name="N2" text:time-value="13:04:30.680872345">00:00:00</text:time></text:p>
+     <text:p><text:date style:data-style-name="N2" text:date-value="2021-03-19">00/00/0000</text:date>, <text:time style:data-style-name="N2" text:time-value="12:01:51.079405648">00:00:00</text:time></text:p>
     </style:region-right>
    </style:header>
    <style:header-left style:display="false"/>
@@ -1291,7 +1293,7 @@
      <table:table-cell table:style-name="ce151" table:number-columns-repeated="17"/>
      <table:table-cell/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce4" office:value-type="string" calcext:value-type="string">
       <text:p>OS Version</text:p>
      </table:table-cell>
@@ -1369,7 +1371,7 @@
      <table:table-cell table:style-name="ce4" table:number-columns-repeated="15"/>
      <table:table-cell table:number-columns-repeated="18"/>
     </table:table-row>
-    <table:table-row table:style-name="ro3">
+    <table:table-row table:style-name="ro2">
      <table:table-cell table:style-name="ce36" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T1">OpenSSL</text:span> /</text:p><text:p><text:span text:style-name="T2">LibreSSL</text:span><text:span text:style-name="T3">⁶</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce8" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T5">1.0.2v-chevah2</text:span><text:span text:style-name="T6"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T5">1.0.2v-chevah2</text:span><text:span text:style-name="T6"> (statically linked with cryptography)</text:span></text:p>
@@ -1442,11 +1444,11 @@
      </table:table-cell>
      <table:table-cell table:style-name="ce60" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T14">1.0.2t </text:span>(bundled with upstream Python 2.7.18)</text:p><text:p><text:span text:style-name="T14">1.1.1g</text:span> (bundled with upstream cryptography 2.9.1)</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce141" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T18">1.0.2t</text:span><text:span text:style-name="T6">¹⁰ (bundled with upstream Python 2.7.18)</text:span></text:p><text:p><text:span text:style-name="T18">1.1.1i</text:span><text:span text:style-name="T6">¹¹ (bundled with upstream cryptography 3.3.2)</text:span></text:p>
+     <table:table-cell table:style-name="ce141" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T18">1.0.2t</text:span><text:span text:style-name="T6">¹⁰ (bundled with upstream Python 2.7.18)</text:span></text:p><text:p><text:span text:style-name="T37">1.1.1j</text:span><text:span text:style-name="T6"> (built from upstream sources)</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="33"/>
     </table:table-row>
-    <table:table-row table:style-name="ro4">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce5" office:value-type="string" calcext:value-type="string">
       <text:p>Python</text:p>
      </table:table-cell>
@@ -1493,7 +1495,7 @@
      <table:table-cell table:style-name="ce76" office:value-type="string" calcext:value-type="string">
       <text:p>2.7.18+patches</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce101" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T2">2.7.8</text:span><text:span text:style-name="T31">⁴</text:span></text:p>
+     <table:table-cell table:style-name="ce101" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T2">2.7.8</text:span><text:span text:style-name="T3">⁴</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce28" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T16">2.7.18</text:span><text:span text:style-name="T19">¹¹</text:span></text:p>
      </table:table-cell>
@@ -1514,11 +1516,11 @@
      </table:table-cell>
      <table:table-cell table:style-name="ce122" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T16">2.7.18</text:span><text:span text:style-name="T19">¹¹</text:span></text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce133" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T18">2.7.18</text:span><text:span text:style-name="T19">¹¹</text:span></text:p>
+     <table:table-cell table:style-name="ce187" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T18">2.7.18</text:span><text:span text:style-name="T19">¹³</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="33"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce36" office:value-type="string" calcext:value-type="string">
       <text:p>SQLite</text:p>
      </table:table-cell>
@@ -1579,13 +1581,13 @@
      <table:table-cell table:number-columns-repeated="3" table:style-name="ce52" office:value-type="string" calcext:value-type="string">
       <text:p>3.34.1</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce60" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T7">3.30.1</text:span><text:span text:style-name="T39"> </text:span>(we overwrite version from upstream Python at build time)</text:p>
+     <table:table-cell table:style-name="ce60" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T7">3.30.1</text:span><text:span text:style-name="T34"> </text:span>(we overwrite version from upstream Python at build time)</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce75" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T7">3.34.1</text:span><text:span text:style-name="T39"> </text:span>(we overwrite version from upstream Python at build time)</text:p>
+     <table:table-cell table:style-name="ce75" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T7">3.34.1</text:span><text:span text:style-name="T34"> </text:span>(we overwrite version from upstream Python at build time)</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="33"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce36" office:value-type="string" calcext:value-type="string">
       <text:p>Expat</text:p>
      </table:table-cell>
@@ -1627,7 +1629,7 @@
      </table:table-cell>
      <table:table-cell table:style-name="ce75" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T7">2.2.8</text:span> (bundled with Python)</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce60" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T32">2.1.0</text:span>⁵ (bundled with Python 2.7.8)</text:p>
+     <table:table-cell table:style-name="ce60" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T9">2.1.0</text:span>⁵ (bundled with Python 2.7.8)</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce50" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T7">2.2.8</text:span> (bundled with Python)</text:p>
      </table:table-cell>
@@ -1649,7 +1651,7 @@
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="33"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce36" office:value-type="string" calcext:value-type="string">
       <text:p>zlib</text:p>
      </table:table-cell>
@@ -1737,7 +1739,7 @@
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="33"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce36" office:value-type="string" calcext:value-type="string">
       <text:p>bzip2</text:p>
      </table:table-cell>
@@ -1818,7 +1820,7 @@
      </table:table-cell>
      <table:table-cell table:style-name="ce60" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T7">1.0.6</text:span> (bundled with Python)</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce37" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T41">1.0.6</text:span><text:span text:style-name="T42"> (bundled with Python)</text:span></text:p>
+     <table:table-cell table:style-name="ce37" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T38">1.0.6</text:span><text:span text:style-name="T39"> (bundled with Python)</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="33"/>
     </table:table-row>
@@ -2545,7 +2547,7 @@
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="33"/>
     </table:table-row>
-    <table:table-row table:style-name="ro4">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce5" office:value-type="string" calcext:value-type="string">
       <text:p>cryptography</text:p>
      </table:table-cell>
@@ -2613,9 +2615,9 @@
      <table:table-cell table:style-name="ce124" office:value-type="string" calcext:value-type="string">
       <text:p>3.3.2</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce61" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T26">2.9.2</text:span><text:span text:style-name="T27">¹² </text:span><text:span text:style-name="T40">(wheel includes OpenSSL)</text:span></text:p>
+     <table:table-cell table:style-name="ce61" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T35">2.9.2</text:span><text:span text:style-name="T36">¹² </text:span><text:span text:style-name="T31">(wheel includes OpenSSL)</text:span></text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce125" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T5">3.3.2</text:span><text:span text:style-name="T43"> (wheel includes OpenSSL)</text:span></text:p>
+     <table:table-cell table:style-name="ce189" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T40">3.3.2</text:span><text:span text:style-name="T41"> (wheel includes OpenSSL)</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="33"/>
     </table:table-row>
@@ -3110,7 +3112,7 @@
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="33"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce36" office:value-type="string" calcext:value-type="string">
       <text:p>pyOpenSSL</text:p>
      </table:table-cell>
@@ -3167,11 +3169,11 @@
      <table:table-cell table:style-name="ce76" office:value-type="string" calcext:value-type="string">
       <text:p>20.0.1</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce164" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T33">0.13.1</text:span><text:span text:style-name="T34">⁷</text:span></text:p>
+     <table:table-cell table:style-name="ce164" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">0.13.1</text:span><text:span text:style-name="T21">⁷</text:span></text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce167" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T35">0.13.1</text:span><text:span text:style-name="T36">⁷</text:span></text:p>
+     <table:table-cell table:style-name="ce167" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">0.13.1</text:span><text:span text:style-name="T31">⁷</text:span></text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce170" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T37">0.13.1</text:span><text:span text:style-name="T38">⁷</text:span></text:p>
+     <table:table-cell table:style-name="ce170" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T32">0.13.1</text:span><text:span text:style-name="T33">⁷</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce76" office:value-type="string" calcext:value-type="string">
       <text:p>19.1.0</text:p>
@@ -3193,7 +3195,7 @@
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="33"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce36" office:value-type="string" calcext:value-type="string">
       <text:p>pycrypto</text:p>
      </table:table-cell>
@@ -3865,7 +3867,7 @@
      <table:table-cell table:style-name="ce66"/>
      <table:table-cell table:number-columns-repeated="47"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce4" office:value-type="string" calcext:value-type="string">
       <text:p>Colour codes:</text:p>
      </table:table-cell>
@@ -3880,7 +3882,7 @@
      <table:table-cell table:style-name="ce66"/>
      <table:table-cell table:number-columns-repeated="47"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce4"/>
      <table:table-cell table:style-name="ce66" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T9">LIGHT GREY</text:span>: Tier 3 platforms and their problematic dependencies</text:p>
      </table:table-cell>
@@ -3893,7 +3895,7 @@
      <table:table-cell table:style-name="ce66"/>
      <table:table-cell table:number-columns-repeated="47"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce4"/>
      <table:table-cell table:style-name="ce66" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T7">GREEN</text:span>: no known vulnerabilities for Tier 1 platforms</text:p>
      </table:table-cell>
@@ -3906,7 +3908,7 @@
      <table:table-cell table:style-name="ce66"/>
      <table:table-cell table:number-columns-repeated="47"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce4"/>
      <table:table-cell table:style-name="ce66" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T10">BLUE</text:span>: possible vulnerabilities found upstream, but no released version has them yet</text:p>
      </table:table-cell>
@@ -3919,7 +3921,7 @@
      <table:table-cell table:style-name="ce66"/>
      <table:table-cell table:number-columns-repeated="47"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce4"/>
      <table:table-cell table:style-name="ce66" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T11">ORANGE</text:span>: minor vulnerabilities found</text:p>
      </table:table-cell>
@@ -3932,7 +3934,7 @@
      <table:table-cell table:style-name="ce66"/>
      <table:table-cell table:number-columns-repeated="47"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce4"/>
      <table:table-cell table:style-name="ce66" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T12">RED</text:span>: major vulnerabilities found</text:p>
      </table:table-cell>
@@ -3945,7 +3947,7 @@
      <table:table-cell table:style-name="ce66"/>
      <table:table-cell table:number-columns-repeated="47"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce4"/>
      <table:table-cell table:style-name="ce66" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T13">MAGENTA</text:span>: vulnerability status could not be established</text:p>
      </table:table-cell>
@@ -3957,7 +3959,7 @@
      <table:table-cell table:style-name="ce49"/>
      <table:table-cell table:number-columns-repeated="47"/>
     </table:table-row>
-    <table:table-row table:style-name="ro4">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce4"/>
      <table:table-cell table:style-name="ce66" office:value-type="string" calcext:value-type="string">
       <text:p>DEFAULT COLOUR: maintained upstream or not applicable</text:p>
@@ -3968,13 +3970,13 @@
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="48"/>
     </table:table-row>
-    <table:table-row table:style-name="ro4">
+    <table:table-row table:style-name="ro3">
      <table:table-cell table:number-columns-repeated="14"/>
      <table:table-cell table:style-name="ce49" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T8">10. </text:span><text:span text:style-name="T8"><text:a xlink:href="https://www.openssl.org/news/openssl-1.1.1-notes.html" xlink:type="simple">https://www.openssl.org/news/openssl-1.1.1-notes.html</text:a></text:span></text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="48"/>
     </table:table-row>
-    <table:table-row table:style-name="ro4">
+    <table:table-row table:style-name="ro3">
      <table:table-cell table:number-columns-repeated="14"/>
      <table:table-cell table:style-name="ce49" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T8">11. </text:span><text:span text:style-name="T8"><text:a xlink:href="https://github.com/ActiveState/cpython/tags" xlink:type="simple">https://github.com/ActiveState/cpython/tags</text:a></text:span></text:p>
      </table:table-cell>
@@ -3989,7 +3991,16 @@
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="48"/>
     </table:table-row>
-    <table:table-row table:style-name="ro1" table:number-rows-repeated="5">
+    <table:table-row table:style-name="ro1">
+     <table:table-cell table:number-columns-repeated="2"/>
+     <table:table-cell table:style-name="ce66"/>
+     <table:table-cell table:number-columns-repeated="11"/>
+     <table:table-cell table:style-name="ce49" office:value-type="string" calcext:value-type="string">
+      <text:p>13. On Windows, the upstream Python 2.7.18 packages are hot patched with all the ActivePython fixes except CVE-2021-3177</text:p>
+     </table:table-cell>
+     <table:table-cell table:number-columns-repeated="48"/>
+    </table:table-row>
+    <table:table-row table:style-name="ro1" table:number-rows-repeated="4">
      <table:table-cell table:number-columns-repeated="2"/>
      <table:table-cell table:style-name="ce66"/>
      <table:table-cell table:number-columns-repeated="60"/>
@@ -3998,10 +4009,10 @@
      <table:table-cell table:style-name="ce4"/>
      <table:table-cell table:number-columns-repeated="62"/>
     </table:table-row>
-    <table:table-row table:style-name="ro5" table:number-rows-repeated="1047562">
+    <table:table-row table:style-name="ro4" table:number-rows-repeated="1047562">
      <table:table-cell table:number-columns-repeated="63"/>
     </table:table-row>
-    <table:table-row table:style-name="ro6">
+    <table:table-row table:style-name="ro5">
      <table:table-cell table:number-columns-repeated="63"/>
     </table:table-row>
    </table:table>

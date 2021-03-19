@@ -16,8 +16,8 @@ LibreSSL⁶","1.0.2v-chevah2 (statically linked with stdlib “ssl”)
 1.1.1j (statically linked with cryptography)","1.1.1j (statically linked with stdlib “ssl”)
 1.1.1j (statically linked with cryptography)",1.1.0g,1.1.1f,"1.0.2t (bundled with upstream Python 2.7.18)
 1.1.1g (bundled with upstream cryptography 2.9.1)","1.0.2t¹⁰ (bundled with upstream Python 2.7.18)
-1.1.1i¹¹ (bundled with upstream cryptography 3.3.2)"
-Python,2.7.18+patches,2.7.18¹¹,2.7.18+patches,2.7.18+patches,2.7.18¹¹,2.7.18¹¹,2.7.18+patches,2.7.18+patches,2.7.18¹¹,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18¹¹,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.8⁴,2.7.18¹¹,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18¹¹,2.7.18¹¹
+1.1.1j (built from upstream sources)"
+Python,2.7.18+patches,2.7.18¹¹,2.7.18+patches,2.7.18+patches,2.7.18¹¹,2.7.18¹¹,2.7.18+patches,2.7.18+patches,2.7.18¹¹,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18¹¹,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.8⁴,2.7.18¹¹,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18¹¹,2.7.18¹³
 SQLite,3.34.1,3.34.1,3.34.1,3.34.1,3.30.1,3.30.1,3.34.1,3.34.1,3.30.1,3.34.1,3.34.1,3.34.1,3.30.1,3.34.1,3.34.1,3.34.1,3.34.1,3.34.1,3.34.1,3.34.1,3.30.1,3.34.1,3.34.1,3.34.1,3.34.1,3.34.1,3.34.1,3.30.1 (we overwrite version from upstream Python at build time),3.34.1 (we overwrite version from upstream Python at build time)
 Expat,2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.1.0⁵ (bundled with Python 2.7.8),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python)
 zlib,1.2.11,p/o,1.2.11,1.2.11,p/o,p/o,p/o,1.2.11,p/o,p/o,1.2.11,p/o,p/o,1.2.11,1.2.11,p/o,p/o,1.2.11,p/o,p/o,p/o,p/o,p/o,1.2.11,1.2.11,p/o,p/o,1.2.11 (bundled with Python),1.2.11 (bundled with Python)
@@ -61,3 +61,4 @@ Colour codes:,DARKGREY: Tier 2 platforms and their problematic dependencies,,,,,
 ,,,,,,,,,,,,,,10. https://www.openssl.org/news/openssl-1.1.1-notes.html,,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,11. https://github.com/ActiveState/cpython/tags,,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,12. https://cryptography.io/en/latest/changelog.html,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,"13. On Windows, the upstream Python 2.7.18 packages are hot patched with all the ActivePython fixes except CVE-2021-3177",,,,,,,,,,,,,,,

@@ -72,7 +72,6 @@ export BUILD_BZIP2="yes"
 export BUILD_LIBEDIT="yes"
 export BUILD_GMP="yes"
 export BUILD_LIBFFI="no"
-export BUILD_CFFI="yes"
 export BUILD_OPENSSL="no"
 
 # Patches for EXTRA_LIBRARIES modules should reside in a sub-directory named

@@ -15,7 +15,6 @@ except:
     print 'Coult not get $OS/$ARCH Chevah env vars.'
     sys.exit(101)
 
-BUILD_CFFI = os.environ.get('BUILD_CFFI', 'no').lower() == 'yes'
 BUILD_LIBEDIT = os.environ.get('BUILD_LIBEDIT', 'no').lower() == 'yes'
 
 
@@ -496,30 +495,27 @@ def main():
     else:
         print 'stdlib ssl %s' % (OPENSSL_VERSION,)
 
-    # cryptography module and latest pyOpenSSL are only available on
-    # systems with cffi.
-    if BUILD_CFFI:
-        try:
-            from cryptography.hazmat.backends.openssl.backend import backend
-            import cryptography
-            # Check OpenSSL version on OS'es with static OpenSSL libs.
-            openssl_version = backend.openssl_version_text()
-            if CHEVAH_OS.startswith(("win", "lnx", "macos", "aix")):
-                # On some OS'es we build against our own OpenSSL.
-                expecting = u'OpenSSL 1.1.1k  25 Mar 2021'
-                if CHEVAH_OS.startswith("aix"):
-                    # On AIX we are stuck with a patched 1.0.2.
-                    expecting = u'OpenSSL 1.0.2v-chevah2  22 Feb 2021'
-                if openssl_version != expecting:
-                    sys.stderr.write('Expecting %s, got %s.\n' % (
-                        expecting, openssl_version))
-                    exit_code = 13
-        except Exception as error:
-            sys.stderr.write('"cryptography" failure. %s\n' % (error,))
-            exit_code = 14
-        else:
-            print 'cryptography %s - %s' % (
-                cryptography.__version__, openssl_version)
+    try:
+        from cryptography.hazmat.backends.openssl.backend import backend
+        import cryptography
+        # Check OpenSSL version on OS'es with static OpenSSL libs.
+        openssl_version = backend.openssl_version_text()
+        if CHEVAH_OS.startswith(("win", "lnx", "macos", "aix")):
+            # On some OS'es we build against our own OpenSSL.
+            expecting = u'OpenSSL 1.1.1k  25 Mar 2021'
+            if CHEVAH_OS.startswith("aix"):
+                # On AIX we are stuck with a patched 1.0.2.
+                expecting = u'OpenSSL 1.0.2v-chevah2  22 Feb 2021'
+            if openssl_version != expecting:
+                sys.stderr.write('Expecting %s, got %s.\n' % (
+                    expecting, openssl_version))
+                exit_code = 13
+    except Exception as error:
+        sys.stderr.write('"cryptography" failure. %s\n' % (error,))
+        exit_code = 14
+    else:
+        print 'cryptography %s - %s' % (
+            cryptography.__version__, openssl_version)
 
     try:
         from OpenSSL import SSL, crypto, rand, __version__ as pyopenssl_version

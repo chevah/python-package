@@ -17,7 +17,7 @@ BZIP2_VERSION="1.0.8"
 LIBEDIT_VERSION="20170329-3.1"
 # PyCrypto needs GMP or MPIR for fast math. GMP has support for AIX.
 GMP_VERSION="6.2.1"
-OPENSSL_VERSION="1.1.1j"
+OPENSSL_VERSION="1.1.1k"
 SQLITE_VERSION="3.34.1"
 
 # Python modules versions to be used everywhere possible.

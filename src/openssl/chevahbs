@@ -7,44 +7,79 @@
 
 
 chevahbs_configure() {
-    # We want static builds only, so that we don't have to mess with LIBPATH.
-    CONF_OPTS="no-shared"
-    # OpenSSL's build requires an absolute path for --prefix,
-    # so we don't use --prefix="" as in the other chevahbs scripts.
-    execute ./config --prefix="$INSTALL_FOLDER" $CONF_OPTS
+    case $OS in
+        win)
+            echo "Configure is done later on Windows."
+            ;;
+        *)
+            # Static builds only, so that we don't have to mess with LIBPATH.
+            CONF_OPTS="no-shared"
+            # OpenSSL's build requires an absolute path for --prefix,
+            # so we don't use --prefix="" as in the other chevahbs scripts.
+            execute ./config --prefix="$INSTALL_FOLDER" $CONF_OPTS
+            ;;
+    esac
 }
 
 
 chevahbs_compile() {
-    # On AIX, OpenSSL's tests have an ~1/6 chance of passing.
-    # Just repeating the tests is not enough, a whole rebuild is needed.
-    if [ "${OS%aix*}" = "" ]; then
-        for i in $(seq 1 20); do
-            echo "OpenSSL build ROUND ${i}..."
-            execute $MAKE
-            $MAKE test
-            tests_error_code=$?
-            if [ $tests_error_code -eq 0 ]; then
-                echo "OpenSSL tests were SUCCESSFUL in ROUND ${i}."
-                break
-            else
-                execute $MAKE clean
+    case $OS in
+        win)
+            # VisualStudio 2010 is required but not installable through Chocolatey.
+            # This ISO file is backed up on our first NFS server in /os/win/.
+            if [ ! -d '/c/Program Files (x86)/Microsoft SDKs/Windows/v7.1' ]; then
+                echo "Visual Studio 2010 not found, installing..."
+                execute powershell -Command ../../src/openssl/win_install_tools.ps1 \
+                    -InstallURI https://download.microsoft.com/download/F/1/0/F10113F5-B750-4969-A255-274341AC6BCE/GRMSDK_EN_DVD.iso
             fi
-        done
-        if [ $tests_error_code -ne 0 ]; then
-            echo "OpenSSL tests failed $i times in a row."
-            exit 69
-        fi
-    else
-        execute $MAKE
-        execute $MAKE test
-    fi
+            # We need a base set of flags because on Windows using MSVC
+            # enable-ec_nistp_64_gcc_128 doesn't work as there's no 128-bit type.
+            export OPENSSL_BUILD_FLAGS_WINDOWS="\
+                no-ssl3 no-ssl3-method no-zlib no-shared no-comp no-dynamic-engine"
+            export OPENSSL_BUILD_FLAGS="\
+                ${OPENSSL_BUILD_FLAGS_WINDOWS} enable-ec_nistp_64_gcc_128"
+            # Use the BATs from pyca/infra which do configure / build / install.
+            # If $MAKE is present, even empty, builds fail with cryptic errors.
+            execute ../../src/openssl/win_${ARCH}_2010.bat
+            ;;
+        aix*)
+            # On AIX, OpenSSL's tests have an ~1/6 chance of passing.
+            # Just repeating the tests is not enough, a whole rebuild is needed.
+            for i in $(seq 1 20); do
+                echo "OpenSSL build ROUND ${i}..."
+                execute $MAKE
+                $MAKE test
+                tests_error_code=$?
+                if [ $tests_error_code -eq 0 ]; then
+                    echo "OpenSSL tests were SUCCESSFUL in ROUND ${i}."
+                    break
+                else
+                    execute $MAKE clean
+                fi
+            done
+            if [ $tests_error_code -ne 0 ]; then
+                echo "OpenSSL tests failed $i times in a row."
+                exit 202
+            fi
+            ;;
+        *)
+            execute $MAKE
+            execute $MAKE test
+            ;;
+    esac
 }
 
 
 chevahbs_install() {
-    install_folder=$1
-    execute $MAKE install
+    case $OS in
+        win)
+            echo "Libs/headers installed through the build BAT file."
+            ;;
+        *)
+            install_folder=$1
+            execute $MAKE install
+            ;;
+    esac
 }
 
 

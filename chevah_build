@@ -8,7 +8,6 @@
 # publish_staging
 #
 
-# Beware that version 2.7.8 is used for Solaris 10.
 PYTHON_BUILD_VERSION="2.7.18"
 LIBFFI_VERSION="3.2.1"
 ZLIB_VERSION="1.2.11"
@@ -16,9 +15,9 @@ BZIP2_VERSION="1.0.8"
 # We statically build the BSD libedit on selected platforms to get the
 # readline module available without linking to the GPL-only readline libs.
 LIBEDIT_VERSION="20170329-3.1"
-# PyCrypto needs GMP or MPIR for fast math. GMP has support for AIX/HP-UX/etc.
+# PyCrypto needs GMP or MPIR for fast math. GMP has support for AIX.
 GMP_VERSION="6.2.1"
-OPENSSL_VERSION="1.1.1j"
+OPENSSL_VERSION="1.1.1k"
 SQLITE_VERSION="3.34.1"
 
 # Python modules versions to be used everywhere possible.
@@ -42,7 +41,6 @@ PSUTIL_VERSION="5.8.0"
 CYTHON_VERSION="0.29.21"
 SUBPROCESS32_VERSION="3.5.4"
 GMPY2_VERSION="2.0.8"
-GMPY_VERSION="1.17"
 
 # Versions no longer upgradable because of Python 2 deprecation.
 PIP_VERSION="20.3.4"
@@ -74,7 +72,6 @@ export BUILD_BZIP2="yes"
 export BUILD_LIBEDIT="yes"
 export BUILD_GMP="yes"
 export BUILD_LIBFFI="no"
-export BUILD_CFFI="yes"
 export BUILD_OPENSSL="no"
 
 # Patches for EXTRA_LIBRARIES modules should reside in a sub-directory named
@@ -83,12 +80,6 @@ export BUILD_OPENSSL="no"
 EXTRA_LIBRARIES="\
     python-modules/cffi-${CFFI_VERSION} \
     python-modules/pycrypto-${PYCRYPTO_VERSION} \
-    "
-# Libraries for legacy systems not built around cffi and pip.
-EXTRA_LIBRARIES_NO_CFFI="\
-    python-modules/pycrypto-${PYCRYPTO_VERSION} \
-    python-modules/pycryptodomex-${PYCRYPTODOMEX_VERSION} \
-    python-modules/bcrypt-${BCRYPT_VERSION} \
     "
 # List of default Python modules installed using pip.
 PIP_LIBRARIES="\
@@ -116,38 +107,12 @@ PIP_LIBRARIES_OPENSSL_102="\
     psutil==${PSUTIL_VERSION} \
     setproctitle==${SETPROCTITLE_VERSION}
     "
-# cryptography 1.3.4 was last upstream version to support OpenSSL 0.9.8.
-# pyOpenSSL 16.0.0 was last upstream version to support OpenSSL 0.9.8.
-PIP_LIBRARIES_OPENSSL_098="\
-    pycryptodomex==${PYCRYPTODOMEX_VERSION} \
-    cryptography==1.3.4 \
-    pyOpenSSL==16.0.0 \
-    scandir==${SCANDIR_VERSION} \
-    Cython==${CYTHON_VERSION} \
-    subprocess32==${SUBPROCESS32_VERSION} \
-    bcrypt==${BCRYPT_VERSION} \
-    psutil==${PSUTIL_VERSION} \
-    setproctitle==${SETPROCTITLE_VERSION} \
-    "
-# Python modules installed through pip on systems not built around cffi.
-# pyOpenSSL 0.13.1 was last upstream version before the port to
-# the cffi-based OpenSSL bindings provided by the cryptography module.
-# pyOpenSSL 0.13.1, that fixes CVE-2013-4314, requires SSL_set_SSL_CTX.
-# psutil not included because it's broken on HP-UX (where it doesn't build),
-# and on Solaris (where it builds just fine, but version 5.6.1 doesn't work).
-PIP_LIBRARIES_NO_CFFI="\
-    pyOpenSSL==0.13.1 \
-    setproctitle==${SETPROCTITLE_VERSION} \
-    scandir==${SCANDIR_VERSION} \
-    Cython==${CYTHON_VERSION} \
-    subprocess32==${SUBPROCESS32_VERSION} \
-    "
-
 # Arguments that are sent when using pip.
 PIP_ARGS="\
     --index-url=http://pypi.chevah.com/simple \
     --trusted-host=pypi.chevah.com \
     --no-cache-dir \
+    --no-warn-script-location \
     "
 
 PROG=$0
@@ -165,38 +130,25 @@ BUILD_FOLDER='build'
 # presence of required packages. Or at least of the required commands...
 # This build of Python / pyOpenSSL / cryptography / etc.  requires:
 # a C compiler, make, m4, libs and headers for OpenSSL / zlib / libffi,
-# git (for patching Python's version), patch (for applying our own patches),
-# and optionally texinfo (link texinfo to `true` if missing on your platform).
+# git (for patching Python's version), patch (for applying our own patches).
 # To build libedit for the readline module, we need the headers of
 # a curses library, automake and libtool.
 # On platforms with a choice of C compilers, you may choose among the
 # available compilers by setting CC and CXX further down in this script.
-COMMON_PKGS="gcc make m4 automake libtool texinfo patch"
+COMMON_PKGS="gcc make m4 automake libtool patch"
 DEBIAN_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
 RHEL_PKGS="$COMMON_PKGS git openssl-devel zlib-devel libffi-devel ncurses-devel"
-ALPINE_COMMON_PKGS="$COMMON_PKGS\
-    git zlib-dev libffi-dev ncurses-dev linux-headers"
-ALPINE_LIBRESSL_PKGS="$ALPINE_COMMON_PKGS libc-dev libressl-dev"
-ALPINE_OPENSSL_PKGS="$ALPINE_COMMON_PKGS musl-dev openssl-dev"
-ARCH_PKGS="$COMMON_PKGS git libffi ncurses"
-# Windows is special, but package management is possible through Chocolatey.
-# Chocolatey's git package comes with patch included through bundling MINGW4.
-CHOCO_PKGS="vcpython27 make git"
+ALPINE_PKGS="$COMMON_PKGS \
+    git zlib-dev libffi-dev ncurses-dev linux-headers musl-dev openssl-dev"
+# No automated Windows package management, but here's what it's needed.
+CHOCO_PKGS="vcpython27 make git StrawberryPerl nasm 7zip"
 
-# In Solaris and AIX we use $ARCH to choose if we build a 32bit or 64bit
-# package. This way we are able to force a 32bit build on a 64bit machine,
-# for example by exporting ARCH in brink.sh as "x86" instead of "x64" or
-# "ppc" instead of "ppc64". Except on HP-UX, where we always do 32bit builds.
+# $ARCH can be used to force a 32bit build on a 64bit machine, e.g. by exporting
+# ARCH in brink.sh as "x86" instead of "x64", or "ppc" instead of "ppc64".
 # $ARCH is also used when statically building libffi/GMP and for testing.
 # $OS is used when patching/configuring/building/testing.
 export ARCH
 export OS
-# Explicitly choose the C compiler in order to make it possible to switch
-# between native compilers and GCC on platforms such as AIX and Solaris.
-export CC='gcc'
-# CXX is not really needed, we export it so that g++ won't get picked up when
-# not using gcc, and thus silence the associated configure warning on stderr.
-export CXX='g++'
 
 LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
 LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/bin/python
@@ -204,20 +156,39 @@ INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST
 PYTHON_BIN=$INSTALL_FOLDER/bin/python
 PYTHON_BUILD_FOLDER="$PYTHON_VERSION-$OS-$ARCH"
 
-export MAKE=make
-
 # Used when building cffi.
 export CHEVAH_BUILD_PATH=$INSTALL_FOLDER
 
+# CXX is not really needed, we export it so that g++ won't get picked up when
+# not using gcc, and thus silence the associated configure warning on stderr.
 case $OS in
+    win)
+        # On Windows, python executable is installed at a different path.
+        LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
+        PYTHON_BIN=$INSTALL_FOLDER/lib/python
+        # For Windows we don't build everything from source yet.
+        # But what we build is done in a very different way, no CC/MAKE/etc.
+        export BUILD_LIBEDIT="no"
+        export BUILD_GMP="no"
+        export BUILD_BZIP2="no"
+        # MSYS2's Perl is not good enough for building OpenSSL.
+        export PATH="/c/Strawberry/perl/bin/:$PATH:/c/Program Files/NASM/"
+        export BUILD_OPENSSL="yes"
+        # Extra libraries are installed only using PIP.
+        EXTRA_LIBRARIES=""
+        # A patched PyCrypto is packed and uploaded to our PyPI server.
+        PIP_LIBRARIES="$PIP_LIBRARIES \
+            pycrypto==${PYCRYPTO_VERSION}chevah1 \
+            pywin32==${PYWIN32_VERSION} \
+            gmpy2==${GMPY2_VERSION} \
+            "
+        ;;
     aix*)
-        # By default, we use IBM's XL C compiler. Remove or comment out the
-        # CC and CXX lines to use GCC. However, beware that GCC 4.2 from
-        # IBM's RPMs will fail with GMP and Python!
+        # Only IBM's XL C compiler is supported.
         export CC="xlc_r"
         export CXX="xlC_r"
-        export MAKE=gmake
-        export PATH=/usr/vac/bin:$PATH
+        export MAKE="gmake"
+        export PATH="/usr/vac/bin:$PATH"
         export CFLAGS="$CFLAGS -O2 -D_LARGE_FILES=1"
         # IBM's OpenSSL libs are mixed 32/64bit binaries in AIX, so we need to
         # be specific about what kind of build we want, because otherwise we
@@ -255,175 +226,33 @@ case $OS in
             python-modules/cryptography-3.2.1 \
         "
         add_ignored_safety_ids_for_cryptography32
-        if [ "${OS%aix53}" = "" ]; then
-            # psutil doesn't build on AIX 5.3, so we do without it.
-            PIP_LIBRARIES="\
-                pycryptodomex==${PYCRYPTODOMEX_VERSION} \
-                pyOpenSSL==19.1.0 \
-                scandir==${SCANDIR_VERSION} \
-                Cython==${CYTHON_VERSION} \
-                subprocess32==${SUBPROCESS32_VERSION} \
-                bcrypt==${BCRYPT_VERSION} \
-                setproctitle==${SETPROCTITLE_VERSION}
-                "
-        fi
         ;;
     sol*)
-        # By default, we use Sun's Studio compiler. Comment these two for GCC.
+        # Only Sun's Studio compiler is supported.
         export CC="cc"
         export CXX="CC"
         export MAKE="gmake"
         # Needed for the subprocess32 module.
         # More at https://github.com/google/python-subprocess32/issues/40.
         export CFLAGS="$CFLAGS -DHAVE_DIRFD"
-        # Here's where the system-included GCC is to be found.
-        if [ "${CC}" = "gcc" ]; then
-            export PATH="$PATH:/usr/sfw/bin/"
-        fi
         # Arch-specific bits and paths.
-        if [ "${ARCH%64}" = "$ARCH" ]; then
-            # GMP needs to be told that we aim for a 32bit build.
-            export ABI="32"
-        else
-            export CFLAGS="$CFLAGS -m64"
-            export LDFLAGS="$LDFLAGS -m64 -L/usr/lib/64 -R/usr/lib/64"
-        fi
+        export CFLAGS="$CFLAGS -m64"
+        export LDFLAGS="$LDFLAGS -m64 -L/usr/lib/64 -R/usr/lib/64"
         # System includes bzip2 libs by default.
         export BUILD_BZIP2="no"
-        if [ "${OS%sol10*}" = "" ]; then
-            # "sol10" code path requires OpenSSL 1.0.x patches from Oracle.
-            # Check "sol10u3" divergent code path to link to OpenSSL 0.9.7.
-            # These are the default-included GNU make and makeinfo.
-            export MAKE=/usr/sfw/bin/gmake
-            export MAKEINFO=/usr/sfw/bin/makeinfo
-            # We favour the BSD-flavoured "install" over the default one.
-            # "ar", "nm" and "ld" are included by default in the same path.
-            export PATH=/usr/ccs/bin/:$PATH
-            # Latest libedit sources do not build on Solaris 10 any more.
-            export BUILD_LIBEDIT="no"
-            # setuptools 42.0.0 breaks allow-hosts set globally.
-            # More at https://github.com/pypa/setuptools/issues/1916.
-            SETUPTOOLS_VERSION="41.6.0"
-            # bcrypt build fails with the system libffi.
-            export BUILD_LIBFFI="yes"
-            # NPN functions missing from Oracle's OpenSSL patches, as of version
-            # 1.0.2n from January 2018 (patches 151912-11/151913-11). Thus, the
-            # new _ssl module in 2.7.9 won't build, error being "_ssl.so: symbol
-            # SSL_get0_next_proto_negotiated: referenced symbol not found".
-            PYTHON_BUILD_VERSION=2.7.8
-            # Elliptic-curve crypto missing too, no cryptography 1.9 or newer.
-            # NPN functions needed in cryptography 0.4 and newer. 1.8.2 builds,
-            # but at runtime: "cryptography/hazmat/bindings/_openssl.so: symbol
-            # SSL_CTX_set_next_proto_select_cb: referenced symbol not found".
-            # cryptography 0.3 doesn't build on Solaris 10, so we are stuck.
-            export BUILD_CFFI="no"
-            add_ignored_safety_ids_for_pyopenssl_false_positives
-            PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
-            EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
-        else
-            # Solaris 11 is much more modern, but still has some quirks.
-            if [ ! -f /usr/include/openssl/cmac.h ]; then
-                # Solaris 11.0/11.1 have OpenSSL 1.0.0 libraries.
-                # cryptography 1.6 is the last version to support them.
-                # pyOpenSSL 17.0.0, last version to support cryptography 1.6.
-                # but it's vulnerable to CVE-2018-1000807 and CVE-2018-1000807.
-                # So we use the libraries not requiring CFFI here.
-                export BUILD_CFFI="no"
-                add_ignored_safety_ids_for_pyopenssl_false_positives
-                PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
-                EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
-                # setuptools 42.0.0 breaks allow-hosts set globally.
-                # More at https://github.com/pypa/setuptools/issues/1916.
-                SETUPTOOLS_VERSION="41.6.0"
-            elif [ ! -f /usr/include/openssl/ecdh.h ]; then
-                # Solaris 11.2 (or 11.3 up to SRU 18) has OpenSSL 1.0.1 without
-                # Elliptic-curve crypto, thus only cryptography 1.8.2 works.
-                # pyOpenSSL 17.0.0, last version to support cryptography 1.8.2,
-                # but it's vulnerable to CVE-2018-1000807 and CVE-2018-1000807.
-                # So we use the libraries not requiring CFFI here.
-                export BUILD_CFFI="no"
-                add_ignored_safety_ids_for_pyopenssl_false_positives
-                PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
-                EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
-                # setuptools 42.0.0 breaks allow-hosts set globally.
-                # More at https://github.com/pypa/setuptools/issues/1916.
-                SETUPTOOLS_VERSION="41.6.0"
-            else
-                # Solaris 11.4 has multiple system libffi libs present.
-                export BUILD_LIBFFI="yes"
-                # cryptography 1.9+ needs EC crypto, enabled in 11.3 SRU19+.
-                # Only cryptography 2.4+ builds unpatched with Studio's CC.
-                # See https://github.com/pyca/cryptography/pull/4545 for more.
-                # cryptography 3.2.x, last version to support OpenSSL 1.0.2.
-                export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
-                # Put cryptography back, to build it against system OpenSSL.
-                # cryptography 3.2.1, last version working with OpenSSL 1.0.2.
-                PIP_LIBRARIES="cryptography==3.2.1 $PIP_LIBRARIES_OPENSSL_102"
-                add_ignored_safety_ids_for_cryptography32
-            fi
-        fi
-        if [ "$OS" = "sol10u3" ]; then
-            # This code path also covers linking to OpenSSL 0.9.7 on all Solaris
-            # 10 versions, including releases u7 and newer, with updated libc.
-            # Paths for OpenSSL 0.9.7 and SQLite libs on Solaris 10.
-            # The latter were moved and are found easily on newer releases.
-            if [ "${ARCH%64}" = "$ARCH" ]; then
-                export LDFLAGS="$LDFLAGS -L/usr/sfw/lib -R/usr/sfw/lib"
-                export LDFLAGS="$LDFLAGS -L/usr/lib/mps -R/usr/lib/mps"
-            else
-                export LDFLAGS="$LDFLAGS -L/usr/sfw/lib/64 -R/usr/sfw/lib/64"
-                export LDFLAGS="$LDFLAGS -L/usr/lib/mps/64 -R/usr/lib/mps/64"
-            fi
-            # pip doesn't like the included zlib on ancient Solaris 10
-            # releases, such as Solaris 10u3.
-            export BUILD_ZLIB="yes"
-            # Solaris 10 has OpenSSL 0.9.7, but Python 2 versions starting with
-            # 2.7.9 do not support it, see https://bugs.python.org/issue20981.
-            PYTHON_BUILD_VERSION=2.7.8
-            # OpenSSL 0.9.7 is unusable with cryptography & current pyOpenSSL.
-            # Beware that OpenSSL 0.9.7 libs, as bundled in Solaris 10, lack
-            # the SSL_set_SSL_CTX symbol.
-            # pyOpenSSL 0.13 was last version to build without SSL_set_SSL_CTX.
-            export BUILD_CFFI="no"
-            # If latest setproctitle fails, look in the history of this repo
-            # for python-modules/python-setproctitle-1.1.8.dev0 for extra libs.
-            add_ignored_safety_ids_for_pyopenssl_false_positives
-            PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
-            EXTRA_LIBRARIES=$EXTRA_LIBRARIES_NO_CFFI
-        fi
-        ;;
-    hpux*)
-        # GCC and the bundled /usr/ccs/bin/cc will fail with pycrypto.
-        # "aCC -Ae" does parallel builds better, but beware of race conditions.
-        # Don't use CFLAGS with native ld, it chokes on some parameters.
-        # An alternative is LDSHARED="/opt/aCC/bin/aCC -b" with CC="aCC -Ae".
-        # As little warnings as possible, HP's compilers generate lots.
-        # Force 32bit binaries (the OS default) and Position-Independent Code.
-        export CC="/opt/aCC/bin/cc -w +DD32 +z"
-        export CXX="/opt/aCC/bin/aCC"
-        # Native make needed for parallel builds, use gmake where this breaks.
-        export MAKE="make -P"
-        # Even though we don't use CFFI, libffi is needed to build _ctypes,
-        # which is then needed by gmpy 1.x
+        # Solaris 11.4 has multiple system libffi libs present.
         export BUILD_LIBFFI="yes"
-        export BUILD_ZLIB="yes"
-        # libedit requires __STDC_ISO_10646__.
-        export BUILD_LIBEDIT="no"
-        # CFFI/cryptography build on HP-UX, but libffi breaks for CFFI. More at
-        # https://bitbucket.org/cffi/cffi/issues/368/segmentation-fault-in-hp-ux
-        export BUILD_CFFI="no"
-        add_ignored_safety_ids_for_pyopenssl_false_positives
-        PIP_LIBRARIES=$PIP_LIBRARIES_NO_CFFI
-        # EXTRA_LIBRARIES is EXTRA_LIBRARIES_NO_CFFI minus bcrypt,
-        # which doesn't support HP-UX at all.
-        EXTRA_LIBRARIES="\
-            python-modules/pycrypto-${PYCRYPTO_VERSION} \
-            python-modules/pycryptodomex-${PYCRYPTODOMEX_VERSION} \
-            "
+        # OpenSSL 1.0.2 has extended support: https://tinyurl.com/2ck2sm6s.
+        export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
+        # Put cryptography back, to build it against system OpenSSL.
+        # cryptography 3.2.1, last version working with OpenSSL 1.0.2.
+        PIP_LIBRARIES="cryptography==3.2.1 $PIP_LIBRARIES_OPENSSL_102"
+        add_ignored_safety_ids_for_cryptography32
         ;;
     macos)
         export CC="clang"
         export CXX="clang++"
+        export MAKE="make"
         # Build as compatible as it makes sense. See brink.sh for the reason.
         export CFLAGS="$CFLAGS -mmacosx-version-min=10.12"
         # setup.py skips building readline by default, as it sets this to
@@ -439,6 +268,7 @@ case $OS in
     fbsd*)
         export CC="clang"
         export CXX="clang++"
+        export MAKE="make"
         # libffi not available in the base system, only as port/package.
         export BUILD_LIBFFI="yes"
         # System includes bzip2 libs by default.
@@ -461,10 +291,14 @@ case $OS in
     obsd*)
         export CC="clang"
         export CXX="clang++"
+        export MAKE="make"
         # libffi not available in the base system, only as port/package.
         export BUILD_LIBFFI="yes"
         ;;
     lnx)
+        export CC="gcc"
+        export CXX="g++"
+        export MAKE="make"
         # Build as portable as possible, only glibc 2.x should be needed.
         export BUILD_LIBFFI="yes"
         export BUILD_ZLIB="yes"
@@ -475,22 +309,11 @@ case $OS in
         # OpenSSL tests on CentOS 5 require an updated Perl 5.10 in /usr/local.
         export PATH="/usr/local/bin:$PATH"
         ;;
-    win)
-        # On Windows, python executable is installed at a different path.
-        LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
-        PYTHON_BIN=$INSTALL_FOLDER/lib/python
-        # For Windows we don't build everything from source yet.
-        export BUILD_LIBEDIT="no"
-        export BUILD_GMP="no"
-        export BUILD_BZIP2="no"
-        # Extra libraries are installed only using PIP.
-        EXTRA_LIBRARIES=""
-        # A patched PyCrypto is packed and uploaded to our PyPI server.
-        PIP_LIBRARIES="$PIP_LIBRARIES \
-            pycrypto==${PYCRYPTO_VERSION}chevah1 \
-            pywin32==${PYWIN32_VERSION} \
-            gmpy2==${GMPY2_VERSION} \
-            "
+    *)
+        # Only supported Linux distributions should be left.
+        export CC="gcc"
+        export CXX="g++"
+        export MAKE="make"
         ;;
 esac
 
@@ -524,9 +347,7 @@ case "$ARCH" in
         let JOBS=CPUS
         ;;
 esac
-if [ "${OS%hpux*}" = "" ]; then
-    export PARALLEL="$JOBS"
-else
+if [ -n "$MAKE" ]; then
     export MAKE="$MAKE -j${JOBS}"
 fi
 
@@ -536,64 +357,40 @@ fi
 #
 check_dependencies() {
 
-    packages=''
-    missing_packages=''
+    packages=""
+    missing_packages=""
+    check_command="command -v"
 
     case $OS in
         # Debian-derived distros are similar in this regard.
         ubuntu*)
             packages=$DEBIAN_PKGS
-            check_command='dpkg --status'
+            check_command="dpkg --status"
             ;;
         rhel*|amzn*)
             packages=$RHEL_PKGS
-            check_command='rpm --query'
+            check_command="rpm --query"
             ;;
         alpine*)
             # Alpine 3.9 switched back to OpenSSL as default.
-            packages=$ALPINE_OPENSSL_PKGS
-            case $OS in
-                alpine36|alpine37|alpine38)
-                    packages=$ALPINE_LIBRESSL_PKGS
-                    ;;
-            esac
-            check_command='apk info -q -e'
-            ;;
-        archlinux)
-            packages=$ARCH_PKGS
-            check_command='pacman -Qi'
+            packages=$ALPINE_PKGS
+            check_command="apk info -q -e"
             ;;
         # On remaining OS'es we just check for some of the needed commands.
-        hpux*)
-            # Included CFLAGS get in the way on HP-UX.
-            packages="/opt/aCC/bin/cc make m4 git patch"
-            check_command="command -v"
-            ;;
         macos)
             packages="$CC make m4 libtool git patch"
-            check_command="command -v"
             ;;
         lnx)
             # Generic Linux builds need Perl 5.10.0+ for building OpenSSL.
             # For testing OpenSSL, Test::More 0.96 or newer is needed.
             packages="$CC make m4 git patch perl"
-            check_command="command -v"
             ;;
         win)
-            # The windows build is special.
-            command -v choco
-            if [ $? -eq 0 ]; then
-                # Chocolatey is present, let's use it.
-                packages=$CHOCO_PKGS
-                check_command="choco info --local-only --limit-output"
-            else
-                packages="make git patch"
-                check_command="command -v"
-            fi
+            # To not get confused by MSYS2's perl, we check for wperl.
+            packages="git patch wperl nasm 7z"
             ;;
         *)
             packages="$CC make m4 git patch"
-            check_command="command -v"
             ;;
     esac
 
@@ -682,27 +479,30 @@ command_build() {
     fi
 
     if [ "$BUILD_OPENSSL" = "yes" ]; then
+        # The Windows build needs it.
+        export OPENSSL_VERSION
         build 'openssl' "openssl-$OPENSSL_VERSION" ${PYTHON_BUILD_FOLDER}
-        if [ "${ARCH%64}" = "$ARCH" ]; then
-            # AIX builds follow this branch.
+        if [ "${OS%aix*}" = "" ]; then
             export LDFLAGS="-L${INSTALL_FOLDER}/lib/ ${LDFLAGS}"
             export PKG_CONFIG_PATH="\
                 ${INSTALL_FOLDER}/lib/pkgconfig/:${PKG_CONFIG_PATH}"
-        else
-            # Generic Linux and macOS builds follow this branch.
+        elif [ "${OS%lnx*}" = "" -o "${OS%macos*}" = "" ]; then
             # Passing -rpath to ldd is needed for building cryptography w/ pip.
             export LDFLAGS="-L${INSTALL_FOLDER}/lib64/ \
                 -Wl,-rpath,${INSTALL_FOLDER}/lib64/ ${LDFLAGS}"
             export PKG_CONFIG_PATH="\
                 ${INSTALL_FOLDER}/lib64/pkgconfig/:${PKG_CONFIG_PATH}"
         fi
-        # Place SSL headers where they can be picked up.
-        echo "Copying OpenSSL $OPENSSL_VERSION headers..."
-        execute cp -r \
-            build/openssl-${OPENSSL_VERSION}/include/openssl \
-            ${INSTALL_FOLDER}/include/
-        # To make sure they're found, we're back to using CPPFLAGS.
-        export CPPFLAGS="$CPPFLAGS -I${INSTALL_FOLDER}/include"
+        # On Windows, the BATs from pyca/infra do the install part.
+        if [ "${OS%win*}" != "" ]; then
+            # Place SSL headers where they can be picked up.
+            echo "Copying OpenSSL $OPENSSL_VERSION headers..."
+            execute cp -r \
+                build/openssl-${OPENSSL_VERSION}/include/openssl \
+                ${INSTALL_FOLDER}/include/
+            # To make sure they're found, we're back to using CPPFLAGS.
+            export CPPFLAGS="$CPPFLAGS -I${INSTALL_FOLDER}/include"
+        fi
     else
         (>&2 echo "Skipping building OpenSSL!")
     fi
@@ -796,24 +596,10 @@ command_build_sqlite() {
 # Build gmpy2 without MPFR and MPC library support.
 # Beware that beginning with v2.1.0, MPFR and MPC will be required.
 # On Windows we use the upstream wheel.
-# On HP-UX gmpy2 is problematic, so we build gmpy.
 #
 command_build_gmpy() {
 
     if [ $OS = 'win' ]; then
-        return
-    fi
-
-    if [ $OS = 'hpux1131' ]; then
-        target_folder=${BUILD_FOLDER}/gmpy
-
-        initialize_python_module \
-            "python-modules/gmpy-$GMPY_VERSION" $target_folder
-
-        # Build and install.
-        execute pushd $target_folder
-            execute $PYTHON_BIN setup.py install
-        execute popd
         return
     fi
 
@@ -927,23 +713,6 @@ initialize_python_module(){
             echo "find_links=http://pypi.chevah.com/" >> setup.cfg
             echo "allow_hosts=*pypi.chevah.com*" >> setup.cfg
         fi
-
-        case $OS in
-            sol10u3*)
-                # Copy special link steps in local folder.
-                mkdir -p Modules
-                cp $INSTALL_FOLDER/lib/$PYTHON_VERSION/config/* Modules
-                extra_args=""
-                 # To link pyOpenSSL to included OpenSSL 0.9.7 libs.
-                extra_args="$extra_args -I/usr/sfw/include"
-                if [ "${ARCH%64}" = "$ARCH" ]; then
-                    extra_args="$extra_args -L/usr/sfw/lib"
-                else
-                    extra_args="$extra_args -L/usr/sfw/lib/64"
-                fi
-                execute $PYTHON_BIN setup.py build_ext $extra_args
-                ;;
-        esac
     execute popd
 }
 
@@ -960,11 +729,6 @@ command_test() {
     # Regexp to match messages allowed on stderr during our Python tests.
     local errors_allowed='enable-meta-key'
 
-    # For error 'RuntimeWarning: The _posixsubprocess module is not being used'.
-    if [ "${OS%sol10*}" = "" ]; then
-        # This error actually has two lines, but both contain the added exp.
-        local errors_allowed='enable-meta-key|program uses threads'
-    fi
     execute mkdir -p build/
     execute cp python-modules/chevah-python-test/${test_file} build/
     execute cp python-modules/chevah-python-test/get_binaries_deps.sh build/
@@ -1007,26 +771,17 @@ command_test() {
 
     # This test requires quite some RAM, so beware of heavy swapping.
     echo 'Testing PyCryptodomex...'
-    case "$OS-$ARCH" in
-        hpux*)
-            # FIXME:5017:
-            # CFFI crashes on HP-UX.
-            (>&2 echo -e "\tSkipping because of cffi-related crash.")
-            ;;
-        *)
-            execute $LOCAL_PYTHON_BINARY -m Cryptodome.SelfTest
-            ;;
-    esac
+    execute $LOCAL_PYTHON_BINARY -m Cryptodome.SelfTest
 
     echo 'Testing scandir...'
     # There are a series of issues with the scandir tests in Linux/Unix.
     # Reported upstream at https://github.com/benhoyt/scandir/issues/78.
     SCANDIR_FOLDER="../python-modules/scandir-${SCANDIR_VERSION}"
     case "$OS-$ARCH" in
-        macos|osx|win)
+        macos|win)
             execute $LOCAL_PYTHON_BINARY ${SCANDIR_FOLDER}/test/run_tests.py
             ;;
-        aix*|hpux*|sol10-sparc)
+        aix*)
             (>&2 echo -e "\tSkipping because of upstream issues.")
             ;;
         *)
@@ -1048,20 +803,9 @@ command_test() {
 help_text_test_compat=\
 "Run a full test for the chevah/compat master."
 command_test_compat() {
-
-    # compat is not suported on these platforms, so no need to test.
-    case "$OS-$ARCH" in
-        sol112-sparc)
-            (>&2 echo -e "\tCompat tests not supported on this platform.")
-            return
-            ;;
-    esac
-
+    # To have a better test coverage, we run compat's tests.
+    # Parts of this hackishly force compat to use the local Python version.
     execute pushd build
-
-    # To have a better test coverage, we run the tests on compat.
-    # Some parts of this is a big hack as we have to force compat to use
-    # the local version.
     echo '##### Running chevah.compat tests... #####'
     execute rm -rf compat
     execute git clone https://github.com/chevah/compat.git --depth=1 -b master

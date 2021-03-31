@@ -31,52 +31,17 @@ chevahbs_patch() {
     fi
     # And finally we apply the OS-specific patches.
     case $OS in
-        rhel7|amzn2)
-            echo "Applying openssl102_allow.patch:"
-            execute patch -p0 < openssl102_allow.patch
-            ;;
-        # BLDSHARED fixes from https://bugs.python.org/issue18235.
         aix*)
             echo "Applying openssl102_allow.patch:"
             execute patch -p0 < openssl102_allow.patch
+            # BLDSHARED fixes from https://bugs.python.org/issue18235.
             echo "Applying aix_bldshared.patch:"
             execute patch -p0 < aix_bldshared.patch
-            ;;
-        # Adds custom paths to find OpenSSL 0.9.7 in /usr/sfw/.
-        sol10u3)
-            echo "Applying solaris10_openssl097.patch:"
-            execute patch < solaris10_openssl097.patch
-            ;;
-        # Fix 64bit crypt builds as per http://bugs.python.org/issue1471934.
-        sol10*)
-            echo "Applying solaris10_libcrypt.patch:"
-            execute patch < solaris10_libcrypt.patch
             ;;
         sol11)
             # The "mmheap" package is required to build Python.
             echo "Applying openssl102_allow.patch:"
             execute patch -p0 < openssl102_allow.patch
-            ;;
-        hpux*)
-            # Our patch to use -fPIC extra argument for linking only with GCC.
-            echo "Applying hpux_fpic.patch:"
-            execute patch < hpux_fpic.patch
-            # Our patch to import _ssl for working crypto.
-            echo "Applying hpux_site.patch:"
-            execute patch -p0 < hpux_site.patch
-            # The second patch from https://bugs.python.org/issue18777.
-            echo "Applying crypto_threadid.patch:"
-            execute patch -p0 < crypto_threadid.patch
-            ;;
-        obsd63)
-            # Support for LibreSSL 2.7 in Python 2.7.14.
-            if [ "$PYTHON_BUILD_VERSION" = "2.7.14" ]; then
-                execute patch -p1 < libressl27-support.patch
-            fi
-            ;;
-        obsd66)
-            # Without this, build fails with MemoryError even with 8GB of RAM.
-            execute patch -p1 < obsd66_memoryerror_fix.patch
             ;;
     esac
 }
@@ -93,22 +58,6 @@ chevahbs_configure() {
         execute cp -r "$INSTALL_FOLDER"/include/* ./Include/
     fi
     case $OS in
-        "ubuntu1004")
-            # On Ubuntu there are no libXXX.o, but rather linked against the
-            # full version number.
-            CONFIG_ARGS="${CONFIG_ARGS} \
-                --with-bz2-version=1 \
-                --with-crypt-version=1 \
-                --with-openssl-version=0.9.8 \
-                "
-            ;;
-        "ubuntu1204")
-            CONFIG_ARGS="${CONFIG_ARGS} \
-                --with-bz2-version=1 \
-                --with-crypt-version=1 \
-                --with-openssl-version=1.0.0 \
-                "
-            ;;
         aix*)
             # Workaround for http://bugs.python.org/issue21917
             echo "import os; os.__dict__.pop('O_NOFOLLOW', None)" \
@@ -120,33 +69,8 @@ chevahbs_configure() {
                 --without-computed-gotos \
                 "
             ;;
-        sol10u3)
-            # In Solaris 10, the default OpenSSL is installed in /usr/sfw/.
-            # Both include options are needed to match both the native Sun
-            # Studio compiler and GCC.
-            if [ "${ARCH%64}" = "$ARCH" ]; then
-                echo "_ssl _ssl.c -I/usr/sfw/include" \
-                    "-I/usr/sfw/include/openssl -L/usr/sfw/lib" \
-                    "-R/usr/sfw/lib -lssl -lcrypto" >> Modules/Setup.local
-            else
-                echo "_ssl _ssl.c -I/usr/sfw/include" \
-                    "-I/usr/sfw/include/openssl -L/usr/sfw/lib/64" \
-                    "-R/usr/sfw/lib/64 -lssl -lcrypto" >> Modules/Setup.local
-            fi
-            ;;
-        hpux*)
-            # Parallel builds on Python sometimes fail, so we use gmake here.
-            MAKE="gmake"
-            LDFLAGS="${LDFLAGS} -lxnet"
-            CONFIG_ARGS="${CONFIG_ARGS} \
-                --with-system-ffi \
-                "
-            ;;
         macos*)
             CONFIG_ARGS="${CONFIG_ARGS} --without-gcc"
-            ;;
-        archlinux)
-            LDFLAGS="$LDFLAGS -ltinfo"
             ;;
         fbsd*|sol11*)
             LDFLAGS="$LDFLAGS -lncurses"
@@ -247,6 +171,11 @@ chevahbs_install() {
             # Patch to disable Python 2 / OpenSSL 1.0.2 warnings from cryptography.
             echo "Applying crypto_silence_warnings.patch:"
             execute patch -d $destination -p0 < crypto_silence_warnings.patch
+            # Lifted from https://github.com/ActiveState/cpython/pull/[2-5].
+            for hotfix in *.diff; do
+                echo "Applying ${hotfix}:"
+                execute patch -d $destination -p1 < $hotfix
+            done
             ;;
         *)
             if [ "${OS%alpine*}" = "" ]; then

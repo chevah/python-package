@@ -9,16 +9,6 @@ chevahbs_patch() {
     # Patch to support PIC and compilers other than GCC.
     echo "Applying cc_fpic.patch:"
     execute patch -p0 < cc_fpic.patch
-    case $OS in
-        hpux*)
-            # For -W flags, cc throws "error 1914: bad form for `-W' option".
-            echo "Applying hpux_disable_wflags.patch:"
-            execute patch -p0 < hpux_disable_wflags.patch
-            # Workaround for tar erroring out with "symbolic link too long".
-            echo "Applying hpux_long_symlinks_workaround.patch:"
-            execute patch -p0 < hpux_long_symlinks_workaround.patch
-            ;;
-    esac
 }
 
 chevahbs_configure() {

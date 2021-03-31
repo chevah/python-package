@@ -15,7 +15,6 @@ except:
     print 'Coult not get $OS/$ARCH Chevah env vars.'
     sys.exit(101)
 
-BUILD_CFFI = os.environ.get('BUILD_CFFI', 'no').lower() == 'yes'
 BUILD_LIBEDIT = os.environ.get('BUILD_LIBEDIT', 'no').lower() == 'yes'
 
 
@@ -190,8 +189,7 @@ def get_allowed_deps():
                     '/usr/lib/libffi.so.7',
                     ])
     elif platform_system == 'aix':
-        # List of deps with full paths for AIX 5.3.
-        # These deps are common to AIX 6.1 and 7.1 as well.
+        # Deps for AIX 7.1, many added with psutil.
         allowed_deps = [
             '/lib/libbsd.a(shr.o)',
             '/lib/libc.a(pse.o)',
@@ -203,197 +201,52 @@ def get_allowed_deps():
             '/lib/libpthreads.a(shr_comm.o)',
             '/lib/libpthreads.a(shr_xpg5.o)',
             '/lib/libpthreads_compat.a(shr.o)',
+            '/lib/libthread.a(shr.o)',
             '/lib/libtli.a(shr.o)',
             '/usr/lib/libc.a(shr.o)',
+            '/usr/lib/libcfg.a(shr.o)',
+            '/usr/lib/libcorcfg.a(shr.o)',
             '/usr/lib/libcrypt.a(shr.o)',
             '/usr/lib/libdl.a(shr.o)',
+            '/usr/lib/liblvm.a(shr.o)',
+            '/usr/lib/libodm.a(shr.o)',
+            '/usr/lib/libperfstat.a(shr.o)',
             '/usr/lib/libpthread.a(shr_xpg5.o)',
             '/usr/lib/libpthreads.a(shr_comm.o)',
             '/usr/lib/libpthreads.a(shr_xpg5.o)',
+            '/usr/lib/libsrc.a(shr.o)',
             '/unix',
             ]
-        # sys.platform could be 'aix5', 'aix6' etc.
-        aix_version = int(sys.platform[-1])
-        if aix_version >= 6:
-            # Specific deps to add for AIX 6.1 and 7.1, mostly psutil deps.
-            allowed_deps.extend([
-                '/lib/libthread.a(shr.o)',
-                '/usr/lib/libcfg.a(shr.o)',
-                '/usr/lib/libcorcfg.a(shr.o)',
-                '/usr/lib/liblvm.a(shr.o)',
-                '/usr/lib/libodm.a(shr.o)',
-                '/usr/lib/libperfstat.a(shr.o)',
-                '/usr/lib/libsrc.a(shr.o)',
-                ])
     elif platform_system == 'sunos':
         # On Solaris, platform.release() can be: '5.9'. '5.10', '5.11' etc.
         solaris_version = platform.release().split('.')[1]
-        if '64' in CHEVAH_ARCH:
-            # This is the common list of deps for Solaris 10 & 11 64bit builds.
-            allowed_deps = [
-                '/lib/64/libc.so.1',
-                '/lib/64/libdl.so.1',
-                '/lib/64/libm.so.2',
-                '/lib/64/libnsl.so.1',
-                '/lib/64/libsocket.so.1',
-                '/usr/lib/64/libbz2.so.1',
-                ]
-            if solaris_version == '10':
-                # Specific deps to add for Solaris 10.
-                allowed_deps.extend([
-                    '/lib/64/libaio.so.1',
-                    '/lib/64/libgen.so.1',
-                    '/lib/64/libmd.so.1',
-                    '/lib/64/librt.so.1',
-                    '/lib/64/libthread.so.1',
-                    '/usr/lib/64/libcrypt_i.so.1',
-                    '/usr/lib/64/libsqlite3.so.0',
-                    '/usr/lib/64/libz.so.1',
-                    '/usr/lib/amd64/libc.so.1',
-                    ])
-                # OpenSSL specific deps per version.
-                try:
-                    from ssl import OPENSSL_VERSION_INFO
-                    if OPENSSL_VERSION_INFO[0:3] == (0, 9, 7):
-                        # Deps for the default OpenSSL 0.9.7d in Solaris 10.
-                        allowed_deps.extend([
-                            '/usr/sfw/lib/64/libcrypto.so.0.9.7',
-                            '/usr/sfw/lib/64/libssl.so.0.9.7',
-                            ])
-                    elif OPENSSL_VERSION_INFO[0:2] == (1, 0):
-                        # Deps for OpenSSL 1.0.2n from patches 151912/151913.
-                        allowed_deps.extend([
-                            '/usr/lib/64/libcrypto.so.1.0.0',
-                            '/usr/lib/64/libssl.so.1.0.0',
-                            ])
-                    else:
-                        sys.stderr.write('Unexpected OpenSSL version: %s.\n' % (
-                            str(OPENSSL_VERSION_INFO)))
-                except:
-                    sys.stderr.write('SSL module missing.\n')
-            elif solaris_version == '11':
-                # Specific deps to add for Solaris 11.
-                allowed_deps.extend([
-                    '/lib/64/libcrypto.so.1.0.0',
-                    '/lib/64/libssl.so.1.0.0',
-                    '/lib/64/libz.so.1',
-                    '/usr/lib/64/libcrypt.so.1',
-                    '/usr/lib/64/libsqlite3.so.0',
-                    ])
-                if 'sparc' in CHEVAH_ARCH:
-                    allowed_deps.extend([
-                        '/usr/lib/sparcv9/libc.so.1',
-                        ])
-                else:
-                    allowed_deps.extend([
-                        '/lib/64/libelf.so.1',
-                        '/usr/lib/amd64/libc.so.1',
-                        ])
-                solaris_version_minor = int(platform.version().split('.')[1])
-                if solaris_version_minor >= 4:
-                    # Solaris 11.4 deps.
-                    allowed_deps.extend([
-                        '/usr/lib/64/libkstat.so.1',
-                        '/usr/lib/64/libncursesw.so.5',
-                        '/usr/lib/64/libpthread.so.1',
-                        ])
-                else:
-                    # Solaris deps for 11.0-11.3.
-                    allowed_deps.extend([
-                        '/usr/lib/64/libncurses.so.5',
-                        '/usr/lib/64/libffi.so.5',
-                        ])
-        else:
-            # This is the common list of deps for Solaris 10 & 11 32bit builds.
-            allowed_deps = [
-                '/lib/libc.so.1',
-                '/lib/libdl.so.1',
-                '/lib/libm.so.2',
-                '/lib/libnsl.so.1',
-                '/lib/libsocket.so.1',
-                '/usr/lib/libbz2.so.1',
-                ]
-            if solaris_version == '10':
-                # Specific deps to add for all Solaris 10 versions.
-                allowed_deps.extend([
-                    '/lib/libaio.so.1',
-                    '/lib/libgen.so.1',
-                    '/lib/librt.so.1',
-                    '/usr/lib/libcrypt_i.so.1',
-                    ])
-                if CHEVAH_OS == 'sol10u3':
-                    # Specific deps for Solaris 10u3 up to 10u7.
-                    allowed_deps.extend([
-                        '/lib/libmd5.so.1',
-                        '/lib/libresolv.so.2',
-                        '/usr/lib/mps/libsqlite3.so.0',
-                        '/usr/sfw/lib//libgcc_s.so.1',
-                        ])
-                else:
-                    # Specific deps for Solaris 10u8 and newer.
-                    allowed_deps.extend([
-                        '/lib/libmd.so.1',
-                        '/lib/libthread.so.1',
-                        '/usr/lib/libsqlite3.so.0',
-                        '/usr/lib/libz.so.1',
-                        ])
-                # OpenSSL specific deps per version.
-                try:
-                    from ssl import OPENSSL_VERSION_INFO
-                    if OPENSSL_VERSION_INFO[0:3] == (0, 9, 7):
-                        # Deps for the default OpenSSL 0.9.7d in Solaris 10.
-                        allowed_deps.extend([
-                            '/usr/sfw/lib/libcrypto.so.0.9.7',
-                            '/usr/sfw/lib/libssl.so.0.9.7',
-                            ])
-                    elif OPENSSL_VERSION_INFO[0:2] == (1, 0):
-                        # Deps for OpenSSL 1.0.2n from patches 151912/151913.
-                        allowed_deps.extend([
-                            '/usr/lib/libcrypto.so.1.0.0',
-                            '/usr/lib/libssl.so.1.0.0',
-                            ])
-                    else:
-                        sys.stderr.write('Unexpected OpenSSL version: %s.\n' % (
-                            str(OPENSSL_VERSION_INFO)))
-                except:
-                    sys.stderr.write('SSL module missing.\n')
-            elif solaris_version == '11':
-                # Specific deps to add for Solaris 11.
-                allowed_deps.extend([
-                    '/lib/libcrypto.so.1.0.0',
-                    '/lib/libssl.so.1.0.0',
-                    '/lib/libz.so.1',
-                    '/usr/lib/libcrypt.so.1',
-                    '/usr/lib/libsqlite3.so.0',
-                    ])
-                solaris_version_minor = int(platform.version().split('.')[1])
-                if solaris_version_minor >= 4:
-                    # Solaris 11.4 deps.
-                    allowed_deps.extend([
-                        '/lib/libkstat.so.1',
-                        '/usr/lib/libncursesw.so.5',
-                        '/usr/lib/libpthread.so.1',
-                        ])
-                else:
-                    # Solaris deps for 11.0-11.3.
-                    allowed_deps.extend([
-                        '/usr/lib/libncurses.so.5',
-                        '/usr/lib/libffi.so.5',
-                        ])
-    elif platform_system == 'hp-ux':
-        # Specific deps for HP-UX 11.31, with full path.
+        # This is the list of deps for Solaris 11.4 64bit builds.
         allowed_deps = [
-            '/usr/lib/hpux32/libc.so.1',
-            '/usr/lib/hpux32/libcrypto.so.1.0.0',
-            '/usr/lib/hpux32/libdl.so.1',
-            '/usr/lib/hpux32/libm.so.1',
-            '/usr/lib/hpux32/libnsl.so.1',
-            '/usr/lib/hpux32/libpthread.so.1',
-            '/usr/lib/hpux32/librt.so.1',
-            '/usr/lib/hpux32/libssl.so.1.0.0',
-            '/usr/lib/hpux32/libxnet.so.1',
-            '/usr/lib/hpux32/libxti.so.1',
+            '/lib/64/libc.so.1',
+            '/lib/64/libcrypto.so.1.0.0',
+            '/lib/64/libdl.so.1',
+            '/lib/64/libm.so.2',
+            '/lib/64/libnsl.so.1',
+            '/lib/64/libsocket.so.1',
+            '/lib/64/libssl.so.1.0.0',
+            '/lib/64/libz.so.1',
+            '/usr/lib/64/libbz2.so.1',
+            '/usr/lib/64/libcrypt.so.1',
+            '/usr/lib/64/libkstat.so.1',
+            '/usr/lib/64/libncursesw.so.5',
+            '/usr/lib/64/libpthread.so.1',
+            '/usr/lib/64/libsqlite3.so.0',
             ]
+        if 'sparc' in CHEVAH_ARCH:
+            # True for 11.2, hopefully for 11.4 as well.
+            allowed_deps.extend([
+                '/usr/lib/sparcv9/libc.so.1',
+                ])
+        else:
+            allowed_deps.extend([
+                '/lib/64/libelf.so.1',
+                '/usr/lib/amd64/libc.so.1',
+                ])
     elif platform_system == 'darwin':
         # Deps for macOS 10.13, with full path.
         allowed_deps = [
@@ -515,11 +368,10 @@ def get_actual_deps(script_helper):
         libs_deps = []
         for line in raw_deps:
             if line.startswith('./') or not line:
-                # In some OS'es (AIX, HP-UX, OS X, etc.), the output includes
+                # In some OS'es (AIX, macOS, etc.), the output includes
                 # the examined binaries, and those lines start with "./".
                 # It's safe to ignore them because they point to paths in
                 # the current hierarchy of directories.
-                # In HP-UX, ldd also outputs an empty first line.
                 continue
             if platform_system in [ 'aix', 'darwin' ]:
                 # When ignoring lines from the above conditions, ldd's output
@@ -643,33 +495,27 @@ def main():
     else:
         print 'stdlib ssl %s' % (OPENSSL_VERSION,)
 
-    # cryptography module and latest pyOpenSSL are only available on
-    # systems with cffi.
-    if BUILD_CFFI:
-        try:
-            from cryptography.hazmat.backends.openssl.backend import backend
-            import cryptography
-            # Check OpenSSL version on OS'es with static OpenSSL libs.
-            openssl_version = backend.openssl_version_text()
-            if CHEVAH_OS.startswith(("win", "lnx", "macos", "aix")):
-                # On some OS'es we build against our own OpenSSL.
-                expecting = u'OpenSSL 1.1.1j  16 Feb 2021'
-                if CHEVAH_OS.startswith("win"):
-                    # On Windows we are stuck with latest upstream wheels.
-                    expecting = u'OpenSSL 1.1.1i  8 Dec 2020'
-                if CHEVAH_OS.startswith("aix"):
-                    # On AIX we are stuck with a patched 1.0.2.
-                    expecting = u'OpenSSL 1.0.2v-chevah2  22 Feb 2021'
-                if openssl_version != expecting:
-                    sys.stderr.write('Expecting %s, got %s.\n' % (
-                        expecting, openssl_version))
-                    exit_code = 13
-        except Exception as error:
-            sys.stderr.write('"cryptography" failure. %s\n' % (error,))
-            exit_code = 14
-        else:
-            print 'cryptography %s - %s' % (
-                cryptography.__version__, openssl_version)
+    try:
+        from cryptography.hazmat.backends.openssl.backend import backend
+        import cryptography
+        # Check OpenSSL version on OS'es with static OpenSSL libs.
+        openssl_version = backend.openssl_version_text()
+        if CHEVAH_OS.startswith(("win", "lnx", "macos", "aix")):
+            # On some OS'es we build against our own OpenSSL.
+            expecting = u'OpenSSL 1.1.1k  25 Mar 2021'
+            if CHEVAH_OS.startswith("aix"):
+                # On AIX we are stuck with a patched 1.0.2.
+                expecting = u'OpenSSL 1.0.2v-chevah2  22 Feb 2021'
+            if openssl_version != expecting:
+                sys.stderr.write('Expecting %s, got %s.\n' % (
+                    expecting, openssl_version))
+                exit_code = 13
+    except Exception as error:
+        sys.stderr.write('"cryptography" failure. %s\n' % (error,))
+        exit_code = 14
+    else:
+        print 'cryptography %s - %s' % (
+            cryptography.__version__, openssl_version)
 
     try:
         from OpenSSL import SSL, crypto, rand, __version__ as pyopenssl_version
@@ -776,21 +622,20 @@ def main():
     else:
         print '"subprocess32" module is present.'
 
-    if not platform_system == 'hp-ux':
-        try:
-            import bcrypt
-            password = b"super secret password"
-            # Hash the password with a randomly-generated salt.
-            hashed = bcrypt.hashpw(password, bcrypt.gensalt())
-            # Check that an unhashed password matches hashed one.
-            if bcrypt.checkpw(password, hashed):
-                print 'bcrypt %s' % (bcrypt.__version__,)
-            else:
-                sys.stderr.write('"bcrypt" present, but broken.\n')
-                exit_code = 27
-        except:
-            sys.stderr.write('"bcrypt" missing.\n')
-            exit_code = 26
+    try:
+        import bcrypt
+        password = b"super secret password"
+        # Hash the password with a randomly-generated salt.
+        hashed = bcrypt.hashpw(password, bcrypt.gensalt())
+        # Check that an unhashed password matches hashed one.
+        if bcrypt.checkpw(password, hashed):
+            print 'bcrypt %s' % (bcrypt.__version__,)
+        else:
+            sys.stderr.write('"bcrypt" present, but broken.\n')
+            exit_code = 27
+    except:
+        sys.stderr.write('"bcrypt" missing.\n')
+        exit_code = 26
 
     try:
         import bz2
@@ -883,16 +728,14 @@ def main():
             sys.stderr.write('"_scandir" missing.\n')
             exit_code = 18
 
-    # Some OS'es are not supported by upstream psutil (or not really working).
-    if not CHEVAH_OS in [ 'aix53', 'hpux1131', 'sol10', 'sol112' ]:
-        try:
-            import psutil
-            cpu_percent = psutil.cpu_percent()
-        except:
-            sys.stderr.write('"psutil" missing or broken.\n')
-            exit_code = 23
-        else:
-            print 'psutil %s' % (psutil.__version__,)
+    try:
+        import psutil
+        cpu_percent = psutil.cpu_percent()
+    except:
+        sys.stderr.write('"psutil" missing or broken.\n')
+        exit_code = 23
+    else:
+        print 'psutil %s' % (psutil.__version__,)
 
     if platform_system in [ 'linux', 'sunos' ]:
         try:

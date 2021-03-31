@@ -108,6 +108,7 @@ jobs:
 
     # Fix back Homebrew, to make everything functional.
     - name: Unhack Homebrew
+      if: failure() && env.TMATE_DEBUG == 'yes'
       run: |
         sudo find /usr/local -name 'libintl*' -exec chmod a+r {} +
         sudo find /usr/local -name 'libffi*' -exec chmod a+r {} +
@@ -135,9 +136,14 @@ jobs:
         limit-access-to-actor: true
 
 
-  windows-2019:
-    runs-on: windows-2019
-    timeout-minutes: 30
+  windows:
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      # Workflow won't be cancelled at the first failed job.
+      fail-fast: false
+      matrix:
+        runs-on: [ windows-2019, windows-2016 ]
+    timeout-minutes: 45
     steps:
     - uses: chevah/auto-cancel-redundant-job@v1
     - uses: actions/checkout@v2
@@ -153,8 +159,7 @@ jobs:
 
     # Add packages needed to build our patched pycrypto.
     - name: Prepare OS
-      run: |
-        chocolatey install --yes --no-progress make vcpython27
+      run: chocolatey install --yes --no-progress make vcpython27 nasm 7zip
 
     # Explicitly run our scripts with Bash, not PowerShell (GitHub's default).
     - name: Download needed deps for the detected OS

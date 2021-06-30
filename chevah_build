@@ -32,6 +32,8 @@ GMPY2_VERSION="2.0.8"
 
 # Versions no longer upgradable because of Python 2 deprecation.
 PIP_VERSION="20.3.4"
+# For pip <21.1.
+SAFETY_FALSE_POSITIVES_OPTS="-i 40291"
 # setuptools 44.x is the last series to support Python 2.7.
 # More at https://github.com/pypa/setuptools/pull/1955.
 SETUPTOOLS_VERSION="44.1.1"

@@ -600,15 +600,14 @@ check_os_version() {
     done
 
     if [ "$flag_supported" = 'false' ]; then
+        (>&2 echo "Detected version of ${name_fancy} is: ${version_raw}.")
+        (>&2 echo "For versions older than ${name_fancy} ${version_good},")
         if [ "$OS" = "Linux" ]; then
             # For old and/or unsupported Linux distros there's a second chance!
-            echo "Current major version of ${name_fancy} is ${version_raw}."
-            echo "For versions older than ${name_fancy} ${version_good},"
-            echo "the generic Linux runtime is used, if possible."
+            (>&2 echo "the generic Linux runtime is used, if possible.")
             check_linux_glibc
         else
-            (>&2 echo "Current version of ${name_fancy} is: ${version_raw}")
-            (>&2 echo "Oldest supported ${name_fancy} version: ${version_good}")
+            (>&2 echo "there is currently no support.")
             exit 13
         fi
     fi

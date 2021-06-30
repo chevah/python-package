@@ -23,22 +23,10 @@ SQLITE_VERSION="3.34.1"
 # Python modules versions to be used everywhere possible.
 PYSQLITE_VERSION="2.8.3"
 CFFI_VERSION="1.14.5"
-PYCRYPTO_VERSION="2.6.1"
-# PyCrypto 2.6.1 is vulnerable to CVE-2013-7459 and CVE-2018-6594, but we patch
-# these vulnerabilities, and mark correspondent Safety IDs as false positives.
-# Safety ID 35015 (CVE-2013-7459):
-#     "Heap-based buffer overflow in the ALGnew function in block_templace.c in
-#     Python Cryptography Toolkit (aka pycrypto) 2.6.1 allows remote attackers
-#     to execute arbitrary code as demonstrated by a crafted iv parameter to
-#     cryptmsg.py."
-SAFETY_FALSE_POSITIVES_OPTS="-i 35015"
-# Haven't replaced PyCrypto w/ PyCryptodome, but we build it for its test suite.
-PYCRYPTODOMEX_VERSION="3.10.1"
 # 19.1.0 is used with OpenSSL 1.0.2 libs.
 PYOPENSSL_VERSION="20.0.1"
 SCANDIR_VERSION="1.10.0"
 PSUTIL_VERSION="5.8.0"
-CYTHON_VERSION="0.29.21"
 SUBPROCESS32_VERSION="3.5.4"
 GMPY2_VERSION="2.0.8"
 
@@ -79,15 +67,12 @@ export BUILD_OPENSSL="no"
 # during the build. See the patches for PyCrypto 2.6.1 for an example.
 EXTRA_LIBRARIES="\
     python-modules/cffi-${CFFI_VERSION} \
-    python-modules/pycrypto-${PYCRYPTO_VERSION} \
     "
 # List of default Python modules installed using pip.
 PIP_LIBRARIES="\
-    pycryptodomex==${PYCRYPTODOMEX_VERSION} \
     cryptography==${CRYPTOGRAPHY_VERSION} \
     pyOpenSSL==${PYOPENSSL_VERSION} \
     scandir==${SCANDIR_VERSION} \
-    Cython==${CYTHON_VERSION} \
     subprocess32==${SUBPROCESS32_VERSION} \
     bcrypt==${BCRYPT_VERSION} \
     psutil==${PSUTIL_VERSION} \
@@ -98,10 +83,8 @@ PIP_LIBRARIES="\
 # it won't link correctly to non-system OpenSSL libs. Use EXTRA_LIBRARIES.
 # PyOpenSSL 19.1.0 was last upstream version to support OpenSSL 1.0.2.
 PIP_LIBRARIES_OPENSSL_102="\
-    pycryptodomex==${PYCRYPTODOMEX_VERSION} \
     pyOpenSSL==19.1.0 \
     scandir==${SCANDIR_VERSION} \
-    Cython==${CYTHON_VERSION} \
     subprocess32==${SUBPROCESS32_VERSION} \
     bcrypt==${BCRYPT_VERSION} \
     psutil==${PSUTIL_VERSION} \
@@ -176,9 +159,7 @@ case $OS in
         export BUILD_OPENSSL="yes"
         # Extra libraries are installed only using PIP.
         EXTRA_LIBRARIES=""
-        # A patched PyCrypto is packed and uploaded to our PyPI server.
         PIP_LIBRARIES="$PIP_LIBRARIES \
-            pycrypto==${PYCRYPTO_VERSION}chevah1 \
             pywin32==${PYWIN32_VERSION} \
             gmpy2==${GMPY2_VERSION} \
             "
@@ -275,10 +256,8 @@ case $OS in
         export BUILD_BZIP2="no"
         # Build scandir through EXTRA_LIBRARIES, to apply a needed patch.
         PIP_LIBRARIES="\
-            pycryptodomex==${PYCRYPTODOMEX_VERSION} \
             cryptography==${CRYPTOGRAPHY_VERSION} \
             pyOpenSSL==${PYOPENSSL_VERSION} \
-            Cython==${CYTHON_VERSION} \
             subprocess32==${SUBPROCESS32_VERSION} \
             bcrypt==${BCRYPT_VERSION} \
             psutil==${PSUTIL_VERSION} \
@@ -768,10 +747,6 @@ command_test() {
     sleep 1
 
     echo '##### Executing tests for included Python modules... #####'
-
-    # This test requires quite some RAM, so beware of heavy swapping.
-    echo 'Testing PyCryptodomex...'
-    execute $LOCAL_PYTHON_BINARY -m Cryptodome.SelfTest
 
     echo 'Testing scandir...'
     # There are a series of issues with the scandir tests in Linux/Unix.

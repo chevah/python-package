@@ -531,24 +531,6 @@ def main():
             )
 
     try:
-        import Crypto
-        pycrypto_version = Crypto.__version__
-    except:
-        sys.stderr.write('"PyCrypto" missing.\n')
-        exit_code = 4
-    else:
-        print 'PyCrypto %s' % (pycrypto_version)
-
-    try:
-        import Cryptodome
-        pycryptodome_version = Cryptodome.__version__
-    except:
-        sys.stderr.write('"PyCryptodome" missing.\n')
-        exit_code = 11
-    else:
-        print 'PyCryptodome %s' % (pycryptodome_version)
-
-    try:
         from ctypes import CDLL
         import ctypes
         CDLL
@@ -604,14 +586,6 @@ def main():
         except:
             sys.stderr.write('"gmpy2" and "gmpy" missing.\n')
             exit_code = 19
-
-    try:
-        import Cython
-    except:
-        sys.stderr.write('"Cython" missing.\n')
-        exit_code = 24
-    else:
-        print 'Cython %s' % (Cython.__version__,)
 
     try:
         import subprocess32 as subprocess

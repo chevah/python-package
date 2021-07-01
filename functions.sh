@@ -214,17 +214,6 @@ make_dist(){
     execute popd
 }
 
-# Move source to target, making sure mv will not fail if a folder
-# already exists.
-#
-# The move is done by merging the folders.
-safe_move() {
-    source=$1
-    target=$2
-    execute cp -r $source $target
-    execute rm -rf $source
-}
-
 
 #
 # Wipe the manifest of source.
@@ -244,6 +233,7 @@ wipe_manifest() {
 
     execute rm -f --verbose ${source}.embedded
 }
+
 
 #
 # Get number of CPUs on supported OS'es.
@@ -277,6 +267,7 @@ get_number_of_cpus() {
     esac
 }
 
+
 #
 # Hack for not finding ld_so_aix & co. in AIX, even with the changes lifted
 # from upstream issue tracker. More at https://bugs.python.org/issue18235.
@@ -303,6 +294,7 @@ aix_ld_hack() {
             ;;
     esac
 }
+
 
 #
 # Put stuff where it's expected and remove some of the cruft.
@@ -345,6 +337,7 @@ cleanup_install_dir() {
                     esac
                 execute popd
                 # OS-related stripping for libs.
+                chmod u+w lib/libpython2.7.a
                 case $OS in
                     macos)
                         # Darwin's strip command is different.
@@ -380,6 +373,7 @@ cleanup_install_dir() {
     echo "::endgroup::"
 }
 
+
 #
 # Safety DB IDs to be ignored when using cryptography 3.2.
 #
@@ -398,6 +392,7 @@ add_ignored_safety_ids_for_cryptography32() {
     #     buffer overflow, as demonstrated by the Fernet class.
     SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 39252 -i 39606"
 }
+
 
 #
 # Construct a SFTP batch for uploading testing packages through GitHub actions.

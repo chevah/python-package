@@ -186,6 +186,9 @@ chevahbs_install() {
                 execute paxctl -cE python
             fi
             execute $MAKE install DESTDIR=$INSTALL_FOLDER
+
+            # Remove test sub-dir to slim down the final dist package.
+            rm -rf "$INSTALL_FOLDER/lib/$PYTHON_BUILD_VERSION/test/"
             ;;
     esac
 }

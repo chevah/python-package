@@ -343,8 +343,6 @@ cleanup_install_dir() {
                             execute strip $PYTHON_VERSION
                             ;;
                     esac
-                    # Remove the sizable sqlite3 binary.
-                    execute rm sqlite3
                 execute popd
                 # OS-related stripping for libs.
                 case $OS in

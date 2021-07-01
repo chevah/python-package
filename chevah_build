@@ -426,25 +426,25 @@ command_build() {
     if [ "$BUILD_LIBFFI" = "yes" ]; then
         build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
     else
-        (>&2 echo "Skipping building LIBFFI!")
+        (>&2 echo "Skip building LIBFFI!")
     fi
 
     if [ "$BUILD_ZLIB" = "yes" ]; then
         build 'zlib' "zlib-$ZLIB_VERSION" ${PYTHON_BUILD_FOLDER}
     else
-        (>&2 echo "Skipping building ZLIB!")
+        (>&2 echo "Skip building ZLIB!")
     fi
 
     if [ "$BUILD_BZIP2" = "yes" ]; then
         build 'bzip2' "bzip2-$BZIP2_VERSION" ${PYTHON_BUILD_FOLDER}
     else
-        (>&2 echo "Skipping building BZIP2!")
+        (>&2 echo "Skip building BZIP2!")
     fi
 
     if [ "$BUILD_LIBEDIT" = "yes" ]; then
         build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
     else
-        (>&2 echo "Skipping building LIBEDIT!")
+        (>&2 echo "Skip building LIBEDIT!")
     fi
 
     if [ "$BUILD_OPENSSL" = "yes" ]; then
@@ -473,7 +473,7 @@ command_build() {
             export CPPFLAGS="$CPPFLAGS -I${INSTALL_FOLDER}/include"
         fi
     else
-        (>&2 echo "Skipping building OpenSSL!")
+        (>&2 echo "Skip building OpenSSL!")
     fi
 
     case $OS in
@@ -498,30 +498,7 @@ command_build() {
     command_build_sqlite
     command_build_python_extra_libraries
     aix_ld_hack cleanup
-
-    case $OS in
-        win)
-            echo "Skipping cleaning install folder"
-            ;;
-        *)
-            execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
-                # Clean the build folder.
-                execute rm -rf tmp
-                execute mkdir -p lib/config
-                safe_move share lib/config
-                safe_move pysqlite2-doc lib/config
-                # Move all bin to lib/config
-                safe_move bin lib/config
-                execute mkdir bin
-                # Copy back python binary
-                execute cp lib/config/bin/$PYTHON_VERSION bin/python
-            execute popd
-            ;;
-    esac
-
-    # Output the python-package version to a dedicated file in the archive.
-    echo "${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" \
-        > ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}/lib/PYTHON_PACKAGE_VERSION
+    cleanup_install_dir
 
     make_dist 'python' ${PYTHON_BUILD_FOLDER}
 
@@ -579,7 +556,7 @@ command_build_python_extra_libraries() {
         install $PIP_ARGS -U pycparser==$PYCPARSER_VERSION
 
     if [ $OS = 'win' ]; then
-        echo "Skipping makefile updating on Windows"
+        echo "Skip makefile updating on Windows"
     else
         # Update Python config Makefile to use the python that we have just
         # created.

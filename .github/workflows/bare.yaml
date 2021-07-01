@@ -20,7 +20,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  TMATE_DEBUG: 'no'
+  TMATE_DEBUG: 'yes'
 
 jobs:
 
@@ -144,6 +144,7 @@ jobs:
 
   windows:
     runs-on: ${{ matrix.runs-on }}
+    needs: [ linux ]
     strategy:
       # Workflow won't be cancelled at the first failed job.
       fail-fast: false

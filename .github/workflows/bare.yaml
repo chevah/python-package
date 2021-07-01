@@ -144,7 +144,6 @@ jobs:
 
   windows:
     runs-on: ${{ matrix.runs-on }}
-    needs: [ linux ]
     strategy:
       # Workflow won't be cancelled at the first failed job.
       fail-fast: false
@@ -162,10 +161,6 @@ jobs:
         path: |
           build-python-package
         key: ${{ runner.os }}-${{ hashFiles('pavement.py') }}
-
-    # Add packages needed to build our patched pycrypto.
-    - name: Prepare OS
-      run: chocolatey install --yes --no-progress make vcpython27 nasm 7zip
 
     # Explicitly run our scripts with Bash, not PowerShell (GitHub's default).
     - name: Download needed deps for the detected OS

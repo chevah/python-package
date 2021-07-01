@@ -162,6 +162,14 @@ jobs:
           build-python-package
         key: ${{ runner.os }}-${{ hashFiles('pavement.py') }}
 
+    # Add packages needed to build OpenSSL.
+    - name: Prepare OS
+      run: |
+        chocolatey install --yes --no-progress make nasm 7zip
+        # There's no vcpython27 choco pkg since Microsoft removed the installer.
+        wget https://web.archive.org/web/20210106040224/https://download.microsoft.com/download/7/9/6/796EF2E4-801B-4FC4-AB28-B59FBF6D907B/VCForPython27.msi
+        msiexec /quiet /i VCForPython27.msi
+
     # Explicitly run our scripts with Bash, not PowerShell (GitHub's default).
     - name: Download needed deps for the detected OS
       run: bash ./brink.sh detect_os

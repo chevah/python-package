@@ -304,18 +304,15 @@ cleanup_install_dir() {
 
     echo "::group::Clean up Python install dir"
 
-    execute pushd ${BUILD_DIR}/${PYTHON_BUILD_DIR}
+    execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
         echo "Cleaning up Python's caches and compiled files..."
         find lib/ | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf
-    execute popd
 
-    case $OS in
-        win)
-            echo "    Skip further cleaning of install dir"
-            ;;
-        *)
-            execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
-                execute rm -rf tmp
+        case $OS in
+            win)
+                echo "    Skip further cleaning of install dir"
+                ;;
+            *)
                 # Move all binaries to lib/config
                 execute mkdir -p lib/config
                 execute mv bin/ lib/config/
@@ -352,19 +349,17 @@ cleanup_install_dir() {
                         ;;
                 esac
                 # Symlink the copy of libpython*.a too.
-                execute pushd lib/$PYTHON_VERSION/config-*
+                execute pushd lib/$PYTHON_VERSION/config/
                     execute rm $python_lib_file
                     execute ln -s ../../$python_lib_file
                 execute popd
-                # Remove the big test/ sub-dir.
-                execute rm -rf "lib/$PYTHON_VERSION/test/"
                 # Remove (mostly OpenSSL) docs and manuals.
                 execute rm -rf share/
                 # Remove pysqlite2 CSS files.
                 execute rm -rf pysqlite2-doc
-            execute popd
-            ;;
-    esac
+                ;;
+        esac
+    execute popd
 
     # Output the python-package version to a dedicated file in the archive.
     echo "${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" \

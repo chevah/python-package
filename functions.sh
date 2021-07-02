@@ -307,17 +307,17 @@ cleanup_install_dir() {
     execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
         echo "Cleaning up Python's caches and compiled files..."
         find lib/ | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf
-        echo "Removing include files..."
-        execute rm -rf lib/include
 
         case $OS in
             win)
                 # Remove Tcl/Tk stuff.
-                execute rm -rf lib/tcl lib/Lib/lib-tk lib/DLLs/t{k,cl}8*.dll
-                # Remove docs, test, include stuff.
-                execute rm -rf lib/Doc lib/Lib/test
+                execute rm -rf lib/tcl/ lib/Lib/lib-tk/ lib/DLLs/t{k,cl}8*.dll
+                # Remove docs / test / include stuff.
+                execute rm -rf lib/Doc/ lib/Lib/test/ lib/include/
                 ;;
             *)
+                # Remove test / include stuff
+                execute rm -rf lib/python2.7/test/ include/
                 # Move all binaries to lib/config
                 execute mkdir -p lib/config
                 execute mv bin/ lib/config/

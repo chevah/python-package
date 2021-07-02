@@ -27,6 +27,8 @@ chevahbs_install() {
     execute $MAKE install PREFIX=${INSTALL_FOLDER}
     # Remove its symlinks because they will be copied as dangling by bcrypt.
     execute find ${INSTALL_FOLDER}/bin/ -type l -name 'bz*' -exec rm {} +
+    # Also remove the binaries, because they just inflate the packages.
+    execute rm ${INSTALL_FOLDER}/bin/{bunzip,bz}*
 }
 
 

@@ -339,14 +339,17 @@ cleanup_install_dir() {
                     esac
                 execute popd
                 # OS-related stripping for libs.
-                chmod u+w lib/libpython2.7.a
                 case $OS in
                     macos)
                         # Darwin's strip command is different.
                         execute strip -r lib/lib*.a
                         ;;
                     *)
+                        # Not sure why it's like that on Python 2.7,
+                        # we'll put the flag back after stripping the lib.
+                        chmod u+w lib/libpython2.7.a
                         execute strip lib/lib*.a
+                        chmod u-w lib/libpython2.7.a
                         # On CentOS 5, libffi and OpenSSL install to lib64/.
                         if [ -d lib64 ]; then
                             execute strip lib64/lib*.a

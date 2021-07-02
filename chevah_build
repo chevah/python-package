@@ -132,7 +132,6 @@ export ARCH
 export OS
 
 LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
-LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/bin/python
 INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST
 PYTHON_BIN=$INSTALL_FOLDER/bin/python
 PYTHON_BUILD_FOLDER="$PYTHON_VERSION-$OS-$ARCH"
@@ -145,7 +144,6 @@ export CHEVAH_BUILD_PATH=$INSTALL_FOLDER
 case $OS in
     win)
         # On Windows, python executable is installed at a different path.
-        LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
         PYTHON_BIN=$INSTALL_FOLDER/lib/python
         # For Windows we don't build everything from source yet.
         # But what we build is done in a very different way, no CC/MAKE/etc.
@@ -661,7 +659,7 @@ command_test() {
     echo '##### Executing Chevah tests (with redirected stderr)... #####'
     # Avoid 'No entry for terminal type "unknown"' warnings on stderr.
     export TERM="dumb"
-    execute $LOCAL_PYTHON_BINARY ${test_file} 2>${errors_log}
+    execute $PYTHON_BIN ${test_file} 2>${errors_log}
     if [ -s "$errors_log" ]; then
         egrep -v "$errors_allowed" $errors_log > $errors_unexpected
         if [ -s $errors_unexpected ]; then
@@ -699,7 +697,7 @@ command_test() {
     SCANDIR_FOLDER="../python-modules/scandir-${SCANDIR_VERSION}"
     case "$OS-$ARCH" in
         macos|win)
-            execute $LOCAL_PYTHON_BINARY ${SCANDIR_FOLDER}/test/run_tests.py
+            execute $PYTHON_BIN ${SCANDIR_FOLDER}/test/run_tests.py
             ;;
         aix*)
             (>&2 echo -e "\tSkipping because of upstream issues.")
@@ -708,7 +706,7 @@ command_test() {
             # Remaining build slaves have the required UTF-8 locale settings
             # available, but they need to be requested for the tests to pass.
             export LC_ALL=en_US.UTF-8
-            execute $LOCAL_PYTHON_BINARY ${SCANDIR_FOLDER}/test/run_tests.py
+            execute $PYTHON_BIN ${SCANDIR_FOLDER}/test/run_tests.py
             export LC_ALL=C
             ;;
     esac

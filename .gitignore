@@ -1,5 +1,5 @@
-/build-python-package
-/cache
+/build-python-package/
+/cache/
 /build/
 /dist/
 /BUILD_ENV_VARS

@@ -307,10 +307,15 @@ cleanup_install_dir() {
     execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
         echo "Cleaning up Python's caches and compiled files..."
         find lib/ | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf
+        echo "Removing include files..."
+        execute rm -rf lib/include
 
         case $OS in
             win)
-                echo "    Skip further cleaning of install dir"
+                # Remove Tcl/Tk stuff.
+                execute rm -rf lib/tcl lib/Lib/lib-tk lib/DLLs/t{k,cl}8*.dll
+                # Remove docs, test, include stuff.
+                execute rm -rf lib/Doc lib/Lib/test
                 ;;
             *)
                 # Move all binaries to lib/config

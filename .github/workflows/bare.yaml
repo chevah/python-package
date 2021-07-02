@@ -162,7 +162,8 @@ jobs:
           build-python-package
         key: ${{ runner.os }}-${{ hashFiles('pavement.py') }}
 
-    # Add packages needed to build OpenSSL (this runs under PowerShell).
+    # Add packages needed to build OpenSSL, cryptography, etc.
+    # This runs under PowerShell.
     - name: Prepare OS
       run: |
         chocolatey install --yes --no-progress make nasm 7zip

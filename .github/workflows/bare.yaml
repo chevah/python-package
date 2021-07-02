@@ -7,7 +7,7 @@
 # When setting up for a tmate debug session, you might need to increase the
 # timeout-minutes for each build. Else you get kicked out after the timeout.
 
-name: GitHub-CI
+name: Bare
 
 on:
   push:
@@ -51,7 +51,7 @@ jobs:
     - name: Prepare OS
       run: sudo apt-get install libncurses5-dev
 
-    - name: Download needed deps for the detected OS
+    - name: Detect current OS
       run: ./brink.sh detect_os
 
     - name: Build Python
@@ -98,7 +98,7 @@ jobs:
           build-python-package
         key: ${{ runner.os }}-${{ hashFiles('pavement.py') }}
 
-    - name: Download needed deps for the detected OS
+    - name: Detect current OS
       run: ./brink.sh detect_os
 
     # Avoid linking to Homebrew's libintl during build.
@@ -162,7 +162,7 @@ jobs:
           build-python-package
         key: ${{ runner.os }}-${{ hashFiles('pavement.py') }}
 
-    # Add packages needed to build OpenSSL.
+    # Add packages needed to build OpenSSL (this runs under PowerShell).
     - name: Prepare OS
       run: |
         chocolatey install --yes --no-progress make nasm 7zip
@@ -171,7 +171,7 @@ jobs:
         msiexec /quiet /i VCForPython27.msi
 
     # Explicitly run our scripts with Bash, not PowerShell (GitHub's default).
-    - name: Download needed deps for the detected OS
+    - name: Detect current OS
       run: bash ./brink.sh detect_os
 
     - name: Build Python

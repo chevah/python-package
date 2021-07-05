@@ -338,8 +338,17 @@ set_download_commands() {
     set +o errexit
     command -v curl > /dev/null
     if [ $? -eq 0 ]; then
-        DOWNLOAD_CMD="curl --remote-name --location"
-        ONLINETEST_CMD="curl --fail --silent --head --output /dev/null"
+        # Retry 2 times, allocating 10s for the connection phase,
+        # at most 300s for an attempt, sleeping for 5s between retries.
+        CURL_RETRY_OPTS="\
+            --retry 2 \
+            --connect-timeout 10 \
+            --max-time 300 \
+            --retry-delay 5 \
+            "
+        DOWNLOAD_CMD="curl --remote-name --location $CURL_RETRY_OPTS"
+        ONLINETEST_CMD="curl --fail --silent --head $CURL_RETRY_OPTS \
+            --output /dev/null"
         set -o errexit
         return
     fi

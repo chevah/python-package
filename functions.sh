@@ -369,8 +369,8 @@ cleanup_install_dir() {
         esac
     execute popd
 
-    # Output the python-package version to a dedicated file in the archive.
-    echo "${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" \
+    # Output version / rev / os / arch to a dedicated file in the archive.
+    echo "${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}-${OS}-${ARCH}" \
         > ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}/lib/PYTHON_PACKAGE_VERSION
 
     echo "::endgroup::"

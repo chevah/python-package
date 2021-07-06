@@ -705,7 +705,7 @@ command_test() {
         *)
             # Remaining build slaves have the required UTF-8 locale settings
             # available, but they need to be requested for the tests to pass.
-            export LC_ALL=en_US.UTF-8
+            export LC_ALL=C.UTF-8
             execute $PYTHON_BIN ${SCANDIR_FOLDER}/test/run_tests.py
             export LC_ALL=C
             ;;

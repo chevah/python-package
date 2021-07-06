@@ -655,8 +655,7 @@ def main():
 
         # Check for the git revision in Python's sys.version on Linux and Unix.
         try:
-            git_rev_cmd = ['git', 'log', '-n', '1', '--no-merges',
-                    '--pretty=format:%h']
+            git_rev_cmd = ['git', 'rev-parse', '--short=7', 'HEAD'
             git_rev = subprocess.check_output(git_rev_cmd).strip()
         except:
             sys.stderr.write("Couldn't get the git rev for the current tree.\n")

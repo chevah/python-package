@@ -94,10 +94,12 @@ jobs:
       run: |
         useradd -g adm -s /bin/bash -m chevah
         echo '%adm    ALL=NOPASSWD: ALL' >> /etc/sudoers
-        chown -R chevah .
+        chown -R chevah python-package
 
     - name: Compat tests run as regular user.
-      run: su chevah -c "./chevah_build compat"
+      run: |
+        cd python-package
+        su chevah -c "./chevah_build compat"
 
     # Using `~/` is problematic under Docker, use `/root/`.
     # Remove key in same step to avoid leaving it on disk if publishing fails.

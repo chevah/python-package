@@ -12,7 +12,7 @@ try:
     CHEVAH_OS = os.environ.get('OS')
     CHEVAH_ARCH = os.environ.get('ARCH')
 except:
-    print 'Coult not get $OS/$ARCH Chevah env vars.'
+    print 'Could not get $OS/$ARCH Chevah env vars.'
     sys.exit(101)
 
 BUILD_LIBEDIT = os.environ.get('BUILD_LIBEDIT', 'no').lower() == 'yes'
@@ -655,7 +655,8 @@ def main():
 
         # Check for the git revision in Python's sys.version on Linux and Unix.
         try:
-            git_rev_cmd = ['git', 'rev-parse', '--short=8', 'HEAD']
+            git_rev_cmd = ['git', 'log', '-n', '1', '--no-merges',
+                    '--pretty=format:%h']
             git_rev = subprocess.check_output(git_rev_cmd).strip()
         except:
             sys.stderr.write("Couldn't get the git rev for the current tree.\n")
@@ -667,8 +668,8 @@ def main():
                                  "\tBin ver: {0}".format(bin_ver) + "\n"
                                  "\tGit rev: {0}".format(git_rev) + "\n")
                 exit_code = 118
-            if len(bin_ver) != 8:
-                sys.stderr.write("Bad length for binary version, expected 8!\n"
+            if len(bin_ver) != 7:
+                sys.stderr.write("Bad length for binary version, expected 7!\n"
                                  "\tBin ver: {0}".format(bin_ver) + "\n")
                 exit_code = 119
 

@@ -485,10 +485,9 @@ copy_python() {
         # If we are upgrading the cache from an unversioned Python,
         # cat fails if this file is missing, so we create it blank.
         touch $version_file
-        python_installed_version=`cat $version_file`
+        python_installed_version=`cat $version_file | cut -d - -f 1`
         if [ "$PYTHON_VERSION" != "$python_installed_version" ]; then
             # We have a different python installed.
-
             # Check if we have the to-be-updated version and fail if
             # it does not exists.
             set +o errexit

@@ -62,7 +62,7 @@ jobs:
         # Use http://binary.chevah.com/third-party-stuff/centos5/tuxad/
         # when tuxad.de dissapears, it has the minimum required stuff.
         rpm -i http://www.tuxad.de/rpms/tuxad-release-5-1.noarch.rpm
-        yum -y install curl gcc44 make m4 automake libtool patch openssl-devel zlib-devel libffi-devel ncurses-devel openssh-clients
+        yum -y install wget curl gcc44 make m4 automake libtool patch openssl-devel zlib-devel libffi-devel ncurses-devel openssh-clients
         ln -s /usr/bin/gcc44 /usr/local/bin/gcc
         wget --mirror --no-parent https://binary.chevah.com/third-party-stuff/centos5/endpoint/
         cd binary.chevah.com/third-party-stuff/centos5/endpoint/

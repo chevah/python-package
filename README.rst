@@ -17,7 +17,7 @@ Building steps as used by Buildbot:
 * ``./brink.sh detect_os``
 * ``./chevah_build build``
 * ``./chevah_build test``
-* ``./chevah_build test_compat``
+* ``./chevah_build compat``
 
 You can try the above steps on your own to build and test a new Python package.
 

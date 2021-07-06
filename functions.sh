@@ -26,11 +26,11 @@ command_help() {
     if [ $? -eq 0 ]; then
         $help_command
     else
-        echo "Commands are:"
+        echo "Available commands are:"
         for help_text in `compgen -A variable help_text_`
         do
             command_name=${help_text#help_text_}
-            echo -e "  $command_name\t\t${!help_text}"
+            echo -e "$command_name\t\t${!help_text}"
         done
     fi
 }
@@ -51,7 +51,6 @@ select_command() {
         *)
             # Test to see if we have a valid command, otherwise call
             # the general help.
-
             call_command="command_$command"
             type $call_command &> /dev/null
             if [ $? -eq 0 ]; then

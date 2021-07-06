@@ -454,7 +454,7 @@ copy_python() {
             cache_ver_file=${python_distributable}/lib/PYTHON_PACKAGE_VERSION
             cache_version='UNVERSIONED'
             if [ -f $cache_ver_file ]; then
-                cache_version=`cat $cache_ver_file`
+                cache_version=`cat $cache_ver_file | cut -d - -f 1`
             fi
             if [ "$PYTHON_VERSION" != "$cache_version" ]; then
                 # We have a different version in the cache.

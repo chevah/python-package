@@ -718,9 +718,9 @@ command_test() {
 #
 # Test the newly created Python binary dist.
 #
-help_text_test_compat=\
+help_text_compat=\
 "Run a full test for the chevah/compat master."
-command_test_compat() {
+command__compat() {
     # To have a better test coverage, we run compat's tests.
     # Parts of this hackishly force compat to use the local Python version.
     execute pushd build
@@ -748,9 +748,9 @@ command_test_compat() {
 }
 
 
-help_text_publish_python=\
+help_text_publish=\
 "Upload Python binaries for current OS."
-command_publish_python() {
+command_publish() {
     execute rsync -qrlDvcz \
         ${DIST_FOLDER}/$PYTHON_VERSION/ \
         ${BINARY_DIST_PUBLISH_URI}/$PYTHON_VERSION/

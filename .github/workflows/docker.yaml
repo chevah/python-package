@@ -40,7 +40,7 @@ jobs:
       run: |
         apk update
         apk upgrade
-        apk add git curl bash openssh-client
+        apk add git curl bash gcc make m4 automake libtool patch zlib-dev libffi-dev ncurses-dev linux-headers musl-dev openssl-dev openssh-client
         curl -o /usr/local/bin/paxctl https://binary.chevah.com/third-party-stuff/alpine/paxctl-3.12
         chmod +x /usr/local/bin/paxctl
 
@@ -51,7 +51,7 @@ jobs:
         sed -i s/^mirrorlist=/#mirrorlist=/ /etc/yum.repos.d/*.repo
         sed -i s@^#baseurl=http://mirror.centos.org/\$contentdir/\$releasever/@baseurl=https://vault.centos.org/8.2.2004/@ /etc/yum.repos.d/*.repo
         yum -y upgrade
-        yum -y install git curl openssh-clients
+        yum -y install git curl gcc make m4 automake libtool patch openssl-devel zlib-devel libffi-devel ncurses-devel openssh-clients
 
     # Final CentOS 5 version is used to build the generic Linux package.
     - name: CentOS 5.11 setup
@@ -63,7 +63,7 @@ jobs:
         # Use http://binary.chevah.com/third-party-stuff/centos5/tuxad/
         # when tuxad.de dissapears, it has the minimum required stuff.
         rpm -i http://www.tuxad.de/rpms/tuxad-release-5-1.noarch.rpm
-        yum -y install curl openssh-clients gcc44 make m4 patch unzip wget
+        yum -y install curl gcc44 make m4 automake libtool patch openssl-devel zlib-devel libffi-devel ncurses-devel openssh-clients
         ln -s /usr/bin/gcc44 /usr/local/bin/gcc
         wget --mirror --no-parent https://binary.chevah.com/third-party-stuff/centos5/endpoint/
         cd binary.chevah.com/third-party-stuff/centos5/endpoint/
@@ -75,6 +75,11 @@ jobs:
         git clone https://github.com/chevah/python-package.git
         cd python-package
         git checkout ${GITHUB_HEAD_REF}
+
+    - name: Detect current OS
+      run: |
+        cd python-package
+        ./brink.sh detect_os
 
     - name: Build
       run: |

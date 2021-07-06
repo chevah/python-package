@@ -16,10 +16,9 @@ concurrency:
   group: docker-${{ github.ref }}
   cancel-in-progress: true
 
-# Set to 'yes' to open a tunnel to GitHub's VMs through tmate on failures.
-# Also increase timeout-minutes for the relevant OS when debugging remotely.
 env:
-  TMATE_DEBUG: 'yes'
+  USER: chevah
+  CHEVAH_CONTAINER: yes
 
 # Using a job name that doesn't contain the OS name, to minimize the risk of
 # confusion with the OS names of the containers, which are the relevant ones.
@@ -90,10 +89,15 @@ jobs:
         cd python-package
         ./chevah_build test
 
-    - name: Compat tests
+    # On a Docker container, everything runs as root by default.
+    - name: Chevah user setup
       run: |
-        cd python-package
-        ./chevah_build compat
+        useradd -g adm -s /bin/bash -m chevah
+        echo '%adm    ALL=NOPASSWD: ALL' >> /etc/sudoers
+        chown -R chevah .
+
+    - name: Compat tests run as regular user.
+      run: su chevah -c "./chevah_build compat"
 
     # Using `~/` is problematic under Docker, use `/root/`.
     # Remove key in same step to avoid leaving it on disk if publishing fails.
@@ -107,12 +111,3 @@ jobs:
         echo "${{ secrets.SFTPPLUS_BIN_HOST_KEY }}" > /root/.ssh/known_hosts
         ./publish_dist.sh
         rm priv_key
-
-    # If one of the above steps fails, fire up tmate for remote debugging.
-    # Not working on Alpine (not supported) and CentOS 5 (glibc too old).
-    - name: Tmate debug on failure
-      if: failure() && env.TMATE_DEBUG == 'yes'
-      uses: mxschmitt/action-tmate@v3
-      with:
-        sudo: false
-        limit-access-to-actor: true

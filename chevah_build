@@ -119,7 +119,7 @@ BUILD_FOLDER='build'
 COMMON_PKGS="gcc make m4 automake libtool patch"
 DEBIAN_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
 RHEL_PKGS="$COMMON_PKGS git openssl-devel zlib-devel libffi-devel ncurses-devel"
-ALPINE_PKGS="$COMMON_PKGS \
+ALPINE_PKGS="$COMMON_PKGS lddtree \
     git zlib-dev libffi-dev ncurses-dev linux-headers musl-dev openssl-dev"
 # No automated Windows package management, but here's what it's needed.
 CHOCO_PKGS="vcpython27 make git StrawberryPerl nasm 7zip"
@@ -720,7 +720,7 @@ command_test() {
 #
 help_text_compat=\
 "Run a full test for the chevah/compat master."
-command__compat() {
+command_compat() {
     # To have a better test coverage, we run compat's tests.
     # Parts of this hackishly force compat to use the local Python version.
     execute pushd build

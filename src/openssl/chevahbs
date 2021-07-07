@@ -75,6 +75,14 @@ chevahbs_install() {
         win)
             echo "Libs/headers installed through the build BAT file."
             ;;
+        lnx)
+            # On CentOS 5, `basename` would also complain of a "missing operand".
+            echo "Installing manually to avoid messing with a lib64/ sub-dir:"
+            execute cp -v libcrypto.a libssl.a "$INSTALL_FOLDER"/lib/
+            execute cp -rv include/openssl/ "$INSTALL_FOLDER"/include/
+            execute mkdir "$INSTALL_FOLDER"/pkgconfig/
+            execute cp -v *.pc "$INSTALL_FOLDER"/pkgconfig/
+            ;;
         *)
             install_folder=$1
             execute $MAKE install

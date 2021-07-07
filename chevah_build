@@ -697,13 +697,13 @@ command_test() {
     # Reported upstream at https://github.com/benhoyt/scandir/issues/78.
     SCANDIR_FOLDER="../python-modules/scandir-${SCANDIR_VERSION}"
     case "$OS-$ARCH" in
-        macos|win)
+        macos*|win*)
             execute $PYTHON_BIN ${SCANDIR_FOLDER}/test/run_tests.py
             ;;
         aix*)
             (>&2 echo -e "\tSkipping because of upstream issues.")
             ;;
-        lnx)
+        lnx*)
             if [ x"$CHEVAH_CONTAINER" = x"yes" ]; then
                 (>&2 echo -e "\tSkipping as it fails under Docker on CentOS 5.")
             else

@@ -94,7 +94,9 @@ jobs:
     - name: Chevah user setup
       run: |
         useradd -g adm -s /bin/bash -m chevah
-        echo '%adm    ALL=NOPASSWD: ALL' >> /etc/sudoers
+        # Don't just add to the file, reset it, as some default options might
+        # be detrimental to our testing, e.g. CentOS 5's requiretty option.
+        echo '%adm    ALL=NOPASSWD: ALL' > /etc/sudoers
         chown -R chevah python-package
 
     # And compat tests must run as regular user with sudo rights.

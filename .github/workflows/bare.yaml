@@ -83,8 +83,12 @@ jobs:
 
 
   macos:
-    runs-on: macos-10.15
-    needs: [ windows, linux ]
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on: [ macos-10.15 ]
+    needs: [ windows ]
     timeout-minutes: 60
     steps:
     - uses: actions/checkout@v2
@@ -149,6 +153,7 @@ jobs:
       fail-fast: false
       matrix:
         runs-on: [ windows-2019, windows-2016 ]
+    needs: [ linux ]
     timeout-minutes: 45
     steps:
     - uses: actions/checkout@v2

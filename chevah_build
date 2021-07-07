@@ -703,8 +703,7 @@ command_test() {
             (>&2 echo -e "\tSkipping because of upstream issues.")
             ;;
         *)
-            # Remaining build slaves have the required UTF-8 locale settings
-            # available, but they need to be requested for the tests to pass.
+            # UTF-8 locale is needed for the tests to pass on remaining OS'es.
             export LC_ALL=C.UTF-8
             execute $PYTHON_BIN ${SCANDIR_FOLDER}/test/run_tests.py
             export LC_ALL=C
@@ -741,7 +740,11 @@ command_compat() {
     unset CHEVAH_CACHE CHEVAH_BUILD
     # Some tests might fail due to causes which are not related to python.
     execute ./brink.sh deps
-    execute ./brink.sh test_ci
+    if [ x"$CHEVAH_CONTAINER" = x"yes" ]; then
+        execute ./brink.sh test_ci2
+    else
+        execute ./brink.sh test_ci
+    fi
     execute popd
 
     execute popd

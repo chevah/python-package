@@ -68,11 +68,12 @@ jobs:
         rpm -i local-perl-*.rpm
         rpm -i --nodeps git{-core,}-2.5.0-1.ep.x86_64.rpm
 
+    # GHA's checkout action doesn't work on CentOS 5.
     - name: Clone repo independently
       run: |
-        git clone https://github.com/chevah/python-package.git
+        # No debugging on GHA's containers, so we clone the minimum required stuff.
+        git clone --depth 1 --single-branch --branch ${GITHUB_HEAD_REF} https://github.com/chevah/python-package.git
         cd python-package
-        git checkout ${GITHUB_HEAD_REF}
 
     - name: Detect current OS
       run: |
@@ -96,7 +97,8 @@ jobs:
         echo '%adm    ALL=NOPASSWD: ALL' >> /etc/sudoers
         chown -R chevah python-package
 
-    - name: Compat tests run as regular user.
+    # And compat tests must run as regular user with sudo rights.
+    - name: Compat tests
       run: |
         cd python-package
         su chevah -c "./chevah_build compat"

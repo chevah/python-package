@@ -413,6 +413,7 @@ command_build() {
     # Clean the build dir to avoid contamination from previous builds.
     command_clean
 
+    echo "Building version ${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}..."
     # Build stuff statically on most platforms, install headers and libs in the
     # following locations and make sure they are picked up when building Python.
     # We used to add the new include path to $CPPFLAGS, but it's not as portable

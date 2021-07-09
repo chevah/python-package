@@ -279,6 +279,7 @@ case $OS in
         # To avoid linking to local libs, we build our own OpenSSL libs.
         export BUILD_OPENSSL="yes"
         # OpenSSL tests on CentOS 5 require an updated Perl 5.10 in /usr/local.
+        # In particular, Perl's Test::Simple and its deps are required.
         export PATH="/usr/local/bin:$PATH"
         ;;
     alpine*)

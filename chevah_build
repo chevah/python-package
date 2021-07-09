@@ -16,7 +16,7 @@ BZIP2_VERSION="1.0.8"
 # readline module available without linking to the GPL-only readline libs.
 LIBEDIT_VERSION="20170329-3.1"
 OPENSSL_VERSION="1.1.1k"
-SQLITE_VERSION="3.34.1"
+SQLITE_VERSION="3.36.0"
 
 # Python modules versions to be used everywhere possible.
 PYSQLITE_VERSION="2.8.3"
@@ -279,8 +279,9 @@ case $OS in
         # To avoid linking to local libs, we build our own OpenSSL libs.
         export BUILD_OPENSSL="yes"
         # OpenSSL tests on CentOS 5 require an updated Perl 5.10 in /usr/local.
-        # In particular, Perl's Test::Simple and its deps are required.
         export PATH="/usr/local/bin:$PATH"
+        # In particular, Perl's Test::Simple and its deps are required.
+        execute perl -MTest::Simple -e 1
         ;;
     alpine*)
         # Do not depend on libffi and ncurses-libs Alpine packages.

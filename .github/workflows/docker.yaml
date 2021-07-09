@@ -102,7 +102,7 @@ jobs:
     # And compat tests must run as regular user with sudo rights.
     - name: Compat tests
       run: |
-        su chevah -lc "umask 002; cd /python-package; ./brink.sh test_ci2"
+        su chevah -lc "umask 002; cd python-package; ./brink.sh test_ci2"
 
     # Using `~/` is problematic under Docker, use `/root/`.
     # Remove key in same step to avoid leaving it on disk if publishing fails.

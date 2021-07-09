@@ -117,10 +117,9 @@ BUILD_FOLDER='build'
 # On platforms with a choice of C compilers, you may choose among the
 # available compilers by setting CC and CXX further down in this script.
 COMMON_PKGS="gcc make m4 automake libtool patch"
-DEBIAN_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
+DEB_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
 RHEL_PKGS="$COMMON_PKGS git openssl-devel zlib-devel libffi-devel ncurses-devel"
-ALPINE_PKGS="$COMMON_PKGS lddtree \
-    git zlib-dev libffi-dev ncurses-dev linux-headers musl-dev openssl-dev"
+ALP_PKGS="$COMMON_PKGS git zlib-dev linux-headers musl-dev openssl-dev lddtree"
 # No automated Windows package management, but here's what it's needed.
 CHOCO_PKGS="vcpython27 make git StrawberryPerl nasm 7zip"
 
@@ -282,8 +281,17 @@ case $OS in
         # OpenSSL tests on CentOS 5 require an updated Perl 5.10 in /usr/local.
         export PATH="/usr/local/bin:$PATH"
         ;;
+    alpine*)
+        # Do not depend on libffi and ncurses-libs Alpine packages.
+        # It's better to run on minimal Alpine containers.
+        export BUILD_LIBFFI="yes"
+        export BUILD_LIBEDIT="no"
+        export CC="gcc"
+        export CXX="g++"
+        export MAKE="make"
+        ;;
     *)
-        # Only supported Linux distributions should be left.
+        # Only supported Linux distributions other than Alpine should be left.
         export CC="gcc"
         export CXX="g++"
         export MAKE="make"
@@ -337,7 +345,7 @@ check_dependencies() {
     case $OS in
         # Debian-derived distros are similar in this regard.
         ubuntu*)
-            packages=$DEBIAN_PKGS
+            packages=$DEB_PKGS
             check_command="dpkg --status"
             ;;
         rhel*|amzn*)
@@ -346,7 +354,7 @@ check_dependencies() {
             ;;
         alpine*)
             # Alpine 3.9 switched back to OpenSSL as default.
-            packages=$ALPINE_PKGS
+            packages=$ALP_PKGS
             check_command="apk info -q -e"
             ;;
         # On remaining OS'es we just check for some of the needed commands.

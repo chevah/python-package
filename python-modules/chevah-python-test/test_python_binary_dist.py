@@ -27,7 +27,7 @@ def get_allowed_deps():
         if 'lnx' in CHEVAH_OS:
             # Deps without paths for generic Linux builds.
             # Only glibc 2.x libs are allowed.
-            # Tested on SLES 11 with glibc 2.11.3.
+            # Tested on SLES 11 with glibc 2.11.3 and CentOS 5 with glibc 2.5.
             allowed_deps=[
                 'libc.so.6',
                 'libcrypt.so.1',
@@ -38,7 +38,7 @@ def get_allowed_deps():
                 ]
             if 'arm64' in CHEVAH_ARCH:
                 # Additional deps without paths for arm64 generic Linux builds.
-                # From Ubuntu 16.04 w/ glibc 2.23 (on Pine A64+ and X-Gene 3).
+                # From Ubuntu 16.04 with glibc 2.23.
                 allowed_deps.extend([
                     'libgcc_s.so.1',
                     ])
@@ -165,28 +165,18 @@ def get_allowed_deps():
                 '/lib/ld-musl-x86_64.so.1',
                 '/lib/libc.musl-x86_64.so.1',
                 '/lib/libz.so.1',
-                '/usr/lib/libncursesw.so.6',
                 ]
             if alpine_version in [ "36", "37", "38" ]:
                 # These versions use LibreSSL by default.
                 allowed_deps.extend([
                     '/lib/libcrypto.so.42',
                     '/lib/libssl.so.44',
-                    '/usr/lib/libffi.so.6',
                     ])
-            elif alpine_version in [ "39", "310", "311" ]:
+            else:
                 # Alpine Linux 3.9 reverted to OpenSSL by default.
                 allowed_deps.extend([
                     '/lib/libcrypto.so.1',
                     '/lib/libssl.so.1',
-                    '/usr/lib/libffi.so.6',
-                    ])
-            else:
-                # Alpine Linux 3.12+ has FFI 3.3.
-                allowed_deps.extend([
-                    '/lib/libcrypto.so.1',
-                    '/lib/libssl.so.1',
-                    '/usr/lib/libffi.so.7',
                     ])
     elif platform_system == 'aix':
         # Deps for AIX 7.1, many added with psutil.

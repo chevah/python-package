@@ -68,41 +68,41 @@ jobs:
         rpm -i local-perl-*.rpm
         rpm -i --nodeps git{-core,}-2.5.0-1.ep.x86_64.rpm
 
-    # GHA's checkout action doesn't work on CentOS 5.
-    - name: Clone repo independently
-      run: |
-        # No debugging on GHA's containers, so we clone the minimum required stuff.
-        git clone --depth 1 --single-branch --branch ${GITHUB_HEAD_REF} https://github.com/chevah/python-package.git
-        cd python-package
-
-    - name: Detect current OS
-      run: |
-        cd python-package
-        ./brink.sh detect_os
-
-    - name: Build
-      run: |
-        cd python-package
-        ./chevah_build build
-
-    - name: Test
-      run: |
-        cd python-package
-        ./chevah_build test
-
     # On a Docker container, everything runs as root by default.
     - name: Chevah user setup
       run: |
         useradd -g adm -s /bin/bash -m chevah
         # Don't just add to the file, reset it, as some default options might
-        # be detrimental to our testing, e.g. CentOS 5's requiretty option.
+        # be detrimental to our testing, e.g. CentOS 5's "requiretty" option.
         echo '%adm    ALL=NOPASSWD: ALL' > /etc/sudoers
-        chown -R chevah python-package
+
+    # GHA's checkout action doesn't work on CentOS 5.
+    - name: Clone repo independently
+      run: |
+        cd /home/chevah
+        # No debugging on GHA's containers, so we clone the minimum required stuff.
+        git clone --depth 1 --single-branch --branch ${GITHUB_HEAD_REF} https://github.com/chevah/python-package.git
+
+    - name: Detect current OS
+      run: |
+        cd /home/chevah/python-package
+        ./brink.sh detect_os
+
+    - name: Build
+      run: |
+        cd /home/chevah/python-package
+        ./chevah_build build
+
+    - name: Test
+      run: |
+        cd /home/chevah/python-package
+        ./chevah_build test
 
     # And compat tests must run as regular user with sudo rights.
     - name: Compat tests
       run: |
-        su chevah -lc "umask 002; cd python-package; ./brink.sh test_ci2"
+        chown -R chevah /home/chevah/python-package
+        su chevah -lc "umask 002; cd /home/chevah/python-package; ./brink.sh test_ci2"
 
     # Using `~/` is problematic under Docker, use `/root/`.
     # Remove key in same step to avoid leaving it on disk if publishing fails.

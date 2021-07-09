@@ -100,10 +100,10 @@ jobs:
         chown -R chevah python-package
 
     # And compat tests must run as regular user with sudo rights.
-    #- name: Compat tests
-    #  run: |
-    #    cd python-package
-    #    su chevah -c "./chevah_build compat"
+    - name: Compat tests
+      run: |
+        cd python-package
+        su chevah -lc "umask 002; ./brink.sh test_ci2"
 
     # Using `~/` is problematic under Docker, use `/root/`.
     # Remove key in same step to avoid leaving it on disk if publishing fails.

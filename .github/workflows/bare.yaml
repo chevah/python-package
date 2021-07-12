@@ -30,6 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # ARM64 is currently our Pine64 board running Ubuntu 16.04.
         runs-on: [ ubuntu-20.04, ubuntu-18.04, ARM64 ]
     timeout-minutes: 30
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -49,7 +50,7 @@ jobs:
         key: ${{ runner.os }}-${{ hashFiles('pavement.py') }}
 
     - name: Prepare OS
-      run: sudo apt-get install libncurses5-dev
+      run: sudo apt-get install -y libncurses5-dev
 
     - name: Detect current OS
       run: ./brink.sh detect_os

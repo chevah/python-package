@@ -99,10 +99,11 @@ jobs:
         ./chevah_build test
 
     # And compat tests must run as regular user with sudo rights.
-    - name: Compat tests
-      run: |
-        chown -R chevah /home/chevah/python-package
-        su chevah -lc "umask 002; cd /home/chevah/python-package; ./chevah_build compat"
+    # Compat tests are disabled pending https://github.com/chevah/compat/pull/113.
+    #- name: Compat tests
+    #  run: |
+    #    chown -R chevah /home/chevah/python-package
+    #    su chevah -lc "umask 002; cd /home/chevah/python-package; ./chevah_build compat"
 
     # Using `~/` is problematic under Docker, use `/root/`.
     # Remove key in same step to avoid leaving it on disk if publishing fails.

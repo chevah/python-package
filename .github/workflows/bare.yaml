@@ -30,9 +30,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # ARM64 is currently our Pine64 board running Ubuntu 16.04.
-        runs-on: [ ubuntu-20.04, ubuntu-18.04, ARM64 ]
-    timeout-minutes: 60
+        runs-on: [ ubuntu-20.04, ubuntu-18.04 ]
+    timeout-minutes: 30
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
 
@@ -82,6 +81,41 @@ jobs:
       with:
         limit-access-to-actor: true
 
+  arm64:
+    # Our Pine64 board running Ubuntu 16.04. Ask dumol to start it up.
+    runs-on: [ pine64 ]
+    strategy:
+      fail-fast: false
+    timeout-minutes: 75
+    steps:
+
+    # GHA's checkout action is acting strange on ARM64.
+    # Our build script can't get current revision from cloned sources.
+    - name: Clone repo independently
+      run: git clone --depth 1 --single-branch --branch ${GITHUB_HEAD_REF} https://github.com/chevah/python-package.git
+
+    - name: Detect current OS
+      run: ./brink.sh detect_os
+
+    - name: Build Python
+      run: ./chevah_build build
+
+    - name: Test Python
+      run: ./chevah_build test
+
+    - name: Test Compat
+      run: ./chevah_build compat
+
+    - name: Upload testing package
+      run: |
+        mkdir -pv ~/.ssh/
+        touch priv_key
+        chmod 600 priv_key
+        echo "${{ secrets.SFTPPLUS_BIN_PRIV_KEY }}" > priv_key
+        echo "${{ secrets.SFTPPLUS_BIN_HOST_KEY }}" > ~/.ssh/known_hosts
+        ./publish_dist.sh
+        rm priv_key
+
 
   macos:
     runs-on: ${{ matrix.runs-on }}
@@ -89,7 +123,7 @@ jobs:
       fail-fast: false
       matrix:
         runs-on: [ macos-10.15 ]
-    needs: [ windows ]
+    needs: [ linux ]
     timeout-minutes: 60
     steps:
     - uses: actions/checkout@v2
@@ -154,7 +188,7 @@ jobs:
       fail-fast: false
       matrix:
         runs-on: [ windows-2019, windows-2016 ]
-    timeout-minutes: 60
+    timeout-minutes: 45
     steps:
     - uses: actions/checkout@v2
       with:

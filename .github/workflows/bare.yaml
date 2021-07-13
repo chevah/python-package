@@ -37,7 +37,7 @@ jobs:
     # GHA's checkout action seems to be misbehaving on ARM64 and
     # our build script can't get current revision from cloned sources.
     # With the repo already cloned in place, just checkout current branch.
-    - name: Checkout branch without actions/checkout
+    - name: Explicitly checkout branch
       if: matrix.container == 'ARM64'
       run: |
         git checkout ${GITHUB_HEAD_REF}

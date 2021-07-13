@@ -34,12 +34,13 @@ jobs:
     timeout-minutes: 90
     steps:
     - name: Clone sources
+      if: startsWith(matrix.runs-on, 'ubuntu')
       uses: actions/checkout@v2
       # Required to get the correct git rev to use in Python's version.
       with:
         fetch-depth: 2
 
-    # GHA's checkout action seems to be misbehaving on ARM64 and
+    # GHA's checkout action seems to be misbehaving on ARM64 and consequently
     # our build script can't get current revision from cloned sources.
     # With the repo cloned in place beforehand, just checkout current branch.
     - name: Checkout branch for already cloned sources

@@ -32,6 +32,7 @@ jobs:
         runs-on: [ ubuntu-20.04, ubuntu-18.04, ARM64 ]
     timeout-minutes: 90
     steps:
+    - name: Clone sources with actions/checkout
     -  uses: actions/checkout@v2
 
     # GHA's checkout action seems to be misbehaving on ARM64 and
@@ -42,14 +43,6 @@ jobs:
       run: |
         git checkout ${GITHUB_HEAD_REF}
         git pull
-
-    # Caches needed files for a faster deps phase.
-    - name: Cache build
-      uses: actions/cache@v2
-      with:
-        path: |
-          build-python-package
-        key: ${{ runner.os }}-${{ hashFiles('pavement.py') }}
 
     - name: Prepare OS
       run: sudo apt-get install -y libncurses5-dev
@@ -91,18 +84,10 @@ jobs:
       fail-fast: false
       matrix:
         runs-on: [ macos-10.15 ]
-    needs: [ linux ]
     timeout-minutes: 60
     steps:
     - name: Clone sources with actions/checkout
       uses: actions/checkout@v2
-
-    - name: Cache build
-      uses: actions/cache@v2
-      with:
-        path: |
-          build-python-package
-        key: ${{ runner.os }}-${{ hashFiles('pavement.py') }}
 
     - name: Detect current OS
       run: ./brink.sh detect_os
@@ -159,13 +144,6 @@ jobs:
     steps:
     - name: Clone sources with actions/checkout
       uses: actions/checkout@v2
-
-    - name: Cache build
-      uses: actions/cache@v2
-      with:
-        path: |
-          build-python-package
-        key: ${{ runner.os }}-${{ hashFiles('pavement.py') }}
 
     # Add packages needed to build OpenSSL, cryptography, etc.
     # This runs under PowerShell.

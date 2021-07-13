@@ -32,7 +32,7 @@ jobs:
         runs-on: [ ubuntu-20.04, ubuntu-18.04, ARM64 ]
     timeout-minutes: 90
     steps:
-      uses: actions/checkout@v2
+    -  uses: actions/checkout@v2
 
     # GHA's checkout action seems to be misbehaving on ARM64 and
     # our build script can't get current revision from cloned sources.
@@ -95,7 +95,7 @@ jobs:
     timeout-minutes: 60
     steps:
     - name: Clone sources with actions/checkout
-    - uses: actions/checkout@v2
+      uses: actions/checkout@v2
 
     - name: Cache build
       uses: actions/cache@v2
@@ -158,7 +158,7 @@ jobs:
     timeout-minutes: 60
     steps:
     - name: Clone sources with actions/checkout
-    - uses: actions/checkout@v2
+      uses: actions/checkout@v2
 
     - name: Cache build
       uses: actions/cache@v2

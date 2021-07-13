@@ -311,12 +311,12 @@ cleanup_install_dir() {
             win)
                 # Remove Tcl/Tk stuff.
                 execute rm -rf lib/tcl/ lib/Lib/lib-tk/ lib/DLLs/t{k,cl}8*.dll
-                # Remove docs / test / include stuff.
-                execute rm -rf lib/Doc/ lib/Lib/test/ lib/include/
+                # Remove docs / test stuff.
+                execute rm -rf lib/Doc/ lib/Lib/test/
                 ;;
             *)
-                # Remove test / include stuff
-                execute rm -rf lib/python2.7/test/ include/
+                # Remove test stuff
+                execute rm -rf lib/python2.7/test/
                 # Move all binaries to lib/config
                 execute mkdir -p lib/config
                 execute mv bin/ lib/config/

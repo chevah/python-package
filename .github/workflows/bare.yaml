@@ -34,6 +34,8 @@ jobs:
     timeout-minutes: 90
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 2
 
     - name: Prepare OS
       run: sudo apt-get install -y libncurses5-dev
@@ -78,6 +80,8 @@ jobs:
     timeout-minutes: 60
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 2
 
     - name: Detect current OS
       run: ./brink.sh detect_os
@@ -133,6 +137,8 @@ jobs:
     timeout-minutes: 60
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 2
 
     # Add packages needed to build OpenSSL, cryptography, etc.
     # This runs under PowerShell.

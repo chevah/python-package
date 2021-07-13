@@ -33,7 +33,7 @@ jobs:
     timeout-minutes: 90
     steps:
     - name: Clone sources with actions/checkout
-    -  uses: actions/checkout@v2
+      uses: actions/checkout@v2
 
     # GHA's checkout action seems to be misbehaving on ARM64 and
     # our build script can't get current revision from cloned sources.

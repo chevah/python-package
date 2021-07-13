@@ -32,14 +32,10 @@ jobs:
         runs-on: [ ubuntu-20.04, ubuntu-18.04, ARM64 ]
     timeout-minutes: 90
     steps:
-
-    # Clones the repository under $GITHUB_WORKSPACE, so the job can access it
-    - name: Clone sources with actions/checkout
-      if: startsWith(matrix.container, 'ubuntu')
       uses: actions/checkout@v2
 
-    # GHA's checkout action seems to be misbehaving on ARM64.
-    # Our build script can't get current revision from cloned sources.
+    # GHA's checkout action seems to be misbehaving on ARM64 and
+    # our build script can't get current revision from cloned sources.
     # With the repo already cloned in place, just checkout current branch.
     - name: Checkout branch without actions/checkout
       if: matrix.container == 'ARM64'

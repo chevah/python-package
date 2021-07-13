@@ -33,8 +33,9 @@ jobs:
         runs-on: [ ubuntu-20.04, ubuntu-18.04, ARM64 ]
     timeout-minutes: 90
     steps:
-    - uses: actions/checkout@v2
-      if: startsWith(matrix.container, 'ubuntu')
+    - name: Clone sources
+      if: startsWith(matrix.runs-on, 'ubuntu')
+      uses: actions/checkout@v2
       # Required to get the correct git rev to use in Python's version.
       with:
         fetch-depth: 2
@@ -42,7 +43,7 @@ jobs:
     # GHA's checkout action seems to be misbehaving on ARM64 and
     # our build script can't get current revision from cloned sources.
     # With the repo cloned in place beforehand, just checkout current branch.
-    - name: Explicitly checkout branch
+    - name: Checkout branch for already cloned sources
       if: matrix.container == 'ARM64'
       run: |
         git checkout ${GITHUB_HEAD_REF}
@@ -87,7 +88,8 @@ jobs:
         runs-on: [ macos-10.15 ]
     timeout-minutes: 60
     steps:
-    - uses: actions/checkout@v2
+    - name: Clone sources
+      uses: actions/checkout@v2
       with:
         fetch-depth: 2
 
@@ -144,7 +146,8 @@ jobs:
         runs-on: [ windows-2019, windows-2016 ]
     timeout-minutes: 60
     steps:
-    - uses: actions/checkout@v2
+    - name: Clone sources
+      uses: actions/checkout@v2
       with:
         fetch-depth: 2
 

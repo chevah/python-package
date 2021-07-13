@@ -25,20 +25,27 @@ env:
 jobs:
 
   linux:
-    # The type of runner that the job will run on
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ ubuntu-20.04, ubuntu-18.04 ]
-    timeout-minutes: 30
-    # Steps represent a sequence of tasks that will be executed as part of the job
+        runs-on: [ ubuntu-20.04, ubuntu-18.04, ARM64 ]
+    timeout-minutes: 90
     steps:
 
-    # Checks-out the repository under $GITHUB_WORKSPACE, so the job can access it
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 2
+    # Clones the repository under $GITHUB_WORKSPACE, so the job can access it
+    - name: Clone sources with actions/checkout
+      if: startsWith(matrix.container, 'ubuntu')
+      uses: actions/checkout@v2
+
+    # GHA's checkout action seems to be misbehaving on ARM64.
+    # Our build script can't get current revision from cloned sources.
+    # With the repo already cloned in place, just checkout current branch.
+    - name: Checkout branch without actions/checkout
+      if: matrix.container == 'ARM64'
+      run: |
+        git checkout ${GITHUB_HEAD_REF}
+        git pull
 
     # Caches needed files for a faster deps phase.
     - name: Cache build
@@ -81,44 +88,6 @@ jobs:
       with:
         limit-access-to-actor: true
 
-  arm64:
-    # Our Pine64 board running Ubuntu 16.04. Ask dumol to start it up.
-    runs-on: [ pine64 ]
-    strategy:
-      fail-fast: false
-    timeout-minutes: 75
-    steps:
-
-    # GHA's checkout action is acting strange on ARM64.
-    # Our build script can't get current revision from cloned sources.
-    # After having the repo cloned in place, just checkout current branch.
-    - name: Checkout branch independently
-      run: |
-        git checkout ${GITHUB_HEAD_REF}
-        git pull
-
-    - name: Detect current OS
-      run: ./brink.sh detect_os
-
-    - name: Build Python
-      run: ./chevah_build build
-
-    - name: Test Python
-      run: ./chevah_build test
-
-    - name: Test Compat
-      run: ./chevah_build compat
-
-    - name: Upload testing package
-      run: |
-        mkdir -pv ~/.ssh/
-        touch priv_key
-        chmod 600 priv_key
-        echo "${{ secrets.SFTPPLUS_BIN_PRIV_KEY }}" > priv_key
-        echo "${{ secrets.SFTPPLUS_BIN_HOST_KEY }}" > ~/.ssh/known_hosts
-        ./publish_dist.sh
-        rm priv_key
-
 
   macos:
     runs-on: ${{ matrix.runs-on }}
@@ -129,9 +98,8 @@ jobs:
     needs: [ linux ]
     timeout-minutes: 60
     steps:
+    - name: Clone sources with actions/checkout
     - uses: actions/checkout@v2
-      with:
-        fetch-depth: 2
 
     - name: Cache build
       uses: actions/cache@v2
@@ -144,7 +112,7 @@ jobs:
       run: ./brink.sh detect_os
 
     # Avoid linking to Homebrew's libintl during build.
-    # We can use needed tools from /usr/bin.
+    # Needed tools are to be used from /usr/bin.
     - name: Hack Homebrew
       run: |
         sudo find /usr/local -name 'libffi*' -exec chmod a-r {} +
@@ -191,11 +159,10 @@ jobs:
       fail-fast: false
       matrix:
         runs-on: [ windows-2019, windows-2016 ]
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
+    - name: Clone sources with actions/checkout
     - uses: actions/checkout@v2
-      with:
-        fetch-depth: 2
 
     - name: Cache build
       uses: actions/cache@v2

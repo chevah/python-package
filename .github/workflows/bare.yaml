@@ -34,7 +34,6 @@ jobs:
     timeout-minutes: 90
     steps:
     - name: Clone sources
-      if: startsWith(matrix.runs-on, 'ubuntu')
       uses: actions/checkout@v2
       # Required to get the correct git rev to use in Python's version.
       with:
@@ -44,10 +43,14 @@ jobs:
     # our build script can't get current revision from cloned sources.
     # With the repo cloned in place beforehand, just checkout current branch.
     - name: Checkout branch for already cloned sources
-      if: matrix.container == 'ARM64'
+      if: matrix.runs-on == 'ARM64'
       run: |
         git checkout ${GITHUB_HEAD_REF}
         git pull
+
+    - name: Prepare OS
+      if: startsWith(matrix.runs-on, 'ubuntu')
+      run: sudo apt-get install -y libncurses5-dev
 
     - name: Detect current OS
       run: ./brink.sh detect_os

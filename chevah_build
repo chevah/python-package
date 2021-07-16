@@ -88,9 +88,15 @@ PIP_LIBRARIES_OPENSSL_102="\
     psutil==${PSUTIL_VERSION} \
     setproctitle==${SETPROCTITLE_VERSION}
     "
+
+PYPI_SITE="https://pypi.chevah.com"
+if [ "${OS%aix*}" = "" ]; then
+    # On AIX 7.1, there are issues with Let's Encrypt certificates.
+    PYPI_SITE="http://pypi.chevah.com"
+fi
 # Arguments that are sent when using pip.
 PIP_ARGS="\
-    --index-url=https://pypi.chevah.com/simple \
+    --index-url=${PYPI_SITE}/simple \
     --trusted-host=pypi.chevah.com \
     --no-cache-dir \
     --no-warn-script-location \
@@ -643,7 +649,7 @@ initialize_python_module(){
             # We want to download dependencies from our PyPI and block
             # the official.
             echo "[easy_install]" >> setup.cfg
-            echo "find_links=https://pypi.chevah.com/" >> setup.cfg
+            echo "find_links=${PYPI_SITE}/" >> setup.cfg
             echo "allow_hosts=*pypi.chevah.com*" >> setup.cfg
         fi
     execute popd

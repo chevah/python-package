@@ -78,13 +78,13 @@ jobs:
 
     # GHA's checkout action doesn't work on CentOS 5.
     - name: Clone master branch independently
-      if: ${GITHUB_HEAD_REF} == ''
+      if: "$GITHUB_HEAD_REF" == ""
       run: |
         cd /home/chevah
         # No debugging on GHA's containers, so we clone the minimum required stuff.
         git clone https://github.com/chevah/python-package.git --depth 1 --single-branch --branch master
     - name: Clone PR branch independently
-      if: ${GITHUB_HEAD_REF} != ''
+      if: "$GITHUB_HEAD_REF" != ""
       run: |
         cd /home/chevah
         git clone https://github.com/chevah/python-package.git --depth 1 --single-branch --branch ${GITHUB_HEAD_REF}

@@ -12,7 +12,7 @@ try:
     CHEVAH_OS = os.environ.get('OS')
     CHEVAH_ARCH = os.environ.get('ARCH')
 except:
-    print 'Coult not get $OS/$ARCH Chevah env vars.'
+    print 'Could not get $OS/$ARCH Chevah env vars.'
     sys.exit(101)
 
 BUILD_LIBEDIT = os.environ.get('BUILD_LIBEDIT', 'no').lower() == 'yes'
@@ -27,7 +27,7 @@ def get_allowed_deps():
         if 'lnx' in CHEVAH_OS:
             # Deps without paths for generic Linux builds.
             # Only glibc 2.x libs are allowed.
-            # Tested on SLES 11 with glibc 2.11.3.
+            # Tested on SLES 11 with glibc 2.11.3 and CentOS 5 with glibc 2.5.
             allowed_deps=[
                 'libc.so.6',
                 'libcrypt.so.1',
@@ -38,7 +38,7 @@ def get_allowed_deps():
                 ]
             if 'arm64' in CHEVAH_ARCH:
                 # Additional deps without paths for arm64 generic Linux builds.
-                # From Ubuntu 16.04 w/ glibc 2.23 (on Pine A64+ and X-Gene 3).
+                # From Ubuntu 16.04 with glibc 2.23.
                 allowed_deps.extend([
                     'libgcc_s.so.1',
                     ])
@@ -165,28 +165,18 @@ def get_allowed_deps():
                 '/lib/ld-musl-x86_64.so.1',
                 '/lib/libc.musl-x86_64.so.1',
                 '/lib/libz.so.1',
-                '/usr/lib/libncursesw.so.6',
                 ]
             if alpine_version in [ "36", "37", "38" ]:
                 # These versions use LibreSSL by default.
                 allowed_deps.extend([
                     '/lib/libcrypto.so.42',
                     '/lib/libssl.so.44',
-                    '/usr/lib/libffi.so.6',
                     ])
-            elif alpine_version in [ "39", "310", "311" ]:
+            else:
                 # Alpine Linux 3.9 reverted to OpenSSL by default.
                 allowed_deps.extend([
                     '/lib/libcrypto.so.1',
                     '/lib/libssl.so.1',
-                    '/usr/lib/libffi.so.6',
-                    ])
-            else:
-                # Alpine Linux 3.12+ has FFI 3.3.
-                allowed_deps.extend([
-                    '/lib/libcrypto.so.1',
-                    '/lib/libssl.so.1',
-                    '/usr/lib/libffi.so.7',
                     ])
     elif platform_system == 'aix':
         # Deps for AIX 7.1, many added with psutil.
@@ -531,24 +521,6 @@ def main():
             )
 
     try:
-        import Crypto
-        pycrypto_version = Crypto.__version__
-    except:
-        sys.stderr.write('"PyCrypto" missing.\n')
-        exit_code = 4
-    else:
-        print 'PyCrypto %s' % (pycrypto_version)
-
-    try:
-        import Cryptodome
-        pycryptodome_version = Cryptodome.__version__
-    except:
-        sys.stderr.write('"PyCryptodome" missing.\n')
-        exit_code = 11
-    else:
-        print 'PyCryptodome %s' % (pycryptodome_version)
-
-    try:
         from ctypes import CDLL
         import ctypes
         CDLL
@@ -581,37 +553,6 @@ def main():
     except:
         sys.stderr.write('"scandir" missing or broken.\n')
         exit_code = 17
-
-    try:
-        import gmpy2
-        print 'gmpy2 %s with:' % (gmpy2.version())
-        print '\tMP (Multiple-precision library) - %s' % (gmpy2.mp_version())
-        print '\tMPFR (Floating-point library) - %s' % (gmpy2.mpfr_version())
-        print '\tMPC (Complex library) - %s' % (gmpy2.mpc_version())
-        x=gmpy2.mpz(123456789123456789)
-        if not x==gmpy2.from_binary(gmpy2.to_binary(x)):
-            sys.stderr.write('"gmpy2" present, but broken!\n')
-            exit_code = 20
-    except:
-        try:
-            import gmpy
-            print 'gmpy %s with:' % (gmpy.version())
-            print '\tGMP library - %s' % (gmpy.gmp_version())
-            x=gmpy.mpz(123456789123456789)
-            if not x==gmpy.mpz(gmpy.binary(x), 256):
-                sys.stderr.write('"gmpy" present, but broken!\n')
-                exit_code = 21
-        except:
-            sys.stderr.write('"gmpy2" and "gmpy" missing.\n')
-            exit_code = 19
-
-    try:
-        import Cython
-    except:
-        sys.stderr.write('"Cython" missing.\n')
-        exit_code = 24
-    else:
-        print 'Cython %s' % (Cython.__version__,)
 
     try:
         import subprocess32 as subprocess
@@ -704,7 +645,8 @@ def main():
 
         # Check for the git revision in Python's sys.version on Linux and Unix.
         try:
-            git_rev_cmd = ['git', 'rev-parse', '--short=8', 'HEAD']
+            git_rev_cmd = ['git', 'log', '-n', '1', '--no-merges',
+                    '--pretty=format:%h']
             git_rev = subprocess.check_output(git_rev_cmd).strip()
         except:
             sys.stderr.write("Couldn't get the git rev for the current tree.\n")
@@ -716,8 +658,8 @@ def main():
                                  "\tBin ver: {0}".format(bin_ver) + "\n"
                                  "\tGit rev: {0}".format(git_rev) + "\n")
                 exit_code = 118
-            if len(bin_ver) != 8:
-                sys.stderr.write("Bad length for binary version, expected 8!\n"
+            if len(bin_ver) != 7:
+                sys.stderr.write("Bad length for binary version, expected 7!\n"
                                  "\tBin ver: {0}".format(bin_ver) + "\n")
                 exit_code = 119
 

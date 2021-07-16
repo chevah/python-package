@@ -1,0 +1,199 @@
+#
+# GitHub actions to build and test python-package.
+#
+# Don't use `-latest` for targeted VMs, pin specific OS versions instead.
+# https://help.github.com/en/actions/reference/virtual-environments-for-github-hosted-runners
+#
+# When setting up for a tmate debug session, you might need to increase the
+# timeout-minutes for each build. Else you get kicked out after the timeout.
+
+name: Bare
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+concurrency:
+  group: bare-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TMATE_DEBUG: 'no'
+
+jobs:
+
+  linux:
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # ARM64 is currently our Pine64 board running Ubuntu 16.04.
+        runs-on: [ ubuntu-20.04, ubuntu-18.04, ARM64 ]
+    timeout-minutes: 90
+    steps:
+    - name: Clone sources
+      if: startsWith(matrix.runs-on, 'ubuntu')
+      uses: actions/checkout@v2
+      # Required to get the correct git rev to use in Python's version.
+      with:
+        fetch-depth: 2
+
+    # GHA's checkout action seems to be misbehaving on ARM64 and consequently
+    # our build script can't get current revision from cloned sources.
+    # With the repo cloned in place beforehand, just checkout current branch.
+    - name: Checkout branch for already cloned sources
+      if: matrix.runs-on == 'ARM64'
+      run: |
+        git checkout ${GITHUB_HEAD_REF}
+        git pull
+
+    - name: Prepare OS
+      if: startsWith(matrix.runs-on, 'ubuntu')
+      run: sudo apt-get install -y libncurses5-dev
+
+    - name: Detect current OS
+      run: ./brink.sh detect_os
+
+    - name: Build Python
+      run: ./chevah_build build
+
+    - name: Test Python
+      run: ./chevah_build test
+
+    - name: Test Compat
+      run: ./chevah_build compat
+
+    # Upload using a (per-OS selected) sftp command, then show final links.
+    # Remove key in same step to have it deleted even if publishing fails.
+    - name: Upload testing package
+      run: |
+        mkdir -pv ~/.ssh/
+        touch priv_key
+        chmod 600 priv_key
+        echo "${{ secrets.SFTPPLUS_BIN_PRIV_KEY }}" > priv_key
+        echo "${{ secrets.SFTPPLUS_BIN_HOST_KEY }}" > ~/.ssh/known_hosts
+        ./publish_dist.sh ; rm priv_key
+
+    # If one of the above steps fails, fire up tmate for remote debugging.
+    - name: Tmate debug on failure
+      if: failure() && env.TMATE_DEBUG == 'yes'
+      uses: mxschmitt/action-tmate@v3
+      with:
+        limit-access-to-actor: true
+
+
+  macos:
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on: [ macos-10.15 ]
+    timeout-minutes: 60
+    steps:
+    - name: Clone sources
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 2
+
+    - name: Detect current OS
+      run: ./brink.sh detect_os
+
+    # Avoid linking to Homebrew's libintl during build.
+    # Needed tools are to be used from /usr/bin.
+    - name: Hack Homebrew
+      run: |
+        sudo find /usr/local -name 'libffi*' -exec chmod a-r {} +
+        sudo find /usr/local -name 'libintl*' -exec chmod a-r {} +
+        sudo rm -f /usr/local/bin/{wget,curl,git}
+
+    - name: Build Python
+      run: ./chevah_build build
+
+    # Fix back Homebrew, to make everything functional.
+    - name: Unhack Homebrew
+      if: failure() && env.TMATE_DEBUG == 'yes'
+      run: |
+        sudo find /usr/local -name 'libintl*' -exec chmod a+r {} +
+        sudo find /usr/local -name 'libffi*' -exec chmod a+r {} +
+
+    - name: Test Python
+      run: ./chevah_build test
+
+    - name: Test Compat
+      run: ./chevah_build compat
+
+    - name: Upload testing package
+      run: |
+        mkdir -pv ~/.ssh/
+        touch priv_key
+        chmod 600 priv_key
+        echo "${{ secrets.SFTPPLUS_BIN_PRIV_KEY }}" > priv_key
+        echo "${{ secrets.SFTPPLUS_BIN_HOST_KEY }}" > ~/.ssh/known_hosts
+        ./publish_dist.sh ; rm priv_key
+
+    - name: Tmate debug on failure
+      if: failure() && env.TMATE_DEBUG == 'yes'
+      uses: mxschmitt/action-tmate@v3
+      with:
+        limit-access-to-actor: true
+
+
+  windows:
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      # Workflow won't be cancelled at the first failed job.
+      fail-fast: false
+      matrix:
+        runs-on: [ windows-2019, windows-2016 ]
+    timeout-minutes: 60
+    steps:
+    - name: Clone sources
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 2
+
+    # Add packages needed to build OpenSSL, cryptography, etc.
+    # This runs under PowerShell.
+    - name: Prepare OS
+      run: |
+        chocolatey install --yes --no-progress make nasm 7zip
+        # There's no vcpython27 choco pkg since Microsoft removed the installer.
+        start-bitstransfer https://binary.chevah.com/third-party-stuff/VCForPython27.msi
+        msiexec /quiet /i VCForPython27.msi
+
+    # Explicitly run our scripts with Bash, not PowerShell (GitHub's default).
+    - name: Detect current OS
+      run: bash ./brink.sh detect_os
+
+    - name: Build Python
+      run: bash ./chevah_build build
+
+    - name: Test Python
+      run: bash ./chevah_build test
+
+    - name: Test Compat
+      run: bash ./chevah_build compat
+
+    # To use an RSA key with SFTPPlus, install upstream OpenSSH package,
+    # which is more finicky in regards to file permissions.
+    # Beware the commands in this step run under PowerShell.
+    - name: Prepare SFTP upload
+      run: |
+        mkdir -p ~/.ssh/
+        touch priv_key
+        icacls .\priv_key /inheritance:r
+        icacls .\priv_key /grant:r runneradmin:"(F)"
+        echo "${{ secrets.SFTPPLUS_BIN_PRIV_KEY }}" > priv_key
+        echo "${{ secrets.SFTPPLUS_BIN_HOST_KEY }}" > ~/.ssh/known_hosts
+        choco install --yes --no-progress openssh
+
+    - name: Upload testing package
+      run: bash -c './publish_dist.sh ; rm priv_key'
+
+    - name: Tmate debug on failure
+      if: failure() && env.TMATE_DEBUG == 'yes'
+      uses: mxschmitt/action-tmate@v3
+      with:
+        limit-access-to-actor: true

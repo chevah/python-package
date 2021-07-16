@@ -1,12 +1,17 @@
+SQLite code is built by the pysqlite module, thus there's no "chevahbs" script.
 
 This sub-directory holds SQLite, as downloaded from upstream and unpacked.
 
-For example, for version 3.23.0:
+For example, for version 3.36.0:
 
- * sources from https://sqlite.org/2018/sqlite-autoconf-3230000.tar.gz
- * 32bit DLL from https://sqlite.org/2018/sqlite-dll-win32-x86-3230000.zip
+ * sources from https://sqlite.org/2021/sqlite-autoconf-3360000.tar.gz
+ * 32bit DLL from https://sqlite.org/2021/sqlite-dll-win32-x86-3360000.zip
+ * 64bit DLL from https://sqlite.org/2021/sqlite-dll-win64-x64-3360000.zip
 
-SQLite code is built by the pysqlite module, thus there's no "chevahbs" script.
+Sources sub-dir was renamed from "sqlite-autoconf-3360000" to "SQLite-3.36.0".
 
-The 32bit binary file is used to update the SQLite DLL bundled with upstream
-Python installer on Windows.
+DLL files were renamed from "sqlite3.dll" to "sqlite3-3.36.0-x86.dll" and
+"sqlite3-3.36.0-x64.dll" respectively.
+
+Windows binaries are used to update the SQLite DLLs bundled with upstream
+Python installers on Windows.

@@ -26,11 +26,11 @@ command_help() {
     if [ $? -eq 0 ]; then
         $help_command
     else
-        echo "Commands are:"
+        echo "Available commands are:"
         for help_text in `compgen -A variable help_text_`
         do
             command_name=${help_text#help_text_}
-            echo -e "  $command_name\t\t${!help_text}"
+            echo -e "$command_name\t\t${!help_text}"
         done
     fi
 }
@@ -51,7 +51,6 @@ select_command() {
         *)
             # Test to see if we have a valid command, otherwise call
             # the general help.
-
             call_command="command_$command"
             type $call_command &> /dev/null
             if [ $? -eq 0 ]; then
@@ -214,17 +213,6 @@ make_dist(){
     execute popd
 }
 
-# Move source to target, making sure mv will not fail if a folder
-# already exists.
-#
-# The move is done by merging the folders.
-safe_move() {
-    source=$1
-    target=$2
-    execute cp -r $source $target
-    execute rm -rf $source
-}
-
 
 #
 # Wipe the manifest of source.
@@ -244,6 +232,7 @@ wipe_manifest() {
 
     execute rm -f --verbose ${source}.embedded
 }
+
 
 #
 # Get number of CPUs on supported OS'es.
@@ -277,6 +266,7 @@ get_number_of_cpus() {
     esac
 }
 
+
 #
 # Hack for not finding ld_so_aix & co. in AIX, even with the changes lifted
 # from upstream issue tracker. More at https://bugs.python.org/issue18235.
@@ -304,6 +294,88 @@ aix_ld_hack() {
     esac
 }
 
+
+#
+# Put stuff where it's expected and remove some of the cruft.
+#
+cleanup_install_dir() {
+    local python_lib_file="lib${PYTHON_VERSION}.a"
+
+    echo "::group::Clean up Python install dir"
+
+    execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
+        echo "Cleaning up Python's caches and compiled files..."
+        find lib/ | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf
+
+        case $OS in
+            win)
+                # Remove Tcl/Tk stuff.
+                execute rm -rf lib/tcl/ lib/Lib/lib-tk/ lib/DLLs/t{k,cl}8*.dll
+                # Remove docs / test stuff.
+                execute rm -rf lib/Doc/ lib/Lib/test/
+                ;;
+            *)
+                # Remove test stuff
+                execute rm -rf lib/python2.7/test/
+                # Move all binaries to lib/config
+                execute mkdir -p lib/config
+                execute mv bin/ lib/config/
+                execute mkdir bin
+                execute pushd lib/config/bin/
+                    # Move Python binary back as bin/python, then link to it.
+                    execute mv $PYTHON_VERSION ../../../bin/python
+                    execute ln -s ../../../bin/python $PYTHON_VERSION
+                    # OS-related fixed for the Python binaries.
+                    case $OS in
+                        macos)
+                            # The binary is already stripped on macOS.
+                            execute rm python2
+                            execute ln -s $PYTHON_VERSION python2
+                            ;;
+                        *)
+                            execute strip $PYTHON_VERSION
+                            ;;
+                    esac
+                execute popd
+                # OS-related stripping for libs.
+                # Not sure why this particular lib is like that on Python 2.7,
+                # we'll set the original permissions after stripping the lib.
+                chmod u+w lib/libpython2.7.a
+                case $OS in
+                    macos)
+                        # Darwin's strip command is different.
+                        execute strip -r lib/lib*.a
+                        ;;
+                    *)
+                        execute strip lib/lib*.a
+                        # On CentOS 5, libffi and OpenSSL install to lib64/.
+                        if [ -d lib64 ]; then
+                            execute strip lib64/lib*.a
+                        fi
+                        ;;
+                esac
+                chmod u-w lib/libpython2.7.a
+                # Symlink the copy of libpython*.a too.
+                execute pushd lib/$PYTHON_VERSION/config/
+                    execute rm $python_lib_file
+                    execute ln -s ../../$python_lib_file
+                execute popd
+                # Remove (mostly OpenSSL) docs and manuals.
+                execute rm -rf share/
+                # Remove pysqlite2 CSS files.
+                execute rm -rf pysqlite2-doc
+                ;;
+        esac
+    execute popd
+
+    # Output version / rev / os / arch to a dedicated file in the archive.
+    echo "${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}-${OS}-${ARCH}" \
+        > ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}/lib/PYTHON_PACKAGE_VERSION
+
+    echo "::endgroup::"
+}
+
+
 #
 # Safety DB IDs to be ignored when using cryptography 3.2.
 #
@@ -322,6 +394,7 @@ add_ignored_safety_ids_for_cryptography32() {
     #     buffer overflow, as demonstrated by the Fernet class.
     SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 39252 -i 39606"
 }
+
 
 #
 # Construct a SFTP batch for uploading testing packages through GitHub actions.

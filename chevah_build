@@ -15,35 +15,22 @@ BZIP2_VERSION="1.0.8"
 # We statically build the BSD libedit on selected platforms to get the
 # readline module available without linking to the GPL-only readline libs.
 LIBEDIT_VERSION="20170329-3.1"
-# PyCrypto needs GMP or MPIR for fast math. GMP has support for AIX.
-GMP_VERSION="6.2.1"
 OPENSSL_VERSION="1.1.1k"
-SQLITE_VERSION="3.34.1"
+SQLITE_VERSION="3.36.0"
 
 # Python modules versions to be used everywhere possible.
 PYSQLITE_VERSION="2.8.3"
 CFFI_VERSION="1.14.5"
-PYCRYPTO_VERSION="2.6.1"
-# PyCrypto 2.6.1 is vulnerable to CVE-2013-7459 and CVE-2018-6594, but we patch
-# these vulnerabilities, and mark correspondent Safety IDs as false positives.
-# Safety ID 35015 (CVE-2013-7459):
-#     "Heap-based buffer overflow in the ALGnew function in block_templace.c in
-#     Python Cryptography Toolkit (aka pycrypto) 2.6.1 allows remote attackers
-#     to execute arbitrary code as demonstrated by a crafted iv parameter to
-#     cryptmsg.py."
-SAFETY_FALSE_POSITIVES_OPTS="-i 35015"
-# Haven't replaced PyCrypto w/ PyCryptodome, but we build it for its test suite.
-PYCRYPTODOMEX_VERSION="3.10.1"
 # 19.1.0 is used with OpenSSL 1.0.2 libs.
 PYOPENSSL_VERSION="20.0.1"
 SCANDIR_VERSION="1.10.0"
 PSUTIL_VERSION="5.8.0"
-CYTHON_VERSION="0.29.21"
 SUBPROCESS32_VERSION="3.5.4"
-GMPY2_VERSION="2.0.8"
 
 # Versions no longer upgradable because of Python 2 deprecation.
 PIP_VERSION="20.3.4"
+# For pip <21.1.
+SAFETY_IGNORED_OPTS="-i 40291"
 # setuptools 44.x is the last series to support Python 2.7.
 # More at https://github.com/pypa/setuptools/pull/1955.
 SETUPTOOLS_VERSION="44.1.1"
@@ -63,14 +50,13 @@ PYCPARSER_VERSION="2.20"
 REDISTRIBUTABLE_VERSION="9.0.30729.9518"
 
 # Git revision to inject into Python's sys.version string through chevahbs.
-PYTHON_PACKAGE_VERSION=$(git rev-parse --short=8 HEAD)
+PYTHON_PACKAGE_VERSION="$(git log -n 1 --no-merges --pretty=format:%h)"
 
 # Export the variables needed by the chevahbs scripts and the test phase.
 export PYTHON_BUILD_VERSION PYTHON_PACKAGE_VERSION REDISTRIBUTABLE_VERSION
 export BUILD_ZLIB="no"
 export BUILD_BZIP2="yes"
 export BUILD_LIBEDIT="yes"
-export BUILD_GMP="yes"
 export BUILD_LIBFFI="no"
 export BUILD_OPENSSL="no"
 
@@ -79,15 +65,12 @@ export BUILD_OPENSSL="no"
 # during the build. See the patches for PyCrypto 2.6.1 for an example.
 EXTRA_LIBRARIES="\
     python-modules/cffi-${CFFI_VERSION} \
-    python-modules/pycrypto-${PYCRYPTO_VERSION} \
     "
 # List of default Python modules installed using pip.
 PIP_LIBRARIES="\
-    pycryptodomex==${PYCRYPTODOMEX_VERSION} \
     cryptography==${CRYPTOGRAPHY_VERSION} \
     pyOpenSSL==${PYOPENSSL_VERSION} \
     scandir==${SCANDIR_VERSION} \
-    Cython==${CYTHON_VERSION} \
     subprocess32==${SUBPROCESS32_VERSION} \
     bcrypt==${BCRYPT_VERSION} \
     psutil==${PSUTIL_VERSION} \
@@ -98,18 +81,22 @@ PIP_LIBRARIES="\
 # it won't link correctly to non-system OpenSSL libs. Use EXTRA_LIBRARIES.
 # PyOpenSSL 19.1.0 was last upstream version to support OpenSSL 1.0.2.
 PIP_LIBRARIES_OPENSSL_102="\
-    pycryptodomex==${PYCRYPTODOMEX_VERSION} \
     pyOpenSSL==19.1.0 \
     scandir==${SCANDIR_VERSION} \
-    Cython==${CYTHON_VERSION} \
     subprocess32==${SUBPROCESS32_VERSION} \
     bcrypt==${BCRYPT_VERSION} \
     psutil==${PSUTIL_VERSION} \
     setproctitle==${SETPROCTITLE_VERSION}
     "
+
+PYPI_SITE="https://pypi.chevah.com"
+if [ "${OS%aix*}" = "" ]; then
+    # On AIX 7.1, there are issues with Let's Encrypt certificates.
+    PYPI_SITE="http://pypi.chevah.com"
+fi
 # Arguments that are sent when using pip.
 PIP_ARGS="\
-    --index-url=http://pypi.chevah.com/simple \
+    --index-url=${PYPI_SITE}/simple \
     --trusted-host=pypi.chevah.com \
     --no-cache-dir \
     --no-warn-script-location \
@@ -136,22 +123,20 @@ BUILD_FOLDER='build'
 # On platforms with a choice of C compilers, you may choose among the
 # available compilers by setting CC and CXX further down in this script.
 COMMON_PKGS="gcc make m4 automake libtool patch"
-DEBIAN_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
+DEB_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
 RHEL_PKGS="$COMMON_PKGS git openssl-devel zlib-devel libffi-devel ncurses-devel"
-ALPINE_PKGS="$COMMON_PKGS \
-    git zlib-dev libffi-dev ncurses-dev linux-headers musl-dev openssl-dev"
+ALP_PKGS="$COMMON_PKGS git zlib-dev linux-headers musl-dev openssl-dev lddtree"
 # No automated Windows package management, but here's what it's needed.
 CHOCO_PKGS="vcpython27 make git StrawberryPerl nasm 7zip"
 
 # $ARCH can be used to force a 32bit build on a 64bit machine, e.g. by exporting
 # ARCH in brink.sh as "x86" instead of "x64", or "ppc" instead of "ppc64".
-# $ARCH is also used when statically building libffi/GMP and for testing.
+# $ARCH is also used when statically building libffi and for testing.
 # $OS is used when patching/configuring/building/testing.
 export ARCH
 export OS
 
 LOCAL_PYTHON_BINARY_DIST="$PYTHON_VERSION-$OS-$ARCH"
-LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/bin/python
 INSTALL_FOLDER=$PWD/${BUILD_FOLDER}/$LOCAL_PYTHON_BINARY_DIST
 PYTHON_BIN=$INSTALL_FOLDER/bin/python
 PYTHON_BUILD_FOLDER="$PYTHON_VERSION-$OS-$ARCH"
@@ -164,23 +149,18 @@ export CHEVAH_BUILD_PATH=$INSTALL_FOLDER
 case $OS in
     win)
         # On Windows, python executable is installed at a different path.
-        LOCAL_PYTHON_BINARY=./$LOCAL_PYTHON_BINARY_DIST/lib/python
         PYTHON_BIN=$INSTALL_FOLDER/lib/python
         # For Windows we don't build everything from source yet.
         # But what we build is done in a very different way, no CC/MAKE/etc.
         export BUILD_LIBEDIT="no"
-        export BUILD_GMP="no"
         export BUILD_BZIP2="no"
         # MSYS2's Perl is not good enough for building OpenSSL.
         export PATH="/c/Strawberry/perl/bin/:$PATH:/c/Program Files/NASM/"
         export BUILD_OPENSSL="yes"
         # Extra libraries are installed only using PIP.
         EXTRA_LIBRARIES=""
-        # A patched PyCrypto is packed and uploaded to our PyPI server.
         PIP_LIBRARIES="$PIP_LIBRARIES \
-            pycrypto==${PYCRYPTO_VERSION}chevah1 \
             pywin32==${PYWIN32_VERSION} \
-            gmpy2==${GMPY2_VERSION} \
             "
         ;;
     aix*)
@@ -192,7 +172,7 @@ case $OS in
         export CFLAGS="$CFLAGS -O2 -D_LARGE_FILES=1"
         # IBM's OpenSSL libs are mixed 32/64bit binaries in AIX, so we need to
         # be specific about what kind of build we want, because otherwise we
-        # might get 64bit libraries (eg. when building GMP).
+        # might get 64bit libraries.
         if [ "${ARCH%64}" = "$ARCH" ]; then
             export OBJECT_MODE="32"
             export ABI="32"
@@ -275,10 +255,8 @@ case $OS in
         export BUILD_BZIP2="no"
         # Build scandir through EXTRA_LIBRARIES, to apply a needed patch.
         PIP_LIBRARIES="\
-            pycryptodomex==${PYCRYPTODOMEX_VERSION} \
             cryptography==${CRYPTOGRAPHY_VERSION} \
             pyOpenSSL==${PYOPENSSL_VERSION} \
-            Cython==${CYTHON_VERSION} \
             subprocess32==${SUBPROCESS32_VERSION} \
             bcrypt==${BCRYPT_VERSION} \
             psutil==${PSUTIL_VERSION} \
@@ -308,9 +286,20 @@ case $OS in
         export BUILD_OPENSSL="yes"
         # OpenSSL tests on CentOS 5 require an updated Perl 5.10 in /usr/local.
         export PATH="/usr/local/bin:$PATH"
+        # In particular, Perl's Test::Simple and its deps are required.
+        execute perl -MTest::Simple -e 1
+        ;;
+    alpine*)
+        # Do not depend on libffi and ncurses-libs Alpine packages.
+        # It's better to run on minimal Alpine containers.
+        export BUILD_LIBFFI="yes"
+        export BUILD_LIBEDIT="no"
+        export CC="gcc"
+        export CXX="g++"
+        export MAKE="make"
         ;;
     *)
-        # Only supported Linux distributions should be left.
+        # Only supported Linux distributions other than Alpine should be left.
         export CC="gcc"
         export CXX="g++"
         export MAKE="make"
@@ -364,7 +353,7 @@ check_dependencies() {
     case $OS in
         # Debian-derived distros are similar in this regard.
         ubuntu*)
-            packages=$DEBIAN_PKGS
+            packages=$DEB_PKGS
             check_command="dpkg --status"
             ;;
         rhel*|amzn*)
@@ -373,7 +362,7 @@ check_dependencies() {
             ;;
         alpine*)
             # Alpine 3.9 switched back to OpenSSL as default.
-            packages=$ALPINE_PKGS
+            packages=$ALP_PKGS
             check_command="apk info -q -e"
             ;;
         # On remaining OS'es we just check for some of the needed commands.
@@ -440,6 +429,7 @@ command_build() {
     # Clean the build dir to avoid contamination from previous builds.
     command_clean
 
+    echo "Building version ${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}..."
     # Build stuff statically on most platforms, install headers and libs in the
     # following locations and make sure they are picked up when building Python.
     # We used to add the new include path to $CPPFLAGS, but it's not as portable
@@ -451,31 +441,25 @@ command_build() {
     if [ "$BUILD_LIBFFI" = "yes" ]; then
         build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
     else
-        (>&2 echo "Skipping building LIBFFI!")
+        (>&2 echo "Skip building LIBFFI!")
     fi
 
     if [ "$BUILD_ZLIB" = "yes" ]; then
         build 'zlib' "zlib-$ZLIB_VERSION" ${PYTHON_BUILD_FOLDER}
     else
-        (>&2 echo "Skipping building ZLIB!")
+        (>&2 echo "Skip building ZLIB!")
     fi
 
     if [ "$BUILD_BZIP2" = "yes" ]; then
         build 'bzip2' "bzip2-$BZIP2_VERSION" ${PYTHON_BUILD_FOLDER}
     else
-        (>&2 echo "Skipping building BZIP2!")
+        (>&2 echo "Skip building BZIP2!")
     fi
 
     if [ "$BUILD_LIBEDIT" = "yes" ]; then
         build 'libedit' "libedit-$LIBEDIT_VERSION" ${PYTHON_BUILD_FOLDER}
     else
-        (>&2 echo "Skipping building LIBEDIT!")
-    fi
-
-    if [ "$BUILD_GMP" = "yes" ]; then
-        build 'gmp' "gmp-$GMP_VERSION" ${PYTHON_BUILD_FOLDER}
-    else
-        (>&2 echo "Skipping building GMP!")
+        (>&2 echo "Skip building LIBEDIT!")
     fi
 
     if [ "$BUILD_OPENSSL" = "yes" ]; then
@@ -504,7 +488,7 @@ command_build() {
             export CPPFLAGS="$CPPFLAGS -I${INSTALL_FOLDER}/include"
         fi
     else
-        (>&2 echo "Skipping building OpenSSL!")
+        (>&2 echo "Skip building OpenSSL!")
     fi
 
     case $OS in
@@ -527,33 +511,9 @@ command_build() {
 
     aix_ld_hack init
     command_build_sqlite
-    command_build_gmpy
     command_build_python_extra_libraries
     aix_ld_hack cleanup
-
-    case $OS in
-        win)
-            echo "Skipping cleaning install folder"
-            ;;
-        *)
-            execute pushd ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}
-                # Clean the build folder.
-                execute rm -rf tmp
-                execute mkdir -p lib/config
-                safe_move share lib/config
-                safe_move pysqlite2-doc lib/config
-                # Move all bin to lib/config
-                safe_move bin lib/config
-                execute mkdir bin
-                # Copy back python binary
-                execute cp lib/config/bin/$PYTHON_VERSION bin/python
-            execute popd
-            ;;
-    esac
-
-    # Output the python-package version to a dedicated file in the archive.
-    echo "${PYTHON_BUILD_VERSION}.${PYTHON_PACKAGE_VERSION}" \
-        > ${BUILD_FOLDER}/${PYTHON_BUILD_FOLDER}/lib/PYTHON_PACKAGE_VERSION
+    cleanup_install_dir
 
     make_dist 'python' ${PYTHON_BUILD_FOLDER}
 
@@ -592,27 +552,6 @@ command_build_sqlite() {
 
 }
 
-#
-# Build gmpy2 without MPFR and MPC library support.
-# Beware that beginning with v2.1.0, MPFR and MPC will be required.
-# On Windows we use the upstream wheel.
-#
-command_build_gmpy() {
-
-    if [ $OS = 'win' ]; then
-        return
-    fi
-
-    target_folder=${BUILD_FOLDER}/gmpy2
-
-    initialize_python_module \
-        "python-modules/gmpy2-$GMPY2_VERSION" $target_folder
-
-    # Build and install.
-    execute pushd $target_folder
-        execute $PYTHON_BIN setup.py install --nompfr
-    execute popd
-}
 
 #
 # Compile and install all Python extra libraries.
@@ -632,7 +571,7 @@ command_build_python_extra_libraries() {
         install $PIP_ARGS -U pycparser==$PYCPARSER_VERSION
 
     if [ $OS = 'win' ]; then
-        echo "Skipping makefile updating on Windows"
+        echo "Skip makefile updating on Windows"
     else
         # Update Python config Makefile to use the python that we have just
         # created.
@@ -710,7 +649,7 @@ initialize_python_module(){
             # We want to download dependencies from our PyPI and block
             # the official.
             echo "[easy_install]" >> setup.cfg
-            echo "find_links=http://pypi.chevah.com/" >> setup.cfg
+            echo "find_links=${PYPI_SITE}/" >> setup.cfg
             echo "allow_hosts=*pypi.chevah.com*" >> setup.cfg
         fi
     execute popd
@@ -737,7 +676,7 @@ command_test() {
     echo '##### Executing Chevah tests (with redirected stderr)... #####'
     # Avoid 'No entry for terminal type "unknown"' warnings on stderr.
     export TERM="dumb"
-    execute $LOCAL_PYTHON_BINARY ${test_file} 2>${errors_log}
+    execute $PYTHON_BIN ${test_file} 2>${errors_log}
     if [ -s "$errors_log" ]; then
         egrep -v "$errors_allowed" $errors_log > $errors_unexpected
         if [ -s $errors_unexpected ]; then
@@ -769,26 +708,31 @@ command_test() {
 
     echo '##### Executing tests for included Python modules... #####'
 
-    # This test requires quite some RAM, so beware of heavy swapping.
-    echo 'Testing PyCryptodomex...'
-    execute $LOCAL_PYTHON_BINARY -m Cryptodome.SelfTest
-
     echo 'Testing scandir...'
     # There are a series of issues with the scandir tests in Linux/Unix.
     # Reported upstream at https://github.com/benhoyt/scandir/issues/78.
     SCANDIR_FOLDER="../python-modules/scandir-${SCANDIR_VERSION}"
     case "$OS-$ARCH" in
-        macos|win)
-            execute $LOCAL_PYTHON_BINARY ${SCANDIR_FOLDER}/test/run_tests.py
+        macos*|win*)
+            execute $PYTHON_BIN ${SCANDIR_FOLDER}/test/run_tests.py
             ;;
         aix*)
             (>&2 echo -e "\tSkipping because of upstream issues.")
             ;;
+        lnx-arm64)
+            (>&2 echo -e "\tSkipping as it now fails on ARM64.")
+            ;;
+        lnx-x64)
+            if [ x"$CHEVAH_CONTAINER" = x"yes" ]; then
+                (>&2 echo -e "\tSkipping as it fails under Docker on CentOS 5.")
+            else
+                execute $PYTHON_BIN ${SCANDIR_FOLDER}/test/run_tests.py
+            fi
+            ;;
         *)
-            # Remaining build slaves have the required UTF-8 locale settings
-            # available, but they need to be requested for the tests to pass.
-            export LC_ALL=en_US.UTF-8
-            execute $LOCAL_PYTHON_BINARY ${SCANDIR_FOLDER}/test/run_tests.py
+            # UTF-8 locale is needed for the tests to pass on remaining OS'es.
+            export LC_ALL=C.UTF-8
+            execute $PYTHON_BIN ${SCANDIR_FOLDER}/test/run_tests.py
             export LC_ALL=C
             ;;
     esac
@@ -800,9 +744,9 @@ command_test() {
 #
 # Test the newly created Python binary dist.
 #
-help_text_test_compat=\
+help_text_compat=\
 "Run a full test for the chevah/compat master."
-command_test_compat() {
+command_compat() {
     # To have a better test coverage, we run compat's tests.
     # Parts of this hackishly force compat to use the local Python version.
     execute pushd build
@@ -823,16 +767,20 @@ command_test_compat() {
     unset CHEVAH_CACHE CHEVAH_BUILD
     # Some tests might fail due to causes which are not related to python.
     execute ./brink.sh deps
-    execute ./brink.sh test_ci
+    if [ x"$CHEVAH_CONTAINER" = x"yes" ]; then
+        execute ./brink.sh test_ci2
+    else
+        execute ./brink.sh test_ci
+    fi
     execute popd
 
     execute popd
 }
 
 
-help_text_publish_python=\
+help_text_publish=\
 "Upload Python binaries for current OS."
-command_publish_python() {
+command_publish() {
     execute rsync -qrlDvcz \
         ${DIST_FOLDER}/$PYTHON_VERSION/ \
         ${BINARY_DIST_PUBLISH_URI}/$PYTHON_VERSION/

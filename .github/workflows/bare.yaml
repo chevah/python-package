@@ -51,13 +51,13 @@ jobs:
         # Cleanup the repo.
         git rev-parse --symbolic-full-name --verify --quiet HEAD
         git rev-parse --symbolic-full-name --branches
-        git remote remove origin
+        git remote remove origin || true
         # Update repo token.
         git remote add origin https://github.com/chevah/$CHEVAH_REPO
         git fetch --no-tags --prune origin
         # Prepare the code.
         git clean -f
-        git reset --hard ${{ github.event.after }} || true
+        git reset --hard ${{ github.event.after }}
 
     - name: Prepare OS
       if: startsWith(matrix.runs-on, 'ubuntu')

@@ -44,6 +44,7 @@ jobs:
     # GHA's checkout action seems to be misbehaving on ARM64 and consequently
     # our build script can't get current revision from cloned sources.
     - name: Clone sources independently
+	  if: matrix.runs-on == 'ARM64'
       run: |
         git init $CHEVAH_REPO
         cd $CHEVAH_REPO
@@ -56,7 +57,7 @@ jobs:
         git fetch --no-tags --prune origin
         # Prepare the code.
         git clean -f
-        git reset --hard ${{ github.event.after }}
+        git reset --hard ${{ github.event.after }} || true
 
     - name: Prepare OS
       if: startsWith(matrix.runs-on, 'ubuntu')

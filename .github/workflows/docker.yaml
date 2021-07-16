@@ -91,7 +91,7 @@ jobs:
         git fetch --no-tags --prune origin
         # Prepare the code.
         git clean -f
-        git reset --hard ${{ github.event.after }}
+        git reset --hard ${{ github.event.after }} || true
 
     - name: Detect current OS
       run: |

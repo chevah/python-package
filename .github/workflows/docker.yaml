@@ -80,6 +80,7 @@ jobs:
     # GHA's checkout action doesn't work on CentOS 5.
     - name: Clone sources independently
       run: |
+        cd /home/chevah/
         git init $CHEVAH_REPO
         cd $CHEVAH_REPO
         # Cleanup the repo.

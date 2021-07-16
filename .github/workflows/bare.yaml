@@ -20,6 +20,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  CHEVAH_REPO: 'python-package'
   TMATE_DEBUG: 'no'
 
 jobs:
@@ -42,12 +43,20 @@ jobs:
 
     # GHA's checkout action seems to be misbehaving on ARM64 and consequently
     # our build script can't get current revision from cloned sources.
-    # With the repo cloned in place beforehand, just checkout current branch.
-    - name: Checkout branch for already cloned sources
-      if: matrix.runs-on == 'ARM64'
+    - name: Clone sources independently
       run: |
-        git checkout ${GITHUB_HEAD_REF}
-        git pull
+        git init $CHEVAH_REPO
+        cd $CHEVAH_REPO
+        # Cleanup the repo.
+        git rev-parse --symbolic-full-name --verify --quiet HEAD
+        git rev-parse --symbolic-full-name --branches
+        git remote remove origin
+        # Update repo token.
+        git remote add origin https://github.com/chevah/$CHEVAH_REPO
+        git fetch --no-tags --prune origin
+        # Prepare the code.
+        git clean -f
+        git reset --hard ${{ github.event.after }}
 
     - name: Prepare OS
       if: startsWith(matrix.runs-on, 'ubuntu')

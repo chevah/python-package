@@ -17,6 +17,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  CHEVAH_REPO: python-package
   USER: chevah
   CHEVAH_CONTAINER: yes
 
@@ -77,17 +78,20 @@ jobs:
         echo '%adm    ALL=NOPASSWD: ALL' > /etc/sudoers
 
     # GHA's checkout action doesn't work on CentOS 5.
-    - name: Clone master branch independently
-      if: "$GITHUB_HEAD_REF" == ""
+    - name: Clone sources independently
       run: |
-        cd /home/chevah
-        # No debugging on GHA's containers, so we clone the minimum required stuff.
-        git clone https://github.com/chevah/python-package.git --depth 1 --single-branch --branch master
-    - name: Clone PR branch independently
-      if: "$GITHUB_HEAD_REF" != ""
-      run: |
-        cd /home/chevah
-        git clone https://github.com/chevah/python-package.git --depth 1 --single-branch --branch ${GITHUB_HEAD_REF}
+        git init $CHEVAH_REPO
+        cd $CHEVAH_REPO
+        # Cleanup the repo.
+        git rev-parse --symbolic-full-name --verify --quiet HEAD
+        git rev-parse --symbolic-full-name --branches
+        git remote remove origin
+        # Update repo token.
+        git remote add origin https://github.com/chevah/$CHEVAH_REPO
+        git fetch --no-tags --prune origin
+        # Prepare the code.
+        git clean -f
+        git reset --hard ${{ github.event.after }}
 
     - name: Detect current OS
       run: |

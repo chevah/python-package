@@ -338,6 +338,9 @@ set_download_commands() {
     set +o errexit
     command -v curl > /dev/null
     if [ $? -eq 0 ]; then
+        # Options not used because of no support in CentOS 5.11's curl:
+        #     --retry-connrefused (since curl 7.52.0)
+        #     --retry-all-errors (since curl 7.71.0)
         # Retry 2 times, allocating 10s for the connection phase,
         # at most 300s for an attempt, sleeping for 5s between retries.
         CURL_RETRY_OPTS="\
@@ -534,7 +537,7 @@ install_dependencies(){
 # If it's too old, exit with a nice informative message.
 # If it's supported, return through eval the version numbers to be used for
 # naming the package, for example: '8' for RHEL 8.2, '2004' for Ubuntu 20.04,
-# '312' for Alpine Linux 3.12, '71' for AIX 7.1, '114' for Solaris 11.4.
+# '314' for Alpine Linux 3.14, '71' for AIX 7.1, '114' for Solaris 11.4.
 #
 check_os_version() {
     # First parameter should be the human-readable name for the current OS.

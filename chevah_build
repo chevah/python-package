@@ -90,7 +90,7 @@ PIP_LIBRARIES_OPENSSL_102="\
     "
 # Arguments that are sent when using pip.
 PIP_ARGS="\
-    --index-url=http://pypi.chevah.com/simple \
+    --index-url=https://pypi.chevah.com/simple \
     --trusted-host=pypi.chevah.com \
     --no-cache-dir \
     --no-warn-script-location \
@@ -643,7 +643,7 @@ initialize_python_module(){
             # We want to download dependencies from our PyPI and block
             # the official.
             echo "[easy_install]" >> setup.cfg
-            echo "find_links=http://pypi.chevah.com/" >> setup.cfg
+            echo "find_links=https://pypi.chevah.com/" >> setup.cfg
             echo "allow_hosts=*pypi.chevah.com*" >> setup.cfg
         fi
     execute popd

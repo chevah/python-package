@@ -10,7 +10,7 @@ For example, for version 3.36.0:
 
 Sources sub-dir was renamed from "sqlite-autoconf-3360000" to "SQLite-3.36.0".
 
-DLL filess were renamed from "sqlite3.dll" to "sqlite3-3.36.0-x86.dll" and
+DLL files were renamed from "sqlite3.dll" to "sqlite3-3.36.0-x86.dll" and
 "sqlite3-3.36.0-x64.dll" respectively.
 
 Windows binaries are used to update the SQLite DLLs bundled with upstream

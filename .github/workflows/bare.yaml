@@ -66,6 +66,7 @@ jobs:
       run: ./chevah_build compat
 
     # Upload using a (per-OS selected) sftp command, then show final links.
+    # Remove key in same step to have it deleted even if publishing fails.
     - name: Upload testing package
       run: |
         mkdir -pv ~/.ssh/
@@ -73,8 +74,7 @@ jobs:
         chmod 600 priv_key
         echo "${{ secrets.SFTPPLUS_BIN_PRIV_KEY }}" > priv_key
         echo "${{ secrets.SFTPPLUS_BIN_HOST_KEY }}" > ~/.ssh/known_hosts
-        ./publish_dist.sh
-        rm priv_key
+        ./publish_dist.sh ; rm priv_key
 
     # If one of the above steps fails, fire up tmate for remote debugging.
     - name: Tmate debug on failure
@@ -131,8 +131,7 @@ jobs:
         chmod 600 priv_key
         echo "${{ secrets.SFTPPLUS_BIN_PRIV_KEY }}" > priv_key
         echo "${{ secrets.SFTPPLUS_BIN_HOST_KEY }}" > ~/.ssh/known_hosts
-        ./publish_dist.sh
-        rm priv_key
+        ./publish_dist.sh ; rm priv_key
 
     - name: Tmate debug on failure
       if: failure() && env.TMATE_DEBUG == 'yes'
@@ -190,11 +189,8 @@ jobs:
         echo "${{ secrets.SFTPPLUS_BIN_HOST_KEY }}" > ~/.ssh/known_hosts
         choco install --yes --no-progress openssh
 
-    # Upload using a (per-OS selected) sftp command, then show final links.
     - name: Upload testing package
-      run: |
-        bash ./publish_dist.sh
-        rm priv_key
+      run: bash -c './publish_dist.sh ; rm priv_key'
 
     - name: Tmate debug on failure
       if: failure() && env.TMATE_DEBUG == 'yes'

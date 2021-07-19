@@ -1,5 +1,5 @@
 #
-# GitHub actions to build and test python-package.
+# GitHub actions for building and testing python-package on bare GitHub VMs.
 #
 # Don't use `-latest` for targeted VMs, pin specific OS versions instead.
 # https://help.github.com/en/actions/reference/virtual-environments-for-github-hosted-runners

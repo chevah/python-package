@@ -1,5 +1,5 @@
 #
-# GitHub actions for building and testing through containers.
+# GitHub actions for building and testing python-package through containers.
 #
 # For best support, use `-latest` for runners spinning up containers. More at
 # https://help.github.com/en/actions/reference/virtual-environments-for-github-hosted-runners.

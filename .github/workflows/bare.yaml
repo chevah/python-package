@@ -42,7 +42,7 @@ jobs:
       uses: actions/checkout@v2
       # Required to get the correct git rev to use in Python's version.
       with:
-        ref: ${{ github.event.after }
+        ref: ${{ github.event.after }}
 
     - name: Detect OS and build Python
       run: |

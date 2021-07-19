@@ -50,7 +50,7 @@ PYCPARSER_VERSION="2.20"
 REDISTRIBUTABLE_VERSION="9.0.30729.9518"
 
 # Git revision to inject into Python's sys.version string through chevahbs.
-PYTHON_PACKAGE_VERSION="$(git log -n 1 --no-merges --pretty=format:%h)"
+PYTHON_PACKAGE_VERSION="$(git rev-parse --short=7 HEAD)"
 
 # Export the variables needed by the chevahbs scripts and the test phase.
 export PYTHON_BUILD_VERSION PYTHON_PACKAGE_VERSION REDISTRIBUTABLE_VERSION
@@ -676,7 +676,8 @@ command_test() {
     echo '##### Executing Chevah tests (with redirected stderr)... #####'
     # Avoid 'No entry for terminal type "unknown"' warnings on stderr.
     export TERM="dumb"
-    execute $PYTHON_BIN ${test_file} 2>${errors_log}
+    # To see the error logged on stderr, allow the following command to fail.
+    $PYTHON_BIN ${test_file} 2>${errors_log}
     if [ -s "$errors_log" ]; then
         egrep -v "$errors_allowed" $errors_log > $errors_unexpected
         if [ -s $errors_unexpected ]; then

@@ -20,6 +20,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  CHEVAH_REPO: 'python-package'
   TMATE_DEBUG: 'no'
 
 jobs:
@@ -33,43 +34,49 @@ jobs:
         runs-on: [ ubuntu-20.04, ubuntu-18.04, ARM64 ]
     timeout-minutes: 90
     steps:
-    - name: Clone sources
-      if: startsWith(matrix.runs-on, 'ubuntu')
-      uses: actions/checkout@v2
-      # Required to get the correct git rev to use in Python's version.
-      with:
-        fetch-depth: 2
-
-    # GHA's checkout action seems to be misbehaving on ARM64 and consequently
-    # our build script can't get current revision from cloned sources.
-    # With the repo cloned in place beforehand, just checkout current branch.
-    - name: Checkout branch for already cloned sources
-      if: matrix.runs-on == 'ARM64'
-      run: |
-        git checkout ${GITHUB_HEAD_REF}
-        git pull
-
     - name: Prepare OS
       if: startsWith(matrix.runs-on, 'ubuntu')
       run: sudo apt-get install -y libncurses5-dev
 
-    - name: Detect current OS
-      run: ./brink.sh detect_os
+    # GHA's checkout action seems to be misbehaving on ARM64 and consequently
+    # our build script can't get current revision from cloned sources.
+    - name: Clone sources independently
+      run: |
+        git init $CHEVAH_REPO
+        cd $CHEVAH_REPO
+        # Cleanup the repo.
+        git rev-parse --symbolic-full-name --verify --quiet HEAD || true
+        git rev-parse --symbolic-full-name --branches || true
+        git remote remove origin || true
+        # Update repo token.
+        git remote add origin https://github.com/chevah/$CHEVAH_REPO
+        git fetch --no-tags --prune origin
+        # Prepare the code.
+        git clean -f
+        git reset --hard ${{ github.event.after }}
 
-    - name: Build Python
-      run: ./chevah_build build
+    - name: Detect OS and build Python
+      run: |
+        cd python-package/
+        ./brink.sh detect_os
+        ./chevah_build build
 
-    - name: Test Python
-      run: ./chevah_build test
+    - name: Own tests
+      run: |
+        cd python-package/
+        ./chevah_build test
 
-    - name: Test Compat
-      run: ./chevah_build compat
+    - name: Compat tests
+      run: |
+        cd python-package/
+        ./chevah_build compat
 
     # Upload using a (per-OS selected) sftp command, then show final links.
     # Remove key in same step to have it deleted even if publishing fails.
     - name: Upload testing package
       run: |
         mkdir -pv ~/.ssh/
+        cd python-package/
         touch priv_key
         chmod 600 priv_key
         echo "${{ secrets.SFTPPLUS_BIN_PRIV_KEY }}" > priv_key
@@ -92,14 +99,6 @@ jobs:
         runs-on: [ macos-10.15 ]
     timeout-minutes: 60
     steps:
-    - name: Clone sources
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 2
-
-    - name: Detect current OS
-      run: ./brink.sh detect_os
-
     # Avoid linking to Homebrew's libintl during build.
     # Needed tools are to be used from /usr/bin.
     - name: Hack Homebrew
@@ -108,8 +107,23 @@ jobs:
         sudo find /usr/local -name 'libintl*' -exec chmod a-r {} +
         sudo rm -f /usr/local/bin/{wget,curl,git}
 
-    - name: Build Python
-      run: ./chevah_build build
+    - name: Clone sources independently
+      run: |
+        git init $CHEVAH_REPO
+        cd $CHEVAH_REPO
+        git rev-parse --symbolic-full-name --verify --quiet HEAD || true
+        git rev-parse --symbolic-full-name --branches || true
+        git remote remove origin || true
+        git remote add origin https://github.com/chevah/$CHEVAH_REPO
+        git fetch --no-tags --prune origin
+        git clean -f
+        git reset --hard ${{ github.event.after }}
+
+    - name: Detect OS and build Python
+      run: |
+        cd python-package/
+        ./brink.sh detect_os
+        ./chevah_build build
 
     # Fix back Homebrew, to make everything functional.
     - name: Unhack Homebrew
@@ -118,15 +132,20 @@ jobs:
         sudo find /usr/local -name 'libintl*' -exec chmod a+r {} +
         sudo find /usr/local -name 'libffi*' -exec chmod a+r {} +
 
-    - name: Test Python
-      run: ./chevah_build test
+    - name: Own tests
+      run: |
+        cd python-package/
+        ./chevah_build test
 
-    - name: Test Compat
-      run: ./chevah_build compat
+    - name: Compat tests
+      run: |
+        cd python-package/
+        ./chevah_build compat
 
     - name: Upload testing package
       run: |
         mkdir -pv ~/.ssh/
+        cd python-package/
         touch priv_key
         chmod 600 priv_key
         echo "${{ secrets.SFTPPLUS_BIN_PRIV_KEY }}" > priv_key
@@ -149,39 +168,56 @@ jobs:
         runs-on: [ windows-2019, windows-2016 ]
     timeout-minutes: 60
     steps:
-    - name: Clone sources
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 2
-
     # Add packages needed to build OpenSSL, cryptography, etc.
-    # This runs under PowerShell.
     - name: Prepare OS
+      shell: powershell
       run: |
         chocolatey install --yes --no-progress make nasm 7zip
         # There's no vcpython27 choco pkg since Microsoft removed the installer.
         start-bitstransfer https://binary.chevah.com/third-party-stuff/VCForPython27.msi
         msiexec /quiet /i VCForPython27.msi
 
+    - name: Clone sources independently
+      shell: bash
+      run: |
+        git init $CHEVAH_REPO
+        cd $CHEVAH_REPO
+        git rev-parse --symbolic-full-name --verify --quiet HEAD || true
+        git rev-parse --symbolic-full-name --branches || true
+        git remote remove origin || true
+        git remote add origin https://github.com/chevah/$CHEVAH_REPO
+        git fetch --no-tags --prune origin
+        git clean -f
+        git reset --hard ${{ github.event.after }}
+
     # Explicitly run our scripts with Bash, not PowerShell (GitHub's default).
-    - name: Detect current OS
-      run: bash ./brink.sh detect_os
+    - name: Detect OS and build Python
+      shell: bash
+      run: |
+        cd python-package/
+        ./brink.sh detect_os
+        ./chevah_build build
 
-    - name: Build Python
-      run: bash ./chevah_build build
+    - name: Own tests
+      shell: bash
+      run: |
+        cd python-package/
+        ./chevah_build test
 
-    - name: Test Python
-      run: bash ./chevah_build test
-
-    - name: Test Compat
-      run: bash ./chevah_build compat
+    - name: Compat tests
+      shell: bash
+      run: |
+        cd python-package/
+        ./chevah_build compat
 
     # To use an RSA key with SFTPPlus, install upstream OpenSSH package,
     # which is more finicky in regards to file permissions.
     # Beware the commands in this step run under PowerShell.
     - name: Prepare SFTP upload
+      shell: powershell
       run: |
         mkdir -p ~/.ssh/
+        cd python-package/
         touch priv_key
         icacls .\priv_key /inheritance:r
         icacls .\priv_key /grant:r runneradmin:"(F)"
@@ -190,7 +226,7 @@ jobs:
         choco install --yes --no-progress openssh
 
     - name: Upload testing package
-      run: bash -c './publish_dist.sh ; rm priv_key'
+      run: bash -c 'cd python-package; ./publish_dist.sh ; rm priv_key'
 
     - name: Tmate debug on failure
       if: failure() && env.TMATE_DEBUG == 'yes'

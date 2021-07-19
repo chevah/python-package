@@ -39,7 +39,7 @@ jobs:
       uses: actions/checkout@v2
       # Required to get the correct git rev to use in Python's version.
       with:
-        ref: ${{ github.event.after }
+        ref: ${{ github.event.after }}
 
     # GHA's checkout action seems to be misbehaving on ARM64 and consequently
     # our build script can't get current revision from cloned sources.
@@ -105,7 +105,7 @@ jobs:
     - name: Clone sources
       uses: actions/checkout@v2
       with:
-        ref: ${{ github.event.after }
+        ref: ${{ github.event.after }}
 
     - name: Detect current OS
       run: ./brink.sh detect_os
@@ -162,7 +162,7 @@ jobs:
     - name: Clone sources
       uses: actions/checkout@v2
       with:
-        ref: ${{ github.event.after }
+        ref: ${{ github.event.after }}
 
     # Add packages needed to build OpenSSL, cryptography, etc.
     # This runs under PowerShell.

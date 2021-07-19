@@ -77,7 +77,7 @@ jobs:
         # be detrimental to our testing, e.g. CentOS 5's "requiretty" option.
         echo '%adm    ALL=NOPASSWD: ALL' > /etc/sudoers
 
-    # GHA's checkout action doesn't work on CentOS 5.
+    # GHA's checkout action doesn't work on CentOS 5. This fails on opening a new PR.
     - name: Clone sources independently
       run: |
         cd /home/chevah/

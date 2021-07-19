@@ -55,16 +55,20 @@ jobs:
         git clean -f
         git reset --hard ${{ github.event.after }}
 
-    - name: Detect current OS and build Python
+    - name: Detect OS and build Python
       run: |
         cd python-package/
         ./brink.sh detect_os
         ./chevah_build build
 
-    - name: Test Python and Compat
+    - name: Own tests
       run: |
         cd python-package/
         ./chevah_build test
+
+    - name: Compat tests
+      run: |
+        cd python-package/
         ./chevah_build compat
 
     # Upload using a (per-OS selected) sftp command, then show final links.
@@ -115,7 +119,7 @@ jobs:
         git clean -f
         git reset --hard ${{ github.event.after }}
 
-    - name: Detect current OS and build Python
+    - name: Detect OS and build Python
       run: |
         cd python-package/
         ./brink.sh detect_os
@@ -128,10 +132,14 @@ jobs:
         sudo find /usr/local -name 'libintl*' -exec chmod a+r {} +
         sudo find /usr/local -name 'libffi*' -exec chmod a+r {} +
 
-    - name: Test Python and Compat
+    - name: Own tests
       run: |
         cd python-package/
         ./chevah_build test
+
+    - name: Compat tests
+      run: |
+        cd python-package/
         ./chevah_build compat
 
     - name: Upload testing package
@@ -161,8 +169,8 @@ jobs:
     timeout-minutes: 60
     steps:
     # Add packages needed to build OpenSSL, cryptography, etc.
-    # This runs under PowerShell.
     - name: Prepare OS
+      shell: powershell
       run: |
         chocolatey install --yes --no-progress make nasm 7zip
         # There's no vcpython27 choco pkg since Microsoft removed the installer.
@@ -183,24 +191,30 @@ jobs:
         git reset --hard ${{ github.event.after }}
 
     # Explicitly run our scripts with Bash, not PowerShell (GitHub's default).
-    - name: Detect current OS and build Python
+    - name: Detect OS and build Python
       shell: bash
       run: |
         cd python-package/
         ./brink.sh detect_os
         ./chevah_build build
 
-    - name: Test Python and Compat
+    - name: Own tests
       shell: bash
       run: |
         cd python-package/
         ./chevah_build test
+
+    - name: Compat tests
+      shell: bash
+      run: |
+        cd python-package/
         ./chevah_build compat
 
     # To use an RSA key with SFTPPlus, install upstream OpenSSH package,
     # which is more finicky in regards to file permissions.
     # Beware the commands in this step run under PowerShell.
     - name: Prepare SFTP upload
+      shell: powershell
       run: |
         mkdir -p ~/.ssh/
         cd python-package/

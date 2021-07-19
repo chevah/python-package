@@ -94,13 +94,13 @@ jobs:
         git clean -f
         git reset --hard ${{ github.event.after }}
 
-    - name: Detect current OS and build Python
+    - name: Detect OS and build Python
       run: |
         cd /home/chevah/python-package
         ./brink.sh detect_os
         ./chevah_build build
 
-    - name: Test
+    - name: Own tests
       run: |
         cd /home/chevah/python-package
         ./chevah_build test

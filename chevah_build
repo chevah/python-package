@@ -676,7 +676,8 @@ command_test() {
     echo '##### Executing Chevah tests (with redirected stderr)... #####'
     # Avoid 'No entry for terminal type "unknown"' warnings on stderr.
     export TERM="dumb"
-    execute $PYTHON_BIN ${test_file} 2>${errors_log}
+    # To see the error logged on stderr, allow the following command to fail.
+    $PYTHON_BIN ${test_file} 2>${errors_log}
     if [ -s "$errors_log" ]; then
         egrep -v "$errors_allowed" $errors_log > $errors_unexpected
         if [ -s $errors_unexpected ]; then

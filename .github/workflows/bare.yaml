@@ -107,14 +107,11 @@ jobs:
       run: |
         git init $CHEVAH_REPO
         cd $CHEVAH_REPO
-        # Cleanup the repo.
         git rev-parse --symbolic-full-name --verify --quiet HEAD || true
         git rev-parse --symbolic-full-name --branches || true
         git remote remove origin || true
-        # Update repo token.
         git remote add origin https://github.com/chevah/$CHEVAH_REPO
         git fetch --no-tags --prune origin
-        # Prepare the code.
         git clean -f
         git reset --hard ${{ github.event.after }}
 
@@ -173,17 +170,15 @@ jobs:
         msiexec /quiet /i VCForPython27.msi
 
     - name: Clone sources independently
+      shell: bash
       run: |
         git init $CHEVAH_REPO
         cd $CHEVAH_REPO
-        # Cleanup the repo.
         git rev-parse --symbolic-full-name --verify --quiet HEAD || true
         git rev-parse --symbolic-full-name --branches || true
         git remote remove origin || true
-        # Update repo token.
         git remote add origin https://github.com/chevah/$CHEVAH_REPO
         git fetch --no-tags --prune origin
-        # Prepare the code.
         git clean -f
         git reset --hard ${{ github.event.after }}
 

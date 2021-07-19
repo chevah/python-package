@@ -50,7 +50,7 @@ PYCPARSER_VERSION="2.20"
 REDISTRIBUTABLE_VERSION="9.0.30729.9518"
 
 # Git revision to inject into Python's sys.version string through chevahbs.
-PYTHON_PACKAGE_VERSION="$(git log -n 1 --no-merges --pretty=format:%h)"
+PYTHON_PACKAGE_VERSION="$(git rev-parse --short=7 HEAD)"
 
 # Export the variables needed by the chevahbs scripts and the test phase.
 export PYTHON_BUILD_VERSION PYTHON_PACKAGE_VERSION REDISTRIBUTABLE_VERSION

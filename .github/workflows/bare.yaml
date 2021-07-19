@@ -46,25 +46,21 @@ jobs:
 
     - name: Detect OS and build Python
       run: |
-        cd python-package/
         ./brink.sh detect_os
         ./chevah_build build
 
     - name: Own tests
       run: |
-        cd python-package/
         ./chevah_build test
 
     - name: Compat tests
       run: |
-        cd python-package/
         ./chevah_build compat
 
     # Upload using a (per-OS selected) sftp command, then show final links.
     - name: Upload testing package
       run: |
         mkdir -pv ~/.ssh/
-        cd python-package/
         touch priv_key
         chmod 600 priv_key
         echo "${{ secrets.SFTPPLUS_BIN_PRIV_KEY }}" > priv_key

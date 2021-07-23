@@ -1,5 +1,5 @@
 #
-# GitHub actions to build and test python-package.
+# GitHub actions for building and testing python-package on bare GitHub VMs.
 #
 # Don't use `-latest` for targeted VMs, pin specific OS versions instead.
 # https://help.github.com/en/actions/reference/virtual-environments-for-github-hosted-runners
@@ -38,8 +38,8 @@ jobs:
       if: startsWith(matrix.runs-on, 'ubuntu')
       run: sudo apt-get install -y libncurses5-dev
 
-    # GHA's checkout action seems to be misbehaving on ARM64 and consequently
-    # our build script can't get current revision from cloned sources.
+    # Git's version on our ARM64 runner is too old for actions/checkout to
+    # create a local repo. Beware this fails on opening a new PR.
     - name: Clone sources independently
       run: |
         git init $CHEVAH_REPO
@@ -54,6 +54,7 @@ jobs:
         # Prepare the code.
         git clean -f
         git reset --hard ${{ github.event.after }}
+        git log -1 --format='%H'
 
     - name: Detect OS and build Python
       run: |
@@ -72,7 +73,6 @@ jobs:
         ./chevah_build compat
 
     # Upload using a (per-OS selected) sftp command, then show final links.
-    # Remove key in same step to have it deleted even if publishing fails.
     - name: Upload testing package
       run: |
         mkdir -pv ~/.ssh/
@@ -81,7 +81,8 @@ jobs:
         chmod 600 priv_key
         echo "${{ secrets.SFTPPLUS_BIN_PRIV_KEY }}" > priv_key
         echo "${{ secrets.SFTPPLUS_BIN_HOST_KEY }}" > ~/.ssh/known_hosts
-        ./publish_dist.sh ; rm priv_key
+        ./publish_dist.sh
+        rm priv_key
 
     # If one of the above steps fails, fire up tmate for remote debugging.
     - name: Tmate debug on failure
@@ -150,7 +151,8 @@ jobs:
         chmod 600 priv_key
         echo "${{ secrets.SFTPPLUS_BIN_PRIV_KEY }}" > priv_key
         echo "${{ secrets.SFTPPLUS_BIN_HOST_KEY }}" > ~/.ssh/known_hosts
-        ./publish_dist.sh ; rm priv_key
+        ./publish_dist.sh
+        rm priv_key
 
     - name: Tmate debug on failure
       if: failure() && env.TMATE_DEBUG == 'yes'
@@ -214,7 +216,6 @@ jobs:
     # which is more finicky in regards to file permissions.
     # Beware the commands in this step run under PowerShell.
     - name: Prepare SFTP upload
-      shell: powershell
       run: |
         mkdir -p ~/.ssh/
         cd python-package/
@@ -226,7 +227,11 @@ jobs:
         choco install --yes --no-progress openssh
 
     - name: Upload testing package
-      run: bash -c 'cd python-package; ./publish_dist.sh ; rm priv_key'
+      shell: bash
+      run: |
+        cd python-package
+        ./publish_dist.sh
+        rm priv_key
 
     - name: Tmate debug on failure
       if: failure() && env.TMATE_DEBUG == 'yes'

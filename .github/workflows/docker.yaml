@@ -1,5 +1,5 @@
 #
-# GitHub actions for building and testing through containers.
+# GitHub actions for building and testing python-package through containers.
 #
 # For best support, use `-latest` for runners spinning up containers. More at
 # https://help.github.com/en/actions/reference/virtual-environments-for-github-hosted-runners.
@@ -77,7 +77,7 @@ jobs:
         # be detrimental to our testing, e.g. CentOS 5's "requiretty" option.
         echo '%adm    ALL=NOPASSWD: ALL' > /etc/sudoers
 
-    # GHA's checkout action doesn't work on CentOS 5.
+    # GHA's checkout action doesn't work on CentOS 5. This fails on opening a new PR.
     - name: Clone sources independently
       run: |
         cd /home/chevah/
@@ -93,6 +93,7 @@ jobs:
         # Prepare the code.
         git clean -f
         git reset --hard ${{ github.event.after }}
+        git log -1 --format='%H'
 
     - name: Detect OS and build Python
       run: |
@@ -113,7 +114,6 @@ jobs:
     #    su chevah -lc "umask 002; cd /home/chevah/python-package; ./chevah_build compat"
 
     # Using `~/` is problematic under Docker, use `/root/`.
-    # Remove key in same step to avoid leaving it on disk if publishing fails.
     - name: Upload testing package
       run: |
         mkdir -pv /root/.ssh/
@@ -122,4 +122,5 @@ jobs:
         chmod 600 priv_key
         echo "${{ secrets.SFTPPLUS_BIN_PRIV_KEY }}" > priv_key
         echo "${{ secrets.SFTPPLUS_BIN_HOST_KEY }}" > /root/.ssh/known_hosts
-        ./publish_dist.sh ; rm priv_key
+        ./publish_dist.sh
+        rm priv_key

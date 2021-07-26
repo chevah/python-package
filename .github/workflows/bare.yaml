@@ -176,7 +176,7 @@ jobs:
       run: |
         chocolatey install --yes --no-progress make nasm 7zip
         # There's no vcpython27 choco pkg since Microsoft removed the installer.
-        start-bitstransfer https://binary.chevah.com/third-party-stuff/VCForPython27.msi
+        start-bitstransfer https://bin.chevah.com:20443/third-party-stuff/VCForPython27.msi
         msiexec /quiet /i VCForPython27.msi
 
     - name: Clone sources independently

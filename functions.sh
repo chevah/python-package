@@ -247,6 +247,10 @@ get_number_of_cpus() {
             # Physical CPUs on AIX 5.3/6.1/7.1, including (v)WPARs.
             # CPU threads don't help us on PPC64 with this workload.
             CPUS=$(lparstat -i | grep ^"Active Physical CPUs" | cut -d\: -f2)
+            if [ $CPUS -gt 8 ]; then
+                # In IBM's cloud, OpenSSL compilation breaks with lots of CPUs.
+                CPUS=8
+            fi
             ;;
         sol*)
             # Physical CPUs. SPARC has lots of threads lately, but they don't

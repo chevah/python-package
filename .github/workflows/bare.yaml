@@ -174,9 +174,11 @@ jobs:
     - name: Prepare OS
       shell: powershell
       run: |
-        chocolatey install --yes --no-progress make nasm 7zip
+        chocolatey install --yes --no-progress make nasm 7zip curl
         # There's no vcpython27 choco pkg since Microsoft removed the installer.
-        Start-BitsTransfer https://bin.chevah.com:20443/third-party-stuff/VCForPython27.msi
+        #Start-BitsTransfer https://bin.chevah.com:20443/third-party-stuff/VCForPython27.msi
+        # Pending upstream fix for SFTPPlus, we use curl for now.
+        curl -O https://bin.chevah.com:20443/third-party-stuff/VCForPython27.msi
         msiexec /quiet /i VCForPython27.msi
 
     - name: Clone sources independently

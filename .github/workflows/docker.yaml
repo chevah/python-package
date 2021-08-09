@@ -69,14 +69,6 @@ jobs:
         rpm -i local-perl-*.rpm
         rpm -i --nodeps git{-core,}-2.5.0-1.ep.x86_64.rpm
 
-    # On a Docker container, everything runs as root by default.
-    - name: Chevah user setup
-      run: |
-        useradd -g adm -s /bin/bash -m chevah
-        # Don't just add to the file, reset it, as some default options might
-        # be detrimental to our testing, e.g. CentOS 5's "requiretty" option.
-        echo '%adm    ALL=NOPASSWD: ALL' > /etc/sudoers
-
     # GHA's checkout action doesn't work on CentOS 5. This fails on opening a new PR.
     - name: Clone sources independently
       run: |
@@ -106,12 +98,19 @@ jobs:
         cd /home/chevah/python-package
         ./chevah_build test
 
-    # And compat tests must run as regular user with sudo rights.
-    # Compat tests are disabled pending https://github.com/chevah/compat/pull/113.
-    #- name: Compat tests
-    #  run: |
-    #    chown -R chevah /home/chevah/python-package
-    #    su chevah -lc "umask 002; cd /home/chevah/python-package; ./chevah_build compat"
+    # On a Docker container, everything runs as root by default..,
+    - name: Chevah user setup
+      run: |
+        useradd -g adm -s /bin/bash -m chevah
+        # Don't just add to the file, reset it, as some default options might
+        # be detrimental to our testing, e.g. CentOS 5's "requiretty" option.
+        echo '%adm    ALL=NOPASSWD: ALL' > /etc/sudoers
+
+    # ...and compat tests must run as regular user with sudo rights.
+    - name: Compat tests
+      run: |
+        chown -R chevah /home/chevah/python-package
+        su chevah -lc "cd /home/chevah/python-package; ./chevah_build compat"
 
     # Using `~/` is problematic under Docker, use `/root/`.
     - name: Upload testing package

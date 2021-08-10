@@ -97,26 +97,27 @@ jobs:
 
     - name: Detect OS and build Python
       run: |
-        cd /home/chevah/python-package
+        cd /home/chevah/$CHEVAH_REPO
         ./brink.sh detect_os
         ./chevah_build build
 
     - name: Own tests
       run: |
-        cd /home/chevah/python-package
+        cd /home/chevah/$CHEVAH_REPO
         ./chevah_build test
 
     # Compat tests must run as regular user with sudo rights.
     - name: Compat tests
       run: |
-        chown -R chevah /home/chevah/python-package
-        su chevah -lc "cd /home/chevah/python-package; ./chevah_build compat"
+        chown -R chevah /home/chevah/$CHEVAH_REPO
+        cd /home/chevah/$CHEVAH_REPO
+        su chevah -c "./chevah_build compat"
 
     # Using `~/` is problematic under Docker, use `/root/`.
     - name: Upload testing package
       run: |
         mkdir -pv /root/.ssh/
-        cd /home/chevah/python-package
+        cd /home/chevah/$CHEVAH_REPO
         touch priv_key
         chmod 600 priv_key
         echo "${{ secrets.SFTPPLUS_BIN_PRIV_KEY }}" > priv_key

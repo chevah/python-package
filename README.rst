@@ -1,6 +1,12 @@
 Python Portable Package
 =======================
 
+.. image:: https://github.com/chevah/python-package/workflows/Bare/badge.svg
+  :target: https://github.com/chevah/python-package/actions/workflows/bare.yaml
+
+.. image:: https://github.com/chevah/python-package/workflows/Docker/badge.svg
+  :target: https://github.com/chevah/python-package/actions/workflows/docker.yaml
+
 Build system for a portable Python distribution.
 
 Used by Chevah's Buildbot setup to generate and publish binary Python
@@ -10,7 +16,7 @@ Please check https://github.com/chevah/python-package/releases for
 latest packages. For older releases or platforms no longer supported,
 please check https://binary.chevah.com/production/python/.
 
-Building steps as used by Buildbot:
+Building steps:
 
 * Login to a system running on the desired platform (e.g. Ubuntu Server 20.04).
 * Get the code for this repository from GitHub.
@@ -21,19 +27,20 @@ Building steps as used by Buildbot:
 
 You can try the above steps on your own to build and test a new Python package.
 
-To have new Python packages uploaded (typically for all supported platforms),
-you should try the following, after securing access to Chevah infrastructure:
-
-* ``./brink.sh test_remote group-all --properties=force_upload_production=yes
-
 Use ``./chevah_build help`` to discover all available commands.
+
+New testing packages are uploaded automatically for green GitHub builds at
+https://bin.chevah.com:20443/testing/.
+
+Production packages are available both through GitHub releases and at
+https://bin.chevah.com:20443/production/.
 
 
 Patching upstream code
 ----------------------
 
 This repository contains a lot of imported code from upstream repos:
-Python, OpenSSL, SQLite, gmp, libffi, PyCrypto, etc.
+Python, OpenSSL, SQLite, libffi, etc.
 
 You can find those sources in two sub-directories:
 
@@ -64,10 +71,10 @@ An example for creating a patch for src/python/Python-2.7.13/Lib/site.py::
 External dependencies and associated vulnerabilities
 ----------------------------------------------------
 
-This Python package builds on and links to third-party libraries.
+This Python package builds and/or links to third-party libraries.
 
-To document them for all OS'es and to list their known vulnerabilities,
-the LibreOffice spreadsheet ``external_deps.fods`` is used.
+Their known vulnerabilities are documented for all OS'es in the
+LibreOffice spreadsheet ``external_deps.fods``.
 
-For your convenience, this flat ODS file is also exported in CSV format in
+For your convenience, this flat ODS file is also exported in CSV format as
 ``external_deps.csv``.

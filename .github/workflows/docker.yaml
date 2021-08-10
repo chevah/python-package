@@ -40,7 +40,7 @@ jobs:
       run: |
         apk upgrade -U
         apk add git curl bash gcc make m4 automake libtool patch zlib-dev libffi-dev ncurses-dev linux-headers musl-dev openssl-dev lddtree shadow sudo openssh-client
-        curl -o /usr/local/bin/paxctl https://binary.chevah.com/third-party-stuff/alpine/paxctl-3.12
+        curl -o /usr/local/bin/paxctl https://bin.chevah.com:20443/third-party-stuff/alpine/paxctl-3.12
         chmod +x /usr/local/bin/paxctl
 
     # Stick to CentOS 8.2 as OpenSSL got updated in 8.3 from 1.1.1c to 1.1.1g.
@@ -59,13 +59,13 @@ jobs:
         sed -i s/^mirrorlist=/#mirrorlist=/ /etc/yum.repos.d/*.repo
         sed -i s@^#baseurl=http://mirror.centos.org/centos/\$releasever/@baseurl=http://vault.centos.org/5.11/@ /etc/yum.repos.d/*.repo
         yum -y upgrade
-        # Use http://binary.chevah.com/third-party-stuff/centos5/tuxad/
+        # Use https://bin.chevah.com:20443/third-party-stuff/centos5/tuxad/
         # when tuxad.de dissapears, it has the minimum required stuff.
         rpm -i http://www.tuxad.de/rpms/tuxad-release-5-1.noarch.rpm
         yum -y install wget curl gcc44 make m4 automake libtool patch sudo which openssh-clients
         ln -s /usr/bin/gcc44 /usr/local/bin/gcc
-        wget --mirror --no-parent https://binary.chevah.com/third-party-stuff/centos5/endpoint/
-        cd binary.chevah.com/third-party-stuff/centos5/endpoint/
+        wget --mirror --no-parent https://bin.chevah.com:20443/third-party-stuff/centos5/endpoint/
+        cd bin.chevah.com\:20443/third-party-stuff/centos5/endpoint/
         rpm -i local-perl-*.rpm
         rpm -i --nodeps git{-core,}-2.5.0-1.ep.x86_64.rpm
 
@@ -97,27 +97,27 @@ jobs:
 
     - name: Detect OS and build Python
       run: |
-        cd /home/chevah/python-package
+        cd /home/chevah/$CHEVAH_REPO
         ./brink.sh detect_os
         ./chevah_build build
 
     - name: Own tests
       run: |
-        cd /home/chevah/python-package
+        cd /home/chevah/$CHEVAH_REPO
         ./chevah_build test
 
-    # And compat tests must run as regular user with sudo rights.
-    # Compat tests are disabled pending https://github.com/chevah/compat/pull/113.
-    #- name: Compat tests
-    #  run: |
-    #    chown -R chevah /home/chevah/python-package
-    #    su chevah -lc "umask 002; cd /home/chevah/python-package; ./chevah_build compat"
+    # Compat tests must run as regular user with sudo rights.
+    - name: Compat tests
+      run: |
+        chown -R chevah /home/chevah/$CHEVAH_REPO
+        cd /home/chevah/$CHEVAH_REPO
+        su chevah -c "./chevah_build compat"
 
     # Using `~/` is problematic under Docker, use `/root/`.
     - name: Upload testing package
       run: |
         mkdir -pv /root/.ssh/
-        cd /home/chevah/python-package
+        cd /home/chevah/$CHEVAH_REPO
         touch priv_key
         chmod 600 priv_key
         echo "${{ secrets.SFTPPLUS_BIN_PRIV_KEY }}" > priv_key

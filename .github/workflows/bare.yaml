@@ -220,7 +220,7 @@ jobs:
     - name: Prepare SFTP upload
       run: |
         mkdir -p ~/.ssh/
-        cd $CHEVAH_REPO
+        cd python-package/
         touch priv_key
         icacls .\priv_key /inheritance:r
         icacls .\priv_key /grant:r runneradmin:"(F)"

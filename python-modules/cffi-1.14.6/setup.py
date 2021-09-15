@@ -56,7 +56,7 @@ def no_working_compiler_found():
     tries to compile C code.  (Hints: on OS/X 10.8, for errors about
     -mno-fused-madd see http://stackoverflow.com/questions/22313407/
     Otherwise, see https://wiki.python.org/moin/CompLangPython or
-    the IRC channel #python on irc.freenode.net.)
+    the IRC channel #python on irc.libera.chat.)
 
     Trying to continue anyway.  If you are trying to install CFFI from
     a build done in a different context, you can ignore this warning.
@@ -187,7 +187,7 @@ Contact
 
 `Mailing list <https://groups.google.com/forum/#!forum/python-cffi>`_
 """,
-        version='1.14.5',
+        version='1.14.6',
         packages=['cffi'] if cpython else [],
         package_data={'cffi': ['_cffi_include.h', 'parse_c_type.h', 
                                '_embedding.h', '_cffi_errors.h']}

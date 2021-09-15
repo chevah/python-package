@@ -18,7 +18,7 @@ SQLITE_VERSION="3.36.0"
 
 # Python modules versions to be used everywhere possible.
 PYSQLITE_VERSION="2.8.3"
-CFFI_VERSION="1.14.5"
+CFFI_VERSION="1.14.6"
 # 19.1.0 is used with OpenSSL 1.0.2 libs.
 PYOPENSSL_VERSION="20.0.1"
 SCANDIR_VERSION="1.10.0"

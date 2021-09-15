@@ -4,9 +4,7 @@
 #
 # build
 # test
-# publish_production
-# publish_staging
-#
+# compat (for the compat repo tests)
 
 PYTHON_BUILD_VERSION="2.7.18"
 LIBFFI_VERSION="3.2.1"

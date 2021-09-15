@@ -649,6 +649,9 @@ void X509V3_section_free(X509V3_CTX *ctx, STACK_OF(CONF_VALUE) *section);
 void X509V3_set_ctx(X509V3_CTX *ctx, X509 *issuer, X509 *subject,
                     X509_REQ *req, X509_CRL *crl, int flags);
 
+int x509v3_add_len_value_uchar(const char *name, const unsigned char *value,
+                               size_t vallen, STACK_OF(CONF_VALUE) **extlist);
+
 int X509V3_add_value(const char *name, const char *value,
                      STACK_OF(CONF_VALUE) **extlist);
 int X509V3_add_value_uchar(const char *name, const unsigned char *value,

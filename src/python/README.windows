@@ -21,7 +21,7 @@ sub-directory (where $VERSION is the latest Python 2.7 version.)
 For pip, copy latest `get-pip.py` to `python-modules/get-pip.py`.
 
 All needed sources and wheels should be present on the custom PyPI server at
-https://pypi.chevah.com.
+https://bin.chevah.com:20443/pypi.
 
 Please note that VC compiler is used by default by pip. To manually enable
 it, make sure you have latest setuptools:

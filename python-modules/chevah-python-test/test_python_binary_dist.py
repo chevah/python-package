@@ -261,7 +261,6 @@ def get_allowed_deps():
             '/lib/libcrypt.so.5',
             '/lib/libdevstat.so.7',
             '/lib/libm.so.5',
-            '/lib/libncurses.so.8',
             '/lib/libthr.so.3',
             '/lib/libutil.so.9',
             '/lib/libz.so.6',
@@ -270,27 +269,40 @@ def get_allowed_deps():
         # On FreeBSD this can be: '10.3-RELEASE-p20', '11.0-RELEASE', etc.
         freebsd_version = platform.release().split('.')[0]
         if freebsd_version == '10':
-            # Additional deps, specific for FreeBSD 10.
+            # Additional deps for FreeBSD 10.
             allowed_deps.extend([
                 '/lib/libcrypto.so.7',
                 '/lib/libkvm.so.6',
+                '/lib/libncurses.so.8',
                 '/usr/lib/libssl.so.7',
             ])
         elif freebsd_version == '11':
-            # Additional deps, specific for FreeBSD 11.
+            # Additional deps for FreeBSD 11.
             allowed_deps.extend([
                 '/lib/libcrypto.so.8',
                 '/lib/libelf.so.2',
                 '/lib/libkvm.so.7',
+                '/lib/libncurses.so.8',
                 '/usr/lib/libdl.so.1',
                 '/usr/lib/libssl.so.8',
             ])
-        else:
-            # Additional deps, specific for FreeBSD 12.
+        elif freebsd_version == '12':
+            # Additional deps for FreeBSD 12.
             allowed_deps.extend([
                 '/lib/libcrypto.so.111',
                 '/lib/libelf.so.2',
                 '/lib/libkvm.so.7',
+                '/lib/libncurses.so.8',
+                '/usr/lib/libdl.so.1',
+                '/usr/lib/libssl.so.111',
+            ])
+        elif freebsd_version == '13':
+            # Additional deps for FreeBSD 13.
+            allowed_deps.extend([
+                '/lib/libcrypto.so.111',
+                '/lib/libelf.so.2',
+                '/lib/libkvm.so.7',
+                '/lib/libncursesw.so.9',
                 '/usr/lib/libdl.so.1',
                 '/usr/lib/libssl.so.111',
             ])

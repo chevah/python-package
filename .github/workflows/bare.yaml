@@ -38,8 +38,8 @@ jobs:
       if: startsWith(matrix.runs-on, 'ubuntu')
       run: sudo apt-get install -y libncurses5-dev
 
-    # Git's version on our ARM64 runner is too old for actions/checkout to
-    # create a local repo. Beware this fails on opening a new PR.
+    # Our ARM64's git is too old for actions/checkout, so do the same manually.
+    # This fails when opening a new PR, but works starting with second commit.
     - name: Clone sources independently
       run: |
         git init $CHEVAH_REPO

@@ -87,15 +87,15 @@ PIP_LIBRARIES_OPENSSL_102="\
     setproctitle==${SETPROCTITLE_VERSION}
     "
 
-PYPI_SITE="https://pypi.chevah.com"
+PYPI_SITE="https://bin.chevah.com:20443/pypi"
 if [ "${OS%aix*}" = "" ]; then
     # On AIX 7.1, there are issues with Let's Encrypt certificates.
-    PYPI_SITE="http://pypi.chevah.com"
+    PYPI_SITE="http://bin.chevah.com:20080/pypi"
 fi
 # Arguments that are sent when using pip.
 PIP_ARGS="\
     --index-url=${PYPI_SITE}/simple \
-    --trusted-host=pypi.chevah.com \
+    --trusted-host=bin.chevah.com \
     --no-cache-dir \
     --no-warn-script-location \
     "
@@ -657,7 +657,7 @@ initialize_python_module(){
             # the official.
             echo "[easy_install]" >> setup.cfg
             echo "find_links=${PYPI_SITE}/" >> setup.cfg
-            echo "allow_hosts=*pypi.chevah.com*" >> setup.cfg
+            echo "allow_hosts=*bin.chevah.com*" >> setup.cfg
         fi
     execute popd
 }

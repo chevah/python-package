@@ -36,7 +36,7 @@ SETUP['folders']['source'] = u'src'
 SETUP['repository']['name'] = u'python-package'
 SETUP['test']['package'] = None
 
-SETUP['pypi']['index_url'] = 'http://pypi.chevah.com/simple'
+SETUP['pypi']['index_url'] = 'https://bin.chevah.com:20443/pypi/simple'
 
 SETUP['repository']['name'] = u'python-package'
 SETUP['repository']['github'] = 'https://github.com/chevah/python-package'

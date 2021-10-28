@@ -494,7 +494,7 @@ command_build() {
                 build/openssl-${OPENSSL_VERSION}/include/openssl \
                 ${INSTALL_FOLDER}/include/
             # To make sure they're found, we're back to using CPPFLAGS.
-            export CPPFLAGS="$CPPFLAGS -I${INSTALL_FOLDER}/include"
+            export CPPFLAGS="${CPPFLAGS:-} -I${INSTALL_FOLDER}/include"
         fi
     else
         (>&2 echo "Skip building OpenSSL!")

@@ -322,7 +322,7 @@ if [ "${OS%sol*}" = "" ]; then
 elif [ "${OS%fbsd*}" = "" -o "${OS%obsd*}" = "" ]; then
     # Use PIC (Position Independent Code) on FreeBSD and OpenBSD with Clang.
     export CFLAGS="${CFLAGS:-} -fPIC"
-elif [ ${CC:-} = "gcc" -a ${ARCH%%64} != "$ARCH" ]; then
+elif [ "${CC:-}" = "gcc" -a ${ARCH%%64} != "$ARCH" ]; then
     # Use PIC (Position Independent Code) with GCC on 64-bit arches.
     export CFLAGS="${CFLAGS:-} -fPIC"
 fi
@@ -340,7 +340,7 @@ case "$ARCH" in
         let JOBS=CPUS
         ;;
 esac
-if [ -n "$MAKE" ]; then
+if [ -n "${MAKE-}" ]; then
     export MAKE="$MAKE -j${JOBS}"
 fi
 

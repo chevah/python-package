@@ -10,7 +10,7 @@ OS=""
 INSTALL_FOLDER=""
 
 # Check if debugging environment variable is set and initialize with 0 if not.
-if [ -z "$DEBUG" ] ; then
+if [ -z "${DEBUG:-}" ] ; then
     DEBUG=0
 fi
 
@@ -18,10 +18,15 @@ fi
 help_text_help=\
 "Show help for a command."
 command_help() {
-    local command=$1
+    if [ -n "${1-}" ]; then
+        local command=$1
+    else
+        local command=""
+    fi
     local help_command="help_$command"
-    # Test to see if we have a valid help method, otherwise call
-    # the general help.
+    # Test to see if we have a valid help method,
+    # otherwise call the general help.
+    set +o errexit
     type $help_command &> /dev/null
     if [ $? -eq 0 ]; then
         $help_command
@@ -33,6 +38,7 @@ command_help() {
             echo -e "$command_name\t\t${!help_text}"
         done
     fi
+    set -o errexit
 }
 
 #
@@ -41,8 +47,12 @@ command_help() {
 # Select fuctions which are made public.
 #
 select_command() {
-    local command=$1
-    shift
+    if [ -n "${1-}" ]; then
+        local command=$1
+        shift
+    else
+        local command=""
+    fi
     case $command in
         "")
             command_help
@@ -52,6 +62,7 @@ select_command() {
             # Test to see if we have a valid command, otherwise call
             # the general help.
             call_command="command_$command"
+            set +o errexit
             type $call_command &> /dev/null
             if [ $? -eq 0 ]; then
                 $call_command $@
@@ -61,6 +72,7 @@ select_command() {
                 echo "Unknown command: ${command}."
                 exit 1
             fi
+            set -o errexit
         ;;
     esac
 }

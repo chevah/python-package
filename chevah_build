@@ -694,6 +694,8 @@ command_test() {
 
     echo '##### Testing for outdated packages and security issues... #####'
     execute $PYTHON_BIN -m pip list --outdated --format=columns
+    # Safety needs PyYAML, which needs Cython, which needs to be built on AIX.
+    aix_ld_hack init
     execute $PYTHON_BIN -m pip install $PIP_ARGS safety==1.8.7
     execute $PYTHON_BIN -m safety check --full-report \
         $SAFETY_FALSE_POSITIVES_OPTS $SAFETY_IGNORED_OPTS
@@ -709,6 +711,7 @@ command_test() {
         (>&2 echo "Following Safety DB IDs were excepted from checks:")
         (>&2 echo "${SAFETY_IGNORED_IDS}")
     fi
+    aix_ld_hack cleanup
     # Avoid having output messages sometimes mangled for some reason.
     sleep 1
 

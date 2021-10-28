@@ -236,7 +236,7 @@ case $OS in
         export CXX="clang++"
         export MAKE="make"
         # Build as compatible as it makes sense. See brink.sh for the reason.
-        export CFLAGS="$CFLAGS -mmacosx-version-min=10.12"
+        export CFLAGS="${CFLAGS:-} -mmacosx-version-min=10.12"
         # setup.py skips building readline by default, as it sets this to
         # "10.4", and then tries to avoid the broken readline in OS X 10.4.
         export MACOSX_DEPLOYMENT_TARGET=10.12
@@ -322,7 +322,7 @@ if [ "${OS%sol*}" = "" ]; then
 elif [ "${OS%fbsd*}" = "" -o "${OS%obsd*}" = "" ]; then
     # Use PIC (Position Independent Code) on FreeBSD and OpenBSD with Clang.
     export CFLAGS="${CFLAGS:-} -fPIC"
-elif [ "$CC" = "gcc" -a ${ARCH%%64} != "$ARCH" ]; then
+elif [ ${CC:-} = "gcc" -a ${ARCH%%64} != "$ARCH" ]; then
     # Use PIC (Position Independent Code) with GCC on 64-bit arches.
     export CFLAGS="${CFLAGS:-} -fPIC"
 fi

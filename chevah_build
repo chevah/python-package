@@ -88,10 +88,6 @@ PIP_LIBRARIES_OPENSSL_102="\
     "
 
 PYPI_SITE="https://bin.chevah.com:20443/pypi"
-if [ "${OS%aix*}" = "" ]; then
-    # On AIX 7.1, there are issues with Let's Encrypt certificates.
-    PYPI_SITE="http://bin.chevah.com:20080/pypi"
-fi
 # Arguments that are sent when using pip.
 PIP_ARGS="\
     --index-url=${PYPI_SITE}/simple \
@@ -206,6 +202,8 @@ case $OS in
             python-modules/cryptography-3.2.1 \
         "
         add_ignored_safety_ids_for_cryptography32
+        # On AIX 7.1, cryptography build fails with Let's Encrypt certificates.
+        PYPI_SITE="http://bin.chevah.com:20080/pypi"
         ;;
     sol*)
         # Only Sun's Studio compiler is supported.

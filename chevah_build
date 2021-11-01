@@ -6,6 +6,10 @@
 # test
 # compat (for the compat repo tests)
 
+set -o nounset
+set -o errexit
+set -o pipefail
+
 PYTHON_BUILD_VERSION="2.7.18"
 LIBFFI_VERSION="3.2.1"
 ZLIB_VERSION="1.2.11"
@@ -88,10 +92,6 @@ PIP_LIBRARIES_OPENSSL_102="\
     "
 
 PYPI_SITE="https://bin.chevah.com:20443/pypi"
-if [ "${OS%aix*}" = "" ]; then
-    # On AIX 7.1, there are issues with Let's Encrypt certificates.
-    PYPI_SITE="http://bin.chevah.com:20080/pypi"
-fi
 # Arguments that are sent when using pip.
 PIP_ARGS="\
     --index-url=${PYPI_SITE}/simple \
@@ -167,7 +167,7 @@ case $OS in
         export CXX="xlC_r"
         export MAKE="gmake"
         export PATH="/usr/vac/bin:$PATH"
-        export CFLAGS="$CFLAGS -O2 -D_LARGE_FILES=1"
+        export CFLAGS="${CFLAGS:-} -O2 -D_LARGE_FILES=1"
         # IBM's OpenSSL libs are mixed 32/64bit binaries in AIX, so we need to
         # be specific about what kind of build we want, because otherwise we
         # might get 64bit libraries.
@@ -206,6 +206,9 @@ case $OS in
             python-modules/cryptography-3.2.1 \
         "
         add_ignored_safety_ids_for_cryptography32
+        # On AIX 7.1, cryptography build fails with Let's Encrypt certificates.
+        # This is enough to fix it, no need to redefine PIP_ARGS as well.
+        PYPI_SITE="http://bin.chevah.com:20080/pypi"
         ;;
     sol*)
         # Only Sun's Studio compiler is supported.
@@ -234,7 +237,7 @@ case $OS in
         export CXX="clang++"
         export MAKE="make"
         # Build as compatible as it makes sense. See brink.sh for the reason.
-        export CFLAGS="$CFLAGS -mmacosx-version-min=10.12"
+        export CFLAGS="${CFLAGS:-} -mmacosx-version-min=10.12"
         # setup.py skips building readline by default, as it sets this to
         # "10.4", and then tries to avoid the broken readline in OS X 10.4.
         export MACOSX_DEPLOYMENT_TARGET=10.12
@@ -312,17 +315,17 @@ esac
 if [ "${OS%sol*}" = "" ]; then
     if [ ${ARCH} = "sparc64" ]; then
         # Required for compiling GMP on Solaris for SPARC with Sun Studio.
-        export CFLAGS="$CFLAGS -xcode=abs64"
+        export CFLAGS="${CFLAGS:-} -xcode=abs64"
     elif [ ${ARCH} = "x64" -a "${OS%sol11*}" = "" ]; then
         # Not all packages enable PIC, we force it to avoid relocation issues.
-        export CFLAGS="$CFLAGS -Kpic"
+        export CFLAGS="${CFLAGS:-} -Kpic"
     fi
 elif [ "${OS%fbsd*}" = "" -o "${OS%obsd*}" = "" ]; then
     # Use PIC (Position Independent Code) on FreeBSD and OpenBSD with Clang.
-    export CFLAGS="${CFLAGS} -fPIC"
-elif [ "$CC" = "gcc" -a ${ARCH%%64} != "$ARCH" ]; then
+    export CFLAGS="${CFLAGS:-} -fPIC"
+elif [ "${CC:-}" = "gcc" -a ${ARCH%%64} != "$ARCH" ]; then
     # Use PIC (Position Independent Code) with GCC on 64-bit arches.
-    export CFLAGS="${CFLAGS} -fPIC"
+    export CFLAGS="${CFLAGS:-} -fPIC"
 fi
 
 # Parallel builds where applicable.
@@ -338,7 +341,7 @@ case "$ARCH" in
         let JOBS=CPUS
         ;;
 esac
-if [ -n "$MAKE" ]; then
+if [ -n "${MAKE-}" ]; then
     export MAKE="$MAKE -j${JOBS}"
 fi
 
@@ -442,8 +445,8 @@ command_build() {
     # We used to add the new include path to $CPPFLAGS, but it's not as portable
     # as copying the includes (HP-UX's linker fails with -I when not using GCC).
     mkdir -p $INSTALL_FOLDER/{include,lib}
-    export LDFLAGS="-L${INSTALL_FOLDER}/lib/ ${LDFLAGS}"
-    export PKG_CONFIG_PATH="${INSTALL_FOLDER}/lib/pkgconfig/:${PKG_CONFIG_PATH}"
+    export LDFLAGS="-L${INSTALL_FOLDER}/lib/ ${LDFLAGS:-}"
+    export PKG_CONFIG_PATH="$INSTALL_FOLDER/lib/pkgconfig/:${PKG_CONFIG_PATH:-}"
 
     if [ "$BUILD_LIBFFI" = "yes" ]; then
         build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
@@ -492,7 +495,7 @@ command_build() {
                 build/openssl-${OPENSSL_VERSION}/include/openssl \
                 ${INSTALL_FOLDER}/include/
             # To make sure they're found, we're back to using CPPFLAGS.
-            export CPPFLAGS="$CPPFLAGS -I${INSTALL_FOLDER}/include"
+            export CPPFLAGS="${CPPFLAGS:-} -I${INSTALL_FOLDER}/include"
         fi
     else
         (>&2 echo "Skip building OpenSSL!")
@@ -696,21 +699,24 @@ command_test() {
 
     echo '##### Testing for outdated packages and security issues... #####'
     execute $PYTHON_BIN -m pip list --outdated --format=columns
+    # Safety needs PyYAML, which needs Cython, which needs to be built on AIX.
+    aix_ld_hack init
     execute $PYTHON_BIN -m pip install $PIP_ARGS safety==1.8.7
     execute $PYTHON_BIN -m safety check --full-report \
-        $SAFETY_FALSE_POSITIVES_OPTS $SAFETY_IGNORED_OPTS
-    if [ -n "$SAFETY_FALSE_POSITIVES_OPTS" ]; then
+        ${SAFETY_FALSE_POSITIVES_OPTS-} ${SAFETY_IGNORED_OPTS:-}
+    if [ -n "${SAFETY_FALSE_POSITIVES_OPTS-}" ]; then
         SAFETY_FALSE_POSITIVES_IDS="\
             $(echo $SAFETY_FALSE_POSITIVES_OPTS | sed s/\-i\ //g)"
         echo "Following Safety DB IDs were excepted as false positives:"
         echo "${SAFETY_FALSE_POSITIVES_IDS}"
     fi
-    if [ -n "$SAFETY_IGNORED_OPTS" ]; then
+    if [ -n "${SAFETY_IGNORED_OPTS-}" ]; then
         SAFETY_IGNORED_IDS="\
             $(echo $SAFETY_IGNORED_OPTS | sed s/\-i\ //g)"
         (>&2 echo "Following Safety DB IDs were excepted from checks:")
         (>&2 echo "${SAFETY_IGNORED_IDS}")
     fi
+    aix_ld_hack cleanup
     # Avoid having output messages sometimes mangled for some reason.
     sleep 1
 
@@ -775,7 +781,7 @@ command_compat() {
     unset CHEVAH_CACHE CHEVAH_BUILD
     # Some tests might fail due to causes which are not related to python.
     execute ./brink.sh deps
-    if [ x"$CHEVAH_CONTAINER" = x"yes" ]; then
+    if [ "${CHEVAH_CONTAINER:-}" = "yes" ]; then
         execute ./brink.sh test_ci2
     else
         execute ./brink.sh test_ci

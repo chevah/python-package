@@ -30,6 +30,7 @@ PSUTIL_VERSION="5.8.0"
 SUBPROCESS32_VERSION="3.5.4"
 
 # Versions no longer upgradable because of Python 2 deprecation.
+# Backported fix for https://github.com/pypa/pip/issues/9827.
 PIP_VERSION="20.3.4chevah1"
 # For pip <21.1.
 SAFETY_IGNORED_OPTS="-i 40291"

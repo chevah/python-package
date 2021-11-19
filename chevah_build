@@ -32,7 +32,7 @@ SUBPROCESS32_VERSION="3.5.4"
 # Versions no longer upgradable because of Python 2 deprecation.
 # Backported fix for https://github.com/pypa/pip/issues/9827
 # at https://github.com/chevah/pip/tree/20.3.4chevah.
-PIP_VERSION="20.3.4chevah0"
+PIP_VERSION="20.3.4chevah1"
 # For pip <21.1.
 SAFETY_IGNORED_OPTS="-i 40291"
 # setuptools 44.x is the last series to support Python 2.7.

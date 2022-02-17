@@ -23,13 +23,13 @@ SQLITE_VERSION="3.36.0"
 # Python modules versions to be used everywhere possible.
 PYSQLITE_VERSION="2.8.3"
 CFFI_VERSION="1.15.0"
-# 19.1.0 is used with OpenSSL 1.0.2 libs.
-PYOPENSSL_VERSION="20.0.1"
 SCANDIR_VERSION="1.10.0"
-PSUTIL_VERSION="5.8.0"
+PSUTIL_VERSION="5.9.0"
 SUBPROCESS32_VERSION="3.5.4"
 
 # Versions no longer upgradable because of Python 2 deprecation.
+# 19.1.0 is used with OpenSSL 1.0.2 libs.
+PYOPENSSL_VERSION="21.0.0"
 # Backported fix for https://github.com/pypa/pip/issues/9827
 # at https://github.com/chevah/pip/tree/20.3.4chevah.
 PIP_VERSION="20.3.4chevah1"
@@ -48,7 +48,7 @@ SETPROCTITLE_VERSION="1.1.10"
 PYWIN32_VERSION="228"
 
 # pycparser is explicitly installed to work around setuptools auto dependencies.
-PYCPARSER_VERSION="2.20"
+PYCPARSER_VERSION="2.21"
 
 # Current revision for the VC++ 9.0 redistributable version used on Windows.
 REDISTRIBUTABLE_VERSION="9.0.30729.9518"

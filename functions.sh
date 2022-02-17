@@ -380,6 +380,13 @@ cleanup_install_dir() {
                 execute rm -rf share/
                 # Remove pysqlite2 CSS files.
                 execute rm -rf pysqlite2-doc
+                # Remove man files.
+                execute rm -rf man/
+                # Move include to lib/include.
+                execute mv include lib/
+                # Move strayed pkgconfig/* to lib/pkgconfig/.
+                execute mv pkgconfig/* lib/pkgconfig/
+                execute rmdir pkgconfig/
                 ;;
         esac
     execute popd

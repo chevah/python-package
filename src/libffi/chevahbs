@@ -38,7 +38,7 @@ chevahbs_install() {
         execute mkdir -p $INSTALL_FOLDER/include
         execute mv $INSTALL_FOLDER/lib*/libffi-*/include/* \
             $INSTALL_FOLDER/include/
-        execute rmdir libffi-*{/include,}
+        execute rm -rf libffi-*
         # On some systems libffi is installed in lib64/ and then cffi is
         # searching for it in lib/ (this affects RHEL 5-7 and SLES 11-12).
         if [ -d $INSTALL_FOLDER/lib64 ]; then

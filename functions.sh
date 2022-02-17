@@ -384,9 +384,11 @@ cleanup_install_dir() {
                 execute rm -rf man/
                 # Move include to lib/include.
                 execute mv include lib/
-                # Move strayed pkgconfig/* to lib/pkgconfig/.
-                execute mv pkgconfig/* lib/pkgconfig/
-                execute rmdir pkgconfig/
+                # Move stray pkgconfig/* to lib/pkgconfig/.
+                if [ -d pkgconfig ]; then
+                    execute mv pkgconfig/* lib/pkgconfig/
+                    execute rmdir pkgconfig/
+                fi
                 ;;
         esac
     execute popd

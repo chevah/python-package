@@ -18,7 +18,7 @@ BZIP2_VERSION="1.0.8"
 # readline module available without linking to the GPL-only readline libs.
 LIBEDIT_VERSION="20170329-3.1"
 OPENSSL_VERSION="1.1.1m"
-SQLITE_VERSION="3.36.0"
+SQLITE_VERSION="3.37.2"
 
 # Python modules versions to be used everywhere possible.
 PYSQLITE_VERSION="2.8.3"
@@ -28,7 +28,7 @@ PSUTIL_VERSION="5.9.0"
 SUBPROCESS32_VERSION="3.5.4"
 
 # Versions no longer upgradable because of Python 2 deprecation.
-# 19.1.0 is used with OpenSSL 1.0.2 libs.
+# pyOpenSSL 19.1.0 is used with OpenSSL 1.0.2 libs.
 PYOPENSSL_VERSION="21.0.0"
 # Backported fix for https://github.com/pypa/pip/issues/9827
 # at https://github.com/chevah/pip/tree/20.3.4chevah.

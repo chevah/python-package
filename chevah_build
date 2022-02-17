@@ -739,11 +739,13 @@ command_test() {
             (>&2 echo -e "\tSkipping as it now fails on ARM64.")
             ;;
         lnx-x64)
+            set +o nounset
             if [ x"$CHEVAH_CONTAINER" = x"yes" ]; then
                 (>&2 echo -e "\tSkipping as it fails under Docker on CentOS 5.")
             else
                 execute $PYTHON_BIN ${SCANDIR_FOLDER}/test/run_tests.py
             fi
+            set -o nounset
             ;;
         *)
             # UTF-8 locale is needed for the tests to pass on remaining OS'es.

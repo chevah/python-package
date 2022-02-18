@@ -735,10 +735,7 @@ command_test() {
         aix*)
             (>&2 echo -e "\tSkipping because of upstream issues.")
             ;;
-        lnx-arm64)
-            (>&2 echo -e "\tSkipping as it now fails on ARM64.")
-            ;;
-        lnx-x64)
+        lnx*)
             set +o nounset
             if [ x"$CHEVAH_CONTAINER" = x"yes" ]; then
                 (>&2 echo -e "\tSkipping as it fails under Docker on CentOS 5.")

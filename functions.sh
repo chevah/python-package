@@ -382,8 +382,6 @@ cleanup_install_dir() {
                 execute rm -rf pysqlite2-doc
                 # Remove man files.
                 execute rm -rf man/
-                # Move include to lib/include.
-                execute mv include lib/
                 # Move stray pkgconfig/* to lib/pkgconfig/.
                 if [ -d pkgconfig ]; then
                     execute mv pkgconfig/* lib/pkgconfig/

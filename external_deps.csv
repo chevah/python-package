@@ -9,7 +9,8 @@ OpenSSL⁶,"1.0.2v-chevah2 (statically linked with stdlib “ssl”)
 1.1.1g (bundled with upstream cryptography 2.9.1)","1.1.1m (statically linked with stdlib “ssl”)
 1.1.1m (statically linked with cryptography)","1.1.1m (statically linked with stdlib “ssl”)
 1.1.1m (statically linked with cryptography)","1.1.1m (statically linked with stdlib “ssl”)
-1.1.1m (statically linked with cryptography)",1.1.1c FIPS,"1.1.1m (statically linked with stdlib “ssl”)
+1.1.1m (statically linked with cryptography)","1.1.1cFIPS /
+1.1.1k FIPS","1.1.1m (statically linked with stdlib “ssl”)
 1.1.1m (statically linked with cryptography)","1.1.1m (statically linked with stdlib “ssl”)
 1.1.1m (statically linked with cryptography)",1.0.2n (from upstream Oracle patches),1.0.0x,1.0.1h,"
 1.0.2o","1.1.1m (statically linked with stdlib “ssl”)

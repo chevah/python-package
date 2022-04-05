@@ -1,7 +1,7 @@
-diff --git a/src/libxcrypt/libxcrypt-4.4.28/configure.ac b/src/libxcrypt/libxcrypt-4.4.28/configure.ac
+diff --git a/configure.ac b/configure.ac
 index b9394d87..8b8748b6 100644
---- a/src/libxcrypt/libxcrypt-4.4.28/configure.ac
-+++ b/src/libxcrypt/libxcrypt-4.4.28/configure.ac
+--- a/configure.ac
++++ b/configure.ac
 @@ -46,7 +46,7 @@ esac
  AC_PROG_CPP
  AC_PROG_MAKE_SET

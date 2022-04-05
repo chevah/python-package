@@ -1,7 +1,7 @@
-diff --git a/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/BuildCommon.pm b/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/BuildCommon.pm
+diff --git a/build-aux/scripts/BuildCommon.pm b/build-aux/scripts/BuildCommon.pm
 index 0e6f2a31..94153db2 100644
---- a/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/BuildCommon.pm
-+++ b/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/BuildCommon.pm
+--- a/build-aux/scripts/BuildCommon.pm
++++ b/build-aux/scripts/BuildCommon.pm
 @@ -7,7 +7,7 @@
  
  package BuildCommon;
@@ -11,10 +11,10 @@ index 0e6f2a31..94153db2 100644
  use warnings FATAL => 'all';
  use utf8;
  use open qw(:utf8);
-diff --git a/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/check-perlcritic-config b/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/check-perlcritic-config
+diff --git a/build-aux/scripts/check-perlcritic-config b/build-aux/scripts/check-perlcritic-config
 index 54b458f1..556be290 100755
---- a/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/check-perlcritic-config
-+++ b/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/check-perlcritic-config
+--- a/build-aux/scripts/check-perlcritic-config
++++ b/build-aux/scripts/check-perlcritic-config
 @@ -18,7 +18,7 @@
  # Ideally this would be a perlcritic policy itself, so it would get
  # run on any invocation of perlcritic, not just on 'make distcheck'.
@@ -24,10 +24,10 @@ index 54b458f1..556be290 100755
  use warnings FATAL => 'all';
  use utf8;
  use open qw(:std :utf8);
-diff --git a/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/compute-symver-floor b/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/compute-symver-floor
+diff --git a/build-aux/scripts/compute-symver-floor b/build-aux/scripts/compute-symver-floor
 index 4ec82e10..eebdeb00 100644
---- a/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/compute-symver-floor
-+++ b/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/compute-symver-floor
+--- a/build-aux/scripts/compute-symver-floor
++++ b/build-aux/scripts/compute-symver-floor
 @@ -9,7 +9,7 @@
  # Process libcrypt.minver and determine the minumum symbol version to
  # use for compatibility symbols.  Called from configure.ac.
@@ -37,10 +37,10 @@ index 4ec82e10..eebdeb00 100644
  use warnings FATAL => 'all';
  use utf8;
  use open qw(:std :utf8);
-diff --git a/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/expand-selected-hashes b/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/expand-selected-hashes
+diff --git a/build-aux/scripts/expand-selected-hashes b/build-aux/scripts/expand-selected-hashes
 index 10d0bcc5..f13a5bac 100644
---- a/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/expand-selected-hashes
-+++ b/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/expand-selected-hashes
+--- a/build-aux/scripts/expand-selected-hashes
++++ b/build-aux/scripts/expand-selected-hashes
 @@ -14,7 +14,7 @@
  # Caution: if you change the format of lib/hashes.conf you will
  # probably need to modify gen-crypt-hashes-h as well as this script.
@@ -50,10 +50,10 @@ index 10d0bcc5..f13a5bac 100644
  use warnings FATAL => 'all';
  use utf8;
  use open qw(:std :utf8);
-diff --git a/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/gen-crypt-h b/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/gen-crypt-h
+diff --git a/build-aux/scripts/gen-crypt-h b/build-aux/scripts/gen-crypt-h
 index 12aecf6d..3710c70f 100644
---- a/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/gen-crypt-h
-+++ b/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/gen-crypt-h
+--- a/build-aux/scripts/gen-crypt-h
++++ b/build-aux/scripts/gen-crypt-h
 @@ -8,7 +8,7 @@
  
  # Generate (x)crypt.h from (x)crypt.h.in.
@@ -63,10 +63,10 @@ index 12aecf6d..3710c70f 100644
  use warnings FATAL => 'all';
  use utf8;
  use open qw(:std :utf8);
-diff --git a/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/gen-crypt-hashes-h b/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/gen-crypt-hashes-h
+diff --git a/build-aux/scripts/gen-crypt-hashes-h b/build-aux/scripts/gen-crypt-hashes-h
 index 056eceb1..a1c55f9d 100644
---- a/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/gen-crypt-hashes-h
-+++ b/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/gen-crypt-hashes-h
+--- a/build-aux/scripts/gen-crypt-hashes-h
++++ b/build-aux/scripts/gen-crypt-hashes-h
 @@ -12,7 +12,7 @@
  # Caution: if you change the format of lib/hashes.conf you will
  # probably need to modify expand-selected-hashes as well as this script.
@@ -76,10 +76,10 @@ index 056eceb1..a1c55f9d 100644
  use warnings FATAL => 'all';
  use utf8;
  use open qw(:std :utf8);
-diff --git a/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/gen-crypt-symbol-vers-h b/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/gen-crypt-symbol-vers-h
+diff --git a/build-aux/scripts/gen-crypt-symbol-vers-h b/build-aux/scripts/gen-crypt-symbol-vers-h
 index d5ee15e0..5f00e804 100644
---- a/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/gen-crypt-symbol-vers-h
-+++ b/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/gen-crypt-symbol-vers-h
+--- a/build-aux/scripts/gen-crypt-symbol-vers-h
++++ b/build-aux/scripts/gen-crypt-symbol-vers-h
 @@ -16,7 +16,7 @@
  # Note: we currently don't support compatibility symbols that need
  # a different definition from the default version.
@@ -89,10 +89,10 @@ index d5ee15e0..5f00e804 100644
  use warnings FATAL => 'all';
  use utf8;
  use open qw(:std :utf8);
-diff --git a/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/gen-libcrypt-map b/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/gen-libcrypt-map
+diff --git a/build-aux/scripts/gen-libcrypt-map b/build-aux/scripts/gen-libcrypt-map
 index ef57a409..a9b1c6d7 100644
---- a/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/gen-libcrypt-map
-+++ b/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/gen-libcrypt-map
+--- a/build-aux/scripts/gen-libcrypt-map
++++ b/build-aux/scripts/gen-libcrypt-map
 @@ -10,7 +10,7 @@
  # See libcrypt.map.in for an explanation of the format of .map.in
  # files.
@@ -102,10 +102,10 @@ index ef57a409..a9b1c6d7 100644
  use warnings FATAL => 'all';
  use utf8;
  use open qw(:std :utf8);
-diff --git a/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/skip-if-exec-format-error b/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/skip-if-exec-format-error
+diff --git a/build-aux/scripts/skip-if-exec-format-error b/build-aux/scripts/skip-if-exec-format-error
 index 0864415d..8fdf86cc 100755
---- a/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/skip-if-exec-format-error
-+++ b/src/libxcrypt/libxcrypt-4.4.28/build-aux/scripts/skip-if-exec-format-error
+--- a/build-aux/scripts/skip-if-exec-format-error
++++ b/build-aux/scripts/skip-if-exec-format-error
 @@ -9,7 +9,7 @@
  # See https://creativecommons.org/publicdomain/zero/1.0/ for further
  # details.
@@ -115,10 +115,10 @@ index 0864415d..8fdf86cc 100755
  use warnings FATAL => 'all';
  use utf8;
  use open qw(:std :utf8);
-diff --git a/src/libxcrypt/libxcrypt-4.4.28/configure b/src/libxcrypt/libxcrypt-4.4.28/configure
+diff --git a/configure b/configure
 index 5074c031..a99e7ce9 100755
---- a/src/libxcrypt/libxcrypt-4.4.28/configure
-+++ b/src/libxcrypt/libxcrypt-4.4.28/configure
+--- a/configure
++++ b/configure
 @@ -4808,16 +4808,16 @@ $as_echo "no" >&6; }
  fi
  
@@ -141,10 +141,10 @@ index 5074c031..a99e7ce9 100755
  fi
  # Extract the first word of "gpg2", so it can be a program name with args.
  set dummy gpg2; ac_word=$2
-diff --git a/src/libxcrypt/libxcrypt-4.4.28/test/TestCommon.pm b/src/libxcrypt/libxcrypt-4.4.28/test/TestCommon.pm
+diff --git a/test/TestCommon.pm b/test/TestCommon.pm
 index 7051d822..ce13b529 100644
---- a/src/libxcrypt/libxcrypt-4.4.28/test/TestCommon.pm
-+++ b/src/libxcrypt/libxcrypt-4.4.28/test/TestCommon.pm
+--- a/test/TestCommon.pm
++++ b/test/TestCommon.pm
 @@ -9,7 +9,7 @@
  
  package TestCommon;
@@ -154,10 +154,10 @@ index 7051d822..ce13b529 100644
  use warnings FATAL => 'all';
  use utf8;
  use open qw(:utf8);
-diff --git a/src/libxcrypt/libxcrypt-4.4.28/test/symbols-compat.pl b/src/libxcrypt/libxcrypt-4.4.28/test/symbols-compat.pl
+diff --git a/test/symbols-compat.pl b/test/symbols-compat.pl
 index 1b5441b2..17380c4a 100644
---- a/src/libxcrypt/libxcrypt-4.4.28/test/symbols-compat.pl
-+++ b/src/libxcrypt/libxcrypt-4.4.28/test/symbols-compat.pl
+--- a/test/symbols-compat.pl
++++ b/test/symbols-compat.pl
 @@ -19,7 +19,7 @@
  # $CC, $NM - names of tools to run (defaults to 'cc' and 'nm' respectively)
  # $CFLAGS, $LDFLAGS - options to pass to $CC when linking (default: empty)
@@ -167,10 +167,10 @@ index 1b5441b2..17380c4a 100644
  use warnings FATAL => 'all';
  use utf8;
  use open qw(:std :utf8);
-diff --git a/src/libxcrypt/libxcrypt-4.4.28/test/symbols-renames.pl b/src/libxcrypt/libxcrypt-4.4.28/test/symbols-renames.pl
+diff --git a/test/symbols-renames.pl b/test/symbols-renames.pl
 index e261cf22..bc09d750 100644
---- a/src/libxcrypt/libxcrypt-4.4.28/test/symbols-renames.pl
-+++ b/src/libxcrypt/libxcrypt-4.4.28/test/symbols-renames.pl
+--- a/test/symbols-renames.pl
++++ b/test/symbols-renames.pl
 @@ -17,7 +17,7 @@
  # $SYMBOL_PREFIX - prefix, if any, added to global symbols defined from C
  # $NM, $CPP, $CPPFLAGS - nm utility, C preprocessor, and parameters
@@ -180,10 +180,10 @@ index e261cf22..bc09d750 100644
  use warnings FATAL => 'all';
  use utf8;
  use open qw(:std :utf8);
-diff --git a/src/libxcrypt/libxcrypt-4.4.28/test/symbols-static.pl b/src/libxcrypt/libxcrypt-4.4.28/test/symbols-static.pl
+diff --git a/test/symbols-static.pl b/test/symbols-static.pl
 index aabba5c7..0b9861a7 100644
---- a/src/libxcrypt/libxcrypt-4.4.28/test/symbols-static.pl
-+++ b/src/libxcrypt/libxcrypt-4.4.28/test/symbols-static.pl
+--- a/test/symbols-static.pl
++++ b/test/symbols-static.pl
 @@ -19,7 +19,7 @@
  # $SYMBOL_PREFIX - prefix, if any, added to global symbols defined from C
  # $NM, $CPP, $CPPFLAGS - nm utility, C preprocessor, and parameters

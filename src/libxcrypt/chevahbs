@@ -5,6 +5,11 @@
 # Import shared code.
 . ./functions.sh
 
+chevahbs_patch() {
+    # On CentOS 5.11, Perl 5.10 is what we have.
+    echo "Applying force_perl_510.patch:"
+    execute patch -p1 < force_perl_510.patch
+}
 
 chevahbs_configure() {
     CONF_OPTS="--enable-static"

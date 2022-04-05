@@ -24,3 +24,55 @@ index 5074c031..a99e7ce9 100755
  fi
  # Extract the first word of "gpg2", so it can be a program name with args.
  set dummy gpg2; ac_word=$2
+diff --git a/test/TestCommon.pm b/test/TestCommon.pm
+index 7051d822..a1f09d81 100644
+--- a/test/TestCommon.pm
++++ b/test/TestCommon.pm
+@@ -9,7 +9,7 @@
+ 
+ package TestCommon;
+ 
+-use v5.14;    # implicit use strict, use feature ':5.14'
++use v5.10;    # implicit use strict, use feature ':5.14'
+ use warnings FATAL => 'all';
+ use utf8;
+ use open qw(:utf8);
+diff --git a/test/symbols-compat.pl b/test/symbols-compat.pl
+index 1b5441b2..95b33368 100644
+--- a/test/symbols-compat.pl
++++ b/test/symbols-compat.pl
+@@ -19,7 +19,7 @@
+ # $CC, $NM - names of tools to run (defaults to 'cc' and 'nm' respectively)
+ # $CFLAGS, $LDFLAGS - options to pass to $CC when linking (default: empty)
+ 
+-use v5.14;    # implicit use strict, use feature ':5.14'
++use v5.10;    # implicit use strict, use feature ':5.14'
+ use warnings FATAL => 'all';
+ use utf8;
+ use open qw(:std :utf8);
+diff --git a/test/symbols-renames.pl b/test/symbols-renames.pl
+index e261cf22..af1905e6 100644
+--- a/test/symbols-renames.pl
++++ b/test/symbols-renames.pl
+@@ -17,7 +17,7 @@
+ # $SYMBOL_PREFIX - prefix, if any, added to global symbols defined from C
+ # $NM, $CPP, $CPPFLAGS - nm utility, C preprocessor, and parameters
+ 
+-use v5.14;    # implicit use strict, use feature ':5.14'
++use v5.10;    # implicit use strict, use feature ':5.14'
+ use warnings FATAL => 'all';
+ use utf8;
+ use open qw(:std :utf8);
+diff --git a/test/symbols-static.pl b/test/symbols-static.pl
+index aabba5c7..75a72440 100644
+--- a/test/symbols-static.pl
++++ b/test/symbols-static.pl
+@@ -19,7 +19,7 @@
+ # $SYMBOL_PREFIX - prefix, if any, added to global symbols defined from C
+ # $NM, $CPP, $CPPFLAGS - nm utility, C preprocessor, and parameters
+ 
+-use v5.14;    # implicit use strict, use feature ':5.14'
++use v5.10;    # implicit use strict, use feature ':5.14'
+ use warnings FATAL => 'all';
+ use utf8;
+ use open qw(:std :utf8);

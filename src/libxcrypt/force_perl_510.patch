@@ -1,13 +1,26 @@
-diff --git a/configure.ac b/configure.ac
-index b9394d87..8b8748b6 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -46,7 +46,7 @@ esac
- AC_PROG_CPP
- AC_PROG_MAKE_SET
- AC_PROG_LN_S
--zw_PROG_PERL([5.14.0])
-+zw_PROG_PERL([5.10.0])
- AC_PATH_PROG([GPG2], [gpg2], [false])
- AC_PATH_PROG([SHA256SUM], [sha256sum], [false])
+diff --git a/configure b/configure
+index 5074c031..a99e7ce9 100755
+--- a/configure
++++ b/configure
+@@ -4808,16 +4808,16 @@ $as_echo "no" >&6; }
+ fi
  
+ 
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $PERL is version 5.14.0 or later" >&5
+-$as_echo_n "checking whether $PERL is version 5.14.0 or later... " >&6; }
+-$as_echo "$as_me:${as_lineno-$LINENO}: $PERL -e 'use v5.14.0;'" >&5
+-if "$PERL" -e 'use v5.14.0;' >&5 2>&1; then :
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $PERL is version 5.10.0 or later" >&5
++$as_echo_n "checking whether $PERL is version 5.10.0 or later... " >&6; }
++$as_echo "$as_me:${as_lineno-$LINENO}: $PERL -e 'use v5.10.0;'" >&5
++if "$PERL" -e 'use v5.10.0;' >&5 2>&1; then :
+   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+ $as_echo "yes" >&6; }
+ else
+   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+ $as_echo "no" >&6; }
+-as_fn_error $? "Perl version 5.14.0 or later is required" "$LINENO" 5
++as_fn_error $? "Perl version 5.10.0 or later is required" "$LINENO" 5
+ fi
+ # Extract the first word of "gpg2", so it can be a program name with args.
+ set dummy gpg2; ac_word=$2

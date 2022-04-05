@@ -12,7 +12,7 @@ chevahbs_patch() {
 }
 
 chevahbs_configure() {
-    CONF_OPTS="--enable-static"
+    CONF_OPTS="--enable-static --enable-hashes=glibc"
     execute ./configure --prefix="" $CONF_OPTS
 }
 

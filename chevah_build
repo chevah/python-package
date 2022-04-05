@@ -12,6 +12,7 @@ set -o pipefail
 
 PYTHON_BUILD_VERSION="2.7.18"
 LIBFFI_VERSION="3.2.1"
+LIBXCRYPT_VERSION="4.4.28"
 ZLIB_VERSION="1.2.11"
 BZIP2_VERSION="1.0.8"
 # We statically build the BSD libedit on selected platforms to get the
@@ -58,6 +59,7 @@ PYTHON_PACKAGE_VERSION="$(git rev-parse --short=7 HEAD)"
 
 # Export the variables needed by the chevahbs scripts and the test phase.
 export PYTHON_BUILD_VERSION PYTHON_PACKAGE_VERSION REDISTRIBUTABLE_VERSION
+export BUILD_LIBXCRYPT="no"
 export BUILD_ZLIB="no"
 export BUILD_BZIP2="yes"
 export BUILD_LIBEDIT="yes"
@@ -286,6 +288,7 @@ case $OS in
         export MAKE="make"
         # Build as portable as possible, only glibc 2.x should be needed.
         export BUILD_LIBFFI="yes"
+        export BUILD_LIBXCRYPT="yes"
         export BUILD_ZLIB="yes"
         export BUILD_LIBEDIT="no"
         # Generic Linux might be an old distro with OpenSSL 0.9.8 libraries.
@@ -454,6 +457,12 @@ command_build() {
         build 'libffi' "libffi-$LIBFFI_VERSION" ${PYTHON_BUILD_FOLDER}
     else
         (>&2 echo "Skip building LIBFFI!")
+    fi
+
+    if [ "$BUILD_LIBXCRYPT" = "yes" ]; then
+        build 'libxcrypt' "libxcrypt-$LIBXCRYPT_VERSION" ${PYTHON_BUILD_FOLDER}
+    else
+        (>&2 echo "Skip building LIBXCRYPT!")
     fi
 
     if [ "$BUILD_ZLIB" = "yes" ]; then

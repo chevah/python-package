@@ -7,7 +7,7 @@
 
 
 chevahbs_configure() {
-    CONF_OPTS="--static"
+    CONF_OPTS="--enable-static"
     execute ./configure --prefix="" $CONF_OPTS
 }
 

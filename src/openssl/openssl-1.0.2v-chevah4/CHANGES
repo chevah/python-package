@@ -7,6 +7,10 @@
  https://github.com/openssl/openssl/commits/ and pick the appropriate
  release branch.
 
+ Changes between 1.0.2v-chevah3 and 1.0.2v-chevah4 [06 Apr 2022]
+
+  *) Fixed infinite loop in BN_mod_sqrt() (CVE-2022-0778).
+
  Changes between 1.0.2v-chevah2 and 1.0.2v-chevah3 [15 Sep 2021]
 
   *) Fixed read buffer overruns processing ASN.1 strings (CVE-2021-3712).

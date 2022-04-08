@@ -22,14 +22,6 @@ chevahbs_compile() {
 chevahbs_install() {
     install_folder=$1
 
-    # Installing fails on some OS'es.
-    # Following workarounds should cover all 32/64bit cases for all arches.
-    case $OS in
-        aix*)
-            execute ln -s ../install-sh powerpc-ibm-aix"$(oslevel)"/install-sh
-            ;;
-    esac
-
     execute $MAKE install DESTDIR=$INSTALL_FOLDER
 
     if [ -z "$(ls -A $INSTALL_FOLDER/include)" ]; then

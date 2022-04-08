@@ -64,7 +64,10 @@ chevahbs_compile() {
             ;;
         *)
             execute $MAKE
-            execute $MAKE test
+            # FIXME. A faster ARM64 GitHub runner would be nice.
+            if [ "$ARCH" != "arm64" ]; then
+                execute $MAKE test
+            fi
             ;;
     esac
 }

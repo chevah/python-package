@@ -21,7 +21,7 @@ concurrency:
 
 env:
   CHEVAH_REPO: 'python-package'
-  TMATE_DEBUG: 'yes'
+  TMATE_DEBUG: 'no'
 
 jobs:
 
@@ -97,8 +97,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ macos-11 ]
-    timeout-minutes: 120
+        runs-on: [ macos-10.15 ]
+    timeout-minutes: 60
     steps:
     # Avoid linking to Homebrew's libintl during build.
     # Needed tools are to be used from /usr/bin.

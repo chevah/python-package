@@ -2,8 +2,7 @@
 #
 # Chevah Build Script for libffi.
 #
-# For now it is supported only on AIX, Solaris and ArchLinux.
-#
+
 # Import shared code.
 . ./functions.sh
 

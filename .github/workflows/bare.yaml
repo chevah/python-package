@@ -21,7 +21,7 @@ concurrency:
 
 env:
   CHEVAH_REPO: 'python-package'
-  TMATE_DEBUG: 'no'
+  TMATE_DEBUG: 'yes'
 
 jobs:
 
@@ -97,8 +97,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ macos-10.15 ]
-    timeout-minutes: 60
+        runs-on: [ macos-11 ]
+    timeout-minutes: 120
     steps:
     # Avoid linking to Homebrew's libintl during build.
     # Needed tools are to be used from /usr/bin.
@@ -167,7 +167,7 @@ jobs:
       # Workflow won't be cancelled at the first failed job.
       fail-fast: false
       matrix:
-        runs-on: [ windows-2022, windows-2019]
+        runs-on: [ windows-2022, windows-2019 ]
     timeout-minutes: 60
     steps:
     # Add packages needed to build OpenSSL, cryptography, etc.

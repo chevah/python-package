@@ -167,7 +167,7 @@ jobs:
       # Workflow won't be cancelled at the first failed job.
       fail-fast: false
       matrix:
-        runs-on: [ windows-2019, windows-2016 ]
+        runs-on: [ windows-2022, windows-2019 ]
     timeout-minutes: 60
     steps:
     # Add packages needed to build OpenSSL, cryptography, etc.

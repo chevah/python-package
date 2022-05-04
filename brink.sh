@@ -729,6 +729,9 @@ detect_os() {
                         if [ ${os_version_chevah%%04} == ${os_version_chevah} \
                             -o $(( ${os_version_chevah:0:2} % 2 )) -ne 0 ]; then
                             check_linux_glibc
+                        elif [ ${os_version_chevah} == "2204" ]; then
+                            # OpenSSL 3.0.x not supported by cryptography 3.3.x.
+                            check_linux_glibc
                         fi
                         set_os_if_not_generic "ubuntu" $os_version_chevah
                         ;;

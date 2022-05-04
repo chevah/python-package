@@ -40,16 +40,10 @@ SETUP['pypi']['index_url'] = 'https://bin.chevah.com:20443/pypi/simple'
 
 SETUP['repository']['name'] = u'python-package'
 SETUP['repository']['github'] = 'https://github.com/chevah/python-package'
-SETUP['buildbot']['builders_filter'] = u'python-package'
-SETUP['buildbot']['server'] = 'buildbot.chevah.com'
-SETUP['buildbot']['web_url'] = 'https://buildbot.chevah.com:10433'
 
 RUN_PACKAGES = [
     'zope.interface==3.8.0',
     'twisted==15.5.0.chevah7',
-
-    # Buildbot is used for try scheduler
-    'buildbot==0.8.11.chevah11',
 
     # Required for some unicode handling.
     'unidecode',

@@ -84,7 +84,7 @@ def get_allowed_deps():
                 '/lib/x86_64-linux-gnu/libutil.so.1',
                 '/lib/x86_64-linux-gnu/libz.so.1',
                 ]
-            elif ubuntu_version == "1804":
+            if ubuntu_version == "1804":
                 allowed_deps.extend([
                     '/lib/x86_64-linux-gnu/libtinfo.so.5',
                     '/usr/lib/x86_64-linux-gnu/libcrypto.so.1.1',

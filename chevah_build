@@ -342,7 +342,10 @@ case "$ARCH" in
         let JOBS=CPUS
         ;;
 esac
-export MAKE="${MAKE:-} -j${JOBS}"
+# Only add to $MAKE if there is one, so that NMAKE on Windows is not confused.
+if [ -n "${MAKE-}" ]; then
+    export MAKE="$MAKE -j${JOBS}"
+fi
 
 
 #

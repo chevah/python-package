@@ -122,8 +122,8 @@ BUILD_FOLDER='build'
 # On platforms with a choice of C compilers, you may choose among the
 # available compilers by setting CC and CXX further down in this script.
 COMMON_PKGS="gcc make m4 automake libtool patch"
-DEB_PKGS="$COMMON_PKGS git zlib1g-dev libffi-dev libncurses5-dev libssl-dev"
-RPM_PKGS="$COMMON_PKGS git zlib-devel libffi-devel ncurses-devel openssl-devel"
+DEB_PKGS="$COMMON_PKGS git libffi-dev zlib1g-dev libncurses5-dev libssl-dev"
+RPM_PKGS="$COMMON_PKGS git libffi-devel zlib-devel ncurses-devel openssl-devel"
 APK_PKGS="$COMMON_PKGS git zlib-dev musl-dev openssl-dev linux-headers lddtree"
 # No automated Windows package management, but here's what it's needed.
 CHOCO_PKGS="vcpython27 make git StrawberryPerl nasm 7zip"

@@ -32,7 +32,7 @@ jobs:
       matrix:
         # CentOS 5.11 setup was saved as an image pushed to Docker Hub. See the
         # Overview section at https://hub.docker.com/r/proatria/centos for details.
-        container: [ 'alpine:3.14', 'centos:8.2.2004', 'proatria/centos:5.11-chevah1', 'ubuntu:22.04' ]
+        container: [ 'alpine:3.14', 'centos:8.2.2004', 'proatria/centos:5.11-chevah1' ]
     timeout-minutes: 30
     steps:
 
@@ -51,13 +51,6 @@ jobs:
         sed -i s@^#baseurl=http://mirror.centos.org/\$contentdir/\$releasever/@baseurl=https://vault.centos.org/8.2.2004/@ /etc/yum.repos.d/*.repo
         yum -y upgrade
         yum -y install git curl gcc make m4 automake libtool patch openssl-devel zlib-devel libffi-devel ncurses-devel sudo which openssh-clients
-
-    - name: Ubuntu setup
-      if: startsWith(matrix.container, 'ubuntu')
-      run: |
-        apt update
-        apt -y dist-upgrade
-        apt -y install git curl gcc make m4 automake libtool patch libffi-dev zlib1g-dev libncurses5-dev libssl-dev sudo openssh-client
 
     # On a Docker container, everything runs as root by default.
     - name: Chevah user setup

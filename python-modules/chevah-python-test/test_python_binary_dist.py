@@ -63,6 +63,7 @@ def get_allowed_deps():
                 '/lib64/libutil.so.1',
                 '/lib64/libz.so.1',
                 ]
+            rhel_version = CHEVAH_OS[4:]
             if rhel_version.startswith("8"):
                 allowed_deps.extend([
                     '/lib64/libcrypto.so.1.1',

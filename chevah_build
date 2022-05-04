@@ -490,11 +490,6 @@ command_build() {
         fi
         # On Windows, the BATs from pyca/infra do the install part.
         if [ "${OS%win*}" != "" ]; then
-            # Place SSL headers where they can be picked up.
-            echo "Copying OpenSSL $OPENSSL_VERSION headers..."
-            execute cp -r \
-                build/openssl-${OPENSSL_VERSION}/include/openssl \
-                ${INSTALL_FOLDER}/include/
             # To make sure they're found, we're back to using CPPFLAGS.
             export CPPFLAGS="${CPPFLAGS:-} -I${INSTALL_FOLDER}/include"
         fi

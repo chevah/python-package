@@ -342,9 +342,7 @@ case "$ARCH" in
         let JOBS=CPUS
         ;;
 esac
-if [ -n "${MAKE-}" ]; then
-    export MAKE="$MAKE -j${JOBS}"
-fi
+export MAKE="${MAKE:-} -j${JOBS}"
 
 
 #
@@ -418,8 +416,9 @@ check_dependencies() {
     command -v makeinfo
     if [ $? -ne 0 ]; then
         (>&2 echo "Missing makeinfo, trying to link it to /bin/true in ~/bin.")
-        mkdir -p ~/bin
-        ln -s /bin/true ~/bin/makeinfo
+        execute mkdir -p ~/bin
+        execute rm -f ~/bin/makeinfo
+        execute ln -s /bin/true ~/bin/makeinfo
         export PATH=$PATH:~/bin/
     fi
 }
@@ -429,7 +428,7 @@ help_text_clean="Clean the build."
 command_clean() {
     if [ -e ${BUILD_FOLDER} ]; then
         echo 'Previous build sub-directory found. Removing...'
-        rm -rf ${BUILD_FOLDER}
+        execute rm -rf ${BUILD_FOLDER}
     fi
 }
 
@@ -730,13 +729,11 @@ command_test() {
             (>&2 echo -e "\tSkipping because of upstream issues.")
             ;;
         lnx*)
-            set +o nounset
-            if [ x"$CHEVAH_CONTAINER" = x"yes" ]; then
+            if [ x${CHEVAH_CONTAINER-} = x"yes" ]; then
                 (>&2 echo -e "\tSkipping as it fails under Docker on CentOS 5.")
             else
                 execute $PYTHON_BIN ${SCANDIR_FOLDER}/test/run_tests.py
             fi
-            set -o nounset
             ;;
         *)
             # UTF-8 locale is needed for the tests to pass on remaining OS'es.

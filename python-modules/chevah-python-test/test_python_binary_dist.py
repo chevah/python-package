@@ -427,7 +427,7 @@ def main():
         sys.stderr.write('"zlib" missing.\n')
         exit_code = 1
     else:
-        print 'zlib %s' % (zlib.__version__,)
+        print 'zlib %s' % (zlib.ZLIB_VERSION,)
 
     try:
         from ssl import OPENSSL_VERSION

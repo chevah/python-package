@@ -64,15 +64,6 @@ def get_allowed_deps():
                 '/lib64/libz.so.1',
                 ]
             rhel_version = CHEVAH_OS[4:]
-            if rhel_version.startswith("7"):
-                allowed_deps.extend([
-                    '/lib64/libcrypto.so.10',
-                    '/lib64/libffi.so.6',
-                    '/lib64/libncursesw.so.5',
-                    '/lib64/libpcre.so.1',
-                    '/lib64/libssl.so.10',
-                    '/lib64/libtinfo.so.5',
-                    ])
             if rhel_version.startswith("8"):
                 allowed_deps.extend([
                     '/lib64/libcrypto.so.1.1',
@@ -81,31 +72,6 @@ def get_allowed_deps():
                     '/lib64/libssl.so.1.1',
                     '/lib64/libtinfo.so.6',
                     ])
-        elif 'amzn' in CHEVAH_OS:
-            # Deps for Amazon Linux 2 (x86_64 only).
-            allowed_deps=[
-                '/lib64/libcom_err.so.2',
-                '/lib64/libcrypto.so.10',
-                '/lib64/libcrypt.so.1',
-                '/lib64/libc.so.6',
-                '/lib64/libdl.so.2',
-                '/lib64/libffi.so.6',
-                '/lib64/libgssapi_krb5.so.2',
-                '/lib64/libk5crypto.so.3',
-                '/lib64/libkeyutils.so.1',
-                '/lib64/libkrb5.so.3',
-                '/lib64/libkrb5support.so.0',
-                '/lib64/libm.so.6',
-                '/lib64/libncursesw.so.6',
-                '/lib64/libpcre.so.1',
-                '/lib64/libpthread.so.0',
-                '/lib64/libresolv.so.2',
-                '/lib64/libselinux.so.1',
-                '/lib64/libssl.so.10',
-                '/lib64/libtinfo.so.6',
-                '/lib64/libutil.so.1',
-                '/lib64/libz.so.1',
-                ]
         elif 'ubuntu' in CHEVAH_OS:
             ubuntu_version = CHEVAH_OS[6:]
             # Common deps for supported Ubuntu LTS with full paths (x86_64).
@@ -119,14 +85,7 @@ def get_allowed_deps():
                 '/lib/x86_64-linux-gnu/libutil.so.1',
                 '/lib/x86_64-linux-gnu/libz.so.1',
                 ]
-            if ubuntu_version == "1604":
-                allowed_deps.extend([
-                    '/lib/x86_64-linux-gnu/libcrypto.so.1.0.0',
-                    '/lib/x86_64-linux-gnu/libssl.so.1.0.0',
-                    '/lib/x86_64-linux-gnu/libtinfo.so.5',
-                    '/usr/lib/x86_64-linux-gnu/libffi.so.6',
-                ])
-            elif ubuntu_version == "1804":
+            if ubuntu_version == "1804":
                 allowed_deps.extend([
                     '/lib/x86_64-linux-gnu/libtinfo.so.5',
                     '/usr/lib/x86_64-linux-gnu/libcrypto.so.1.1',
@@ -141,23 +100,6 @@ def get_allowed_deps():
                     '/lib/x86_64-linux-gnu/libtinfo.so.6',
                     '/lib/x86_64-linux-gnu/libffi.so.7',
                 ])
-            if 'arm64' in CHEVAH_ARCH:
-                # Deps with full paths for Ubuntu 16.04 on a Pine64 board.
-                allowed_deps=[
-                    '/lib/aarch64-linux-gnu/libc.so.6',
-                    '/lib/aarch64-linux-gnu/libcrypt.so.1',
-                    '/lib/aarch64-linux-gnu/libcrypto.so.1.0.0',
-                    '/lib/aarch64-linux-gnu/libdl.so.2',
-                    '/lib/aarch64-linux-gnu/libgcc_s.so.1',
-                    '/lib/aarch64-linux-gnu/libm.so.6',
-                    '/lib/aarch64-linux-gnu/libnsl.so.1',
-                    '/lib/aarch64-linux-gnu/libpthread.so.0',
-                    '/lib/aarch64-linux-gnu/libssl.so.1.0.0',
-                    '/lib/aarch64-linux-gnu/libtinfo.so.5',
-                    '/lib/aarch64-linux-gnu/libutil.so.1',
-                    '/lib/aarch64-linux-gnu/libz.so.1',
-                    '/usr/lib/aarch64-linux-gnu/libffi.so.6',
-                    ]
         elif 'alpine' in CHEVAH_OS:
             # Full deps with paths, but no minor versions, for Alpine 3.6+.
             alpine_version = CHEVAH_OS[6:]
@@ -485,7 +427,7 @@ def main():
         sys.stderr.write('"zlib" missing.\n')
         exit_code = 1
     else:
-        print 'zlib %s' % (zlib.__version__,)
+        print 'zlib %s' % (zlib.ZLIB_VERSION,)
 
     try:
         from ssl import OPENSSL_VERSION

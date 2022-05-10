@@ -97,7 +97,6 @@ PYPI_SITE="https://bin.chevah.com:20443/pypi"
 # Arguments that are sent when using pip.
 PIP_ARGS="\
     --index-url=${PYPI_SITE}/simple \
-    --trusted-host=bin.chevah.com \
     --no-cache-dir \
     --no-warn-script-location \
     "
@@ -123,9 +122,9 @@ BUILD_FOLDER='build'
 # On platforms with a choice of C compilers, you may choose among the
 # available compilers by setting CC and CXX further down in this script.
 COMMON_PKGS="gcc make m4 automake libtool patch"
-DEB_PKGS="$COMMON_PKGS git libssl-dev zlib1g-dev libffi-dev libncurses5-dev"
-RHEL_PKGS="$COMMON_PKGS git openssl-devel zlib-devel libffi-devel ncurses-devel"
-ALP_PKGS="$COMMON_PKGS git zlib-dev linux-headers musl-dev openssl-dev lddtree"
+DEB_PKGS="$COMMON_PKGS git libffi-dev zlib1g-dev libncurses5-dev libssl-dev"
+RPM_PKGS="$COMMON_PKGS git libffi-devel zlib-devel ncurses-devel openssl-devel"
+APK_PKGS="$COMMON_PKGS git zlib-dev musl-dev openssl-dev linux-headers lddtree"
 # No automated Windows package management, but here's what it's needed.
 CHOCO_PKGS="vcpython27 make git StrawberryPerl nasm 7zip"
 
@@ -343,6 +342,7 @@ case "$ARCH" in
         let JOBS=CPUS
         ;;
 esac
+# Only add to $MAKE if there is one, so that NMAKE on Windows is not confused.
 if [ -n "${MAKE-}" ]; then
     export MAKE="$MAKE -j${JOBS}"
 fi
@@ -364,12 +364,12 @@ check_dependencies() {
             check_command="dpkg --status"
             ;;
         rhel*|amzn*)
-            packages=$RHEL_PKGS
+            packages=$RPM_PKGS
             check_command="rpm --query"
             ;;
         alpine*)
             # Alpine 3.9 switched back to OpenSSL as default.
-            packages=$ALP_PKGS
+            packages=$APK_PKGS
             check_command="apk info -q -e"
             ;;
         # On remaining OS'es we just check for some of the needed commands.
@@ -384,7 +384,7 @@ check_dependencies() {
             packages="git gmake patch xlc_r seq sudo"
             ;;
         macos)
-            packages="$CC make m4 libtool git patch"
+            packages="$CC make m4 libtool git patch perl"
             ;;
         win)
             # To not get confused by MSYS2's perl, we check for wperl.
@@ -419,8 +419,9 @@ check_dependencies() {
     command -v makeinfo
     if [ $? -ne 0 ]; then
         (>&2 echo "Missing makeinfo, trying to link it to /bin/true in ~/bin.")
-        mkdir -p ~/bin
-        ln -s /bin/true ~/bin/makeinfo
+        execute mkdir -p ~/bin
+        execute rm -f ~/bin/makeinfo
+        execute ln -s /bin/true ~/bin/makeinfo
         export PATH=$PATH:~/bin/
     fi
 }
@@ -430,7 +431,7 @@ help_text_clean="Clean the build."
 command_clean() {
     if [ -e ${BUILD_FOLDER} ]; then
         echo 'Previous build sub-directory found. Removing...'
-        rm -rf ${BUILD_FOLDER}
+        execute rm -rf ${BUILD_FOLDER}
     fi
 }
 
@@ -491,11 +492,6 @@ command_build() {
         fi
         # On Windows, the BATs from pyca/infra do the install part.
         if [ "${OS%win*}" != "" ]; then
-            # Place SSL headers where they can be picked up.
-            echo "Copying OpenSSL $OPENSSL_VERSION headers..."
-            execute cp -r \
-                build/openssl-${OPENSSL_VERSION}/include/openssl \
-                ${INSTALL_FOLDER}/include/
             # To make sure they're found, we're back to using CPPFLAGS.
             export CPPFLAGS="${CPPFLAGS:-} -I${INSTALL_FOLDER}/include"
         fi
@@ -736,13 +732,11 @@ command_test() {
             (>&2 echo -e "\tSkipping because of upstream issues.")
             ;;
         lnx*)
-            set +o nounset
-            if [ x"$CHEVAH_CONTAINER" = x"yes" ]; then
+            if [ x${CHEVAH_CONTAINER-} = x"yes" ]; then
                 (>&2 echo -e "\tSkipping as it fails under Docker on CentOS 5.")
             else
                 execute $PYTHON_BIN ${SCANDIR_FOLDER}/test/run_tests.py
             fi
-            set -o nounset
             ;;
         *)
             # UTF-8 locale is needed for the tests to pass on remaining OS'es.

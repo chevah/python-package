@@ -33,10 +33,11 @@
 # command used to execute Python inside the newly virtual environment.
 #
 
-# Script initialization.
-set -o nounset
-set -o errexit
-set -o pipefail
+# Bash checks
+set -o nounset    # always check if variables exist
+set -o errexit    # always exit on error
+set -o errtrace   # trap errors in functions as well
+set -o pipefail   # don't ignore exit codes when piping output
 
 # Initialize default value.
 COMMAND=${1-''}
@@ -636,10 +637,11 @@ check_linux_glibc() {
         exit 18
     fi
 
-    ldd --version > $ldd_output_file
+    ldd --version > $ldd_output_file 2> /dev/null
     egrep "GNU\ libc|GLIBC" $ldd_output_file > /dev/null
     if [ $? -ne 0 ]; then
         (>&2 echo "No glibc reported by ldd... Unsupported Linux libc?")
+        rm $ldd_output_file
         exit 19
     fi
 

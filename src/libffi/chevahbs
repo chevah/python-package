@@ -20,7 +20,19 @@ chevahbs_compile() {
 
 chevahbs_install() {
     install_folder=$1
-    execute $MAKE install DESTDIR=$INSTALL_FOLDER
+    case $OS in
+        lnx)
+            # Install manually to avoid creating a lib64/ sub-dir on CentOS 5.
+            execute cp -v *-linux-*/.libs/libffi.a "$INSTALL_FOLDER"/lib/
+            execute cp -v *-linux-*/libffi.la "$INSTALL_FOLDER"/lib/
+            execute cp -v *-linux-*/include/*.h "$INSTALL_FOLDER"/include/
+            execute mkdir "$INSTALL_FOLDER"/lib/pkgconfig/
+            execute cp -v *-linux-*/libffi.pc "$INSTALL_FOLDER"/lib/pkgconfig/
+            ;;
+        *)
+            execute $MAKE install DESTDIR=$INSTALL_FOLDER
+            ;;
+    esac
 }
 
 

@@ -2,7 +2,7 @@
 #
 # Chevah Build Script for Python.
 #
-# Import shared code.
+# Import shared code and the Bash checks.
 . ./functions.sh
 
 #

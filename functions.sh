@@ -3,6 +3,11 @@
 # Shared code for all binary-dist scripts.
 #
 
+# Bash checks (chevahbs scripts source them from here)
+set -o nounset    # always check if variables exist
+set -o errexit    # always exit on error
+set -o errtrace   # trap errors in functions as well
+set -o pipefail   # don't ignore exit codes when piping output
 
 # Define global variables
 COMMAND=""

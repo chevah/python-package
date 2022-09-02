@@ -88,7 +88,6 @@ chevahbs_install() {
             execute cp *.pc "$INSTALL_FOLDER"/lib/pkgconfig/
             ;;
         *)
-            install_folder=$1
             execute $MAKE install
             ;;
     esac

@@ -19,7 +19,6 @@ chevahbs_compile() {
 
 
 chevahbs_install() {
-    install_folder=$1
     case $OS in
         lnx)
             # Install manually to avoid creating a lib64/ sub-dir on CentOS 5.

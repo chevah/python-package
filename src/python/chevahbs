@@ -48,8 +48,6 @@ chevahbs_patch() {
 
 
 chevahbs_configure() {
-    install_folder="$1"
-
     CONFIG_ARGS="--disable-shared"
     CONFIGURE_ENVIRONMENT=""
 
@@ -124,7 +122,6 @@ chevahbs_compile() {
 
 
 chevahbs_install() {
-    install_folder=$1
     case $OS in
         win)
             local destination=$INSTALL_FOLDER/lib

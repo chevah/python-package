@@ -610,7 +610,7 @@ def main():
 
     try:
         import psutil
-        cpu_percent = psutil.cpu_percent()
+        psutil_cpus = psutil.cpu_count()
     except:
         sys.stderr.write('"psutil" missing or broken.\n')
         exit_code = 23

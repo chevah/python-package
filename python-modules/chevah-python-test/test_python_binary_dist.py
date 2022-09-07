@@ -24,7 +24,12 @@ def get_allowed_deps():
     """
     allowed_deps = []
     if platform_system == 'linux':
-        if 'lnx' in CHEVAH_OS:
+        if 'musl' in CHEVAH_OS:
+           allowed_deps=[
+                'ld-musl-x86_64.so.1',
+                'libc.musl-x86_64.so.1',
+                ]
+        elif 'lnx' in CHEVAH_OS:
             # Deps without paths for generic Linux builds.
             # Only glibc 2.x libs are allowed.
             # Tested on SLES 11 with glibc 2.11.3 and CentOS 5 with glibc 2.5.
@@ -100,26 +105,6 @@ def get_allowed_deps():
                     '/lib/x86_64-linux-gnu/libtinfo.so.6',
                     '/lib/x86_64-linux-gnu/libffi.so.7',
                 ])
-        elif 'alpine' in CHEVAH_OS:
-            # Full deps with paths, but no minor versions, for Alpine 3.6+.
-            alpine_version = CHEVAH_OS[6:]
-            allowed_deps=[
-                '/lib/ld-musl-x86_64.so.1',
-                '/lib/libc.musl-x86_64.so.1',
-                '/lib/libz.so.1',
-                ]
-            if alpine_version in [ "36", "37", "38" ]:
-                # These versions use LibreSSL by default.
-                allowed_deps.extend([
-                    '/lib/libcrypto.so.42',
-                    '/lib/libssl.so.44',
-                    ])
-            else:
-                # Alpine Linux 3.9 reverted to OpenSSL by default.
-                allowed_deps.extend([
-                    '/lib/libcrypto.so.1',
-                    '/lib/libssl.so.1',
-                    ])
     elif platform_system == 'aix':
         # Deps for AIX 7.1, many added with psutil.
         allowed_deps = [
@@ -326,8 +311,8 @@ def get_actual_deps(script_helper):
                 if dep.startswith(openbsd_ignored_strings):
                     continue
             elif platform_system == 'linux':
-                # On Alpine we don't use regular ldd, the output is different.
-                if 'alpine' in CHEVAH_OS:
+                # Musl's ldd output is different.
+                if 'musl' in CHEVAH_OS:
                     dep = line.split()[0]
                 else:
                     if any(string in line for string in linux_ignored_strings):

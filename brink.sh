@@ -704,13 +704,14 @@ check_musl_version(){
 
     IFS=. read -a musl_version_array <<< "$musl_version"
 
-    if [ ${musl_version_array[0]} -lt 1 -o ${musl_version_array[1]} -lt 1 ]; then
-        (>&2 echo "Only musl 1.1 or greater supported! Detected version: $musl_version")
+    if [ ${musl_version_array[0]} -lt 1 -o ${musl_version_array[1]} -lt 1 ];then
+        (>&2 echo "Only musl 1.1 or greater supported! Detected: $musl_version")
         exit 21
     fi
 
     # Decrement supported_musl11_version if building against an older musl.
-    if [ ${musl_version_array[2]} -lt ${supported_musl11_version} ]; then
+    if [ ${musl_version_array[0]} -eq 1 -a ${musl_version_array[1]} -eq 1 \
+        -a ${musl_version_array[2]} -lt ${supported_musl11_version} ]; then
         (>&2 echo "NOT good. Detected version is older: ${musl_version}!")
         exit 22
     else

@@ -1418,7 +1418,7 @@
      </table:table-cell>
      <table:table-cell table:style-name="ce8" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T23">1.0.2v-chevah4</text:span><text:span text:style-name="T7"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T23">1.0.2v-chevah4</text:span><text:span text:style-name="T7"> (statically linked with cryptography)</text:span></text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce58" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T25">1.1.1n</text:span> (statically linked with stdlib “ssl”)</text:p><text:p><text:span text:style-name="T25">1.1.1n</text:span> (statically linked with cryptography)</text:p>
+     <table:table-cell table:style-name="ce58" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T25">1.1.1q</text:span> (statically linked with stdlib “ssl”)</text:p><text:p><text:span text:style-name="T25">1.1.1q</text:span> (statically linked with cryptography)</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce60" office:value-type="string" calcext:value-type="string">
       <text:p>1.1.1j</text:p>
@@ -1426,7 +1426,7 @@
      <table:table-cell table:style-name="ce77" office:value-type="string" calcext:value-type="string">
       <text:p>1.1.1m</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce117" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">1.1.1n</text:span><text:span text:style-name="T30"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T29">1.1.1n</text:span><text:span text:style-name="T30"> (statically linked with cryptography)</text:span></text:p>
+     <table:table-cell table:style-name="ce117" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">1.1.1q</text:span><text:span text:style-name="T30"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T29">1.1.1q</text:span><text:span text:style-name="T30"> (statically linked with cryptography)</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce118" office:value-type="string" calcext:value-type="string">
       <text:p>1.0.1u</text:p>
@@ -1437,21 +1437,21 @@
      <table:table-cell table:style-name="ce130" office:value-type="string" calcext:value-type="string">
       <text:p>1.0.2h</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce8" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">1.1.1n</text:span><text:span text:style-name="T30"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T29">1.1.1n</text:span><text:span text:style-name="T30"> (statically linked with cryptography)</text:span></text:p>
+     <table:table-cell table:style-name="ce8" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">1.1.1q</text:span><text:span text:style-name="T30"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T29">1.1.1q</text:span><text:span text:style-name="T30"> (statically linked with cryptography)</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce155" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T34">1.1.1g</text:span><text:span text:style-name="T35"> (statically built for stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T34">1.1.1g</text:span><text:span text:style-name="T35"> (bundled with upstream cryptography 2.9.1)</text:span></text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce8" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">1.1.1n</text:span><text:span text:style-name="T30"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T29">1.1.1n</text:span><text:span text:style-name="T30"> (statically linked with cryptography)</text:span></text:p>
+     <table:table-cell table:style-name="ce8" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">1.1.1q</text:span><text:span text:style-name="T30"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T29">1.1.1q</text:span><text:span text:style-name="T30"> (statically linked with cryptography)</text:span></text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce139" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">1.1.1n</text:span><text:span text:style-name="T30"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T29">1.1.1n</text:span><text:span text:style-name="T30"> (statically linked with cryptography)</text:span></text:p>
+     <table:table-cell table:style-name="ce139" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">1.1.1q</text:span><text:span text:style-name="T30"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T29">1.1.1q</text:span><text:span text:style-name="T30"> (statically linked with cryptography)</text:span></text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce139" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">1.1.1n</text:span><text:span text:style-name="T30"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T29">1.1.1n</text:span><text:span text:style-name="T30"> (statically linked with cryptography)</text:span></text:p>
+     <table:table-cell table:style-name="ce139" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">1.1.1q</text:span><text:span text:style-name="T30"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T29">1.1.1q</text:span><text:span text:style-name="T30"> (statically linked with cryptography)</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce77" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T23">1.1.1cFIPS /</text:span></text:p><text:p><text:span text:style-name="T23">1.1.1k FIPS</text:span></text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce8" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">1.1.1n</text:span><text:span text:style-name="T30"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T29">1.1.1n</text:span><text:span text:style-name="T30"> (statically linked with cryptography)</text:span></text:p>
+     <table:table-cell table:style-name="ce8" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">1.1.1q</text:span><text:span text:style-name="T30"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T29">1.1.1q</text:span><text:span text:style-name="T30"> (statically linked with cryptography)</text:span></text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce141" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">1.1.1n</text:span><text:span text:style-name="T30"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T29">1.1.1n</text:span><text:span text:style-name="T30"> (statically linked with cryptography)</text:span></text:p>
+     <table:table-cell table:style-name="ce141" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">1.1.1q</text:span><text:span text:style-name="T30"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T29">1.1.1q</text:span><text:span text:style-name="T30"> (statically linked with cryptography)</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce60" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T5">1.0.2n</text:span><text:span text:style-name="T6"> </text:span><text:span text:style-name="T7">(from upstream Oracle patches)</text:span></text:p>
      </table:table-cell>
@@ -1463,9 +1463,9 @@
      </table:table-cell>
      <table:table-cell table:style-name="ce75" office:value-type="string" calcext:value-type="string"><text:p/><text:p><text:span text:style-name="T5">1.0.2o</text:span></text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce8" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">1.1.1n</text:span><text:span text:style-name="T30"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T29">1.1.1n</text:span><text:span text:style-name="T30"> (statically linked with cryptography)</text:span></text:p>
+     <table:table-cell table:style-name="ce8" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">1.1.1q</text:span><text:span text:style-name="T30"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T29">1.1.1q</text:span><text:span text:style-name="T30"> (statically linked with cryptography)</text:span></text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce135" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">1.1.1n</text:span><text:span text:style-name="T30"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T29">1.1.1n</text:span><text:span text:style-name="T30"> (statically linked with cryptography)</text:span></text:p>
+     <table:table-cell table:style-name="ce135" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">1.1.1q</text:span><text:span text:style-name="T30"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T29">1.1.1q</text:span><text:span text:style-name="T30"> (statically linked with cryptography)</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce70" office:value-type="string" calcext:value-type="string">
       <text:p>1.1.0g</text:p>
@@ -1475,7 +1475,7 @@
      </table:table-cell>
      <table:table-cell table:style-name="ce60" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T5">1.0.2t</text:span><text:span text:style-name="T6"> </text:span>(bundled with upstream Python 2.7.18)</text:p><text:p><text:span text:style-name="T5">1.1.1g</text:span><text:span text:style-name="T6"> </text:span>(bundled with upstream cryptography 2.9.1)</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce141" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T24">1.0.2t</text:span>⁹ (bundled with upstream Python 2.7.18)</text:p><text:p><text:span text:style-name="T25">1.1.1n</text:span> (built from upstream sources for cryptography)</text:p>
+     <table:table-cell table:style-name="ce141" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T24">1.0.2t</text:span>⁹ (bundled with upstream Python 2.7.18)</text:p><text:p><text:span text:style-name="T25">1.1.1q</text:span> (built from upstream sources for cryptography)</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="33"/>
     </table:table-row>

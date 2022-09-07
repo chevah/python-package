@@ -281,7 +281,7 @@ case $OS in
         # libffi not available in the base system, only as port/package.
         export BUILD_LIBFFI="yes"
         ;;
-    lnx)
+    lnx*)
         export CC="gcc"
         export CXX="g++"
         export MAKE="make"
@@ -375,7 +375,7 @@ check_dependencies() {
             check_command="apk info -q -e"
             ;;
         # On remaining OS'es we just check for some of the needed commands.
-        lnx)
+        lnx*)
             # Generic Linux builds need Perl 5.10.0+ for building OpenSSL.
             # For testing OpenSSL, Test::More 0.96 or newer is needed.
             packages="$CC make m4 git patch perl"

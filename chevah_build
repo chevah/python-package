@@ -35,8 +35,8 @@ PYOPENSSL_VERSION="21.0.0"
 # Backported fix for https://github.com/pypa/pip/issues/9827
 # at https://github.com/chevah/pip/tree/20.3.4chevah.
 PIP_VERSION="20.3.4chevah1"
-# For pip <21.1 and click <8.0.0.
-SAFETY_IGNORED_OPTS="-i 40291 -i 47833"
+# For pip <21.1, click <8.0.0, dparse <0.5.2. XXX not sure about dparse.
+SAFETY_IGNORED_OPTS="-i 40291 -i 47833 -i 50571"
 # setuptools 44.x is the last series to support Python 2.7.
 # More at https://github.com/pypa/setuptools/pull/1955.
 SETUPTOOLS_VERSION="44.1.1"

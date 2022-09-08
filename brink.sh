@@ -762,7 +762,7 @@ detect_os() {
                 # Some rolling-release distros (eg. Arch Linux) have
                 # no VERSION_ID here, so don't count on it unconditionally.
                 case "$linux_distro" in
-                    rhel|centos|ol)
+                    rhel|centos|almalinux|rocky|ol)
                         os_version_raw="$VERSION_ID"
                         check_os_version "Red Hat Enterprise Linux" 8 \
                             "$os_version_raw" os_version_chevah

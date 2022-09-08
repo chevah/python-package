@@ -680,7 +680,7 @@ check_glibc_version(){
         echo "All is good. Detected glibc version: ${glibc_version}."
     fi
 
-    # glibc 2 detected, we set $OS for a generic glibc Linux build.
+    # Supported glibc version detected, set $OS for a generic glibc Linux build.
     OS="lnx"
 }
 
@@ -699,39 +699,39 @@ check_musl_version(){
     if [[ $musl_version =~ [^[:digit:]\.] ]]; then
         (>&2 echo "Musl version should only have numbers and periods, but:")
         (>&2 echo "    \$musl_version=$musl_version")
-        exit 20
+        exit 25
     fi
 
     IFS=. read -a musl_version_array <<< "$musl_version"
 
     if [ ${musl_version_array[0]} -lt 1 -o ${musl_version_array[1]} -lt 1 ];then
         (>&2 echo "Only musl 1.1 or greater supported! Detected: $musl_version")
-        exit 21
+        exit 26
     fi
 
     # Decrement supported_musl11_version if building against an older musl.
     if [ ${musl_version_array[0]} -eq 1 -a ${musl_version_array[1]} -eq 1 \
         -a ${musl_version_array[2]} -lt ${supported_musl11_version} ]; then
         (>&2 echo "NOT good. Detected version is older: ${musl_version}!")
-        exit 22
+        exit 27
     else
         echo "All is good. Detected musl version: ${musl_version}."
     fi
 
-    # musl 1.1.x or greater detected, we set $OS for a generic musl Linux build.
+    # Supported musl version detected, set $OS for a generic musl Linux build.
     OS="lnx_musl"
 }
 
 #
-# For glibc-based Linux distros, after checking if current version is
-# supported with check_os_version(), $OS might already be set to "lnx"
-# if current version is too old, through check_linux_glibc().
+# For Linux distros with a supported libc, after checking if current version is
+# supported with check_os_version(), $OS might be set to something like "lnx"
+# if current version is too old, through check_linux_libc() and its subroutines.
 #
 set_os_if_not_generic() {
     local distro_name="$1"
     local distro_version="$2"
 
-    # Match if OS doesn't start with "lnx" to have it working generically.
+    # Check if OS starts with "lnx", to match "lnx_musl" too, just in case.
     if [ "${OS#lnx}" = "$OS" ]; then
         OS="${distro_name}${distro_version}"
     fi

@@ -126,7 +126,6 @@ BUILD_FOLDER='build'
 COMMON_PKGS="gcc make m4 automake libtool patch"
 DEB_PKGS="$COMMON_PKGS git libffi-dev zlib1g-dev libncurses5-dev libssl-dev"
 RPM_PKGS="$COMMON_PKGS git libffi-devel zlib-devel ncurses-devel openssl-devel"
-APK_PKGS="$COMMON_PKGS git zlib-dev musl-dev openssl-dev linux-headers lddtree"
 # No automated Windows package management, but here's what it's needed.
 CHOCO_PKGS="vcpython27 make git StrawberryPerl nasm 7zip"
 
@@ -307,17 +306,8 @@ case $OS in
             setproctitle==${SETPROCTITLE_VERSION}
             "
         ;;
-    alpine*)
-        # Do not depend on libffi and ncurses-libs Alpine packages.
-        # It's better to run on minimal Alpine containers.
-        export BUILD_LIBFFI="yes"
-        export BUILD_LIBEDIT="no"
-        export CC="gcc"
-        export CXX="g++"
-        export MAKE="make"
-        ;;
     *)
-        # Only supported Linux distributions other than Alpine should be left.
+        # Only supported Linux distributions should be left.
         export CC="gcc"
         export CXX="g++"
         export MAKE="make"
@@ -378,11 +368,6 @@ check_dependencies() {
         rhel*|amzn*)
             packages=$RPM_PKGS
             check_command="rpm --query"
-            ;;
-        alpine*)
-            # Alpine 3.9 switched back to OpenSSL as default.
-            packages=$APK_PKGS
-            check_command="apk info -q -e"
             ;;
         # On remaining OS'es we just check for some of the needed commands.
         lnx*)

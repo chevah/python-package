@@ -175,7 +175,7 @@ chevahbs_install() {
             done
             ;;
         *)
-            if [ "${OS%alpine*}" = "" ]; then
+            if [ -f /etc/alpine-release ]; then
                 # EMUTRAMP required for full functionality under a grsec kernel.
                 # Don't use "paxmark", file attributes will be lost when tar'ed.
                 # Needed with non-grsec kernels as well, otherwise PAM-related

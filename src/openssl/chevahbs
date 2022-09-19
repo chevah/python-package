@@ -2,7 +2,7 @@
 #
 # Chevah Build Script for OpenSSL.
 
-# Import shared code.
+# Import shared code and the Bash checks.
 . ./functions.sh
 
 
@@ -88,7 +88,6 @@ chevahbs_install() {
             execute cp *.pc "$INSTALL_FOLDER"/lib/pkgconfig/
             ;;
         *)
-            install_folder=$1
             execute $MAKE install
             ;;
     esac

@@ -2,7 +2,7 @@
 #
 # Chevah Build Script for Python.
 #
-# Import shared code.
+# Import shared code and the Bash checks.
 . ./functions.sh
 
 #
@@ -48,8 +48,6 @@ chevahbs_patch() {
 
 
 chevahbs_configure() {
-    install_folder="$1"
-
     CONFIG_ARGS="--disable-shared"
     CONFIGURE_ENVIRONMENT=""
 
@@ -124,7 +122,6 @@ chevahbs_compile() {
 
 
 chevahbs_install() {
-    install_folder=$1
     case $OS in
         win)
             local destination=$INSTALL_FOLDER/lib
@@ -171,14 +168,14 @@ chevahbs_install() {
             # Patch to disable Python 2 / OpenSSL 1.0.2 warnings from cryptography.
             echo "Applying crypto_silence_warnings.patch:"
             execute patch -d $destination -p0 < crypto_silence_warnings.patch
-            # Lifted from https://github.com/ActiveState/cpython/pull/[2-5].
+            # Lifted from https://github.com/ActiveState/cpython/.
             for hotfix in *.diff; do
                 echo "Applying ${hotfix}:"
                 execute patch -d $destination -p1 < $hotfix
             done
             ;;
         *)
-            if [ "${OS%alpine*}" = "" ]; then
+            if [ -f /etc/alpine-release ]; then
                 # EMUTRAMP required for full functionality under a grsec kernel.
                 # Don't use "paxmark", file attributes will be lost when tar'ed.
                 # Needed with non-grsec kernels as well, otherwise PAM-related

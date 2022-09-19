@@ -3,6 +3,11 @@
 # Shared code for all binary-dist scripts.
 #
 
+# Bash checks (chevahbs scripts source them from here)
+set -o nounset    # always check if variables exist
+set -o errexit    # always exit on error
+set -o errtrace   # trap errors in functions as well
+set -o pipefail   # don't ignore exit codes when piping output
 
 # Define global variables
 COMMAND=""
@@ -364,7 +369,8 @@ cleanup_install_dir() {
                         execute strip lib/lib*.a
                         # On CentOS 5, libffi and OpenSSL install to lib64/.
                         if [ -d lib64 ]; then
-                            execute strip lib64/lib*.a
+                            echo "/lib64 found!"
+                            exit 98
                         fi
                         ;;
                 esac

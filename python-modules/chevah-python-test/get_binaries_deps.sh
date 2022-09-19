@@ -25,7 +25,7 @@ elif [ "$os" = "HP-UX" ]; then
 elif [ "$os" = "Linux" ]; then
     if [ -f /etc/alpine-release ]; then
         # musl's ldd has issues with some Python modules, so we use lddtree,
-        # which is forked from pax-utils and installed by default in Alpine.
+        # which is forked from pax-utils and available on Alpine.
         checker="lddtree -l"
     fi
 fi

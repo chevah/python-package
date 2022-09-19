@@ -32,7 +32,7 @@ jobs:
       matrix:
         # CentOS 5.11 setup was saved as an image pushed to Docker Hub. See the
         # Overview section at https://hub.docker.com/r/proatria/centos for details.
-        container: [ 'alpine:3.14', 'centos:8.2.2004', 'proatria/centos:5.11-chevah1' ]
+        container: [ 'alpine:3.12', 'centos:8.2.2004', 'proatria/centos:5.11-chevah1' ]
     timeout-minutes: 30
     steps:
 
@@ -41,7 +41,9 @@ jobs:
       if: startsWith(matrix.container, 'alpine')
       run: |
         apk upgrade -U
-        apk add git curl bash gcc make m4 automake libtool patch libffi-dev zlib-dev openssl-dev musl-dev lddtree shadow sudo openssh-client paxctl
+        apk add git curl bash gcc make m4 automake libtool patch libffi-dev zlib-dev openssl-dev musl-dev lddtree shadow sudo openssh-client
+        curl --output /usr/local/bin/paxctl https://bin.chevah.com:20443/third-party-stuff/alpine/paxctl-3.12
+        chmod +x /usr/local/bin/paxctl
 
     # Stick to CentOS 8.2 as OpenSSL got updated in 8.3 from 1.1.1c to 1.1.1g.
     - name: CentOS 8.2 setup

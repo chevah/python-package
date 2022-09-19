@@ -3,9 +3,11 @@
 # Uploads dist packages to testing/ on Chevah's server, then shows final links.
 # To be used through GitHub actions.
 
-set -o nounset
-set -o errexit
-set -o pipefail
+# Bash checks
+set -o nounset    # always check if variables exist
+set -o errexit    # always exit on error
+set -o errtrace   # trap errors in functions as well
+set -o pipefail   # don't ignore exit codes when piping output
 
 dest_server="bin.chevah.com"
 dest_user="github-upload"

@@ -2,7 +2,7 @@
 #
 # Chevah Build Script for libedit.
 #
-# Import shared code.
+# Import shared code and the Bash checks.
 . ./functions.sh
 
 chevahbs_patch() {
@@ -44,7 +44,6 @@ chevahbs_compile() {
 
 
 chevahbs_install() {
-    install_folder=$1
     execute $MAKE install DESTDIR=$INSTALL_FOLDER
 }
 

@@ -1,5 +1,5 @@
 OS,AIX,,,Amazon,Alpine,Debian,FreeBSD,,HP-UX,macOS,OS X,RHEL,,,SLES,Solaris,,,,Ubuntu Server,,,,Windows,
-OS Version,5.3³,6.1³,7.1+¹,2+¹,3.12+¹,5.0+²,11.4³,12.2+³,11.31³,10.13+¹,10.8³,5.11-7.x¹,8.x¹,9.x¹,11SP4+²,10u8+³,11.0/11.1³,11.2³,11.4³,14.04/16.04¹,18.04¹,20.04¹,22.04¹,"XP, 2003, 2008³","2012r2, 2016, 2019, 2022¹"
+OS Version,5.3³,6.1³,7.2+¹,2+¹,3.12+¹,5.0+²,11.4³,12.2+³,11.31³,10.13+¹,10.8³,5.11-7.x¹,8.x¹,9.x¹,11SP4+²,10u8+³,11.0/11.1³,11.2³,11.4³,14.04/16.04¹,18.04¹,20.04¹,22.04¹,"XP, 2003, 2008³","2012r2, 2016, 2019, 2022¹"
 OpenSSL⁶,"1.0.2v-chevah2 (statically linked with stdlib “ssl”)
 1.0.2v-chevah2 (statically linked with cryptography)",1.0.2k (from AIX Web Download Pack Programs),"1.0.2v-chevah4 (statically linked with stdlib “ssl”)
 1.0.2v-chevah4 (statically linked with cryptography)","1.1.1q (statically linked with stdlib “ssl”)

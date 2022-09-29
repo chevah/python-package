@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <office:document xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" xmlns:css3t="http://www.w3.org/TR/css3-text/" xmlns:grddl="http://www.w3.org/2003/g/data-view#" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:formx="urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:oooc="http://openoffice.org/2004/calc" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:ooow="http://openoffice.org/2004/writer" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rpt="http://openoffice.org/2005/report" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:ooo="http://openoffice.org/2004/office" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2" xmlns:calcext="urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" xmlns:tableooo="http://openoffice.org/2009/table" xmlns:drawooo="http://openoffice.org/2010/draw" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" xmlns:dom="http://www.w3.org/2001/xml-events" xmlns:field="urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0" xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0" xmlns:xforms="http://www.w3.org/2002/xforms" office:version="1.3" office:mimetype="application/vnd.oasis.opendocument.spreadsheet">
- <office:meta><meta:generator>LibreOffice/7.3.3.2$Linux_X86_64 LibreOffice_project/30$Build-2</meta:generator><meta:editing-cycles>132</meta:editing-cycles><meta:editing-duration>PT7H52M20S</meta:editing-duration><dc:title>python-package - external dependencies and associated vulnerabilities</dc:title><dc:date>2022-09-20T14:53:09.500126956</dc:date><meta:document-statistic meta:table-count="1" meta:cell-count="767" meta:object-count="0"/></office:meta>
+ <office:meta><meta:generator>LibreOffice/7.3.3.2$Linux_X86_64 LibreOffice_project/30$Build-2</meta:generator><meta:editing-cycles>131</meta:editing-cycles><meta:editing-duration>PT7H51M59S</meta:editing-duration><dc:title>python-package - external dependencies and associated vulnerabilities</dc:title><dc:date>2022-09-08T12:17:12.193057655</dc:date><meta:document-statistic meta:table-count="1" meta:cell-count="767" meta:object-count="0"/></office:meta>
  <office:settings>
   <config:config-item-set config:name="ooo:view-settings">
    <config:config-item config:name="VisibleAreaTop" config:type="int">0</config:config-item>
    <config:config-item config:name="VisibleAreaLeft" config:type="int">0</config:config-item>
    <config:config-item config:name="VisibleAreaWidth" config:type="int">46625</config:config-item>
-   <config:config-item config:name="VisibleAreaHeight" config:type="int">23176</config:config-item>
+   <config:config-item config:name="VisibleAreaHeight" config:type="int">22583</config:config-item>
    <config:config-item-map-indexed config:name="Views">
     <config:config-item-map-entry>
      <config:config-item config:name="ViewId" config:type="string">view1</config:config-item>
      <config:config-item-map-named config:name="Tables">
       <config:config-item-map-entry config:name="Sheet1">
-       <config:config-item config:name="CursorPositionX" config:type="int">3</config:config-item>
-       <config:config-item config:name="CursorPositionY" config:type="int">2</config:config-item>
+       <config:config-item config:name="CursorPositionX" config:type="int">20</config:config-item>
+       <config:config-item config:name="CursorPositionY" config:type="int">1</config:config-item>
        <config:config-item config:name="HorizontalSplitMode" config:type="short">2</config:config-item>
        <config:config-item config:name="VerticalSplitMode" config:type="short">2</config:config-item>
        <config:config-item config:name="HorizontalSplitPosition" config:type="int">1</config:config-item>
@@ -95,7 +95,7 @@
    <config:config-item config:name="LoadReadonly" config:type="boolean">false</config:config-item>
    <config:config-item config:name="PrinterName" config:type="string">Generic Printer</config:config-item>
    <config:config-item config:name="PrinterPaperFromSetup" config:type="boolean">false</config:config-item>
-   <config:config-item config:name="PrinterSetup" config:type="base64Binary">oAH+/0dlbmVyaWMgUHJpbnRlcgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU0dFTlBSVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWAAMAwQAAAAAAAAAEAAhSAAAEdAAASm9iRGF0YSAxCnByaW50ZXI9R2VuZXJpYyBQcmludGVyCm9yaWVudGF0aW9uPVBvcnRyYWl0CmNvcGllcz0xCmNvbGxhdGU9ZmFsc2UKbWFyZ2luYWRqdXN0bWVudD0wLDAsMCwwCmNvbG9yZGVwdGg9MjQKcHNsZXZlbD0wCnBkZmRldmljZT0xCmNvbG9yZGV2aWNlPTAKUFBEQ29udGV4dERhdGEKRHVwbGV4Ok5vbmUAUGFnZVNpemU6QTQAABIAQ09NUEFUX0RVUExFWF9NT0RFDwBEdXBsZXhNb2RlOjpPZmY=</config:config-item>
+   <config:config-item config:name="PrinterSetup" config:type="base64Binary">oAH+/0dlbmVyaWMgUHJpbnRlcgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU0dFTlBSVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWAAMAwQAAAAAAAAAEAAhSAAAEdAAASm9iRGF0YSAxCnByaW50ZXI9R2VuZXJpYyBQcmludGVyCm9yaWVudGF0aW9uPVBvcnRyYWl0CmNvcGllcz0xCmNvbGxhdGU9ZmFsc2UKbWFyZ2luYWRqdXN0bWVudD0wLDAsMCwwCmNvbG9yZGVwdGg9MjQKcHNsZXZlbD0wCnBkZmRldmljZT0xCmNvbG9yZGV2aWNlPTAKUFBEQ29udGV4dERhdGEKUGFnZVNpemU6QTQARHVwbGV4Ok5vbmUAABIAQ09NUEFUX0RVUExFWF9NT0RFDwBEdXBsZXhNb2RlOjpPZmY=</config:config-item>
    <config:config-item config:name="RasterIsVisible" config:type="boolean">false</config:config-item>
    <config:config-item config:name="RasterResolutionX" config:type="int">1000</config:config-item>
    <config:config-item config:name="RasterResolutionY" config:type="int">1000</config:config-item>
@@ -124,11 +124,11 @@
   </office:script>
  </office:scripts>
  <office:font-face-decls>
+  <style:font-face style:name="Archivo Light" svg:font-family="&apos;Archivo Light&apos;" style:font-family-generic="system" style:font-pitch="variable"/>
   <style:font-face style:name="Arial" svg:font-family="Arial"/>
   <style:font-face style:name="Cambria" svg:font-family="Cambria"/>
   <style:font-face style:name="Liberation Sans" svg:font-family="&apos;Liberation Sans&apos;" style:font-family-generic="swiss" style:font-pitch="variable"/>
   <style:font-face style:name="Liberation Sans1" svg:font-family="&apos;Liberation Sans&apos;" style:font-family-generic="system" style:font-pitch="variable"/>
-  <style:font-face style:name="Roboto Flex" svg:font-family="&apos;Roboto Flex&apos;" style:font-family-generic="system" style:font-pitch="variable"/>
   <style:font-face style:name="Sans" svg:font-family="Sans" style:font-family-generic="swiss"/>
  </office:font-face-decls>
  <office:styles>
@@ -150,169 +150,81 @@
    <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
    <style:map style:condition="value()&gt;=0" style:apply-style-name="N112P0"/>
   </number:currency-style>
-  <number:time-style style:name="N116" number:title="User-defined">
+  <number:number-style style:name="N116">
+   <number:scientific-number number:decimal-places="1" number:min-decimal-places="1" number:min-integer-digits="1" number:min-exponent-digits="1" number:exponent-interval="3" number:forced-exponent-sign="true"/>
+  </number:number-style>
+  <number:time-style style:name="N115">
    <number:minutes number:style="long"/>
    <number:text>:</number:text>
-   <number:seconds number:style="long"/>
+   <number:seconds number:style="long" number:decimal-places="1"/>
   </number:time-style>
-  <number:time-style style:name="N115" number:truncate-on-overflow="false">
+  <number:time-style style:name="N114" number:truncate-on-overflow="false">
    <number:hours/>
    <number:text>:</number:text>
    <number:minutes number:style="long"/>
    <number:text>:</number:text>
    <number:seconds number:style="long"/>
   </number:time-style>
-  <number:time-style style:name="N114">
+  <number:time-style style:name="N113" number:title="User-defined">
    <number:minutes number:style="long"/>
    <number:text>:</number:text>
-   <number:seconds number:style="long" number:decimal-places="1"/>
+   <number:seconds number:style="long"/>
   </number:time-style>
-  <number:number-style style:name="N113">
-   <number:scientific-number number:decimal-places="1" number:min-decimal-places="1" number:min-integer-digits="1" number:min-exponent-digits="1" number:exponent-interval="3" number:forced-exponent-sign="true"/>
-  </number:number-style>
-  <number:number-style style:name="N10138P0" style:volatile="true" number:language="ro" number:country="RO">
-   <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
-   <number:text> lei</number:text>
-  </number:number-style>
-  <number:number-style style:name="N10138" number:language="ro" number:country="RO">
-   <number:text>-</number:text>
-   <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
-   <number:text> lei</number:text>
-   <style:map style:condition="value()&gt;=0" style:apply-style-name="N10138P0"/>
-  </number:number-style>
-  <number:date-style style:name="N10136" number:language="ro" number:country="RO">
-   <number:day number:style="long"/>
-   <number:text>.</number:text>
-   <number:month number:textual="true"/>
-  </number:date-style>
-  <number:date-style style:name="N10135" number:language="ro" number:country="RO">
-   <number:day number:style="long"/>
-   <number:text>.</number:text>
-   <number:month number:textual="true"/>
-   <number:text>.</number:text>
-   <number:year/>
-  </number:date-style>
-  <number:number-style style:name="N10108P0" style:volatile="true" number:language="ro" number:country="RO">
-   <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
-   <number:text> lei</number:text>
-  </number:number-style>
-  <number:number-style style:name="N10108" number:language="ro" number:country="RO">
-   <style:text-properties fo:color="#ff0000"/>
-   <number:text>-</number:text>
-   <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
-   <number:text> lei</number:text>
-   <style:map style:condition="value()&gt;=0" style:apply-style-name="N10108P0"/>
-  </number:number-style>
-  <number:number-style style:name="N10121P0" style:volatile="true" number:language="ro" number:country="RO">
-   <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
-   <number:text>     </number:text>
-  </number:number-style>
-  <number:number-style style:name="N10121" number:language="ro" number:country="RO">
-   <style:text-properties fo:color="#ff0000"/>
-   <number:text>-</number:text>
-   <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
-   <number:text>     </number:text>
-   <style:map style:condition="value()&gt;=0" style:apply-style-name="N10121P0"/>
-  </number:number-style>
-  <number:number-style style:name="N10134P0" style:volatile="true" number:language="ro" number:country="RO">
-   <number:fill-character> </number:fill-character>
-   <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
-   <number:text> lei </number:text>
-  </number:number-style>
-  <number:number-style style:name="N10134P1" style:volatile="true" number:language="ro" number:country="RO">
-   <number:text>-</number:text>
-   <number:fill-character> </number:fill-character>
-   <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
-   <number:text> lei </number:text>
-  </number:number-style>
-  <number:number-style style:name="N10134P2" style:volatile="true" number:language="ro" number:country="RO">
-   <number:fill-character> </number:fill-character>
-   <number:text>- lei </number:text>
-  </number:number-style>
-  <number:text-style style:name="N10134" number:language="ro" number:country="RO">
-   <number:text-content/>
-   <number:text> </number:text>
-   <style:map style:condition="value()&gt;0" style:apply-style-name="N10134P0"/>
-   <style:map style:condition="value()&lt;0" style:apply-style-name="N10134P1"/>
-   <style:map style:condition="value()=0" style:apply-style-name="N10134P2"/>
-  </number:text-style>
   <number:number-style style:name="N10139P0" style:volatile="true" number:language="ro" number:country="RO">
-   <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
+   <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
    <number:text> lei</number:text>
   </number:number-style>
   <number:number-style style:name="N10139" number:language="ro" number:country="RO">
    <style:text-properties fo:color="#ff0000"/>
    <number:text>-</number:text>
-   <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
+   <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
    <number:text> lei</number:text>
    <style:map style:condition="value()&gt;=0" style:apply-style-name="N10139P0"/>
   </number:number-style>
-  <number:number-style style:name="N10110P0" style:volatile="true" number:language="ro" number:country="RO">
+  <number:number-style style:name="N10136P0" style:volatile="true" number:language="ro" number:country="RO">
    <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
    <number:text>     </number:text>
   </number:number-style>
-  <number:number-style style:name="N10110" number:language="ro" number:country="RO">
+  <number:number-style style:name="N10136" number:language="ro" number:country="RO">
    <style:text-properties fo:color="#ff0000"/>
    <number:text>-</number:text>
    <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
    <number:text>     </number:text>
-   <style:map style:condition="value()&gt;=0" style:apply-style-name="N10110P0"/>
+   <style:map style:condition="value()&gt;=0" style:apply-style-name="N10136P0"/>
   </number:number-style>
-  <number:date-style style:name="N10111" number:language="ro" number:country="RO">
+  <number:date-style style:name="N10135" number:language="ro" number:country="RO">
    <number:month number:textual="true"/>
    <number:text>.</number:text>
    <number:year/>
   </number:date-style>
-  <number:number-style style:name="N10112P0" style:volatile="true" number:language="ro" number:country="RO">
+  <number:number-style style:name="N10134P0" style:volatile="true" number:language="ro" number:country="RO">
    <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
    <number:text>     </number:text>
   </number:number-style>
-  <number:number-style style:name="N10112" number:language="ro" number:country="RO">
+  <number:number-style style:name="N10134" number:language="ro" number:country="RO">
    <number:text>-</number:text>
    <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
    <number:text>     </number:text>
-   <style:map style:condition="value()&gt;=0" style:apply-style-name="N10112P0"/>
+   <style:map style:condition="value()&gt;=0" style:apply-style-name="N10134P0"/>
   </number:number-style>
-  <number:number-style style:name="N10125P0" style:volatile="true" number:language="ro" number:country="RO">
-   <number:fill-character> </number:fill-character>
-   <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
-   <number:text>      </number:text>
-  </number:number-style>
-  <number:number-style style:name="N10125P1" style:volatile="true" number:language="ro" number:country="RO">
-   <number:text>-</number:text>
-   <number:fill-character> </number:fill-character>
-   <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
-   <number:text>      </number:text>
-  </number:number-style>
-  <number:number-style style:name="N10125P2" style:volatile="true" number:language="ro" number:country="RO">
-   <number:fill-character> </number:fill-character>
-   <number:text>-      </number:text>
-  </number:number-style>
-  <number:text-style style:name="N10125" number:language="ro" number:country="RO">
-   <number:text-content/>
-   <number:text> </number:text>
-   <style:map style:condition="value()&gt;0" style:apply-style-name="N10125P0"/>
-   <style:map style:condition="value()&lt;0" style:apply-style-name="N10125P1"/>
-   <style:map style:condition="value()=0" style:apply-style-name="N10125P2"/>
-  </number:text-style>
-  <number:number-style style:name="N10113P0" style:volatile="true" number:language="ro" number:country="RO">
+  <number:number-style style:name="N10132P0" style:volatile="true" number:language="ro" number:country="RO">
    <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
    <number:text> lei</number:text>
   </number:number-style>
-  <number:number-style style:name="N10113" number:language="ro" number:country="RO">
+  <number:number-style style:name="N10132" number:language="ro" number:country="RO">
    <number:text>-</number:text>
    <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
    <number:text> lei</number:text>
-   <style:map style:condition="value()&gt;=0" style:apply-style-name="N10113P0"/>
+   <style:map style:condition="value()&gt;=0" style:apply-style-name="N10132P0"/>
   </number:number-style>
-  <number:time-style style:name="N10114" number:language="ro" number:country="RO">
+  <number:time-style style:name="N10130" number:language="ro" number:country="RO">
    <number:hours/>
    <number:text>:</number:text>
    <number:minutes number:style="long"/>
    <number:text> </number:text>
    <number:am-pm/>
   </number:time-style>
-  <number:time-style style:name="N10115" number:language="ro" number:country="RO">
+  <number:time-style style:name="N10129" number:language="ro" number:country="RO">
    <number:hours/>
    <number:text>:</number:text>
    <number:minutes number:style="long"/>
@@ -321,22 +233,79 @@
    <number:text> </number:text>
    <number:am-pm/>
   </number:time-style>
-  <number:number-style style:name="N10119P0" style:volatile="true" number:language="ro" number:country="RO">
+  <number:number-style style:name="N10128P0" style:volatile="true" number:language="ro" number:country="RO">
    <number:fill-character> </number:fill-character>
    <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
    <number:text> lei </number:text>
+  </number:number-style>
+  <number:number-style style:name="N10128P1" style:volatile="true" number:language="ro" number:country="RO">
+   <number:text>-</number:text>
+   <number:fill-character> </number:fill-character>
+   <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
+   <number:text> lei </number:text>
+  </number:number-style>
+  <number:number-style style:name="N10128P2" style:volatile="true" number:language="ro" number:country="RO">
+   <number:fill-character> </number:fill-character>
+   <number:text>-</number:text>
+   <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="0"/>
+   <number:text> lei </number:text>
+  </number:number-style>
+  <number:text-style style:name="N10128" number:language="ro" number:country="RO">
+   <number:text-content/>
+   <number:text> </number:text>
+   <style:map style:condition="value()&gt;0" style:apply-style-name="N10128P0"/>
+   <style:map style:condition="value()&lt;0" style:apply-style-name="N10128P1"/>
+   <style:map style:condition="value()=0" style:apply-style-name="N10128P2"/>
+  </number:text-style>
+  <number:number-style style:name="N10124P0" style:volatile="true" number:language="ro" number:country="RO">
+   <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
+   <number:text>     </number:text>
+  </number:number-style>
+  <number:number-style style:name="N10124" number:language="ro" number:country="RO">
+   <style:text-properties fo:color="#ff0000"/>
+   <number:text>-</number:text>
+   <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
+   <number:text>     </number:text>
+   <style:map style:condition="value()&gt;=0" style:apply-style-name="N10124P0"/>
+  </number:number-style>
+  <number:number-style style:name="N10123P0" style:volatile="true" number:language="ro" number:country="RO">
+   <number:fill-character> </number:fill-character>
+   <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
+   <number:text>      </number:text>
+  </number:number-style>
+  <number:number-style style:name="N10123P1" style:volatile="true" number:language="ro" number:country="RO">
+   <number:text>-</number:text>
+   <number:fill-character> </number:fill-character>
+   <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
+   <number:text>      </number:text>
+  </number:number-style>
+  <number:number-style style:name="N10123P2" style:volatile="true" number:language="ro" number:country="RO">
+   <number:fill-character> </number:fill-character>
+   <number:text>-      </number:text>
+  </number:number-style>
+  <number:text-style style:name="N10123" number:language="ro" number:country="RO">
+   <number:text-content/>
+   <number:text> </number:text>
+   <style:map style:condition="value()&gt;0" style:apply-style-name="N10123P0"/>
+   <style:map style:condition="value()&lt;0" style:apply-style-name="N10123P1"/>
+   <style:map style:condition="value()=0" style:apply-style-name="N10123P2"/>
+  </number:text-style>
+  <number:number-style style:name="N10119P0" style:volatile="true" number:language="ro" number:country="RO">
+   <number:fill-character> </number:fill-character>
+   <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
+   <number:text>      </number:text>
   </number:number-style>
   <number:number-style style:name="N10119P1" style:volatile="true" number:language="ro" number:country="RO">
    <number:text>-</number:text>
    <number:fill-character> </number:fill-character>
    <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
-   <number:text> lei </number:text>
+   <number:text>      </number:text>
   </number:number-style>
   <number:number-style style:name="N10119P2" style:volatile="true" number:language="ro" number:country="RO">
    <number:fill-character> </number:fill-character>
    <number:text>-</number:text>
    <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="0"/>
-   <number:text> lei </number:text>
+   <number:text>      </number:text>
   </number:number-style>
   <number:text-style style:name="N10119" number:language="ro" number:country="RO">
    <number:text-content/>
@@ -345,39 +314,70 @@
    <style:map style:condition="value()&lt;0" style:apply-style-name="N10119P1"/>
    <style:map style:condition="value()=0" style:apply-style-name="N10119P2"/>
   </number:text-style>
-  <number:number-style style:name="N10129P0" style:volatile="true" number:language="ro" number:country="RO">
-   <number:fill-character> </number:fill-character>
+  <number:number-style style:name="N10115P0" style:volatile="true" number:language="ro" number:country="RO">
    <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
-   <number:text>      </number:text>
+   <number:text>     </number:text>
   </number:number-style>
-  <number:number-style style:name="N10129P1" style:volatile="true" number:language="ro" number:country="RO">
+  <number:number-style style:name="N10115" number:language="ro" number:country="RO">
+   <number:text>-</number:text>
+   <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
+   <number:text>     </number:text>
+   <style:map style:condition="value()&gt;=0" style:apply-style-name="N10115P0"/>
+  </number:number-style>
+  <number:number-style style:name="N10113P0" style:volatile="true" number:language="ro" number:country="RO">
+   <number:fill-character> </number:fill-character>
+   <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
+   <number:text> lei </number:text>
+  </number:number-style>
+  <number:number-style style:name="N10113P1" style:volatile="true" number:language="ro" number:country="RO">
    <number:text>-</number:text>
    <number:fill-character> </number:fill-character>
-   <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
-   <number:text>      </number:text>
+   <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
+   <number:text> lei </number:text>
   </number:number-style>
-  <number:number-style style:name="N10129P2" style:volatile="true" number:language="ro" number:country="RO">
+  <number:number-style style:name="N10113P2" style:volatile="true" number:language="ro" number:country="RO">
    <number:fill-character> </number:fill-character>
-   <number:text>-</number:text>
-   <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="0"/>
-   <number:text>      </number:text>
+   <number:text>- lei </number:text>
   </number:number-style>
-  <number:text-style style:name="N10129" number:language="ro" number:country="RO">
+  <number:text-style style:name="N10113" number:language="ro" number:country="RO">
    <number:text-content/>
    <number:text> </number:text>
-   <style:map style:condition="value()&gt;0" style:apply-style-name="N10129P0"/>
-   <style:map style:condition="value()&lt;0" style:apply-style-name="N10129P1"/>
-   <style:map style:condition="value()=0" style:apply-style-name="N10129P2"/>
+   <style:map style:condition="value()&gt;0" style:apply-style-name="N10113P0"/>
+   <style:map style:condition="value()&lt;0" style:apply-style-name="N10113P1"/>
+   <style:map style:condition="value()=0" style:apply-style-name="N10113P2"/>
   </number:text-style>
-  <number:number-style style:name="N10130P0" style:volatile="true" number:language="ro" number:country="RO">
-   <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
-   <number:text>     </number:text>
+  <number:date-style style:name="N10138" number:language="ro" number:country="RO">
+   <number:day number:style="long"/>
+   <number:text>.</number:text>
+   <number:month number:textual="true"/>
+   <number:text>.</number:text>
+   <number:year/>
+  </number:date-style>
+  <number:date-style style:name="N10109" number:language="ro" number:country="RO">
+   <number:day number:style="long"/>
+   <number:text>.</number:text>
+   <number:month number:textual="true"/>
+  </number:date-style>
+  <number:number-style style:name="N10137P0" style:volatile="true" number:language="ro" number:country="RO">
+   <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
+   <number:text> lei</number:text>
   </number:number-style>
-  <number:number-style style:name="N10130" number:language="ro" number:country="RO">
+  <number:number-style style:name="N10137" number:language="ro" number:country="RO">
    <number:text>-</number:text>
-   <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
-   <number:text>     </number:text>
-   <style:map style:condition="value()&gt;=0" style:apply-style-name="N10130P0"/>
+   <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
+   <number:text> lei</number:text>
+   <style:map style:condition="value()&gt;=0" style:apply-style-name="N10137P0"/>
+  </number:number-style>
+  <number:number-style style:name="N10108P0" style:volatile="true" number:language="ro" number:country="RO">
+   <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
+   <number:text> lei</number:text>
+  </number:number-style>
+  <number:number-style style:name="N10108" number:language="ro" number:country="RO">
+   <style:text-properties fo:color="#ff0000"/>
+   <number:text>-</number:text>
+   <number:number number:decimal-places="0" number:min-decimal-places="0" number:min-integer-digits="1" number:grouping="true"/>
+   <number:text> lei</number:text>
+   <style:map style:condition="value()&gt;=0" style:apply-style-name="N10108P0"/>
   </number:number-style>
   <style:style style:name="Default" style:family="table-cell">
    <style:table-cell-properties style:rotation-align="none" style:vertical-align="bottom"/>
@@ -513,13 +513,13 @@
    <style:table-row-properties style:row-height="0.487cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
   </style:style>
   <style:style style:name="ro2" style:family="table-row">
-   <style:table-row-properties style:row-height="0.526cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
+   <style:table-row-properties style:row-height="0.499cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
   </style:style>
   <style:style style:name="ro3" style:family="table-row">
    <style:table-row-properties style:row-height="1.005cm" fo:break-before="auto" style:use-optimal-row-height="false"/>
   </style:style>
   <style:style style:name="ro4" style:family="table-row">
-   <style:table-row-properties style:row-height="0.499cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
+   <style:table-row-properties style:row-height="0.473cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
   </style:style>
   <style:style style:name="ro5" style:family="table-row">
    <style:table-row-properties style:row-height="0.556cm" fo:break-before="auto" style:use-optimal-row-height="false"/>
@@ -1109,78 +1109,90 @@
    <style:text-properties fo:color="#6aa84f" fo:font-weight="bold" style:font-weight-asian="bold" style:font-weight-complex="bold"/>
   </style:style>
   <style:style style:name="T23" style:family="text">
-   <style:text-properties style:font-name="Sans" fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" style:use-window-font-color="true" fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
+   <style:text-properties style:text-emphasize="none" style:text-overline-style="none" style:text-overline-color="font-color" style:font-style-complex="normal" style:font-style-asian="normal" style:font-weight-complex="bold" style:font-weight-asian="bold" style:font-size-complex="11pt" style:font-size-asian="11pt" style:font-name-complex="Arial" style:font-name-asian="Liberation Sans" style:language-complex="hi" style:country-complex="IN" fo:language="en" fo:country="US" style:font-name="Sans" style:language-asian="zh" style:country-asian="CN" fo:text-shadow="none" style:text-outline="false" fo:font-style="normal" style:text-line-through-type="none" style:text-underline-style="none" style:text-underline-color="font-color" fo:font-weight="bold" fo:color="#6aa84f" fo:font-size="11pt" style:text-line-through-mode="continuous" style:font-relief="none"/>
   </style:style>
   <style:style style:name="T24" style:family="text">
-   <style:text-properties fo:color="#999999" style:font-name="Cambria" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
+   <style:text-properties style:text-emphasize="none" style:text-overline-style="none" style:text-overline-color="font-color" style:font-style-complex="normal" style:font-style-asian="normal" style:font-size-complex="11pt" style:font-size-asian="11pt" style:font-name-complex="Arial" style:font-name-asian="Liberation Sans" style:language-complex="hi" style:country-complex="IN" fo:language="en" fo:country="US" style:font-name="Sans" style:language-asian="zh" style:country-asian="CN" fo:text-shadow="none" style:text-outline="false" fo:font-style="normal" style:text-line-through-type="none" style:text-underline-style="none" style:text-underline-color="font-color" fo:font-size="11pt" style:text-line-through-mode="continuous" style:font-relief="none" fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal" style:use-window-font-color="true"/>
   </style:style>
   <style:style style:name="T25" style:family="text">
-   <style:text-properties fo:color="#999999" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal"/>
+   <style:text-properties fo:color="#999999" style:font-name="Cambria" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
   </style:style>
   <style:style style:name="T26" style:family="text">
-   <style:text-properties fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" style:font-style-complex="normal" fo:color="#000000" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
+   <style:text-properties fo:color="#999999" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal"/>
   </style:style>
   <style:style style:name="T27" style:family="text">
-   <style:text-properties fo:color="#d9d9d9" style:font-name="Sans" fo:font-size="11pt" fo:font-weight="normal" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="normal" style:font-weight-complex="normal" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
+   <style:text-properties fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" style:font-style-complex="normal" fo:color="#000000" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
   </style:style>
   <style:style style:name="T28" style:family="text">
-   <style:text-properties style:font-name="Sans" fo:font-size="11pt" fo:font-weight="normal" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="normal" style:font-weight-complex="normal" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" style:use-window-font-color="true"/>
+   <style:text-properties fo:color="#d9d9d9" style:font-name="Sans" fo:font-size="11pt" fo:font-weight="normal" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="normal" style:font-weight-complex="normal" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
   </style:style>
   <style:style style:name="T29" style:family="text">
-   <style:text-properties fo:color="#cccccc" style:font-name="Sans" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
+   <style:text-properties style:font-name="Sans" fo:font-size="11pt" fo:font-weight="normal" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="normal" style:font-weight-complex="normal" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" style:use-window-font-color="true"/>
   </style:style>
   <style:style style:name="T30" style:family="text">
-   <style:text-properties style:font-name="Sans" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" fo:color="#000000"/>
+   <style:text-properties fo:color="#cccccc" style:font-name="Sans" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
   </style:style>
   <style:style style:name="T31" style:family="text">
-   <style:text-properties fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" style:font-name="Cambria" fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
+   <style:text-properties style:font-name="Sans" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" fo:color="#000000"/>
   </style:style>
   <style:style style:name="T32" style:family="text">
-   <style:text-properties fo:color="#000000"/>
+   <style:text-properties fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" style:font-name="Cambria" fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
   </style:style>
   <style:style style:name="T33" style:family="text">
-   <style:text-properties fo:font-weight="bold" style:font-weight-asian="bold" style:font-weight-complex="bold"/>
+   <style:text-properties fo:color="#000000"/>
   </style:style>
   <style:style style:name="T34" style:family="text">
-   <style:text-properties style:font-name="Sans" fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
+   <style:text-properties fo:font-weight="bold" style:font-weight-asian="bold" style:font-weight-complex="bold"/>
   </style:style>
   <style:style style:name="T35" style:family="text">
-   <style:text-properties fo:color="#cccccc" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal"/>
+   <style:text-properties style:font-name="Sans" fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
   </style:style>
   <style:style style:name="T36" style:family="text">
-   <style:text-properties fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" fo:color="#000000"/>
+   <style:text-properties style:text-emphasize="none" style:text-overline-style="none" style:text-overline-color="font-color" style:font-style-complex="normal" style:font-style-asian="normal" style:font-size-complex="11pt" style:font-size-asian="11pt" style:font-name-complex="Arial" style:font-name-asian="Liberation Sans" style:language-complex="hi" style:country-complex="IN" fo:language="en" fo:country="US" style:font-name="Sans" style:language-asian="zh" style:country-asian="CN" fo:text-shadow="none" style:text-outline="false" fo:font-style="normal" style:text-line-through-type="none" style:text-underline-style="none" style:text-underline-color="font-color" fo:font-size="11pt" style:text-line-through-mode="continuous" style:font-relief="none" fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
   </style:style>
   <style:style style:name="T37" style:family="text">
-   <style:text-properties fo:color="#cccccc"/>
+   <style:text-properties fo:color="#cccccc" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal"/>
   </style:style>
   <style:style style:name="T38" style:family="text">
-   <style:text-properties fo:color="#000000" style:font-name="Cambria" fo:font-size="11pt" fo:font-weight="normal" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="normal" style:font-weight-complex="normal" style:font-style-asian="normal" style:font-style-complex="normal"/>
+   <style:text-properties fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" fo:color="#000000"/>
   </style:style>
   <style:style style:name="T39" style:family="text">
-   <style:text-properties fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" style:font-style-complex="normal" fo:color="#000000" fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
+   <style:text-properties fo:color="#cccccc"/>
   </style:style>
   <style:style style:name="T40" style:family="text">
-   <style:text-properties style:font-name="Cambria" fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" fo:color="#000000" fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
+   <style:text-properties fo:color="#000000" style:font-name="Cambria" fo:font-size="11pt" fo:font-weight="normal" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="normal" style:font-weight-complex="normal" style:font-style-asian="normal" style:font-style-complex="normal"/>
   </style:style>
   <style:style style:name="T41" style:family="text">
-   <style:text-properties style:font-name="Sans" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
+   <style:text-properties fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" style:font-style-complex="normal" fo:color="#000000" fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
   </style:style>
   <style:style style:name="T42" style:family="text">
-   <style:text-properties style:font-name="Cambria" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" fo:color="#93c47d"/>
+   <style:text-properties style:font-name="Cambria" fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" fo:color="#000000" fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
   </style:style>
   <style:style style:name="T43" style:family="text">
-   <style:text-properties style:font-name="Sans" fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" fo:color="#000000" fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
+   <style:text-properties style:language-complex="hi" style:country-complex="IN" style:text-overline-style="none" style:text-overline-color="font-color" fo:color="#6aa84f" style:text-emphasize="none" style:font-style-complex="normal" style:font-style-asian="normal" style:font-weight-complex="bold" style:font-weight-asian="bold" style:font-size-complex="11pt" style:font-size-asian="11pt" style:font-name-complex="Arial" style:font-name-asian="Liberation Sans" style:font-relief="none" style:language-asian="zh" style:country-asian="CN" fo:language="en" fo:country="US" style:text-line-through-mode="continuous" fo:text-shadow="none" style:text-outline="false" fo:font-style="normal" style:text-line-through-type="none" style:text-underline-style="none" style:text-underline-color="font-color" fo:font-weight="bold" fo:font-size="11pt" style:font-name="Sans"/>
   </style:style>
   <style:style style:name="T44" style:family="text">
-   <style:text-properties fo:color="#cccccc" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
+   <style:text-properties style:language-complex="hi" style:country-complex="IN" style:text-overline-style="none" style:text-overline-color="font-color" style:text-emphasize="none" style:font-style-complex="normal" style:font-style-asian="normal" style:font-size-complex="11pt" style:font-size-asian="11pt" style:font-name-complex="Arial" style:font-name-asian="Liberation Sans" style:font-relief="none" style:language-asian="zh" style:country-asian="CN" fo:language="en" fo:country="US" style:text-line-through-mode="continuous" fo:text-shadow="none" style:text-outline="false" fo:font-style="normal" style:text-line-through-type="none" style:text-underline-style="none" style:text-underline-color="font-color" fo:font-size="11pt" style:font-name="Sans" style:use-window-font-color="true" fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
   </style:style>
   <style:style style:name="T45" style:family="text">
-   <style:text-properties fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" fo:color="#000000"/>
+   <style:text-properties style:font-name-complex="Arial" style:font-weight-complex="bold" style:font-weight-asian="bold" fo:font-weight="bold" style:text-overline-style="none" style:text-overline-color="font-color" style:font-relief="none" style:text-emphasize="none" style:font-style-complex="normal" style:font-style-asian="normal" style:font-size-complex="11pt" style:font-size-asian="11pt" style:font-name="Sans" style:font-name-asian="Liberation Sans" style:language-complex="hi" style:country-complex="IN" style:language-asian="zh" style:country-asian="CN" fo:language="en" fo:country="US" style:text-line-through-mode="continuous" fo:text-shadow="none" style:text-outline="false" fo:font-style="normal" style:text-line-through-type="none" style:text-underline-style="none" style:text-underline-color="font-color" fo:font-size="11pt"/>
   </style:style>
   <style:style style:name="T46" style:family="text">
-   <style:text-properties fo:color="#6aa84f" style:font-name="Cambria" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
+   <style:text-properties style:font-name="Cambria" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" fo:color="#93c47d"/>
   </style:style>
   <style:style style:name="T47" style:family="text">
+   <style:text-properties style:font-name="Sans" fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" fo:color="#000000" fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
+  </style:style>
+  <style:style style:name="T48" style:family="text">
+   <style:text-properties fo:color="#cccccc" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
+  </style:style>
+  <style:style style:name="T49" style:family="text">
+   <style:text-properties fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" fo:color="#000000"/>
+  </style:style>
+  <style:style style:name="T50" style:family="text">
+   <style:text-properties fo:color="#6aa84f" style:font-name="Cambria" fo:font-size="11pt" fo:font-weight="bold" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-position="0% 100%" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-weight-asian="bold" style:font-weight-complex="bold" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color"/>
+  </style:style>
+  <style:style style:name="T51" style:family="text">
    <style:text-properties fo:font-size="11pt" style:text-underline-style="none" style:text-underline-color="font-color" style:text-line-through-type="none" fo:font-style="normal" style:text-outline="false" fo:text-shadow="none" style:text-line-through-mode="continuous" fo:language="en" fo:country="US" style:language-asian="zh" style:country-asian="CN" style:language-complex="hi" style:country-complex="IN" style:font-name-asian="Liberation Sans" style:font-name-complex="Arial" style:font-size-asian="11pt" style:font-size-complex="11pt" style:font-style-asian="normal" style:font-style-complex="normal" style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none" style:text-overline-color="font-color" style:use-window-font-color="true" style:font-name="Sans" fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
   </style:style>
  </office:automatic-styles>
@@ -1203,7 +1215,7 @@
      <text:p><text:sheet-name>???</text:sheet-name><text:s/>(<text:title>???</text:title>)</text:p>
     </style:region-left>
     <style:region-right>
-     <text:p><text:date style:data-style-name="N2" text:date-value="2022-09-20">00/00/0000</text:date>, <text:time style:data-style-name="N2" text:time-value="14:52:48.386100300">00:00:00</text:time></text:p>
+     <text:p><text:date style:data-style-name="N2" text:date-value="2022-09-08">00/00/0000</text:date>, <text:time style:data-style-name="N2" text:time-value="11:51:04.170375350">00:00:00</text:time></text:p>
     </style:region-right>
    </style:header>
    <style:header-left style:display="false"/>
@@ -1320,7 +1332,7 @@
      <table:table-cell table:style-name="ce68" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T13">6.1</text:span>³</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce74" office:value-type="string" calcext:value-type="string">
-      <text:p>7.2+¹</text:p>
+      <text:p>7.1+¹</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce9" office:value-type="string" calcext:value-type="string">
       <text:p>2+¹</text:p>
@@ -1328,7 +1340,7 @@
      <table:table-cell table:style-name="ce90" office:value-type="string" calcext:value-type="string">
       <text:p>3.12+¹</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce92" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T24">5.0+</text:span><text:span text:style-name="T4">²</text:span></text:p>
+     <table:table-cell table:style-name="ce92" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T25">5.0+</text:span><text:span text:style-name="T4">²</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce92" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T13">11.4</text:span>³</text:p>
      </table:table-cell>
@@ -1350,9 +1362,9 @@
      <table:table-cell table:style-name="ce90" office:value-type="string" calcext:value-type="string">
       <text:p>9.x¹</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce161" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T24">11SP4+</text:span><text:span text:style-name="T4">²</text:span></text:p>
+     <table:table-cell table:style-name="ce161" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T25">11SP4+</text:span><text:span text:style-name="T4">²</text:span></text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce172" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T35">10u8+</text:span><text:span text:style-name="T36">³</text:span></text:p>
+     <table:table-cell table:style-name="ce172" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T37">10u8+</text:span><text:span text:style-name="T38">³</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce68" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T13">11.0/11.1</text:span>³</text:p>
      </table:table-cell>
@@ -1391,7 +1403,7 @@
      </table:table-cell>
      <table:table-cell table:style-name="ce58" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T22">1.1.1q</text:span> (statically linked with stdlib “ssl”)</text:p><text:p><text:span text:style-name="T22">1.1.1q</text:span> (statically linked with cryptography)</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce104" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T20">1.1.1q</text:span><text:span text:style-name="T23"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T20">1.1.1q</text:span><text:span text:style-name="T23"> (statically linked with cryptography)</text:span></text:p>
+     <table:table-cell table:style-name="ce104" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T23">1.1.1q</text:span><text:span text:style-name="T24"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T23">1.1.1q</text:span><text:span text:style-name="T24"> (statically linked with cryptography)</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce117" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T20">1.1.1q</text:span><text:span text:style-name="T7"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T20">1.1.1q</text:span><text:span text:style-name="T7"> (statically linked with cryptography)</text:span></text:p>
      </table:table-cell>
@@ -1406,13 +1418,13 @@
      </table:table-cell>
      <table:table-cell table:style-name="ce8" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T20">1.1.1q</text:span><text:span text:style-name="T7"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T20">1.1.1q</text:span><text:span text:style-name="T7"> (statically linked with cryptography)</text:span></text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce155" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T27">1.1.1g</text:span><text:span text:style-name="T28"> (statically built for stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T27">1.1.1g</text:span><text:span text:style-name="T28"> (bundled with upstream cryptography 2.9.1)</text:span></text:p>
+     <table:table-cell table:style-name="ce155" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T28">1.1.1g</text:span><text:span text:style-name="T29"> (statically built for stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T28">1.1.1g</text:span><text:span text:style-name="T29"> (bundled with upstream cryptography 2.9.1)</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce8" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T20">1.1.1q</text:span><text:span text:style-name="T7"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T20">1.1.1q</text:span><text:span text:style-name="T7"> (statically linked with cryptography)</text:span></text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce156" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T34">1.1.1cFIPS /</text:span></text:p><text:p><text:span text:style-name="T34">1.1.1k FIPS</text:span></text:p>
+     <table:table-cell table:style-name="ce156" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T35">1.1.1cFIPS /</text:span></text:p><text:p><text:span text:style-name="T35">1.1.1k FIPS</text:span></text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce104" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T20">1.1.1q</text:span><text:span text:style-name="T7"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T20">1.1.1q</text:span><text:span text:style-name="T7"> (statically linked with cryptography)</text:span></text:p>
+     <table:table-cell table:style-name="ce104" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T23">1.1.1q</text:span><text:span text:style-name="T36"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T23">1.1.1q</text:span><text:span text:style-name="T36"> (statically linked with cryptography)</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce8" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T20">1.1.1q</text:span><text:span text:style-name="T7"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T20">1.1.1q</text:span><text:span text:style-name="T7"> (statically linked with cryptography)</text:span></text:p>
      </table:table-cell>
@@ -1434,7 +1446,7 @@
      <table:table-cell table:style-name="ce70" office:value-type="string" calcext:value-type="string">
       <text:p>1.1.1f</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce104" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T20">1.1.1q</text:span><text:span text:style-name="T23"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T20">1.1.1q</text:span><text:span text:style-name="T23"> (statically linked with cryptography)</text:span></text:p>
+     <table:table-cell table:style-name="ce104" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T43">1.1.1q</text:span><text:span text:style-name="T44"> (statically linked with stdlib “ssl”)</text:span></text:p><text:p><text:span text:style-name="T43">1.1.1q</text:span><text:span text:style-name="T44"> (statically linked with cryptography)</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce60" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T5">1.0.2t</text:span><text:span text:style-name="T6"> </text:span>(bundled with upstream Python 2.7.18)</text:p><text:p><text:span text:style-name="T5">1.1.1g</text:span><text:span text:style-name="T6"> </text:span>(bundled with upstream cryptography 2.9.1)</text:p>
      </table:table-cell>
@@ -1479,7 +1491,7 @@
      <table:table-cell table:style-name="ce61" office:value-type="string" calcext:value-type="string">
       <text:p>2.7.18+patches</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce101" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T37">2.7.8</text:span><text:span text:style-name="T38">⁴</text:span></text:p>
+     <table:table-cell table:style-name="ce101" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T39">2.7.8</text:span><text:span text:style-name="T40">⁴</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce28" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T9">2.7.18</text:span><text:span text:style-name="T10">¹¹</text:span></text:p>
      </table:table-cell>
@@ -1556,7 +1568,7 @@
      <table:table-cell table:number-columns-repeated="3" table:style-name="ce52" office:value-type="string" calcext:value-type="string">
       <text:p>3.37.2</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce60" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T8">3.30.1</text:span><text:span text:style-name="T42"> </text:span>(we overwrite version from upstream Python at build time)</text:p>
+     <table:table-cell table:style-name="ce60" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T8">3.30.1</text:span><text:span text:style-name="T46"> </text:span>(we overwrite version from upstream Python at build time)</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce75" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T22">3.37.2</text:span> (we overwrite version from upstream Python at build time)</text:p>
      </table:table-cell>
@@ -1682,11 +1694,11 @@
      <table:table-cell table:number-columns-repeated="2" table:style-name="ce66" office:value-type="string" calcext:value-type="string">
       <text:p>p/o</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce179" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T41">1.2.12</text:span></text:p>
+     <table:table-cell table:style-name="ce179" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T45">1.2.12</text:span></text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce60" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">1.2.11</text:span><text:span text:style-name="T43">⁸</text:span> (bundled with Python)</text:p>
+     <table:table-cell table:style-name="ce60" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T30">1.2.11</text:span><text:span text:style-name="T47">⁸</text:span> (bundled with Python)</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce75" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T1">1.2.11</text:span><text:span text:style-name="T43">⁸</text:span> (bundled with Python)</text:p>
+     <table:table-cell table:style-name="ce75" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T1">1.2.11</text:span><text:span text:style-name="T47">⁸</text:span> (bundled with Python)</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="33"/>
     </table:table-row>
@@ -1759,7 +1771,7 @@
      </table:table-cell>
      <table:table-cell table:style-name="ce60" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T8">1.0.6</text:span> (bundled with Python)</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce37" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T46">1.0.6</text:span><text:span text:style-name="T47"> (bundled with Python)</text:span></text:p>
+     <table:table-cell table:style-name="ce37" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T50">1.0.6</text:span><text:span text:style-name="T51"> (bundled with Python)</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="33"/>
     </table:table-row>
@@ -1982,7 +1994,7 @@
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="33"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce36" office:value-type="string" calcext:value-type="string">
       <text:p>pip</text:p>
      </table:table-cell>
@@ -2354,7 +2366,7 @@
      <table:table-cell table:style-name="ce100" office:value-type="string" calcext:value-type="string">
       <text:p>3.3.2</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce149" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T29">2.9.2</text:span><text:span text:style-name="T30">¹²</text:span><text:span text:style-name="T31"> (wheel includes OpenSSL)</text:span></text:p>
+     <table:table-cell table:style-name="ce149" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T30">2.9.2</text:span><text:span text:style-name="T31">¹²</text:span><text:span text:style-name="T32"> (wheel includes OpenSSL)</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce100" office:value-type="string" calcext:value-type="string">
       <text:p>3.3.2</text:p>
@@ -2385,7 +2397,7 @@
      <table:table-cell table:style-name="ce124" office:value-type="string" calcext:value-type="string">
       <text:p>3.3.2</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce61" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T44">2.9.2</text:span><text:span text:style-name="T45">¹² </text:span><text:span text:style-name="T39">(wheel includes OpenSSL)</text:span></text:p>
+     <table:table-cell table:style-name="ce61" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T48">2.9.2</text:span><text:span text:style-name="T49">¹² </text:span><text:span text:style-name="T41">(wheel includes OpenSSL)</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce189" office:value-type="string" calcext:value-type="string">
       <text:p>3.3.2</text:p>
@@ -2817,7 +2829,7 @@
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="33"/>
     </table:table-row>
-    <table:table-row table:style-name="ro4">
+    <table:table-row table:style-name="ro2">
      <table:table-cell table:style-name="ce36" office:value-type="string" calcext:value-type="string">
       <text:p>pyOpenSSL</text:p>
      </table:table-cell>
@@ -2845,7 +2857,7 @@
      <table:table-cell table:style-name="ce76" office:value-type="string" calcext:value-type="string">
       <text:p>21.0.0</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce152" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T25">0.13.1</text:span><text:span text:style-name="T26">⁷</text:span></text:p>
+     <table:table-cell table:style-name="ce152" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T26">0.13.1</text:span><text:span text:style-name="T27">⁷</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce61" office:value-type="string" calcext:value-type="string">
       <text:p>21.0.0</text:p>
@@ -2865,11 +2877,11 @@
      <table:table-cell table:style-name="ce61" office:value-type="string" calcext:value-type="string">
       <text:p>21.0.0</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce164" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T35">0.13.1</text:span><text:span text:style-name="T26">⁷</text:span></text:p>
+     <table:table-cell table:style-name="ce164" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T37">0.13.1</text:span><text:span text:style-name="T27">⁷</text:span></text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce167" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T35">0.13.1</text:span><text:span text:style-name="T39">⁷</text:span></text:p>
+     <table:table-cell table:style-name="ce167" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T37">0.13.1</text:span><text:span text:style-name="T41">⁷</text:span></text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce170" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T3">0.13.1</text:span><text:span text:style-name="T40">⁷</text:span></text:p>
+     <table:table-cell table:style-name="ce170" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T3">0.13.1</text:span><text:span text:style-name="T42">⁷</text:span></text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce76" office:value-type="string" calcext:value-type="string">
       <text:p>19.1.0</text:p>
@@ -3360,26 +3372,26 @@
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="46"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce4"/>
      <table:table-cell table:style-name="ce66" office:value-type="string" calcext:value-type="string">
       <text:p>DEFAULT COLOUR: maintained upstream or not applicable</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="ce66"/>
      <table:table-cell table:number-columns-repeated="9"/>
-     <table:table-cell table:style-name="ce49" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T32">9. </text:span><text:span text:style-name="T32"><text:a xlink:href="https://www.openssl.org/news/openssl-1.0.2-notes.html" xlink:type="simple">https://www.openssl.org/news/openssl-1.0.2-notes.html</text:a></text:span></text:p>
+     <table:table-cell table:style-name="ce49" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T33">9. </text:span><text:span text:style-name="T33"><text:a xlink:href="https://www.openssl.org/news/openssl-1.0.2-notes.html" xlink:type="simple">https://www.openssl.org/news/openssl-1.0.2-notes.html</text:a></text:span></text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="46"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro4">
      <table:table-cell table:number-columns-repeated="12"/>
-     <table:table-cell table:style-name="ce49" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T32">10. </text:span><text:span text:style-name="T32"><text:a xlink:href="https://www.openssl.org/news/openssl-1.1.1-notes.html" xlink:type="simple">https://www.openssl.org/news/openssl-1.1.1-notes.html</text:a></text:span></text:p>
+     <table:table-cell table:style-name="ce49" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T33">10. </text:span><text:span text:style-name="T33"><text:a xlink:href="https://www.openssl.org/news/openssl-1.1.1-notes.html" xlink:type="simple">https://www.openssl.org/news/openssl-1.1.1-notes.html</text:a></text:span></text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="46"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro4">
      <table:table-cell table:number-columns-repeated="12"/>
-     <table:table-cell table:style-name="ce49" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T32">11. </text:span><text:span text:style-name="T32"><text:a xlink:href="https://github.com/ActiveState/cpython/tags" xlink:type="simple">https://github.com/ActiveState/cpython/tags</text:a></text:span></text:p>
+     <table:table-cell table:style-name="ce49" office:value-type="string" calcext:value-type="string"><text:p><text:span text:style-name="T33">11. </text:span><text:span text:style-name="T33"><text:a xlink:href="https://github.com/ActiveState/cpython/tags" xlink:type="simple">https://github.com/ActiveState/cpython/tags</text:a></text:span></text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="46"/>
     </table:table-row>
@@ -3392,11 +3404,11 @@
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="46"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:number-columns-repeated="2"/>
      <table:table-cell table:style-name="ce66"/>
      <table:table-cell table:number-columns-repeated="9"/>
-     <table:table-cell table:style-name="ce49" office:value-type="string" calcext:value-type="string"><text:p>13. On Windows, the upstream Python 2.7.18 packages are hot patched with all the ActivePython fixes <text:span text:style-name="T33">except</text:span> CVE-2021-3177</text:p>
+     <table:table-cell table:style-name="ce49" office:value-type="string" calcext:value-type="string"><text:p>13. On Windows, the upstream Python 2.7.18 packages are hot patched with all the ActivePython fixes <text:span text:style-name="T34">except</text:span> CVE-2021-3177</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="46"/>
     </table:table-row>

@@ -541,7 +541,7 @@ install_dependencies(){
 # If it's too old, exit with a nice informative message.
 # If it's supported, return through eval the version numbers to be used for
 # naming the package, for example: '8' for RHEL 8.2, '2004' for Ubuntu 20.04,
-# '72' for AIX 7.2, '114' for Solaris 11.4.
+# '71' for AIX 7.1, '114' for Solaris 11.4.
 #
 check_os_version() {
     # First parameter should be the human-readable name for the current OS.
@@ -847,7 +847,7 @@ detect_os() {
         AIX)
             ARCH="ppc$(getconf HARDWARE_BITMODE)"
             os_version_raw=$(oslevel)
-            check_os_version AIX 7.2 "$os_version_raw" os_version_chevah
+            check_os_version AIX 7.1 "$os_version_raw" os_version_chevah
             OS="aix${os_version_chevah}"
             ;;
         *)

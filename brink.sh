@@ -139,6 +139,10 @@ clean_build() {
     delete_folder ${DIST_FOLDER}
     echo "Removing publish..."
     delete_folder 'publish'
+    echo "Removing node_modules..."
+    delete_folder node_modules
+    echo "Removing web build"
+    delete_folder chevah/server/static/build/
 
     # In some case pip hangs with a build folder in temp and
     # will not continue until it is manually removed.
@@ -766,7 +770,12 @@ detect_os() {
                         os_version_raw="$VERSION_ID"
                         check_os_version "Red Hat Enterprise Linux" 8 \
                             "$os_version_raw" os_version_chevah
-                        set_os_if_not_generic "rhel" $os_version_chevah
+                        if [ ${os_version_chevah} == "8" ]; then
+                            set_os_if_not_generic "rhel" $os_version_chevah
+                        else
+                            # OpenSSL 3.0.x not supported by cryptography 3.3.x.
+                            check_linux_libc
+                        fi
                         ;;
                     ubuntu|ubuntu-core)
                         os_version_raw="$VERSION_ID"

@@ -345,7 +345,8 @@ case "$ARCH" in
         ;;
 esac
 # Only add to $MAKE if there is one, so that NMAKE on Windows is not confused.
-if [ -n "${MAKE-}" ]; then
+# But not on AIX, where there are random errors w/ parallel builds on IBM Cloud.
+if [ -n "${MAKE-}" -a "${OS%aix*}" != "" ]; then
     export MAKE="$MAKE -j${JOBS}"
 fi
 

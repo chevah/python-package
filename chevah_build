@@ -35,8 +35,8 @@ PYOPENSSL_VERSION="21.0.0"
 # Backported fix for https://github.com/pypa/pip/issues/9827
 # at https://github.com/chevah/pip/tree/20.3.4chevah.
 PIP_VERSION="20.3.4chevah1"
-# For pip <21.1, click <8.0.0, dparse <0.5.2.
-SAFETY_IGNORED_OPTS="-i 40291 -i 47833 -i 50571"
+# For pip <21.1, click <8.0.0, dparse <0.5.2, wheel <0.38.0, safety <2.2.0.
+SAFETY_IGNORED_OPTS="-i 40291 -i 47833 -i 50571 -i 51499 -i 51358"
 # setuptools 44.x is the last series to support Python 2.7.
 # More at https://github.com/pypa/setuptools/pull/1955.
 SETUPTOOLS_VERSION="44.1.1"
@@ -696,7 +696,8 @@ command_test() {
     execute $PYTHON_BIN -m pip list --outdated --format=columns
     # Safety needs PyYAML, which needs Cython, which needs to be built on AIX.
     aix_ld_hack init
-    execute $PYTHON_BIN -m pip install $PIP_ARGS safety==1.8.7
+    # This is the newest version with a py2 wheel.
+    execute $PYTHON_BIN -m pip install $PIP_ARGS safety==1.10.3
     execute $PYTHON_BIN -m safety check --full-report \
         ${SAFETY_FALSE_POSITIVES_OPTS-} ${SAFETY_IGNORED_OPTS:-}
     if [ -n "${SAFETY_FALSE_POSITIVES_OPTS-}" ]; then

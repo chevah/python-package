@@ -295,16 +295,6 @@ case $OS in
         export PATH="/usr/local/bin:$PATH"
         # In particular, Perl's Test::Simple and its deps are required.
         execute perl -MTest::Simple -e 1
-        # Version 5.9.2 of psutil not working properly on CentOS 5.
-        PIP_LIBRARIES="\
-            cryptography==${CRYPTOGRAPHY_VERSION} \
-            pyOpenSSL==${PYOPENSSL_VERSION} \
-            scandir==${SCANDIR_VERSION} \
-            subprocess32==${SUBPROCESS32_VERSION} \
-            bcrypt==${BCRYPT_VERSION} \
-            psutil=="5.9.0" \
-            setproctitle==${SETPROCTITLE_VERSION}
-            "
         ;;
     *)
         # Only supported Linux distributions should be left.

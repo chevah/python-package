@@ -21,7 +21,7 @@ concurrency:
 
 env:
   CHEVAH_REPO: 'python-package'
-  TMATE_DEBUG: 'no'
+  TMATE_DEBUG: 'yes'
 
 jobs:
 

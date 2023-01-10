@@ -25,12 +25,14 @@ def get_allowed_deps():
     allowed_deps = []
     if platform_system == 'linux':
         if 'musl' in CHEVAH_OS:
-           allowed_deps=[
+            # Deps without paths for generic musl Linux builds.
+            # Only musl 1.x libs are allowed.
+            allowed_deps=[
                 'ld-musl-x86_64.so.1',
                 'libc.musl-x86_64.so.1',
                 ]
         elif 'lnx' in CHEVAH_OS:
-            # Deps without paths for generic Linux builds.
+            # Deps without paths for generic glibc Linux builds.
             # Only glibc 2.x libs are allowed.
             # Tested on SLES 11 with glibc 2.11.3 and CentOS 5 with glibc 2.5.
             allowed_deps=[

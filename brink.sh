@@ -540,8 +540,7 @@ install_dependencies(){
 # Check version of current OS to see if it is supported.
 # If it's too old, exit with a nice informative message.
 # If it's supported, return through eval the version numbers to be used for
-# naming the package, for example: '8' for RHEL 8.2, '2004' for Ubuntu 20.04,
-# '71' for AIX 7.1, '114' for Solaris 11.4.
+# naming the package, for example: '71' for AIX 7.1, '114' for Solaris 11.4.
 #
 check_os_version() {
     # First parameter should be the human-readable name for the current OS.
@@ -735,8 +734,8 @@ set_os_if_not_generic() {
     local distro_name="$1"
     local distro_version="$2"
 
+    # Check if OS starts with "lnx", to match "lnx_musl" too, just in case.
     if [ "${OS#lnx}" = "$OS" ]; then
-        # $OS doesn't start with lnx, not a generic Linux build.
         OS="${distro_name}${distro_version}"
     fi
 }

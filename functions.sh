@@ -380,6 +380,8 @@ cleanup_install_dir() {
                     execute rm $python_lib_file
                     execute ln -s ../../$python_lib_file
                 execute popd
+                # Remove OpenSSL files if present.
+                execute rm -rf ssl/
                 # Remove (mostly OpenSSL) docs and manuals.
                 execute rm -rf share/
                 # Remove pysqlite2 CSS files.

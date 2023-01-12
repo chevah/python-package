@@ -31,8 +31,7 @@ jobs:
       fail-fast: false
       matrix:
         # ARM64 is currently our virtualized Ubuntu 16.04 image.
-        #runs-on: [ ubuntu-20.04, ubuntu-18.04, ARM64 ]
-        runs-on: [ ubuntu-20.04, ubuntu-18.04 ]
+        runs-on: [ ubuntu-20.04, ubuntu-18.04, ARM64 ]
     timeout-minutes: 90
     steps:
     - name: Prepare OS

@@ -32,7 +32,7 @@ jobs:
       matrix:
         # ARM64 is currently our virtualized Ubuntu 16.04 image.
         runs-on: [ ubuntu-20.04, ubuntu-18.04, ARM64 ]
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
     - name: Prepare OS
       if: startsWith(matrix.runs-on, 'ubuntu')

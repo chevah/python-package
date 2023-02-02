@@ -332,6 +332,7 @@ cleanup_install_dir() {
                 execute rm -rf lib/tcl/ lib/Lib/lib-tk/ lib/DLLs/t{k,cl}8*.dll
                 # Remove docs / test stuff.
                 execute rm -rf lib/Doc/ lib/Lib/test/
+                execute rmdir include/
                 ;;
             *)
                 # Remove test stuff
@@ -393,13 +394,8 @@ cleanup_install_dir() {
                     execute mv pkgconfig/* lib/pkgconfig/
                     execute rmdir pkgconfig/
                 fi
-                # Move include to lib/include in a way that works on Windows.
-                if [ -d include ]; then
-                    execute mkdir -p lib/include
-                    execute mv include/* lib/include/
-                    execute rmdir include/
-                fi
-
+                # Move include/ to lib/include/.
+                execute mv include/ lib/
                 # Test that only bin/ and lib/ sub-dirs are left.
                 for element in $(ls -1); do
                     if [ "$element" != "bin" -a "$element" != "lib" ]; then

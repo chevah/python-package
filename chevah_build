@@ -296,8 +296,9 @@ case $OS in
         export PATH="/usr/local/bin:$PATH"
         # In particular, Perl's Test::Simple and its deps are required.
         execute perl -MTest::Simple -e 1
-        # Version 5.9.2/5.9.3 of psutil not working properly on CentOS 5.
+        # Version 5.9.2-5.9.4 of psutil not working properly on CentOS 5.
         # More at https://github.com/giampaolo/psutil/issues/2164.
+        # Should be fixed with the 5.9.5 release.
         PIP_LIBRARIES="\
             cryptography==${CRYPTOGRAPHY_VERSION} \
             pyOpenSSL==${PYOPENSSL_VERSION} \
@@ -615,6 +616,9 @@ command_build_python_extra_libraries() {
     for library in $PIP_LIBRARIES ; do
         execute $PYTHON_BIN -m pip install $PIP_ARGS $library
     done
+
+    # When done, uninstall wheel.
+    execute $PYTHON_BIN -m pip uninstall $PIP_ARGS wheel
 
     if [ "$OS" = "win" ]; then
         echo "Patching pyWin32 manifests to use our redistributable version"

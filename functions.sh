@@ -393,6 +393,8 @@ cleanup_install_dir() {
                     execute mv pkgconfig/* lib/pkgconfig/
                     execute rmdir pkgconfig/
                 fi
+                # Move include/ to lib/include/.
+                execute mv include/ lib/
                 ;;
         esac
     execute popd

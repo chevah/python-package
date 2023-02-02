@@ -396,15 +396,15 @@ cleanup_install_dir() {
                 fi
                 # Move include/ to lib/include/.
                 execute mv include/ lib/
-                # Test that only bin/ and lib/ sub-dirs are left.
-                for element in $(ls -1); do
-                    if [ "$element" != "bin" -a "$element" != "lib" ]; then
-                        echo "Unwanted element in root dir: $element"
-                        exit 97
-                    fi
-                done
                 ;;
         esac
+        # Test that only bin/ and lib/ sub-dirs are left.
+        for element in $(ls -1); do
+            if [ "$element" != "bin" -a "$element" != "lib" ]; then
+                echo "Unwanted element in root dir: $element"
+                exit 97
+            fi
+        done
     execute popd
 
     # Output version / rev / os / arch to a dedicated file in the archive.

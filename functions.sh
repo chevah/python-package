@@ -393,8 +393,11 @@ cleanup_install_dir() {
                     execute mv pkgconfig/* lib/pkgconfig/
                     execute rmdir pkgconfig/
                 fi
-                # Move include/ to lib/include/.
-                execute mv include/ lib/
+                # Move include sub-dir to lib/include.
+                if [ -d include ]; then
+                    execute mv include lib/
+                fi
+
                 # Test that only bin/ and lib/ sub-dirs are left.
                 for element in $(ls -1); do
                     if [ "$element" != "bin" -a "$element" != "lib" ]; then

@@ -618,7 +618,7 @@ command_build_python_extra_libraries() {
     done
 
     # When done, uninstall wheel.
-    execute $PYTHON_BIN -m pip uninstall wheel
+    execute $PYTHON_BIN -m pip uninstall --yes wheel
 
     if [ "$OS" = "win" ]; then
         echo "Patching pyWin32 manifests to use our redistributable version"

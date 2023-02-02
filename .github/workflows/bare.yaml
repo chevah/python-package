@@ -21,7 +21,7 @@ concurrency:
 
 env:
   CHEVAH_REPO: 'python-package'
-  TMATE_DEBUG: 'yes'
+  TMATE_DEBUG: 'no'
 
 jobs:
 
@@ -31,8 +31,9 @@ jobs:
       fail-fast: false
       matrix:
         # ARM64 is currently our virtualized Ubuntu 16.04 image.
-        runs-on: [ ubuntu-20.04, ubuntu-18.04, ARM64 ]
-    timeout-minutes: 120
+        #runs-on: [ ubuntu-20.04, ubuntu-18.04, ARM64 ]
+        runs-on: [ ubuntu-20.04, ubuntu-18.04 ]
+    timeout-minutes: 90
     steps:
     - name: Prepare OS
       if: startsWith(matrix.runs-on, 'ubuntu')
@@ -97,14 +98,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ macos-latest ]
+        runs-on: [ macos-10.15 ]
     timeout-minutes: 60
     steps:
     # Avoid linking to Homebrew's libintl during build.
     # Needed tools are to be used from /usr/bin.
     - name: Hack Homebrew
       run: |
-        false
         sudo find /usr/local -name 'libffi*' -exec chmod a-r {} +
         sudo find /usr/local -name 'libintl*' -exec chmod a-r {} +
         sudo rm -f /usr/local/bin/{wget,curl,git}

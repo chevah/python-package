@@ -169,8 +169,9 @@ chevahbs_install() {
             echo "Applying crypto_silence_warnings.patch:"
             execute patch -d $destination -p0 < crypto_silence_warnings.patch
             execute ls -l $destination
-            ls -l $destination/Doc/
+            execute ls -l $destination/Doc/
             execute mkdir -p $destination/Doc/library/
+            execute touch $destionation/Doc/library/mailcap.rst
             # Lifted from https://github.com/ActiveState/cpython/.
             for hotfix in *.diff; do
                 echo "Applying ${hotfix}:"

@@ -5,6 +5,12 @@ E.g. to fix CVE-2020-10735 from https://github.com/ActiveState/cpython/pull/18,
 https://github.com/ActiveState/cpython/pull/18.diff is saved to this sub-dir as
 CVE-2020-10735.diff.
 
-The *.diff hot fixes are copied over automatically before building Python,
-alongside the original *.patch fixes. The `chevahbs` script in this sub-dir
-is going to patch them on top of the *.patch diffs.
+To apply the new patch to our Python sources tree, issue something like:
+
+    cd Python-2.7.18
+    patch -p1 <../CVE-2020-10735.diff
+
+On Windows, we don't build Python from sources. Therefore, the *.diff hot fixes
+are copied over automatically before building Python, alongside the original
+*.patch fixes. The `chevahbs` script in this sub-dir is going to patch them
+on top of the *.patch diffs.

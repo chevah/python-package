@@ -171,7 +171,7 @@ chevahbs_install() {
             execute ls -l $destination
             execute ls -l $destination/Doc/
             execute mkdir -p $destination/Doc/library/
-            execute touch $destionation/Doc/library/mailcap.rst
+            execute touch $destination/Doc/library/mailcap.rst
             # Lifted from https://github.com/ActiveState/cpython/.
             for hotfix in *.diff; do
                 echo "Applying ${hotfix}:"

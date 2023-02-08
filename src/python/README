@@ -1,9 +1,12 @@
 As Python 2.7 is no longer maintained upstream, security patches are lifted from
-ActiveState's fork: https://github.com/ActiveState/cpython/commits/2.7
+ActiveState's fork: https://github.com/ActiveState/cpython/commits/2.7.
 
 E.g. to fix CVE-2020-10735 from https://github.com/ActiveState/cpython/pull/18,
 https://github.com/ActiveState/cpython/pull/18.diff is saved to this sub-dir as
 CVE-2020-10735.diff.
+
+To have the new *.diff files working on Windows, run `unix2dos` on them
+if saved from a Unix-like OS like Linux.
 
 The *.diff hot fixes are copied over automatically before building Python,
 alongside the original *.patch fixes. The `chevahbs` script in this sub-dir

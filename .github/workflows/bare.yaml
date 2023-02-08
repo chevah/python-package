@@ -13,7 +13,6 @@ on:
   push:
     branches: [ master ]
   pull_request:
-    branches: [ master ]
 
 concurrency:
   group: bare-${{ github.ref }}

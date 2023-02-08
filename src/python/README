@@ -2,15 +2,20 @@ As Python 2.7 is no longer maintained upstream, security patches are lifted from
 ActiveState's fork: https://github.com/ActiveState/cpython/commits/2.7.
 
 E.g. to fix CVE-2020-10735 from https://github.com/ActiveState/cpython/pull/18,
-https://github.com/ActiveState/cpython/pull/18.diff is saved to this sub-dir as
-CVE-2020-10735.diff.
-
-To apply the new patch to our Python sources tree, issue something like:
+use https://github.com/ActiveState/cpython/pull/18.diff to save the patch
+to apply to our Python sources tree, then issue something like:
 
     cd Python-2.7.18
-    patch -p1 <../CVE-2020-10735.diff
+    patch -p1 <~/CVE-2020-10735.diff
 
-On Windows, we don't build Python from sources. Therefore, the *.diff hot fixes
-are copied over automatically before building Python, alongside the original
-*.patch fixes. The `chevahbs` script in this sub-dir is going to patch them
-on top of the *.patch diffs.
+On Windows, we don't build Python from sources. Therefore, only patches to
+Python code can be applied. Patches to C code cannot be applied on Windows,
+where we use the already-compiled upstream Python package.
+
+To have a Python-only patch automatically applied on Windows, save it as
+a ".diff" file in this sub-dir, e.g. "CVE-2015-20107.diff". If it doesn't apply
+cleanly, try adapting it to our sources.
+
+The ".diff" patches are copied over automatically before building Python,
+alongside the original "*.patch" fixes. The `chevahbs` script in this sub-dir
+is going to patch the ".diff" patches on Windows, ordered by filename.

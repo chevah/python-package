@@ -13,7 +13,6 @@ on:
   push:
     branches: [ master ]
   pull_request:
-    branches: [ master ]
 
 concurrency:
   group: bare-${{ github.ref }}
@@ -31,9 +30,8 @@ jobs:
       fail-fast: false
       matrix:
         # ARM64 is currently our virtualized Ubuntu 16.04 image.
-        #runs-on: [ ubuntu-20.04, ubuntu-18.04, ARM64 ]
-        runs-on: [ ubuntu-20.04, ubuntu-18.04 ]
-    timeout-minutes: 90
+        runs-on: [ ubuntu-20.04, ubuntu-18.04, ARM64 ]
+    timeout-minutes: 120
     steps:
     - name: Prepare OS
       if: startsWith(matrix.runs-on, 'ubuntu')

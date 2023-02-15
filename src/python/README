@@ -1,0 +1,75 @@
+Building Python on Linux/Unix
+=============================
+
+On these OS'es, we build Python from its sources ourselves. As Python 2.7 is
+no longer maintained upstream, security patches are lifted from
+ActiveState's fork: https://github.com/ActiveState/cpython/commits/2.7.
+
+E.g. to fix CVE-2020-10735 from https://github.com/ActiveState/cpython/pull/18,
+use https://github.com/ActiveState/cpython/pull/18.diff to save the patch
+to apply to our Python sources tree, then issue something like:
+
+    cd Python-2.7.18
+    patch -p1 < ~/Downloads/CVE-2020-10735.diff
+
+
+
+Building Python on Windows
+==========================
+
+Building Python on Windows is something of a black art. So we don't build
+Python from source on this OS, we use the already-compiled upstream Python
+package instead. Therefore, only patches to Python code can be applied.
+Patches to C code cannot be applied on Windows through our build system.
+
+
+Patching Python code
+--------------------
+
+To have a Python-only patch automatically applied on Windows, save it as
+a ".diff" file in this sub-dir, e.g. "CVE-2015-20107.diff". If it doesn't apply
+cleanly, try adapting it to our sources. This patch in particular (actually
+written in 2023) was edited to remove patching for tests that are only present
+in ActiveState's fork.
+
+These ".diff" patches (called hot fixes in our scripts) are copied over
+automatically before "building" Python on Windows, alongside the original
+"*.patch" fixes. The `chevahbs` script in this sub-dir is going to patch
+the ".diff" patches on Windows, ordered by filename.
+
+
+Building Python modules
+-----------------------
+
+Even though we don't build Python on Windows, we do compile some Python modules.
+
+Systems on which this Python distribution is built need to have at least:
+
+* Microsoft Visual C++ Redistributable for Visual Studio 2008 (VC+ 9.0) from
+  https://support.microsoft.com/en-us/kb/2977003
+* Microsoft Visual C++ Compiler for Python 2.7 from
+  https://www.microsoft.com/en-us/download/details.aspx?id=44266
+
+Alternatively, install the `vcredist2008` and `vcpython2` Chocolatey packages.
+
+To not require the Visual Studio 2008 (VC++ 9.0) redistributable on the systems
+running this Python package, the needed DLLs and their manifests are copied
+over from the `win-tools/redistributables` sub-directory of this repository
+at build time. To update them, follow the instructions in `win-tools/README`.
+
+MSI installers for both x86 and amd64, downloaded from the official Python
+website, should be present in the `src/python/Python-$VERSION-windows/`
+sub-directory (where $VERSION is the latest Python 2.7 version.)
+
+For pip, copy latest `get-pip.py` to `python-modules/get-pip.py`.
+
+All needed sources and wheels should be present on the custom PyPI server at
+https://bin.chevah.com:20443/pypi.
+
+Please note that VC compiler is used by default by pip. To manually enable
+it, make sure you have latest setuptools:
+
+1. Enter MSVC for Python command prompt
+2. SET DISTUTILS_USE_SDK=1
+3. SET MSSdk=1
+4. python.exe setup.py build

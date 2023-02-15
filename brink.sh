@@ -540,8 +540,7 @@ install_dependencies(){
 # Check version of current OS to see if it is supported.
 # If it's too old, exit with a nice informative message.
 # If it's supported, return through eval the version numbers to be used for
-# naming the package, for example: '8' for RHEL 8.2, '2004' for Ubuntu 20.04,
-# '71' for AIX 7.1, '114' for Solaris 11.4.
+# naming the package, for example: '71' for AIX 7.1, '114' for Solaris 11.4.
 #
 check_os_version() {
     # First parameter should be the human-readable name for the current OS.
@@ -617,11 +616,11 @@ check_linux_libc() {
     fi
 
     ldd --version > $ldd_output_file 2>&1
-    egrep "GNU\ libc|GLIBC" $ldd_output_file > /dev/null
+    egrep "GNU libc|GLIBC" $ldd_output_file > /dev/null
     if [ $? -eq 0 ]; then
         check_glibc_version
     else
-        egrep ^"musl\ libc" $ldd_output_file > /dev/null
+        egrep ^"musl libc" $ldd_output_file > /dev/null
         if [ $? -eq 0 ]; then
             check_musl_version
         else

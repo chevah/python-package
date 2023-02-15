@@ -332,6 +332,7 @@ cleanup_install_dir() {
                 execute rm -rf lib/tcl/ lib/Lib/lib-tk/ lib/DLLs/t{k,cl}8*.dll
                 # Remove docs / test stuff.
                 execute rm -rf lib/Doc/ lib/Lib/test/
+                execute rmdir include/
                 ;;
             *)
                 # Remove test stuff
@@ -380,6 +381,8 @@ cleanup_install_dir() {
                     execute rm $python_lib_file
                     execute ln -s ../../$python_lib_file
                 execute popd
+                # Remove OpenSSL files if present.
+                execute rm -rf ssl/
                 # Remove (mostly OpenSSL) docs and manuals.
                 execute rm -rf share/
                 # Remove pysqlite2 CSS files.
@@ -391,8 +394,17 @@ cleanup_install_dir() {
                     execute mv pkgconfig/* lib/pkgconfig/
                     execute rmdir pkgconfig/
                 fi
+                # Move include/ to lib/include/.
+                execute mv include/ lib/
                 ;;
         esac
+        # Test that only bin/ and lib/ sub-dirs are left.
+        for element in $(ls -1); do
+            if [ "$element" != "bin" -a "$element" != "lib" ]; then
+                echo "Unwanted element in root dir: $element"
+                exit 97
+            fi
+        done
     execute popd
 
     # Output version / rev / os / arch to a dedicated file in the archive.

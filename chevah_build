@@ -19,8 +19,8 @@ BZIP2_VERSION="1.0.8"
 # We statically build the BSD libedit on selected platforms to get the
 # readline module available without linking to the GPL-only readline libs.
 LIBEDIT_VERSION="20170329-3.1"
-OPENSSL_VERSION="1.1.1s"
-SQLITE_VERSION="3.39.4"
+OPENSSL_VERSION="1.1.1t"
+SQLITE_VERSION="3.40.1"
 
 # Python modules versions to be used everywhere possible.
 PYSQLITE_VERSION="2.8.3"
@@ -35,8 +35,9 @@ PYOPENSSL_VERSION="21.0.0"
 # Backported fix for https://github.com/pypa/pip/issues/9827
 # at https://github.com/chevah/pip/tree/20.3.4chevah.
 PIP_VERSION="20.3.4chevah1"
-# For pip <21.1, click <8.0.0, dparse <0.5.2, wheel <0.38.0, safety <2.2.0.
-SAFETY_IGNORED_OPTS="-i 40291 -i 47833 -i 50571 -i 51499 -i 51358"
+# For pip <21.1, click <8.0.0, dparse <0.5.2, wheel <0.38.0, safety <2.2.0,
+# setuptools <65.5.1, certifi <2022.12.07.
+SAFETY_IGNORED_OPTS="-i 40291 -i 47833 -i 50571 -i 51499 -i 51358 -i 52495 -i 52365"
 # setuptools 44.x is the last series to support Python 2.7.
 # More at https://github.com/pypa/setuptools/pull/1955.
 SETUPTOOLS_VERSION="44.1.1"
@@ -295,8 +296,9 @@ case $OS in
         export PATH="/usr/local/bin:$PATH"
         # In particular, Perl's Test::Simple and its deps are required.
         execute perl -MTest::Simple -e 1
-        # Version 5.9.2/5.9.3 of psutil not working properly on CentOS 5.
+        # Version 5.9.2-5.9.4 of psutil not working properly on CentOS 5.
         # More at https://github.com/giampaolo/psutil/issues/2164.
+        # Should be fixed with the 5.9.5 release.
         PIP_LIBRARIES="\
             cryptography==${CRYPTOGRAPHY_VERSION} \
             pyOpenSSL==${PYOPENSSL_VERSION} \
@@ -482,7 +484,7 @@ command_build() {
             export LDFLAGS="-L${INSTALL_FOLDER}/lib/ ${LDFLAGS}"
             export PKG_CONFIG_PATH="\
                 ${INSTALL_FOLDER}/lib/pkgconfig/:${PKG_CONFIG_PATH}"
-        elif [ "${OS%lnx*}" = "" -o "${OS%macos*}" = "" ]; then
+        elif [ "${OS%lnx*}" = "" ]; then
             # Passing -rpath to ldd is needed for building cryptography w/ pip.
             export LDFLAGS="-Wl,-rpath,${INSTALL_FOLDER}/lib/ ${LDFLAGS}"
             export PKG_CONFIG_PATH="\
@@ -614,6 +616,9 @@ command_build_python_extra_libraries() {
     for library in $PIP_LIBRARIES ; do
         execute $PYTHON_BIN -m pip install $PIP_ARGS $library
     done
+
+    # When done, uninstall wheel.
+    execute $PYTHON_BIN -m pip uninstall --yes wheel
 
     if [ "$OS" = "win" ]; then
         echo "Patching pyWin32 manifests to use our redistributable version"
@@ -773,6 +778,8 @@ command_compat() {
     execute cp -r ../$LOCAL_PYTHON_BINARY_DIST cache/
     # Make sure everything is done from scratch in the current dir.
     unset CHEVAH_CACHE CHEVAH_BUILD
+    # Install wheel back for the compat tests.
+    execute $PYTHON_BIN -m pip install $PIP_ARGS wheel
     # Some tests might fail due to causes which are not related to python.
     execute ./brink.sh deps
     if [ "${CHEVAH_CONTAINER:-}" = "yes" ]; then

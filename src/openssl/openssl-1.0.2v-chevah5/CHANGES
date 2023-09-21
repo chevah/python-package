@@ -7,6 +7,10 @@
  https://github.com/openssl/openssl/commits/ and pick the appropriate
  release branch.
 
+ Changes between 1.0.2v-chevah4 and 1.0.2v-chevah5 [21 Sep 2023]
+
+  *) Fixed address type confusion in X.509 GeneralName (CVE-2023-0286).
+
  Changes between 1.0.2v-chevah3 and 1.0.2v-chevah4 [06 Apr 2022]
 
   *) Fixed infinite loop in BN_mod_sqrt() (CVE-2022-0778).

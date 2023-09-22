@@ -780,7 +780,7 @@ command_compat() {
     execute pushd build
     echo '##### Running chevah.compat tests... #####'
     execute rm -rf compat
-    execute git clone https://github.com/chevah/compat.git --depth=1 -b master
+    execute git clone https://github.com/chevah/compat.git --depth=1 -b py2-support
     execute pushd compat
     # Copy over current brink stuff, as some changes might require it.
     execute cp ../../brink.{conf,sh} ./

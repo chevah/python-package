@@ -257,10 +257,12 @@ case $OS in
         # setup.py skips building readline by default, as it sets this to
         # "10.4", and then tries to avoid the broken readline in OS X 10.4.
         export MACOSX_DEPLOYMENT_TARGET=10.12
-        # System includes bzip2 libs by default.
-        export BUILD_BZIP2="no"
+        # System included bzip2 libs by default up to and including macOS 10.15.
+        export BUILD_BZIP2="yes"
         # Apparently, macOS 11 doesn't include zlib libraries either.
         export BUILD_ZLIB="yes"
+        # Building readline fails on macOS 11, could be fixable.
+        export BUILD_LIBEDIT="no"
         # 10.13 and newer come with LibreSSL instead of the old OpenSSL libs.
         # But 10.13 has version 2.2.7, while cryptography 2.9 requires 2.7.
         # Therefore, we build OpenSSL for both stdlib and cryptography.

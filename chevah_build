@@ -48,8 +48,9 @@ SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 59473 -i 60224 -i 53048"
 # setuptools 44.x is the last series to support Python 2.7.
 # More at https://github.com/pypa/setuptools/pull/1955.
 SETUPTOOLS_VERSION="44.1.1"
-# Version 3.2.1 is used with OpenSSL 1.0.2 libs.
-CRYPTOGRAPHY_VERSION="3.3.2"
+# Version 3.2.1 (with patches) from python-modules/ is used with OpenSSL 1.0.2.
+# Our patched versions fix CVE-2023-23931.
+CRYPTOGRAPHY_VERSION="3.3.2chevah"
 # bcrypt 3.2.0 requires at least Python 3.6.
 BCRYPT_VERSION="3.1.7"
 # setproctitle 1.2.x requires at least Python 3.6.

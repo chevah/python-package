@@ -171,7 +171,7 @@ case $OS in
         # MSYS2's Perl is not good enough for building OpenSSL.
         export PATH="/c/Strawberry/perl/bin/:$PATH:/c/Program Files/NASM/"
         export BUILD_OPENSSL="yes"
-        # Extra libraries are installed only using PIP.
+        # Python modules are installed only using PIP.
         EXTRA_LIBRARIES=""
         PIP_LIBRARIES="$PIP_LIBRARIES \
             pywin32==${PYWIN32_VERSION} \
@@ -243,9 +243,13 @@ case $OS in
         export BUILD_LIBFFI="yes"
         # OpenSSL 1.0.2 has extended support: https://tinyurl.com/2ck2sm6s.
         export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
-        # Put cryptography back, to build it against system OpenSSL.
+        # Build cryptography against system OpenSSL with our patches.
         # cryptography 3.2.1, last version working with OpenSSL 1.0.2.
-        PIP_LIBRARIES="cryptography==3.2.1 $PIP_LIBRARIES_OPENSSL_102"
+        EXTRA_LIBRARIES="$EXTRA_LIBRARIES \
+            python-modules/cryptography-3.2.1 \
+        "
+        # Use the appropriate PIP_LIBRARIES env var.
+        PIP_LIBRARIES="$PIP_LIBRARIES_OPENSSL_102"
         add_ignored_safety_ids_for_cryptography32
         ;;
     macos)

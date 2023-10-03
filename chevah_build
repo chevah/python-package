@@ -26,7 +26,7 @@ SQLITE_VERSION="3.40.1"
 PYSQLITE_VERSION="2.8.3"
 CFFI_VERSION="1.15.1"
 SCANDIR_VERSION="1.10.0"
-PSUTIL_VERSION="5.9.3"
+PSUTIL_VERSION="5.9.5"
 SUBPROCESS32_VERSION="3.5.4"
 
 # Versions no longer upgradable because of Python 2 deprecation.
@@ -318,18 +318,6 @@ case $OS in
         export PATH="/usr/local/bin:$PATH"
         # In particular, Perl's Test::Simple and its deps are required.
         execute perl -MTest::Simple -e 1
-        # Version 5.9.2-5.9.4 of psutil not working properly on CentOS 5.
-        # More at https://github.com/giampaolo/psutil/issues/2164.
-        # Should be fixed with the 5.9.5 release.
-        PIP_LIBRARIES="\
-            cryptography==${CRYPTOGRAPHY_VERSION} \
-            pyOpenSSL==${PYOPENSSL_VERSION} \
-            scandir==${SCANDIR_VERSION} \
-            subprocess32==${SUBPROCESS32_VERSION} \
-            bcrypt==${BCRYPT_VERSION} \
-            psutil=="5.9.1" \
-            setproctitle==${SETPROCTITLE_VERSION}
-            "
         ;;
     *)
         # Only supported Linux distributions should be left.

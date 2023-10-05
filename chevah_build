@@ -35,16 +35,17 @@ PYOPENSSL_VERSION="21.0.0"
 # Backported fix for https://github.com/pypa/pip/issues/9827
 # at https://github.com/chevah/pip/tree/20.3.4chevah.
 PIP_VERSION="20.3.4chevah1"
-# pip <21.1/click <8.0.0/dparse <0.5.2/wheel <0.38.0/safety <2.2.0/ pywin32<301.
+# pip <21.1, click <8, dparse <0.5.2, wheel <0.38, safety <2.2, pywin32 <301.
 SAFETY_IGNORED_OPTS="-i 40291 -i 47833 -i 50571 -i 51499 -i 51358 -i 54687"
-# setuptools <65.5.1 / requests <2.31.0 / certifi <2023.07.22.
+# setuptools <65.5.1, requests <2.31.0, certifi <2023.07.22.
 SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 52495 -i 58755 -i 52365 -i 59956"
 # Newer cryptography, OpenSSL-related.
 SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 53306 -i 53298 -i 53305 -i 53301"
 SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 53307 -i 53304 -i 53302 -i 53299"
 SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 53303 -i 59062 -i 60225 -i 60223"
-# Other cryptography security fixes.
-SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 59473 -i 60224 -i 53048"
+SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 60224"
+# Other cryptography security fixes. The fix for 53048 was backported by us.
+SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 53048 -i 59473"
 # setuptools 44.x is the last series to support Python 2.7.
 # More at https://github.com/pypa/setuptools/pull/1955.
 SETUPTOOLS_VERSION="44.1.1"
@@ -266,7 +267,7 @@ case $OS in
         export BUILD_BZIP2="yes"
         # Apparently, macOS 11 doesn't include zlib libraries either.
         export BUILD_ZLIB="yes"
-        # Building readline fails on macOS 11, could be fixable.
+        # Building readline fails on macOS 11, didn't look into it.
         export BUILD_LIBEDIT="no"
         # 10.13 and newer come with LibreSSL instead of the old OpenSSL libs.
         # But 10.13 has version 2.2.7, while cryptography 2.9 requires 2.7.

@@ -711,9 +711,10 @@ command_test() {
 
     echo '##### Testing for outdated packages and security issues... #####'
     execute $PYTHON_BIN -m pip list --outdated --format=columns
-    # Install wheel back for compat tests and for building Cython on ARM64
-    # without resorting to legacy 'setup.py install', which fails.
+    # Install wheel back for better collection of needed dependencies.
     execute $PYTHON_BIN -m pip install $PIP_ARGS wheel
+    # Move include/ back for building some deps, like Cython on ARM64.
+    execute mv $INSTALL_FOLDER/lib/include $INSTALL_FOLDER/
     # Safety needs PyYAML, which needs Cython, which needs to be built on AIX.
     aix_ld_hack init
     # This is the newest version that still works with Python 2.7.x.

@@ -29,8 +29,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # ARM64 is currently our virtualized Ubuntu 16.04 image.
-        runs-on: [ ubuntu-20.04, ubuntu-18.04, ARM64 ]
+        # The ARM64 build runs on an Amazon Linux 2 docker container on Laja.
+        runs-on: [ ubuntu-20.04, ubuntu-18.04, amzn-2-arm64 ]
     timeout-minutes: 120
     steps:
     - name: Prepare OS

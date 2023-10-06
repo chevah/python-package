@@ -711,6 +711,9 @@ command_test() {
 
     echo '##### Testing for outdated packages and security issues... #####'
     execute $PYTHON_BIN -m pip list --outdated --format=columns
+    # Install wheel back for compat tests and for building Cython on ARM64
+    # without resorting to legacy 'setup.py install', which fails.
+    execute $PYTHON_BIN -m pip install $PIP_ARGS wheel
     # Safety needs PyYAML, which needs Cython, which needs to be built on AIX.
     aix_ld_hack init
     # This is the newest version that still works with Python 2.7.x.
@@ -789,8 +792,6 @@ command_compat() {
     execute cp -r ../$LOCAL_PYTHON_BINARY_DIST cache/
     # Make sure everything is done from scratch in the current dir.
     unset CHEVAH_CACHE CHEVAH_BUILD
-    # Install wheel back for the compat tests.
-    execute $PYTHON_BIN -m pip install $PIP_ARGS wheel
     # Some tests might fail due to causes which are not related to python.
     execute ./brink.sh deps
     if [ "${CHEVAH_CONTAINER:-}" = "yes" ]; then

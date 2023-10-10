@@ -103,6 +103,7 @@ jobs:
     # Needed tools are to be used from /usr/bin.
     - name: Hack Homebrew
       run: |
+        sleep 10
         sudo find /usr/local -name 'libffi*' -exec chmod a-r {} +
         sudo find /usr/local -name 'libintl*' -exec chmod a-r {} +
         sudo rm -f /usr/local/bin/{wget,curl,git}

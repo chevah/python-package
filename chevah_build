@@ -38,8 +38,8 @@ PIP_VERSION="20.3.4chevah1"
 # For safety alerts, we need to ignore some vulnerabilities which are either:
 #   * not present in the final tarball, e.g. for wheel, safety, etc.,
 #   * not at all relevant, e.g. those for cryptography's bundled openssl,
-#   * not actually relevant for these old versions, e.g. 53048 in cryptography,
-#   * patched by us, e.g. 40291 in pip, 53048 in cryptography,
+#   * not actually relevant for these old versions, e.g. 53048 for cryptography,
+#   * patched by us, e.g. 40291 for pip, 53048 for cryptography,
 #   * not patched: 52495 for setuptools.
 # pip <21.1, click <8, dparse <0.5.2, wheel <0.38, safety <2.2, pywin32 <301.
 SAFETY_IGNORED_OPTS="-i 40291 -i 47833 -i 50571 -i 51499 -i 51358 -i 54687"
@@ -757,10 +757,8 @@ command_test() {
             (>&2 echo -e "\tSkipping because of upstream issues.")
             ;;
         lnx*)
-            if [ x${CHEVAH_CONTAINER-} = x"yes" ]; then
-                (>&2 echo -e "\tSkipping as it fails under Docker on CentOS 5.")
-            elif [ "$ARCH" = "arm64" ]; then
-                (>&2 echo -e "\tSkipping as it fails on Amazon Linux 2 arm64.")
+            if [ -f /.dockerenv ]; then
+                (>&2 echo -e "\tSkipping as it fails under Docker.")
             else
                 execute $PYTHON_BIN ${SCANDIR_FOLDER}/test/run_tests.py
             fi

@@ -29,8 +29,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # ARM64 is currently our virtualized Ubuntu 16.04 image.
-        runs-on: [ ubuntu-20.04, ubuntu-18.04, ARM64 ]
+        # The ARM64 build actually runs on an Amazon Docker container on Laja.
+        runs-on: [ ubuntu-20.04, ubuntu-18.04, amzn-2-arm64 ]
     timeout-minutes: 120
     steps:
     - name: Prepare OS
@@ -96,13 +96,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ macos-10.15 ]
+        runs-on: [ macos-11 ]
     timeout-minutes: 60
     steps:
     # Avoid linking to Homebrew's libintl during build.
     # Needed tools are to be used from /usr/bin.
     - name: Hack Homebrew
       run: |
+        sleep 10
         sudo find /usr/local -name 'libffi*' -exec chmod a-r {} +
         sudo find /usr/local -name 'libintl*' -exec chmod a-r {} +
         sudo rm -f /usr/local/bin/{wget,curl,git}
@@ -173,7 +174,7 @@ jobs:
     - name: Prepare OS
       shell: powershell
       run: |
-        chocolatey install --yes --no-progress make nasm 7zip curl
+        choco install --yes --no-progress make nasm 7zip curl
         # There's no vcpython27 choco pkg since Microsoft removed the installer.
         Start-BitsTransfer https://bin.chevah.com:20443/third-party-stuff/VCForPython27.msi
         msiexec /quiet /i VCForPython27.msi

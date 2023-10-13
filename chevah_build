@@ -14,19 +14,19 @@ set -o pipefail   # don't ignore exit codes when piping output
 
 PYTHON_BUILD_VERSION="2.7.18"
 LIBFFI_VERSION="3.4.4"
-ZLIB_VERSION="1.2.13"
+ZLIB_VERSION="1.3"
 BZIP2_VERSION="1.0.8"
 # We statically build the BSD libedit on selected platforms to get the
 # readline module available without linking to the GPL-only readline libs.
 LIBEDIT_VERSION="20170329-3.1"
-OPENSSL_VERSION="1.1.1t"
-SQLITE_VERSION="3.40.1"
+OPENSSL_VERSION="1.1.1w"
+SQLITE_VERSION="3.43.1"
 
 # Python modules versions to be used everywhere possible.
 PYSQLITE_VERSION="2.8.3"
 CFFI_VERSION="1.15.1"
 SCANDIR_VERSION="1.10.0"
-PSUTIL_VERSION="5.9.3"
+PSUTIL_VERSION="5.9.5"
 SUBPROCESS32_VERSION="3.5.4"
 
 # Versions no longer upgradable because of Python 2 deprecation.
@@ -35,14 +35,29 @@ PYOPENSSL_VERSION="21.0.0"
 # Backported fix for https://github.com/pypa/pip/issues/9827
 # at https://github.com/chevah/pip/tree/20.3.4chevah.
 PIP_VERSION="20.3.4chevah1"
-# For pip <21.1, click <8.0.0, dparse <0.5.2, wheel <0.38.0, safety <2.2.0,
-# setuptools <65.5.1, certifi <2022.12.07.
-SAFETY_IGNORED_OPTS="-i 40291 -i 47833 -i 50571 -i 51499 -i 51358 -i 52495 -i 52365"
+# For safety alerts, we need to ignore some vulnerabilities which are either:
+#   * not present in the final tarball, e.g. for wheel, safety, etc.,
+#   * not at all relevant, e.g. those for cryptography's bundled openssl,
+#   * not actually relevant for these old versions, e.g. 53048 for cryptography,
+#   * patched by us, e.g. 40291 for pip, 53048 for cryptography,
+#   * not patched: 52495 for setuptools.
+# pip <21.1, click <8, dparse <0.5.2, wheel <0.38, safety <2.2, pywin32 <301.
+SAFETY_IGNORED_OPTS="-i 40291 -i 47833 -i 50571 -i 51499 -i 51358 -i 54687"
+# setuptools <65.5.1, requests <2.31.0, certifi <2023.07.22.
+SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 52495 -i 58755 -i 52365 -i 59956"
+# These are related to cryptography's bundled OpenSSL libs. We don't use those.
+SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 53306 -i 53298 -i 53305 -i 53301"
+SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 53307 -i 53304 -i 53302 -i 53299"
+SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 53303 -i 59062 -i 60225 -i 60223"
+SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 60224"
+# Other cryptography vulnerabilities, see a few lines above for more details.
+SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 53048 -i 59473"
 # setuptools 44.x is the last series to support Python 2.7.
 # More at https://github.com/pypa/setuptools/pull/1955.
 SETUPTOOLS_VERSION="44.1.1"
-# Version 3.2.1 is used with OpenSSL 1.0.2 libs.
-CRYPTOGRAPHY_VERSION="3.3.2"
+# Version 3.2.1 (with patches) from python-modules/ is used with OpenSSL 1.0.2.
+# Our patched versions fix CVE-2023-23931.
+CRYPTOGRAPHY_VERSION="3.3.2chevah"
 # bcrypt 3.2.0 requires at least Python 3.6.
 BCRYPT_VERSION="3.1.7"
 # setproctitle 1.2.x requires at least Python 3.6.
@@ -164,7 +179,7 @@ case $OS in
         # MSYS2's Perl is not good enough for building OpenSSL.
         export PATH="/c/Strawberry/perl/bin/:$PATH:/c/Program Files/NASM/"
         export BUILD_OPENSSL="yes"
-        # Extra libraries are installed only using PIP.
+        # Python modules are installed only using PIP.
         EXTRA_LIBRARIES=""
         PIP_LIBRARIES="$PIP_LIBRARIES \
             pywin32==${PYWIN32_VERSION} \
@@ -202,8 +217,8 @@ case $OS in
         export BUILD_LIBEDIT="no"
         # As of January 2021, OpenSSL 1.0.2u is the latest version from IBM.
         export BUILD_OPENSSL="yes"
-        # 1.1.1 tests fail on AIX, use 1.0.2 with patches from Ubuntu 16.04 LTS.
-        OPENSSL_VERSION="1.0.2v-chevah4"
+        # 1.1.1 tests fail on AIX, use 1.0.2 with patches from CentOS 7.
+        OPENSSL_VERSION="1.0.2v-chevah5"
         # Perl's Test::Simple and its deps are required for building OpenSSL.
         execute perl -MTest::Simple -e 1
         # cryptography 3.2.x, last version to support OpenSSL 1.0.2.
@@ -236,9 +251,13 @@ case $OS in
         export BUILD_LIBFFI="yes"
         # OpenSSL 1.0.2 has extended support: https://tinyurl.com/2ck2sm6s.
         export CRYPTOGRAPHY_ALLOW_OPENSSL_102="yes"
-        # Put cryptography back, to build it against system OpenSSL.
+        # Build cryptography against system OpenSSL with our patches.
         # cryptography 3.2.1, last version working with OpenSSL 1.0.2.
-        PIP_LIBRARIES="cryptography==3.2.1 $PIP_LIBRARIES_OPENSSL_102"
+        EXTRA_LIBRARIES="$EXTRA_LIBRARIES \
+            python-modules/cryptography-3.2.1 \
+        "
+        # Use the appropriate PIP_LIBRARIES env var.
+        PIP_LIBRARIES="$PIP_LIBRARIES_OPENSSL_102"
         add_ignored_safety_ids_for_cryptography32
         ;;
     macos)
@@ -250,8 +269,12 @@ case $OS in
         # setup.py skips building readline by default, as it sets this to
         # "10.4", and then tries to avoid the broken readline in OS X 10.4.
         export MACOSX_DEPLOYMENT_TARGET=10.12
-        # System includes bzip2 libs by default.
-        export BUILD_BZIP2="no"
+        # System included bzip2 libs by default up to and including macOS 10.15.
+        export BUILD_BZIP2="yes"
+        # Apparently, macOS 11 doesn't include zlib libraries either.
+        export BUILD_ZLIB="yes"
+        # Building readline fails on macOS 11, didn't look into it.
+        export BUILD_LIBEDIT="no"
         # 10.13 and newer come with LibreSSL instead of the old OpenSSL libs.
         # But 10.13 has version 2.2.7, while cryptography 2.9 requires 2.7.
         # Therefore, we build OpenSSL for both stdlib and cryptography.
@@ -302,18 +325,6 @@ case $OS in
         export PATH="/usr/local/bin:$PATH"
         # In particular, Perl's Test::Simple and its deps are required.
         execute perl -MTest::Simple -e 1
-        # Version 5.9.2-5.9.4 of psutil not working properly on CentOS 5.
-        # More at https://github.com/giampaolo/psutil/issues/2164.
-        # Should be fixed with the 5.9.5 release.
-        PIP_LIBRARIES="\
-            cryptography==${CRYPTOGRAPHY_VERSION} \
-            pyOpenSSL==${PYOPENSSL_VERSION} \
-            scandir==${SCANDIR_VERSION} \
-            subprocess32==${SUBPROCESS32_VERSION} \
-            bcrypt==${BCRYPT_VERSION} \
-            psutil=="5.9.1" \
-            setproctitle==${SETPROCTITLE_VERSION}
-            "
         ;;
     *)
         # Only supported Linux distributions should be left.
@@ -706,6 +717,10 @@ command_test() {
 
     echo '##### Testing for outdated packages and security issues... #####'
     execute $PYTHON_BIN -m pip list --outdated --format=columns
+    # Install wheel back for better collection of needed dependencies.
+    execute $PYTHON_BIN -m pip install $PIP_ARGS wheel
+    # Move include/ back for building some deps, like Cython on ARM64.
+    execute mv $INSTALL_FOLDER/lib/include $INSTALL_FOLDER/
     # Safety needs PyYAML, which needs Cython, which needs to be built on AIX.
     aix_ld_hack init
     # This is the newest version that still works with Python 2.7.x.
@@ -742,8 +757,8 @@ command_test() {
             (>&2 echo -e "\tSkipping because of upstream issues.")
             ;;
         lnx*)
-            if [ x${CHEVAH_CONTAINER-} = x"yes" ]; then
-                (>&2 echo -e "\tSkipping as it fails under Docker on CentOS 5.")
+            if [ -f /.dockerenv ]; then
+                (>&2 echo -e "\tSkipping as it fails under Docker.")
             else
                 execute $PYTHON_BIN ${SCANDIR_FOLDER}/test/run_tests.py
             fi
@@ -771,7 +786,7 @@ command_compat() {
     execute pushd build
     echo '##### Running chevah.compat tests... #####'
     execute rm -rf compat
-    execute git clone https://github.com/chevah/compat.git --depth=1 -b master
+    execute git clone https://github.com/chevah/compat.git --depth=1 -b py2-support
     execute pushd compat
     # Copy over current brink stuff, as some changes might require it.
     execute cp ../../brink.{conf,sh} ./
@@ -784,8 +799,6 @@ command_compat() {
     execute cp -r ../$LOCAL_PYTHON_BINARY_DIST cache/
     # Make sure everything is done from scratch in the current dir.
     unset CHEVAH_CACHE CHEVAH_BUILD
-    # Install wheel back for the compat tests.
-    execute $PYTHON_BIN -m pip install $PIP_ARGS wheel
     # Some tests might fail due to causes which are not related to python.
     execute ./brink.sh deps
     if [ "${CHEVAH_CONTAINER:-}" = "yes" ]; then

@@ -13,7 +13,7 @@ set -o errtrace   # trap errors in functions as well
 set -o pipefail   # don't ignore exit codes when piping output
 
 PYTHON_BUILD_VERSION="2.7.18"
-LIBFFI_VERSION="3.4.4"
+LIBFFI_VERSION="3.4.6"
 ZLIB_VERSION="1.3"
 BZIP2_VERSION="1.0.8"
 # We statically build the BSD libedit on selected platforms to get the

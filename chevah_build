@@ -23,7 +23,7 @@ LIBEDIT_VERSION="20170329-3.1"
 # More at https://openssl-library.org/news/vulnerabilities-1.1.1/index.html.
 # Some fixes can still be found in the OpenSSL 1.1.1f sources from Ubuntu 20.04.
 OPENSSL_VERSION="1.1.1w-chevah1"
-SQLITE_VERSION="3.43.1"
+SQLITE_VERSION="3.46.0"
 
 # Python modules versions to be used everywhere possible.
 PYSQLITE_VERSION="2.8.3"

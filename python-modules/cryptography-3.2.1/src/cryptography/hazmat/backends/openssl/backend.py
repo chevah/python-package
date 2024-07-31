@@ -2673,7 +2673,7 @@ class Backend(object):
                 _Reasons.UNSUPPORTED_SERIALIZATION,
             )
 
-        certs: list[x509.Certificate] = []
+        certs = []  # type: list of x509.Certificate
         if p7.d.sign == self._ffi.NULL:
             return certs
 

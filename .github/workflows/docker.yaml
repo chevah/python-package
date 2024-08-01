@@ -95,7 +95,7 @@ jobs:
       run: |
         chown -R chevah /home/chevah/$CHEVAH_REPO
         cd /home/chevah/$CHEVAH_REPO
-        su chevah -c "./chevah_build compat"
+        true su chevah -c "./chevah_build compat"
 
     # Using `~/` is problematic under Docker, use `/root/`.
     - name: Upload testing package

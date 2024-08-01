@@ -794,8 +794,6 @@ command_compat() {
     execute rm -rf compat
     execute git clone https://github.com/chevah/compat.git -b py2-support
     execute pushd compat
-    # Switch to last revision supporting Python 2.7.
-    execute git checkout ffeb6f6830a4fc8f3d2fefdf2f4eb7f4db8cbcf4
     # Copy over current brink stuff, as some changes might require it.
     execute cp ../../brink.{conf,sh} ./
     # We patch the Python version to match the one that we have just built

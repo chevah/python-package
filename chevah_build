@@ -27,12 +27,12 @@ SQLITE_VERSION="3.46.0"
 
 # Python modules versions to be used everywhere possible.
 PYSQLITE_VERSION="2.8.3"
-CFFI_VERSION="1.15.1"
 SCANDIR_VERSION="1.10.0"
-PSUTIL_VERSION="5.9.5"
+PSUTIL_VERSION="6.0.0"
 SUBPROCESS32_VERSION="3.5.4"
 
 # Versions no longer upgradable because of Python 2 deprecation.
+CFFI_VERSION="1.15.1"
 # pyOpenSSL 19.1.0 is used with OpenSSL 1.0.2 libs.
 PYOPENSSL_VERSION="21.0.0"
 # Backported fix for https://github.com/pypa/pip/issues/9827

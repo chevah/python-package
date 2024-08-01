@@ -331,6 +331,8 @@ case $OS in
         export PATH="/usr/local/bin:$PATH"
         # In particular, Perl's Test::Simple and its deps are required.
         execute perl -MTest::Simple -e 1
+        # Version 6.0.0 can't build on RHEL 5 and clones.
+        PSUTIL_VERSION="5.9.8"
         ;;
     *)
         # Only supported Linux distributions should be left.

@@ -792,7 +792,7 @@ command_compat() {
     execute pushd build
     echo '##### Running chevah.compat tests... #####'
     execute rm -rf compat
-    execute git clone https://github.com/chevah/compat.git --depth=1 -b py2-support
+    execute git clone https://github.com/chevah/compat.git
     execute pushd compat
     # Switch to last revision supporting Python 2.7.
     execute git checkout d4a3dfc815e6cbfac5e0244a0ee22bf88627e76c

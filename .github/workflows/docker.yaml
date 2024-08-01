@@ -57,7 +57,7 @@ jobs:
       run: |
         apt update
         apt --yes dist-upgrade
-        apt --yes install gcc make m4 automake libtool patch git libffi-dev zlib1g-dev libncurses5-dev libssl-dev
+        apt --yes install curl bash gcc make m4 automake libtool patch git libffi-dev zlib1g-dev libncurses5-dev libssl-dev
 
     # On a Docker container, everything runs as root by default.
     - name: Chevah user setup

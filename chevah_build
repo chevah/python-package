@@ -28,6 +28,7 @@ SQLITE_VERSION="3.46.0"
 # Python modules versions to be used everywhere possible.
 PYSQLITE_VERSION="2.8.3"
 SCANDIR_VERSION="1.10.0"
+# An older version is used on generic Linux to have it built on CentOS 5.
 PSUTIL_VERSION="6.0.0"
 SUBPROCESS32_VERSION="3.5.4"
 
@@ -331,8 +332,16 @@ case $OS in
         export PATH="/usr/local/bin:$PATH"
         # In particular, Perl's Test::Simple and its deps are required.
         execute perl -MTest::Simple -e 1
-        # Version 5.9.8 and newer can't build on RHEL 5 and clones.
-        PSUTIL_VERSION="5.9.6"
+        # Version 6.0.0 of psutil can't build on RHEL 5 and clones.
+        PIP_LIBRARIES="\
+            cryptography==${CRYPTOGRAPHY_VERSION} \
+            pyOpenSSL==${PYOPENSSL_VERSION} \
+            scandir==${SCANDIR_VERSION} \
+            subprocess32==${SUBPROCESS32_VERSION} \
+            bcrypt==${BCRYPT_VERSION} \
+            psutil==5.9.8 \
+            setproctitle==${SETPROCTITLE_VERSION}
+            "
         ;;
     *)
         # Only supported Linux distributions should be left.

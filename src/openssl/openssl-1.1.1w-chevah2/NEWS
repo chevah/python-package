@@ -5,6 +5,13 @@
   This file gives a brief overview of the major changes between each OpenSSL
   release. For more details please read the CHANGES file.
 
+  Major changes between OpenSSL 1.1.1w-chevah1 and 1.1.1w-chevah2 [15 Aug 2024]
+
+      o  Fix SSL_select_next_proto buffer overread (CVE-2024-5535)
+      o  Fix Use After Free with SSL_free_buffers (CVE-2024-4741)
+      o  Fix unbounded memory growth with session handling in TLSv1.3
+         (CVE-2024-2511)
+
   Major changes between OpenSSL 1.1.1w and OpenSSL 1.1.1w-chevah1 [26 Jul 2024]
 
       o Fix PKCS12 decoding crashes (CVE-2024-0727)

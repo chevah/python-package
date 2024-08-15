@@ -433,7 +433,7 @@ def main():
         openssl_version = backend.openssl_version_text()
         if CHEVAH_OS.startswith(("win", "lnx", "macos", "aix")):
             # On some OS'es we build against our own OpenSSL.
-            expecting = u'OpenSSL 1.1.1w-chevah1  26 Jul 2024'
+            expecting = u'OpenSSL 1.1.1w-chevah2  15 Aug 2024'
             if CHEVAH_OS.startswith("aix"):
                 # On AIX we are stuck with a patched 1.0.2.
                 expecting = u'OpenSSL 1.0.2v-chevah5  21 Sep 2023'

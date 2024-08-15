@@ -1,6 +1,9 @@
 # OpenSSL 1.0.2 sources are patched with latest security fixes from the
 # CentOS 7 sources at https://git.centos.org/rpms/openssl/blob/c7/f/SOURCES.
 # Latest patches are at https://git.centos.org/rpms/openssl/commits/c7.
-# Until 2023, Ubuntu Server 16.04 source packages were available for download at
-# http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/. E.g.
+# If not found above, latest patches for OpenSSL 1.1.1 are in 1.1.1f sources for
+# Ubuntu 20.04 at http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/. E.g.
+# http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/openssl_1.1.1f-1ubuntu2.23.debian.tar.xz
+# Until 2023, Ubuntu Server 16.04 source updates for OpenSSL 1.0.2 were
+# available at http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/. E.g.
 # http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/openssl_1.0.2g-1ubuntu4.19.debian.tar.xz

@@ -14,9 +14,8 @@ to apply to our Python sources tree, then issue something like:
     cd Python-2.7.18
     patch -p1 < ~/Downloads/CVE-2020-10735.diff
 
-Python sources are currently patched from upstream Active State branch at
-https://github.com/ActiveState/cpython/commits/2.7.18.6_base/ up to & including
-fixes from July 31, 2024. Last commit: 0f39e68197b735203b8c1b4988ff78ae61842864.
+Python sources are currently patched from upstream Active State branch up to and
+including fixes from Aug 9, 2024 for ActiveState Python version 2.7.18.10.
 
 Patches that can be applied on Windows as hot fixes (see below for more details)
 are saved as diff files in the current directory. They are also applied on

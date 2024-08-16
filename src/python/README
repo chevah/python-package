@@ -15,7 +15,7 @@ to apply to our Python sources tree, then issue something like:
     patch -p1 < ~/Downloads/CVE-2020-10735.diff
 
 Python sources are currently patched from upstream Active State branch up to and
-including fixes from Aug 9, 2024 for ActiveState Python version 2.7.18.10.
+including fixes from Aug 13, 2024 for ActiveState Python version 2.7.18.10.
 
 Patches that can be applied on Windows as hot fixes (see below for more details)
 are saved as diff files in the current directory. They are also applied on

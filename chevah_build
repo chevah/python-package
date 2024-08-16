@@ -21,7 +21,7 @@ BZIP2_VERSION="1.0.8"
 LIBEDIT_VERSION="20170329-3.1"
 # As of November 2023, security patches for OpenSSL 1.1.1 are private.
 # More at https://openssl-library.org/news/vulnerabilities-1.1.1/index.html.
-# Some fixes can still be found in the OpenSSL 1.1.1f sources from Ubuntu 20.04.
+# See src/openssl/README for details on where to get them anyway.
 OPENSSL_VERSION="1.1.1w-chevah2"
 SQLITE_VERSION="3.46.0"
 

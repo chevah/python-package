@@ -1,44 +1,44 @@
 OS,AIX,,,Amazon,Alpine,Debian,FreeBSD,,HP-UX,macOS,OS X,RHEL,,,SLES,Solaris,,,,Ubuntu Server,,,,Windows,
-OS Version,5.3³,6.1³,7.1+¹,2+¹,3.12+¹,5.0+²,11.4³,12.2+³,11.31³,10.13+¹,10.8³,5.11-7.x¹,8.x¹,9.x¹,11SP4+²,10u8+³,11.0/11.1³,11.2³,11.4³,14.04/16.04¹,18.04¹,20.04¹,22.04¹,"XP, 2003, 2008³","2012r2, 2016, 2019, 2022¹"
+OS Version,5.3³,6.1³,7.1+²,2+¹,3.12+¹,6.0+²,11.4³,12.2+³,11.31³,10.13+¹,10.8³,5.11-7.x¹,8.x¹,9.x+¹,11SP4+²,10u8+³,11.0/11.1³,11.2³,11.4³,16.04²,18.04¹,20.04¹,22.04+¹,"XP, 2003, 2008³","2012r2, 2016, 2019, 2022¹"
 OpenSSL⁶,"1.0.2v-chevah2 (statically linked with stdlib “ssl”)
 1.0.2v-chevah2 (statically linked with cryptography)",1.0.2k (from AIX Web Download Pack Programs),"1.0.2v-chevah5¹⁵ (statically linked with stdlib “ssl”)
-1.0.2v-chevah5¹⁵ (statically linked with cryptography)","1.1.1w (statically linked with stdlib “ssl”)
-1.1.1w (statically linked with cryptography)","1.1.1w (statically linked with stdlib “ssl”)
-1.1.1w (statically linked with cryptography)","1.1.1w (statically linked with stdlib “ssl”)
-1.1.1w (statically linked with cryptography)",1.0.1u,1.0.2s,1.0.2h,"1.1.1w (statically linked with stdlib “ssl”)
-1.1.1w (statically linked with cryptography)","1.1.1g (statically built for stdlib “ssl”)
-1.1.1g (bundled with upstream cryptography 2.9.1)","1.1.1w (statically linked with stdlib “ssl”)
-1.1.1w (statically linked with cryptography)","1.1.1cFIPS /
-1.1.1k FIPS","1.1.1w (statically linked with stdlib “ssl”)
-1.1.1w (statically linked with cryptography)","1.1.1w (statically linked with stdlib “ssl”)
-1.1.1w (statically linked with cryptography)",1.0.2n (from upstream Oracle patches),1.0.0x,1.0.1h,"
-1.0.2o","1.1.1w (statically linked with stdlib “ssl”)
-1.1.1w (statically linked with cryptography)",1.1.0g,1.1.1f,"1.1.1w (statically linked with stdlib “ssl”)
-1.1.1w (statically linked with cryptography)","1.0.2t (bundled with upstream Python 2.7.18)
+1.0.2v-chevah5¹⁵ (statically linked with cryptography)","1.1.1w-chevah2 (statically linked with stdlib “ssl”)
+1.1.1w-chevah2 (statically linked with cryptography)","1.1.1w-chevah2 (statically linked with stdlib “ssl”)
+1.1.1w-chevah2 (statically linked with cryptography)","1.1.1w-chevah2 (statically linked with stdlib “ssl”)
+1.1.1w-chevah2 (statically linked with cryptography)",1.0.1u,1.0.2s,1.0.2h,"1.1.1w-chevah2 (statically linked with stdlib “ssl”)
+1.1.1w-chevah2 (statically linked with cryptography)","1.1.1g (statically built for stdlib “ssl”)
+1.1.1g (bundled with upstream cryptography 2.9.1)","1.1.1w-chevah2 (statically linked with stdlib “ssl”)
+1.1.1w-chevah2 (statically linked with cryptography)","1.1.1cFIPS /
+1.1.1k FIPS","1.1.1w-chevah2 (statically linked with stdlib “ssl”)
+1.1.1w-chevah2 (statically linked with cryptography)","1.1.1w-chevah2 (statically linked with stdlib “ssl”)
+1.1.1w-chevah2 (statically linked with cryptography)",1.0.2n (from upstream Oracle patches),1.0.0x,1.0.1h,"
+1.0.2o","1.1.1w-chevah2 (statically linked with stdlib “ssl”)
+1.1.1w-chevah2 (statically linked with cryptography)",1.1.0g,1.1.1f,"1.1.1w-chevah2 (statically linked with stdlib “ssl”)
+1.1.1w-chevah2 (statically linked with cryptography)","1.0.2t (bundled with upstream Python 2.7.18)
 1.1.1g (bundled with upstream cryptography 2.9.1)","1.0.2t⁹ (bundled with upstream Python 2.7.18)
-1.1.1w (built from upstream sources for cryptography)"
+1.1.1w-chevah2 (built from upstream sources for cryptography)"
 Python,2.7.18+patches,2.7.18¹¹,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18¹¹,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18¹¹,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.8⁴,2.7.18¹¹,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18+patches,2.7.18¹¹,2.7.18¹³
-SQLite,3.34.1,3.34.1,3.43.1,3.43.1,3.43.1,3.43.1,3.30.1,3.34.1,3.34.1,3.43.1,3.30.1,3.43.1,3.43.1,3.43.1,3.43.1,3.34.1,3.30.1,3.34.1,3.34.1,3.43.1,3.43.1,3.43.1,3.43.1,3.30.1 (we overwrite version from upstream Python at build time),3.43.1 (we overwrite version from upstream Python at build time)
+SQLite,3.46.0,3.34.1,3.46.0,3.46.0,3.46.0,3.46.0,3.30.1,3.46.0,3.46.0,3.46.0,3.30.1,3.46.0,3.46.0,3.46.0,3.46.0,3.46.0,3.30.1,3.46.0,3.46.0,3.46.0,3.46.0,3.46.0,3.46.0,3.30.1 (we overwrite version from upstream Python at build time),3.46.0 (we overwrite version from upstream Python at build time)
 Expat,2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.1.0⁵ (bundled with Python 2.7.8),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python),2.2.8 (bundled with Python)
-zlib,1.2.12,p/o,1.3,1.3,p/o,1.3,p/o,p/o,1.2.12,1.3,p/o,1.3,p/o,1.3,1.3,p/o,p/o,p/o,p/o,1.3,p/o,p/o,1.3,1.2.11⁸ (bundled with Python),1.2.11⁸ (bundled with Python)
+zlib,1.2.12,p/o,1.3.1,1.3.1,1.3.1,1.3.1,p/o,p/o,1.2.12,1.3.1,p/o,1.3.1,p/o,1.3.1,1.3.1,p/o,p/o,p/o,p/o,1.3.1,p/o,p/o,1.3.1,1.2.11⁸ (bundled with Python),1.2.11⁸ (bundled with Python)
 bzip2,1.0.8,1.0.8,1.0.8,1.0.8,1.0.8,1.0.8,p/o,p/o,1.0.8,p/o,p/o,1.0.8,1.0.8,1.0.8,1.0.8,p/o,p/o,p/o,p/o,1.0.8,1.0.8,1.0.8,1.0.8,1.0.6 (bundled with Python),1.0.6 (bundled with Python)
-libffi,3.4.4,3.4.2,3.4.4,p/o,3.4.4,3.4.4,3.4.2,3.4.2,3.4.2,p/o,p/o,3.4.4,p/o,3.4.4,3.4.4,n/a,n/a,3.4.2,3.4.2,p/o,p/o,p/o,p/o,n/a,n/a
+libffi,3.4.6,3.4.2,3.4.6,3.4.6,3.4.6,3.4.6,3.4.2,3.4.2,3.4.2,p/o,p/o,3.4.6,p/o,3.4.6,3.4.6,n/a,n/a,3.4.2,3.4.2,3.4.6,p/o,p/o,3.4.6,n/a,n/a
 libedit,n/a,n/a,n/a,n/a,20170329-3.1,n/a,20170329-3.1,20170329-3.1,n/a,n/a,20170329-3.1,n/a,20170329-3.1,n/a,n/a,n/a,20170329-3.1,20170329-3.1,20170329-3.1,n/a,20170329-3.1,20170329-3.1,n/a,n/a,n/a
 pysqlite,2.8.3,2.8.3,2.8.3,2.8.3,2.8.3,2.8.3,2.8.3,2.8.3,2.8.3,2.8.3,2.8.3,2.8.3,2.8.3,2.8.3,2.8.3,2.8.3,2.8.3,2.8.3,2.8.3,2.8.3,2.8.3,2.8.3,2.8.3,"n/a, upstream sqlite3 is used","n/a, upstream sqlite3 is used"
 pip,20.3.4¹⁴,9.0.3¹⁴,20.3.4chevah1,20.3.4chevah1,20.3.4chevah1,20.3.4chevah1,9.0.3¹⁴,20.3.4chevah1,20.3.4¹⁴,20.3.4chevah1,9.0.3¹⁴,20.3.4chevah1,20.3.4chevah1,20.3.4chevah1,20.3.4chevah1,20.3.4¹⁴,9.0.3¹⁴,20.3.4¹⁴,20.3.4chevah1,20.3.4chevah1,20.3.4chevah1,20.3.4chevah1,20.3.4chevah1,20.3.4¹⁴,20.3.4chevah1
 setuptools,44.1.1¹⁷,44.1.1¹⁷,44.1.1¹⁷,44.1.1¹⁷,44.1.1¹⁷,44.1.1¹⁷,44.1.1¹⁷,44.1.1¹⁷,44.1.1¹⁷,44.1.1¹⁷,44.1.1¹⁷,44.1.1¹⁷,44.1.1¹⁷,44.1.1¹⁷,44.1.1¹⁷,41.6.0¹⁷,41.6.0¹⁷,41.6.0¹⁷,44.1.1¹⁷,44.1.1¹⁷,44.1.1¹⁷,44.1.1¹⁷,44.1.1¹⁷,44.1.1¹⁷,44.1.1¹⁷
 pycparser,2.20,2.20,2.21,2.21,2.21,2.21,2.20,2.21,2.20,2.21,2.20,2.21,2.21,2.21,2.21,2.20,2.20,2.20,2.21,2.21,2.21,2.21,2.21,2.20,2.21
 setproctitle,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10
-cryptography,3.2.1¹²,2.9.2¹²,3.2.1¹⁶,3.3.2¹⁶,3.3.2¹⁶,3.3.2¹⁶,2.9.2¹²,3.3.2¹⁶,n/a,3.3.2¹⁶,2.9.2¹² (wheel includes OpenSSL),3.3.2¹⁶,3.3.2¹⁶,3.3.2¹⁶,3.3.2¹⁶,n/a,n/a,n/a,3.2.1¹²,3.3.2¹⁶,3.3.2¹⁶,3.3.2¹⁶,3.3.2¹⁶,2.9.2¹² (wheel includes OpenSSL),3.3.2¹⁶
+cryptography,3.2.1¹²,2.9.2¹²,3.2.1+patches,3.3.2+patches¹⁶,3.3.2+patches¹⁶,3.3.2+patches¹⁶,2.9.2¹²,3.3.2+patches¹⁶,n/a,3.3.2+patches¹⁶,2.9.2¹² (wheel includes OpenSSL),3.3.2+patches¹⁶,3.3.2+patches¹⁶,3.3.2+patches¹⁶,3.3.2+patches¹⁶,n/a,n/a,n/a,3.2.1¹²,3.3.2+patches¹⁶,3.3.2+patches¹⁶,3.3.2+patches¹⁶,3.3.2+patches¹⁶,2.9.2¹² (wheel includes OpenSSL),3.3.2+patches¹⁶
 six,1.15.0,1.13.0,1.15.0,1.15.0,1.15.0,1.15.0,1.11.0,1.15.0,1.15.0,1.15.0,1.11.0,1.15.0,1.15.0,1.15.0,1.15.0,1.15.0,1.11.0,1.15.0,1.15.0,1.11.0,1.11.0,1.11.0,1.11.0,1.11.0,1.11.0
 ipaddress,1.0.23,1.0.23,1.0.23,1.0.23,1.0.23,1.0.23,1.0.23,1.0.23,n/a,1.0.23,1.0.23,1.0.23,1.0.23,1.0.23,1.0.23,n/a,n/a,n/a,1.0.23,1.0.23,1.0.23,1.0.23,1.0.23,1.0.23,1.0.23
 cffi,1.14.5,1.14.0,1.15.1,1.15.1,1.15.1,1.15.1,1.14.0,1.15.1,n/a,1.15.1,1.14.0,1.15.1,1.15.1,1.15.1,1.15.1,n/a,1.14.0,1.14.5,1.15.1,1.15.1,1.15.1,1.15.1,1.15.1,1.14.0,1.15.1
 asn1crypto,n/a,1.2.0,n/a,n/a,n/a,n/a,1.2.0,n/a,n/a,n/a,1.2.0,n/a,n/a,n/a,n/a,n/a,1.2.0,n/a,n/a,n/a,n/a,n/a,n/a,1.2.0,n/a
 enum34,1.1.10,1.1.6,1.1.10,1.1.10,1.1.10,1.1.10,1.1.6,1.1.10,n/a,1.1.10,1.1.6,1.1.10,1.1.10,1.1.10,1.1.10,,,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.10,1.1.6,1.1.10
-idna,n/a,2.6,n/a,n/a,n/a,n/a,2.6,n/a,n/a,n/a,2.6,n/a,n/a,n/a,n/a,n/a,2.6,n/a,n/a,n/a,n/a,n/a,n/a,2.6,n/a
+idna,n/a,"2,6",n/a,n/a,n/a,n/a,"2,6",n/a,n/a,n/a,"2,6",n/a,n/a,n/a,n/a,n/a,"2,6",n/a,n/a,n/a,n/a,n/a,n/a,"2,6",n/a
 pyOpenSSL,19.1.0,19.1.0,19.1.0,21.0.0,21.0.0,21.0.0,19.1.0,21.0.0,0.13.1⁷,21.0.0,19.1.0,21.0.0,21.0.0,21.0.0,21.0.0,0.13.1⁷,0.13.1⁷,0.13.1⁷,19.1.0,21.0.0,21.0.0,21.0.0,21.0.0,19.1.0,21.0.0
 scandir,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0,1.10.0
-psutil,n/a,5.6.5,5.9.5,5.9.5,5.9.5,5.9.5,n/a,5.9.2,n/a,5.9.5,5.6.5,5.9.5,5.9.5,5.9.5,5.9.5,n/a,n/a,n/a,5.9.2,5.9.5,5.9.5,5.9.5,5.9.5,n/a,5.9.5
+psutil,n/a,5.6.5,6.0.0,5.9.6,6.0.0,5.9.6,n/a,5.9.2,n/a,6.0.0,5.6.5,5.9.6,6.0.0,5.9.6,5.9.6,n/a,n/a,n/a,6.0.0,5.9.6,6.0.0,6.0.0,5.9.6,n/a,6.0.0
 subprocess32,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4,3.5.4
 bcrypt,3.1.7,3.1.7,3.1.7,3.1.7,3.1.7,3.1.7,3.1.7,3.1.7,n/a,3.1.7,3.1.7,3.1.7,3.1.7,3.1.7,3.1.7,3.1.7,3.1.7,3.1.7,3.1.7,3.1.7,3.1.7,3.1.7,3.1.7,3.1.7,3.1.7
 pywin32,n/a,n/a,n/a,n/a,n/a,n/a,n/a,n/a,n/a,n/a,n/a,n/a,n/a,n/a,n/a,n/a,n/a,n/a,n/a,n/a,n/a,,n/a,227,228
@@ -56,8 +56,8 @@ Colour codes:,DARKGREY: Tier 2 platforms and their problematic dependencies,,,,,
 ,,,,,,,,,,,,10. https://www.openssl.org/news/openssl-1.1.1-notes.html,,,,,,,,,,,,,
 ,,,,,,,,,,,,11. https://github.com/ActiveState/cpython/tags,,,,,,,,,,,,,
 ,,,,,,,,,,,,12. https://cryptography.io/en/latest/changelog.html,,,,,,,,,,,,,
-,,,,,,,,,,,,"13. On Windows, the upstream Python 2.7.18 packages are hot patched for all known issues except CVE-2021-3177 and CVE-2020-10735",,,,,,,,,,,,,
+,,,,,,,,,,,,"13. On Windows, the upstream Python 2.7.18 packages are not patched for CVE-2020-10735, CVE-2021-3177, CVE-2022-48560, CVE-2022-48566, CVE-2023-40217, CVE-2024-0397.",,,,,,,,,,,,,
 ,,,,,,,,,,,,14. https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-3572,,,,,,,,,,,,,
 ,,,,,,,,,,,,15. Corresponds to upstream OpenSSL version 1.0.2zg from 07 Feb 2023.,,,,,,,,,,,,,
-,,,,,,,,,,,,"16. Both cryptography 3.2.1 and version 3.3.2 have been patched for CVE-2023-23931, but not for CVE-2023-38325.",,,,,,,,,,,,,
-,,,,,,,,,,,,17. Versions older than 65.5.1 are vulnerable to CVE-2022-40897.,,,,,,,,,,,,,
+,,,,,,,,,,,,"16. Both cryptography 3.2.1 and version 3.3.2+patches have been patched for CVE-2023-23931 and CVE-2023-49083, but not for CVE-2023-38325. Other issues might be present.",,,,,,,,,,,,,
+,,,,,,,,,,,,"17. Vulnerable to CVE-2022-40897, CVE-2024-6345.",,,,,,,,,,,,,

@@ -44,7 +44,7 @@ PIP_VERSION="20.3.4chevah1"
 #   * not at all relevant, e.g. those for cryptography's bundled openssl,
 #   * not actually relevant for these old versions, e.g. 65647 for cryptography,
 #   * patched by us, e.g. 40291 for pip, 53048/62556 for cryptography,
-#   * not patched: 52495/72236 for setuptools.
+#   * not patched: 52495/72236 for setuptools, 59473 for cryptography.
 # pip <21.1, click <8, dparse <0.5.2, wheel <0.38, safety <2.2, pywin32 <301.
 SAFETY_IGNORED_OPTS="-i 40291 -i 47833 -i 50571 -i 51499 -i 51358 -i 54687"
 # setuptools <65.5.1, requests <2.31.0, certifi <2023.07.22.
@@ -63,7 +63,7 @@ SAFETY_IGNORED_OPTS="$SAFETY_IGNORED_OPTS -i 53048 -i 59473 -i 62556 -i 65647"
 # More at https://github.com/pypa/setuptools/pull/1955.
 SETUPTOOLS_VERSION="44.1.1"
 # Version 3.2.1 (with patches) from python-modules/ is used with OpenSSL 1.0.2.
-# Our patched versions fix CVE-2023-23931 and CVE-2023-49083.
+# Our patched versions are not affected by CVE-2023-23931 and CVE-2023-49083.
 CRYPTOGRAPHY_VERSION="3.3.2chevah2"
 # bcrypt 3.2.0 requires at least Python 3.6.
 BCRYPT_VERSION="3.1.7"
@@ -803,7 +803,7 @@ command_compat() {
     execute pushd build
     echo '##### Running chevah.compat tests... #####'
     execute rm -rf compat
-    execute git clone https://github.com/chevah/compat.git -b py2-support
+    execute git clone https://github.com/chevah/compat.git --depth 1 -b py2-support
     execute pushd compat
     # Copy over current brink stuff, as some changes might require it.
     execute cp ../../brink.{conf,sh} ./

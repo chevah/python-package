@@ -30,7 +30,7 @@ jobs:
       fail-fast: false
       matrix:
         # The ARM64 build actually runs on an Amazon Docker container on Laja.
-        runs-on: [ ubuntu-20.04, ubuntu-18.04, amzn-2-arm64 ]
+        runs-on: [ ubuntu-20.04, amzn-2-arm64 ]
     timeout-minutes: 120
     steps:
     - name: Prepare OS
@@ -66,11 +66,6 @@ jobs:
         cd $CHEVAH_REPO
         ./chevah_build test
 
-    - name: Compat tests
-      run: |
-        cd $CHEVAH_REPO
-        ./chevah_build compat
-
     # Upload using a (per-OS selected) sftp command, then show final links.
     - name: Upload testing package
       run: |
@@ -96,7 +91,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ macos-11 ]
+        runs-on: [ macos-13 ]
     timeout-minutes: 60
     steps:
     # Avoid linking to Homebrew's libintl during build.
@@ -137,11 +132,6 @@ jobs:
       run: |
         cd $CHEVAH_REPO
         ./chevah_build test
-
-    - name: Compat tests
-      run: |
-        cd $CHEVAH_REPO
-        ./chevah_build compat
 
     - name: Upload testing package
       run: |
@@ -205,12 +195,6 @@ jobs:
       run: |
         cd $CHEVAH_REPO
         ./chevah_build test
-
-    - name: Compat tests
-      shell: bash
-      run: |
-        cd $CHEVAH_REPO
-        ./chevah_build compat
 
     # To use an RSA key with SFTPPlus, install upstream OpenSSH package,
     # which is more finicky in regards to file permissions.

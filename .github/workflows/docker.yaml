@@ -96,13 +96,6 @@ jobs:
         cd /home/chevah/$CHEVAH_REPO
         ./chevah_build test
 
-    # Compat tests must run as regular user with sudo rights.
-    - name: Compat tests
-      run: |
-        chown -R chevah /home/chevah/$CHEVAH_REPO
-        cd /home/chevah/$CHEVAH_REPO
-        true su chevah -c "./chevah_build compat"
-
     # Using `~/` is problematic under Docker, use `/root/`.
     - name: Upload testing package
       run: |
